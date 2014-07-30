@@ -1,0 +1,63 @@
+
+@import '//fonts.googleapis.com/css?family=Roboto:400,700';
+
+.charted-chart {
+  font-family: 'Roboto';
+  display: block;
+}
+
+.charted-chart text {
+  fill: #666666;
+  shape-rendering: crispEdges;
+}
+
+/*
+ * Styles for the legend
+ */
+.chart-legend {
+  margin-left: 40px;
+  align-self: flex-start;
+}
+
+.legend-title {
+  font-weight: bold;
+  font-size: 18px;
+}
+
+.legend-row {
+  width: 200px;
+  display: flex;
+  font-size: 14px;
+  margin-top: 10px;
+}
+
+.legend-color {
+  align-self: center;
+  width: 12px;
+  height: 12px;
+  margin-right: 8px;
+}
+
+/*
+ * Lines in line chart
+ */
+path.line {
+  stroke-width: 2px;
+}
+
+/*
+ * Axes styles
+ */
+.tick line, .domain {
+  fill: none;
+  stroke: #E0E0E0;
+  stroke-width: 1px;
+  shape-rendering: crispEdges;
+}
+.measure-group .domain {
+  stroke-width: 0;
+}
+.dim-group .domain {
+  stroke: #A2A2A2;
+}
+
