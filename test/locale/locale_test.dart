@@ -14,7 +14,7 @@ import 'package:charted/locale/locale.dart';
 part 'number_format_test.dart';
 part 'time_format_test.dart';
 
-main() {
+localeTests() {
   testNumberFormat();
   testTimeFormat();
 }

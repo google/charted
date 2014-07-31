@@ -21,7 +21,7 @@ part 'svg_arc_test.dart';
 part 'svg_axis_test.dart';
 part 'svg_line_test.dart';
 
-main() {
+svgTests() {
   testSvgArc();
   testSvgAxis();
   testSvgLine();

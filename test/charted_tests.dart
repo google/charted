@@ -20,17 +20,16 @@ import 'svg/svg_test.dart' as svg;
 import 'time/time_test.dart' as time;
 import 'transition/transition_test.dart' as transition;
 
-main(List<String> args) {
-  core.main();
-  event.main();
-  format.main();
-  interpolators.main();
-  layout.main();
-  locale.main();
-  selection.main();
-  scale.main();
-  svg.main();
-  time.main();
-  transition.main();
+allChartedTests() {
+  core.coreTests();
+  event.eventTests();
+  format.formatTests();
+  interpolators.interpolatorsTests();
+  layout.layoutTests();
+  locale.localeTests();
+  scale.scaleTests();
+  selection.selectionTests();
+  svg.svgTests();
+  time.timeTests();
+  transition.transitionTests();
 }
-

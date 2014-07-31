@@ -20,7 +20,7 @@ part 'ordinal_scale_test.dart';
 part 'scale_util_test.dart';
 part 'time_scale_test.dart';
 
-main() {
+scaleTests() {
   testScaleUtil();
   testLinearScale();
   testLogScale();
