@@ -7,7 +7,6 @@
  */
 part of charted.charts;
 
-// TODO (midoringo): Handle Observable behavior.
 /**
  * Transforms the ChartData base on the specified dimension columns and facts
  * columns indices. The values in the facts columns will be aggregated by the
@@ -27,22 +26,23 @@ class AggregationTransformer extends Observable implements ChartDataTransformer,
   static const String AGGREGATION_TYPE_MIN = 'min';
   static const String AGGREGATION_TYPE_MAX = 'max';
   static const String AGGREGATION_TYPE_VALID = 'valid';
+  final SubscriptionsDisposer _dataSubscriptions = new SubscriptionsDisposer();
+  final Set<List> _expandedSet = new Set();
   Iterable<ChartColumnSpec> columns;
-  Iterable<Iterable> rows;
+  ObservableList<Iterable> rows = new ObservableList();
   List<int> _dimensionColumnIndices;
   List<int> _factsColumnIndices;
   String _aggregationType;
   AggregationModel _model;
-  final Set<List> _expandedSet = new Set();
   bool _expandAllDimension = false;
   List _selectedColumns = [];
   FieldAccessor _indexFieldAccessor = (List row, int index) => row[index];
+  ChartData _data;
 
   AggregationTransformer(this._dimensionColumnIndices,
       this._factsColumnIndices,
       [String aggregationType = AGGREGATION_TYPE_SUM]) {
     _aggregationType = aggregationType;
-    rows = new ObservableList();
   }
 
   /**
@@ -52,8 +52,32 @@ class AggregationTransformer extends Observable implements ChartDataTransformer,
   ChartData transform(ChartData data) {
     assert(data.columns.length > max(_dimensionColumnIndices));
     assert(data.columns.length > max(_factsColumnIndices));
+    _data = data;
+    _registerListeners();
+    _transform();
+    return this;
+  }
 
-    _model = new AggregationModel(data.rows, _dimensionColumnIndices,
+  /** Registers listeners if data.rows or data.columns are Observable. */
+  _registerListeners() {
+    _dataSubscriptions.dispose();
+
+    if (_data.rows is ObservableList) {
+      _dataSubscriptions.add((_data.rows as ObservableList).listChanges
+          .listen((_) => _transform()));
+    }
+    if (_data.columns is ObservableList) {
+      _dataSubscriptions.add((_data.columns as ObservableList).listChanges
+          .listen((_) => _transform()));
+    }
+  }
+
+  /**
+   * Performs the filter transform with _data.  This is called on transform and
+   * onChange if the input ChartData is Observable.
+   */
+  _transform() {
+    _model = new AggregationModel(_data.rows, _dimensionColumnIndices,
         _factsColumnIndices, aggregationTypes: [_aggregationType],
         dimensionAccessor: _indexFieldAccessor,
         factsAccessor: _indexFieldAccessor);
@@ -64,22 +88,21 @@ class AggregationTransformer extends Observable implements ChartDataTransformer,
       expandAll();
     }
 
+    _selectedColumns.clear();
     _selectedColumns.addAll(_dimensionColumnIndices);
     _selectedColumns.addAll(_factsColumnIndices);
 
     // Process rows.
-    (rows as ObservableList).clear();
+    rows.clear();
     var transformedRows = [];
     for (var value in _model.valuesForDimension(_dimensionColumnIndices[0])) {
       _generateAggregatedRow(transformedRows, [value]);
     }
-    (rows as ObservableList).addAll(transformedRows);
+    rows.addAll(transformedRows);
 
     // Process columns.
     columns = new List.generate(_selectedColumns.length, (index) =>
-        data.columns.elementAt(_selectedColumns[index]));
-
-    return this;
+        _data.columns.elementAt(_selectedColumns[index]));
   }
 
   /**

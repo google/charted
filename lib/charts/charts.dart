@@ -51,6 +51,7 @@ part 'renderers/stackedbar_chart_renderer.dart';
 part 'transformers/aggregation.dart';
 part 'transformers/aggregation_item.dart';
 part 'transformers/aggregation_transformer.dart';
+part 'transformers/filter_transformer.dart';
 part 'transformers/transformer.dart';
 
 part 'src/chart_area_impl.dart';
