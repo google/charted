@@ -253,7 +253,7 @@ InterpolateFn interpolateTransform(String a, String b) {
     tempStr = a.substring(translateA.start, translateA.end);
     match = numberRegEx.allMatches(tempStr);
     for (Match m in match) {
-      numSetA.add(m.group(0));
+      numSetA.add(num.parse(m.group(0)));
     }
   } else {
     numSetA.addAll(const[0, 0]);
@@ -263,7 +263,7 @@ InterpolateFn interpolateTransform(String a, String b) {
     tempStr = b.substring(translateB.start, translateB.end);
     match = numberRegEx.allMatches(tempStr);
     for (Match m in match) {
-      numSetB.add(m.group(0));
+      numSetB.add(num.parse(m.group(0)));
     }
   } else {
     numSetB.addAll(const[0, 0]);

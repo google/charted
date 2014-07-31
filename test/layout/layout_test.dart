@@ -14,6 +14,6 @@ import 'package:unittest/unittest.dart';
 
 part 'pie_layout_test.dart';
 
-main() {
+layoutTests() {
   testPieLayout();
 }

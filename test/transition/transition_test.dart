@@ -15,7 +15,7 @@ import 'package:charted/selection/selection.dart';
 import 'package:charted/transition/transition.dart';
 import 'package:unittest/unittest.dart';
 
-main() {
+transitionTests() {
   const TIME_BIAS = 50;
   String markup =
       '<div class="transition-container">'

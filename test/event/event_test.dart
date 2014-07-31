@@ -15,6 +15,6 @@ import 'package:charted/event/event.dart';
 
 part 'timer_test.dart';
 
-main() {
+eventTests() {
   testTimer();
 }

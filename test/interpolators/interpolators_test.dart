@@ -20,7 +20,7 @@ class MockObject {
   MockObject(this.a, this.b);
 }
 
-main() {
+interpolatorsTests() {
   testEasing();
 
   test('interpolateNumber correctly interpolates two [num]s', () {

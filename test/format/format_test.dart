@@ -12,7 +12,7 @@ import 'package:charted/core/core.dart';
 import 'package:charted/format/format.dart';
 import 'package:unittest/unittest.dart';
 
-main() {
+formatTests() {
   List mockValues = [
     [0.0000000000000000000001,          'y', 100],
     [0.000000000000000000231,           'z', 231],

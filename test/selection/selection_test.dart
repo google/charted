@@ -14,7 +14,7 @@ import 'package:charted/selection/selection.dart';
 
 part 'selection_scope_test.dart';
 
-main() {
+selectionTests() {
   testSelectionScope();
   testSelections();
 }

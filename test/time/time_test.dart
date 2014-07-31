@@ -11,7 +11,7 @@ library charted.test.time;
 import 'package:charted/time/time.dart';
 import 'package:unittest/unittest.dart';
 
-main() {
+timeTests() {
   List granularity = [
     ['second', Time.second],
     ['minute', Time.minute],

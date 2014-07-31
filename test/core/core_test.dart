@@ -20,7 +20,7 @@ part 'color_test.dart';
 part 'math_test.dart';
 part 'object_factory_test.dart';
 
-main() {
+coreTests() {
   test('toCallback() creates a callback to return the given value', () {
     num value = 100;
     ChartedCallback<num> cb = toCallback(value);
