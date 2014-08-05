@@ -20,13 +20,25 @@ testLists() {
     });
   });
 
-  group('isNullOrEmpty()', () {
-    test('returns true when the iterable is null or empty', () {
-      expect(isNullOrEmpty(null), isTrue);
-      expect(isNullOrEmpty([]), isTrue);
+  group('Range', () {
+    test('throws ArgumentError when range is infinite', () {
+      expect(() => new Range(0, 1, 0), throwsArgumentError);
     });
-    test('returns false when the iterable is not null or empty', () {
-      expect(isNullOrEmpty([3]), isFalse);
+    test('returns integers between 0 and [start] when only start is set', () {
+      expect(new Range(5), orderedEquals([0, 1, 2, 3, 4]));
+    });
+    test('returns a list of increasing step values '
+        'when start is less than stop', () {
+      expect(new Range(0, 5), orderedEquals([0, 1, 2, 3, 4]));
+      expect(new Range(10, 50, 10), orderedEquals([10, 20, 30, 40]));
+      expect(new Range(-6, 0, 1.2),
+          orderedEquals([-6, -4.8, -3.6, -2.4, -1.2]));
+      expect(new Range(1.2, 1.6, 0.2), orderedEquals([1.2, 1.4]));
+    });
+    test('returns a list of decreasing step values '
+        'when start is greater than stop', () {
+      expect(new Range(5, 0, -1), orderedEquals([5, 4, 3, 2, 1]));
+      expect(new Range(-1.2, -1.6, -0.2), orderedEquals([-1.2, -1.4]));
     });
   });
 }

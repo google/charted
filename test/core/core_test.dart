@@ -33,6 +33,17 @@ coreTests() {
     expect(cb(null, null), equals(value));
   });
 
+  group('isNullOrEmpty()', () {
+    test('returns true when the object is null or empty', () {
+      expect(isNullOrEmpty(null), isTrue);
+      expect(isNullOrEmpty(''), isTrue);
+      expect(isNullOrEmpty({}), isTrue);
+      expect(isNullOrEmpty([]), isTrue);
+    });
+    test('returns false when the object is not null or empty', () {
+      expect(isNullOrEmpty([3]), isFalse);
+    });
+  });
 
   testLists();
   testNamespace();

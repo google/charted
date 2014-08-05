@@ -71,7 +71,7 @@ class TimeScale extends LinearScale {
     return new DateTime.fromMillisecondsSinceEpoch(t);
   }
 
-  List _tickMethod(quiver.Extent extent, int count) {
+  List _tickMethod(Extent extent, int count) {
     var span  = extent.max - extent.min,
         target = span / count,
         i = ScaleUtil.bisect(_scaleSteps, target);
@@ -122,7 +122,7 @@ class TimeScale extends LinearScale {
 
   List niceInterval(var interval, [int skip = 1]) {
     var extent = scaleExtent(domain);
-    extent = new quiver.Extent(extent[0], extent[1]);
+    extent = new Extent(extent[0], extent[1]);
 
     var method = interval == null ? _tickMethod(extent, 10) :
                  interval is int ? _tickMethod(extent, interval) : null;
@@ -168,7 +168,7 @@ class TimeScale extends LinearScale {
 
   List ticksInterval(var interval, [int skip = 1]) {
     var extent = scaleExtent(domain);
-    extent = new quiver.Extent(extent[0], extent[1]);
+    extent = new Extent(extent[0], extent[1]);
     var method = interval == null ? _tickMethod(extent, 10) :
         interval is int ? _tickMethod(extent, interval) :
         [interval, skip];
@@ -194,7 +194,7 @@ class ScaleMilliSeconds extends chartTime.Interval {
   List range(var t0, var t1, int step) {
     int start = t0 is DateTime ? t0.millisecondsSinceEpoch : t0,
         stop = t1 is DateTime ? t1.millisecondsSinceEpoch : t1;
-    return quiver.range((start / step).ceil() * step, stop, step).map(
+    return new Range((start / step).ceil() * step, stop, step).map(
         (d) => new DateTime.fromMillisecondsSinceEpoch(d)).toList();
   }
 }

@@ -35,8 +35,8 @@ class OrdinalScale extends Scale {
   }
 
   List steps(start, step) {
-    return ScaleUtil.range(domain.length).map(
-        (num i) => start + step * i).toList();
+    var s = new Range(domain.length).toList();
+    return s.map((num i) => start + step * i).toList();
   }
 
   void nice([int ticks]) {

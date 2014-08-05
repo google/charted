@@ -49,7 +49,7 @@ class PieLayout {
         endAngle = endAngleCallback(data, ei, e),
         total = sum(values),
         scaleFactor = (endAngle - startAngle) / (total > 0 ? total : 1),
-        index = range(values.length).toList(),
+        index = new Range.integers(values.length).toList(),
         arcs = new List(data.length);
 
     if (compare != null) {

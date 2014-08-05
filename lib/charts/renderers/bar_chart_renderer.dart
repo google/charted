@@ -61,7 +61,7 @@ class BarChartRenderer implements ChartRenderer {
         (row) => row.elementAt(chart.config.dimensions.first)).toList();
 
     var bars = new OrdinalScale()
-        ..domain = range(series.measures.length).toList()
+        ..domain = new Range(series.measures.length).toList()
         ..rangeRoundBands([0, xScale.rangeBand]);
 
     var group = _group.selectAll('.row-group').data(rows);

@@ -9,43 +9,6 @@
 part of charted.test.scale;
 
 testScaleUtil() {
-  test('ScaleUtil::integerScaleRange() correctly finds the exponent of 10 '
-      'to multiply a num variable to be an integer', () {
-    /* Integers */
-    expect(ScaleUtil.integerScaleRange(0), equals(1));
-    expect(ScaleUtil.integerScaleRange(1), equals(1));
-    expect(ScaleUtil.integerScaleRange(12), equals(1));
-    /* Float numbers */
-    expect(ScaleUtil.integerScaleRange(0.5), equals(10));
-    expect(ScaleUtil.integerScaleRange(3.157), equals(1000));
-    /* Negative numbers */
-    expect(ScaleUtil.integerScaleRange(-1), equals(1));
-    expect(ScaleUtil.integerScaleRange(-0.5), equals(10));
-    expect(ScaleUtil.integerScaleRange(-3.157), equals(1000));
-  });
-
-  group('ScaleUtil::range()', () {
-    test('throws RangeError when range is infinite', () {
-      expect(() => ScaleUtil.range(0, 1, 0), throwsRangeError);
-    });
-    test('returns integers between 0 and [start] when only start is set', () {
-      expect(ScaleUtil.range(5), orderedEquals([0, 1, 2, 3, 4]));
-    });
-    test('returns a list of increasing step values '
-        'when start is less than stop', () {
-      expect(ScaleUtil.range(0, 5), orderedEquals([0, 1, 2, 3, 4]));
-      expect(ScaleUtil.range(10, 50, 10), orderedEquals([10, 20, 30, 40]));
-      expect(ScaleUtil.range(-6, 0, 1.2),
-          orderedEquals([-6, -4.8, -3.6, -2.4, -1.2]));
-      expect(ScaleUtil.range(1.2, 1.6, 0.2), orderedEquals([1.2, 1.4]));
-    });
-    test('returns a list of decreasing step values '
-        'when start is greater than stop', () {
-      expect(ScaleUtil.range(5, 0, -1), orderedEquals([5, 4, 3, 2, 1]));
-      expect(ScaleUtil.range(-1.2, -1.6, -0.2), orderedEquals([-1.2, -1.4]));
-    });
-  });
-
   group('ScaleUtil::nice()', () {
     Nice nice = new Nice((num x) => x.ceil(), (num x) => x.floor());
     test('extends domain extent to nice values '

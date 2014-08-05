@@ -147,18 +147,18 @@ class _ChartArea implements ChartArea {
   }
 
   void setMeasureAxis(String id, ChartAxis axis) {
-    assert(axis != null && !isBlank(id));
+    assert(axis != null && !isNullOrEmpty(id));
     _measureAxes[id] = axis;
   }
 
   ChartAxis getDimensionAxis(String id, {bool force: false}) {
-    assert(!isBlank(id));
+    assert(!isNullOrEmpty(id));
     if (force) _dimensionAxes.putIfAbsent(id, () => new ChartAxis());
     return _dimensionAxes[id];
   }
 
   void setDimensionAxis(String id, ChartAxis axis) {
-    assert(!isBlank(id));
+    assert(!isNullOrEmpty(id));
     assert(axis != null);
     _dimensionAxes[id] = axis;
   }
@@ -382,7 +382,7 @@ class _ChartArea implements ChartArea {
                     (old, next) =>
                         math.min(old, next.renderer.bandInnerPadding)),
                 values = data.rows.map((row) => row.elementAt(column)),
-                minMax = extent(values);
+                minMax = new Extent.items(values);
 
             axis..outerPadding = outerPadding
                 ..innerPadding = innerPadding

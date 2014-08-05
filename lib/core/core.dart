@@ -10,6 +10,7 @@ library charted.core;
 
 import "dart:html" show Element;
 import "dart:math" as math;
+import "dart:collection";
 
 part 'color.dart';
 part 'lists.dart';
@@ -37,11 +38,15 @@ ChartedValueAccessor toValueAccessor(val) => (d, i) => val;
 /** IdentityFunction */
 identityFunction(x) => x;
 
+/** Utility method to test if [val] is null or isEmpty */
+bool isNullOrEmpty(val) => val == null || val.isEmpty;
+
 /** Class representing a pair of values */
-class ChartedPair<T1, T2> {
+class Pair<T1, T2> {
   final T1 first;
   final T2 last;
-  ChartedPair(this.first, this.last);
+
+  Pair(this.first, this.last);
 }
 
 /*
@@ -50,46 +55,6 @@ class ChartedPair<T1, T2> {
  */
 
 class ScaleUtil {
-  /** Returns the smallest k(k ∈ 10^n) such that x * k is an integer. */
-    static int integerScaleRange(num x) {
-      int k = 1;
-      while (x * k % 1 > 0) {
-        k *= 10;
-      }
-      return k;
-    }
-
-  /**
-   * Returns the list containing the start, stop, and each of the step values
-   * beteween the start and stop value.
-   */
-  static List range(num start, [num stop = -1, num step = 1]) {
-    if (stop == -1) {
-      stop = start;
-      start = 0;
-    }
-    if ((stop - start) / step == double.INFINITY) {
-      throw new RangeError('infinite range');
-    }
-    List range = [];
-    var k = integerScaleRange(step.abs());
-    var i = -1;
-    var j;
-    start *= k;
-    stop *= k;
-    step *= k;
-    if (step < 0) {
-      while ((j = start + step * ++i) > stop) {
-        range.add(j / k);
-      }
-    } else {
-      while ((j = start + step * ++i) < stop) {
-        range.add(j / k);
-      }
-    }
-    return range;
-  }
-
   static List nice(List domain, Nice nice) {
     var i0 = 0,
         i1 = domain.length - 1,
