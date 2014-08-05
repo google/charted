@@ -68,7 +68,7 @@ abstract class ChartDataObservable {
    * Stream on which data changes are announced. Each update includes
    * the columns and row index of the value that got changed
    */
-  Stream<ChartedPair<int,ListChangeRecord>> get onValuesUpdated;
+  Stream<Pair<int,ListChangeRecord>> get onValuesUpdated;
 }
 
 /**

@@ -86,10 +86,10 @@ class _ChartData implements ChartData, ChartDataObservable {
     if (!_hasObservableRows) return;
     if (_valuesChangeController != null)
       changes.forEach((change) => _valuesChangeController.add(
-          new ChartedPair(index, change)));
+          new Pair(index, change)));
   }
 
-  Stream<ChartedPair> get onValuesUpdated {
+  Stream<Pair> get onValuesUpdated {
     if (_valuesChangeController == null)
       _valuesChangeController = new StreamController.broadcast(sync:true);
     return _valuesChangeController.stream;

@@ -151,7 +151,7 @@ class LinearScale extends Scale {
 
   List _linearTicks(List domain, int ticks) {
     List args = _linearTickRange(domain, ticks);
-    return ScaleUtil.range(args[0], args[1], args[2]);
+    return new Range(args[0], args[1], args[2]).toList();
   }
 
   List _linearTickRange(List domain, int ticks) {

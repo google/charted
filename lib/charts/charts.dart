@@ -30,8 +30,6 @@ import 'package:charted/transition/transition.dart';
 import 'package:collection/equality.dart';
 import 'package:logging/logging.dart';
 import 'package:observe/observe.dart';
-import 'package:quiver/iterables.dart';
-import 'package:quiver/strings.dart';
 
 part 'chart_axis.dart';
 part 'chart_area.dart';

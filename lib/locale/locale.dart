@@ -17,7 +17,6 @@ import 'package:charted/time/time.dart' as chartTime;
 import 'package:charted/scale/scale.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
-import 'package:quiver/iterables.dart' as quiver;
 
 import 'package:charted/interpolators/interpolators.dart' as interpolators;
 
