@@ -36,14 +36,12 @@ class FilterTransformer extends Observable implements ChartDataTransformer,
   _registerListeners() {
     _dataSubscriptions.dispose();
 
-    if (_data.rows is ObservableList) {
-      _dataSubscriptions.add((_data.rows as ObservableList).listChanges
-          .listen((_) => _transform()));
-    }
-
-    if (_data.columns is ObservableList) {
-      _dataSubscriptions.add((_data.columns as ObservableList).listChanges
-          .listen((_) => _transform()));
+    if(_data is ChartDataObservable) {
+      var observable = (_data as ChartDataObservable);
+      _dataSubscriptions.add(observable.onValuesUpdated.listen((_) =>
+          _transform()));
+      _dataSubscriptions.add(observable.onRowsChanged.listen((_) =>
+          _transform()));
     }
   }
 

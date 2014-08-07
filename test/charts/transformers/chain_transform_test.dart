@@ -3,8 +3,6 @@ library charted.test.chaintransform;
 import 'package:charted/charts/charts.dart';
 import 'package:charted/core/core.dart';
 import 'package:unittest/unittest.dart';
-import 'package:observe/observe.dart';
-
 
 main() {
   List COLUMNS = [
@@ -125,43 +123,6 @@ main() {
     // France
     expect(result.rows.elementAt(1).elementAt(3), equals(9000));
     expect(result.rows.elementAt(1).elementAt(4), closeTo(9, EPSILON));
-  });
-
-  test('Modifying data row when it is an ObeservableList should cause' +
-      'transforms to be called', () {
-
-    ObservableList observableRows = new ObservableList.from(DATA);
-    ChartData observableData = new ChartData(COLUMNS, observableRows);
-    AggregationTransformer aggrTransformer = new AggregationTransformer(
-        [1, 2, 0], [5, 3]);
-
-    ChartData aggrResult = aggrTransformer.transform(observableData);
-    // Result at this point:
-    // [Argentina, , , 2000.0, 5.50]
-    // [Brazil, , , 9000.0, 4.00]
-    // [England, , , 3000.0, 2.50]
-    // [France, , , 9000.0, 9.00]
-    // ...
-
-    FilterDefinition fd = new FilterDefinition(3, (value) => (value >= 8000));
-    FilterTransformer transformer = new FilterTransformer([fd]);
-    ChartData result = transformer.transform(aggrResult);
-
-    // Result at this point:
-    // [Brazil, , , 9000.0, 4.00]
-    // [France, , , 9000.0, 9.00]
-    // ...
-
-    // Remove Brazil, Brazilia from the original data, causing the aggregation
-    // of on stats3 on Brazil to be less than 8000 and therefore filtered from
-    // the final result.
-   observableRows.remove(observableRows.last);
-   observableRows.deliverListChanges();
-   (aggrResult.rows as ObservableList).deliverListChanges();
-
-   // [France, , , 9000.0, 9.00]
-   expect(result.rows.elementAt(0).elementAt(3), equals(9000));
-   expect(result.rows.elementAt(0).elementAt(4), closeTo(9, EPSILON));
   });
 
 }

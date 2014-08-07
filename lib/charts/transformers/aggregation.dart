@@ -20,9 +20,6 @@ typedef dynamic FieldAccessor(dynamic item, dynamic key);
 /**
  * Given list of items, dimensions and facts, compute
  * aggregates (COUNT, SUM, MIN, MAX) for facts at each dimension level.
- *
- * [Design/API Document]
- * (https://docs.google.com/a/google.com/document/d/1m6xGU9KF3nWPRjwILGRFhoi1_9mCCkCPIs0OxsaoQMU/view)
  */
 class AggregationModel {
 

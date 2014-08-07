@@ -10,7 +10,7 @@ library charted.test.aggregationtransformer;
 import 'package:charted/charts/charts.dart';
 import 'package:charted/core/core.dart';
 import 'package:unittest/unittest.dart';
-
+import 'package:observe/observe.dart';
 
 main() {
   List COLUMNS = [
@@ -347,5 +347,35 @@ main() {
     // France
     expect(result.rows.elementAt(3).elementAt(3), equals(9000));
     expect(result.rows.elementAt(3).elementAt(4), closeTo(9, EPSILON));
+  });
+
+
+  test('Modifying data row when it is an ObeservableList should cause' +
+      'transforms to be called', () {
+
+    ObservableList observableRows = new ObservableList.from(DATA);
+    ChartData observableData = new ChartData(COLUMNS, observableRows);
+    AggregationTransformer aggrTransformer = new AggregationTransformer(
+        [1, 2, 0], [5, 3]);
+
+    ChartData result = aggrTransformer.transform(observableData);
+    // Result at this point:
+    // [Argentina, , , 2000.0, 5.50]
+    // [Brazil, , , 9000.0, 4.00]
+    // [England, , , 3000.0, 2.50]
+    // [France, , , 9000.0, 9.00]
+    // ...
+
+    // Remove Brazil, Rio de Janeiro from the original data, causing aggregation
+    // of stats1 for Brazil to drop from 4 to 1.5 and stats3 from 9000 to 6000.
+    observableRows.remove(observableRows.last);
+    observableRows.deliverListChanges();
+
+    // [Argentina, , , 2000.0, 5.50]
+    // [Brazil, , , 6000.0, 2.50]
+    expect(result.rows.elementAt(0).elementAt(3), equals(2000));
+    expect(result.rows.elementAt(0).elementAt(4), closeTo(5.5, EPSILON));
+    expect(result.rows.elementAt(1).elementAt(3), equals(6000));
+    expect(result.rows.elementAt(1).elementAt(4), closeTo(1.5, EPSILON));
   });
 }
