@@ -53,7 +53,6 @@ part 'transformers/aggregation_item.dart';
 part 'transformers/aggregation_transformer.dart';
 part 'transformers/filter_transformer.dart';
 part 'transformers/transformer.dart';
-part 'transformers/transpose_transformer.dart';
 
 part 'src/chart_area_impl.dart';
 part 'src/chart_axis_impl.dart';
