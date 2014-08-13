@@ -50,10 +50,12 @@ List DATA = [
   ];
 
 main() {
-  var series = new ChartSeries('one', [1], new SparkChartRenderer()),
+  var series = new ChartSeries('one', [1], new LineChartRenderer()),
       data = new ChartData(COLUMNS, DATA),
-      config = new ChartConfig([series], [0]),
+      config = new ChartConfig([series], [0])
+          ..displayedMeasureAxes = []
+          ..renderDimensionAxes = false,
       area = new ChartArea(querySelector('.climate-chart'),
-          data, config, autoUpdate:false, dimensionAxesCount:0);
+          data, config, autoUpdate:false, dimensionAxesCount:1);
   area.draw();
 }

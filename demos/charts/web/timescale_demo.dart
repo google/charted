@@ -36,7 +36,7 @@ List DATA = [
 main() {
   var series = new ChartSeries('one', [1, 2, 3], new LineChartRenderer()),
       data = new ChartData(COLUMNS, DATA),
-      config = new ChartConfig([series], [0], dimensionTickNumbers: [5]),
+      config = new ChartConfig([series], [0]),
       area = new ChartArea(querySelector('.climate-chart'),
           data, config, autoUpdate:false, dimensionAxesCount:1);
   area.draw();

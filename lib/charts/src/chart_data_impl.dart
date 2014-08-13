@@ -1,22 +1,11 @@
-/*
- * Copyright 2014 Google Inc. All rights reserved.
- *
- * Use of this source code is governed by a BSD-style
- * license that can be found in the LICENSE file or at
- * https://developers.google.com/open-source/licenses/bsd
- */
 
 part of charted.charts;
 
-class _ChartData implements ChartData, ChartDataObservable {
+class _ChartData extends ChangeNotifier implements ChartData {
   Iterable<ChartColumnSpec> _columns;
   Iterable<Iterable> _rows;
 
-  StreamController _valuesChangeController;
-  StreamController _rowsChangeController;
-
   bool _hasObservableRows = false;
-
   SubscriptionsDisposer _disposer = new SubscriptionsDisposer();
 
   _ChartData(Iterable<ChartColumnSpec> columns, Iterable<Iterable> rows) {
@@ -59,12 +48,11 @@ class _ChartData implements ChartData, ChartDataObservable {
   Iterable<Iterable> get rows => _rows;
 
   _rowsChanged(List<ListChangeRecord> changes) {
-    if (_rows is! ObservableList || _rowsChangeController == null) return;
+    if (_rows is! ObservableList) return;
+    notifyChange(new ChartRowChangeRecord(changes));
 
+    if (!_hasObservableRows) return;
     changes.forEach((ListChangeRecord change) {
-      _rowsChangeController.add(change);
-
-      if (!_hasObservableRows) return;
       change.removed.forEach((item) => _disposer.unsubscribe(item));
 
       for(int i = 0; i < change.addedCount; i++) {
@@ -84,20 +72,6 @@ class _ChartData implements ChartData, ChartDataObservable {
 
   _valuesChanged(int index, List<ListChangeRecord> changes) {
     if (!_hasObservableRows) return;
-    if (_valuesChangeController != null)
-      changes.forEach((change) => _valuesChangeController.add(
-          new Pair(index, change)));
-  }
-
-  Stream<Pair> get onValuesUpdated {
-    if (_valuesChangeController == null)
-      _valuesChangeController = new StreamController.broadcast(sync:true);
-    return _valuesChangeController.stream;
-  }
-
-  Stream<ListChangeRecord> get onRowsChanged {
-    if (_rowsChangeController == null)
-      _rowsChangeController = new StreamController.broadcast(sync:true);
-    return _rowsChangeController.stream;
+    notifyChange(new ChartValueChangeRecord(index, changes));
   }
 }

@@ -12,7 +12,6 @@ library charted.selection;
 
 import "dart:html" show Element, Event, document;
 import "dart:math" as math;
-import "package:bot/bot.dart";
 import "package:charted/core/core.dart";
 import "package:charted/transition/transition.dart";
 

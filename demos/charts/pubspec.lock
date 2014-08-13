@@ -13,10 +13,6 @@ packages:
     description: barback
     source: hosted
     version: "0.14.0+3"
-  bot:
-    description: bot
-    source: hosted
-    version: "0.27.0+2"
   browser:
     description: browser
     source: hosted
@@ -51,10 +47,6 @@ packages:
     description: path
     source: hosted
     version: "1.2.1"
-  quiver:
-    description: quiver
-    source: hosted
-    version: "0.18.2"
   smoke:
     description: smoke
     source: hosted

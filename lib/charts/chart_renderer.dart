@@ -12,38 +12,17 @@ part of charted.charts;
  * Renders the chart on a compatible [ChartArea].
  */
 abstract class ChartRenderer {
-  /** Configuration of the series that will be rendered */
-  set series(ChartSeries value);
-
-  /**
-   * ChartBase on which the chart is rendered. This is also where the renderer
-   * would get the data, axes and other configuration from.
-   */
-  set chart(ChartArea value);
-
   /**
    * Returns extent of the series. This extent is used by [ChartArea] to
-   * set the output range of the corresponding scale/axis of of the series.
+   * set the output range of the corresponding scale/axis of the series.
    *
-   * Both [series] and [chart] must be set before attempting to get the extent.
+   * Extent has valid values only if [prepare] was already called.
    */
   Extent get extent;
 
   /**
-   * Render series data on the passed [host].
-   * Both [series] and [chart] must be set before render is called.
-   */
-  void render(Element host);
-
-  /** Clear the chart */
-  void clear();
-
-  /** Indicate if the renderer can draw on the passed ChartBase */
-  bool isAreaCompatible(ChartArea chart);
-
-  /**
-   * Indicates if this renderer uses range "band" on each of the dimension
-   * axis. Band is defined as the space taken on the dimension axis.
+   * Indicates if this renderer uses range "band" on any of the dimension
+   * axis. Band is space taken on the dimension axis (if more than a point).
    *
    * Examples:
    *   A bar chart takes up space (width of the bar) on the dimension axis.
@@ -64,4 +43,20 @@ abstract class ChartRenderer {
    * [dimensionsUsingBand] set to true.
    */
   double get bandOuterPadding;
+
+  /**
+   * Prepare the chart for rendering.
+   * - [area] represents the [ChartArea] on which the chart is rendered.
+   * - [series] represents the [ChartSeries] that is rendered
+   */
+  bool prepare(ChartArea area, ChartSeries series);
+
+  /**
+   * Render series data on the passed [host].
+   * Draw will not be successful if [prepare] was not already called.
+   */
+  void draw(Element host, Iterable<Scale> dimensions, Iterable<Scale> measures);
+
+  /** Clear the chart */
+  void clear();
 }

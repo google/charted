@@ -5,20 +5,15 @@
  * license that can be found in the LICENSE file or at
  * https://developers.google.com/open-source/licenses/bsd
  */
-/*
- * TODO(midoringo,prsd): Document library
- */
+
 library charted.charts;
 
 import 'dart:async';
 import 'dart:collection';
 import 'dart:html' show Element,document,window;
 import 'dart:math' as math;
-import 'dart:svg';
+import 'dart:svg' hide Rect;
 import 'dart:typed_data';
-
-@MirrorsUsed()
-import 'dart:mirrors' show MirrorsUsed;
 
 import 'package:charted/core/core.dart';
 import 'package:charted/layout/layout.dart';
@@ -31,7 +26,6 @@ import 'package:collection/equality.dart';
 import 'package:logging/logging.dart';
 import 'package:observe/observe.dart';
 
-part 'chart_axis.dart';
 part 'chart_area.dart';
 part 'chart_config.dart';
 part 'chart_data.dart';
@@ -43,13 +37,7 @@ part 'chart_theme.dart';
 part 'renderers/bar_chart_renderer.dart';
 part 'renderers/line_chart_renderer.dart';
 part 'renderers/pie_chart_renderer.dart';
-part 'renderers/spark_chart_renderer.dart';
 part 'renderers/stackedbar_chart_renderer.dart';
-
-part 'transformers/aggregation.dart';
-part 'transformers/aggregation_item.dart';
-part 'transformers/aggregation_transformer.dart';
-part 'transformers/transformer.dart';
 
 part 'src/chart_area_impl.dart';
 part 'src/chart_axis_impl.dart';
@@ -59,6 +47,10 @@ part 'src/chart_legend_impl.dart';
 part 'src/chart_series_impl.dart';
 
 part 'themes/quantum_theme.dart';
+
+part 'transformers/aggregation.dart';
+part 'transformers/aggregation_item.dart';
+part 'transformers/aggregation_transformer.dart';
 
 final Logger logger = new Logger('charted.charts');
 
