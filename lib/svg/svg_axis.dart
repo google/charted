@@ -13,18 +13,6 @@ typedef String Formatter(x);
  * [SvgAxis] helps draw chart axes based on a given scale.
  */
 class SvgAxis {
-  /** Orientation for axis displayed on the left of chart */
-  static const String ORIENTATION_LEFT = 'left';
-
-  /** Orientation for axis displayed on the right of chart */
-  static const String ORIENTATION_RIGHT = 'right';
-
-  /** Orientation for axis displayed at the top of chart */
-  static const String ORIENTATION_TOP = 'top';
-
-  /** Orientation for axis displayed at the bottom of chart */
-  static const String ORIENTATION_BOTTOM = 'bottom';
-
   /** Scale used on this axis */
   Scale scale = new LinearScale();
 

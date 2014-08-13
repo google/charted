@@ -1,50 +1,49 @@
-/*
- * Copyright 2014 Google Inc. All rights reserved.
- *
- * Use of this source code is governed by a BSD-style
- * license that can be found in the LICENSE file or at
- * https://developers.google.com/open-source/licenses/bsd
- */
 
 part of charted.charts;
 
-class _ChartConfig implements ChartConfig {
+class _ChartConfig extends ChangeNotifier implements ChartConfig {
+  final Map<String,ChartAxisConfig> _measureAxisRegistry = {};
+  final Map<int,ChartAxisConfig> _dimensionAxisRegistry = {};
+  final SubscriptionsDisposer _disposer = new SubscriptionsDisposer();
+
   Iterable<ChartSeries> _series;
   Iterable<int> _dimensions;
-  Iterable<int> _dimensionTickNumbers;
-
-  StreamController _controller;
-  SubscriptionsDisposer _disposer = new SubscriptionsDisposer();
-  final Map<ChartSeries,StreamSubscription> _seriesChangeListeners = {};
-
-  StreamSubscription _seriesSubscription;
   StreamSubscription _dimensionsSubscription;
 
-  int width;
-  int height;
-  int xAxisHeight = 50;
-  int yAxisWidth = 50;
-  bool isRotated = false;
+  @override
+  Rect minimumSize = const Rect.size(400, 300);
 
+  @override
+  bool leftAxisIsPrimary = false;
+
+  @override
+  bool autoResizeAxis = true;
+
+  @override
   ChartLegend legend;
 
-  _ChartConfig(Iterable<ChartSeries> series, Iterable<int> dimensions,
-      {Iterable<int> dimensionTickNumbers}) {
+  @override
+  List<String> displayedMeasureAxes;
+
+  @override
+  bool renderDimensionAxes = true;
+
+  _ChartConfig(Iterable<ChartSeries> series, Iterable<int> dimensions) {
     this.series = series;
     this.dimensions = dimensions;
-    this.dimensionTickNumbers = dimensionTickNumbers;
   }
 
+  @override
   set series(Iterable<ChartSeries> values) {
     assert(values != null && values.isNotEmpty);
 
     _disposer.dispose();
     _series = values;
-    _change();
+    notifyChange(const ChartConfigChangeRecord());
 
     // Monitor each series for changes on them
-    values.forEach((item) =>
-        _disposer.add(item.changes.listen((_) => _change()), item));
+    values.forEach((item) => _disposer.add(item.changes.listen(
+        (_) => notifyChange(const ChartConfigChangeRecord())), item));
 
     // Monitor series for changes.  When the list changes, update
     // subscriptions to ChartSeries changes.
@@ -55,16 +54,19 @@ class _ChartConfig implements ChartConfig {
           record.removed.forEach((value) => _disposer.unsubscribe(value));
           for (int i = 0; i < record.addedCount; i++) {
             var added = observable[i + record.index];
-            _disposer.add(added.changes.listen((_) => _change()), added);
+            _disposer.add(added.changes.listen(
+                (_) => notifyChange(const ChartConfigChangeRecord())));
           }
         });
-        _change();
+        notifyChange(const ChartConfigChangeRecord());
       }));
     }
   }
 
-  List<ChartSeries> get series => _series;
+  @override
+  Iterable<ChartSeries> get series => _series;
 
+  @override
   set dimensions(Iterable<int> values) {
     _dimensions = values;
 
@@ -77,26 +79,30 @@ class _ChartConfig implements ChartConfig {
 
     if (_dimensions is ObservableList) {
       _dimensionsSubscription =
-          (_dimensions as ObservableList).listChanges.listen((_) => _change());
+          (_dimensions as ObservableList).listChanges.listen(
+              (_) => notifyChange(const ChartConfigChangeRecord()));
     }
   }
 
-  List<int> get dimensions => _dimensions;
+  @override
+  Iterable<int> get dimensions => _dimensions;
 
-  set dimensionTickNumbers(Iterable<int> values) {
-    _dimensionTickNumbers = values;
+  @override
+  void registerMeasureAxis(String id, ChartAxisConfig config) {
+    assert(config != null);
+    _measureAxisRegistry[id] = config;
   }
 
-  List<int> get dimensionTickNumbers => _dimensionTickNumbers;
+  @override
+  ChartAxisConfig getMeasureAxis(String id) => _measureAxisRegistry[id];
 
-  _change() {
-    if (_controller != null) _controller.add(this);
+  @override
+  void registerDimensionAxis(int column, ChartAxisConfig config) {
+    assert(config != null);
+    assert(dimensions.contains(column));
+    _dimensionAxisRegistry[column] = config;
   }
 
-  Stream get changes {
-    if (_controller == null) {
-      _controller = new StreamController(sync:true);
-    }
-    return _controller.stream;
-  }
+  @override
+  ChartAxisConfig getDimensionAxis(int column) => _dimensionAxisRegistry[column];
 }

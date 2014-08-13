@@ -1,27 +1,31 @@
-/*
- * Copyright 2014 Google Inc. All rights reserved.
- *
- * Use of this source code is governed by a BSD-style
- * license that can be found in the LICENSE file or at
- * https://developers.google.com/open-source/licenses/bsd
- */
 part of charted.charts;
 
 class StackedBarChartRenderer implements ChartRenderer {
   final Iterable<int> dimensionsUsingBand = const[0];
 
-  ChartArea chart;
+  ChartArea area;
   ChartSeries series;
 
   Element _host;
   Selection _group;
   SelectionScope _scope;
 
-  void render(Element element) {
-    assert(series != null);
-    assert(chart != null);
+  /*
+   * Returns false if the number of dimension axes on the area is 0.
+   * Otherwise, the first dimension scale is used to render the chart.
+   */
+  bool prepare(ChartArea area, ChartSeries series) {
+    assert(area != null && series != null);
+    if (area.dimensionAxesCount == 0) return false;
+    this.area = area;
+    this.series = series;
+    return true;
+  }
+
+  void draw(Element element,
+      Iterable<Scale> dimensions, Iterable<Scale> measures) {
+    assert(area != null && series != null);
     assert(element != null && element is GElement);
-    assert(_host == null || _host == element);
 
     if (_scope == null) {
       _host = element;
@@ -29,19 +33,13 @@ class StackedBarChartRenderer implements ChartRenderer {
       _group = _scope.selectElements([_host]);
     }
 
-    var width = int.parse(element.attributes['width']),
-        height = int.parse(element.attributes['height']),
-        measureAxisId = ((series.measureAxisIds == null) ?
-            ChartArea.MEASURE_AXIS_IDS.first :
-                series.measureAxisIds.first),
-        yAxis = chart.getMeasureAxis(measureAxisId),
-        yScale = yAxis.scale,
-        dimensionAxisId = ChartArea.DIMENSION_AXIS_IDS.first,
-        xAxis = chart.getDimensionAxis(dimensionAxisId),
-        xScale = xAxis.scale,
-        theme = chart.theme;
+    var geometry = area.layout.renderArea,
+        measuresCount = series.measures.length,
+        measureScale = measures.first,
+        dimensionScale = dimensions.first,
+        theme = area.theme;
 
-    var rows = new List()..addAll(chart.data.rows.map((e) {
+    var rows = new List()..addAll(area.data.rows.map((e) {
       var row = [];
       for (var i = series.measures.length - 1; i >= 0; i--) {
         row.add(e[series.measures.elementAt(i)]);
@@ -50,23 +48,23 @@ class StackedBarChartRenderer implements ChartRenderer {
     }));
 
     String color(i) =>
-        chart.theme.getColorForKey(
+        area.theme.getColorForKey(
             series.measures.elementAt(series.measures.length - 1 - i));
 
     // We support only one dimension, so always use the first one.
-    var x = chart.data.rows.map(
-        (row) => row.elementAt(chart.config.dimensions.first)).toList();
+    var x = area.data.rows.map(
+        (row) => row.elementAt(area.config.dimensions.first)).toList();
 
     var group = _group.selectAll('.row-group').data(rows);
     group.enter.append('g')
         ..classed('row-group')
         ..attrWithCallback('transform', (d, i, c) =>
-            'translate(${xScale.apply(x[i])}, 0)');
+            'translate(${dimensionScale.apply(x[i])}, 0)');
     group.exit.remove();
 
     group.transition()
         ..attrWithCallback('transform', (d, i, c) =>
-            'translate(${xScale.apply(x[i])}, 0)')
+            'translate(${dimensionScale.apply(x[i])}, 0)')
         ..duration(theme.transitionDuration);
 
     /* TODO(prsd): Handle cases where x and y axes are swapped */
@@ -90,14 +88,14 @@ class StackedBarChartRenderer implements ChartRenderer {
     var enter = bar.enter.append('rect')
         ..classed('bar')
         ..styleWithCallback('fill', (d, i, c) => color(i))
-        ..attr('width', xScale.rangeBand - theme.strokeWidth)
+        ..attr('width', dimensionScale.rangeBand - theme.defaultStrokeWidth)
         ..attrWithCallback('y', (d, i, c) {
             var tempY;
             if (i <= ic && i > 0) {
               tempY = prevY[order];
               order++;
             } else {
-              tempY = height;
+              tempY = geometry.height;
             }
             ic = i;
             return tempY;
@@ -106,27 +104,29 @@ class StackedBarChartRenderer implements ChartRenderer {
 
     bar.transition()
         ..styleWithCallback('fill', (d, i, c) => color(i))
-        ..attr('width', xScale.rangeBand - theme.strokeWidth)
+        ..attr('width', dimensionScale.rangeBand - theme.defaultStrokeWidth)
         ..duration(theme.transitionDuration);
 
     var y = 0,
         length = bar.length;
     bar.transition()
         ..attrWithCallback('y', (d, i, c) {
-            if (i == 0) y = yScale.apply(0).round();
-            return (y -= (height - yScale.apply(d).round()));
+            if (i == 0) y = measureScale.apply(0).round();
+            return (y -= (geometry.height - measureScale.apply(d).round()));
           })
         ..attrWithCallback('height', (d, i, c) {
-            var ht = height - yScale.apply(d).round();
-            if (i != 0) ht -= (theme.separatorWidth + theme.strokeWidth);
+            var ht = geometry.height - measureScale.apply(d).round();
+            if (i != 0) {
+              ht -= (theme.defaultSeparatorWidth + theme.defaultStrokeWidth);
+            }
             if (ht < 0) ht = 0;
             return ht;
           })
         ..duration(theme.transitionDuration)
         ..delay(50);
 
-    if (theme.strokeWidth > 0) {
-      enter.attr('stroke-width', '${theme.strokeWidth}px');
+    if (theme.defaultStrokeWidth > 0) {
+      enter.attr('stroke-width', '${theme.defaultStrokeWidth}px');
       enter.styleWithCallback('stroke', (d, i, c) => color(i));
       bar.transition()
         ..styleWithCallback('stroke', (d, i, c) => color(i));
@@ -140,14 +140,15 @@ class StackedBarChartRenderer implements ChartRenderer {
     _group.selectAll('.row-group').remove();
   }
 
-  double get bandInnerPadding => chart.theme.bandInnerPadding;
-  double get bandOuterPadding => chart.theme.bandOuterPadding;
+  double get bandInnerPadding =>
+      area.theme.dimensionAxisTheme.axisBandInnerPadding;
+
+  double get bandOuterPadding =>
+      area.theme.dimensionAxisTheme.axisBandOuterPadding;
 
   Extent get extent {
-    assert(series != null);
-    assert(chart != null);
-
-    var rows = chart.data.rows,
+    assert(area != null && series != null);
+    var rows = area.data.rows,
         max = rows[0][series.measures.first],
         min = max;
 
@@ -164,7 +165,4 @@ class StackedBarChartRenderer implements ChartRenderer {
 
     return new Extent(min, max);
   }
-
-  // We support drawing as long as we have atleast one dimension axes.
-  bool isAreaCompatible(ChartArea area) => area.dimensionAxesCount >= 1;
 }

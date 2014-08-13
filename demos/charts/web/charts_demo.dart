@@ -88,7 +88,8 @@ List DEMOS = [
         'renderer': 'stacked-bar-chart',
         'columns': [ 1, 2, 3 ]
       }
-    ]
+    ],
+    'displayedMeasureAxes': []
   },
   {
     'name': 'Four',
@@ -158,6 +159,13 @@ class DemoChart {
     config = new ChartConfig(series, DIMENSION_COLUMNS);
     area = new ChartArea(host, data, config, autoUpdate:true,
         dimensionAxesCount: dimensionAxesCount);
+
+    if (demoConfig.containsKey('displayedMeasureAxes')) {
+      config.displayedMeasureAxes = demoConfig['displayedMeasureAxes'];
+      if (config.displayedMeasureAxes.isEmpty) {
+        config.renderDimensionAxes = false;
+      }
+    }
 
     config.legend = new ChartLegend(legendHost);
   }

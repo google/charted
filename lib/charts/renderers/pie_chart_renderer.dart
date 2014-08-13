@@ -1,16 +1,9 @@
-/*
- * Copyright 2014 Google Inc. All rights reserved.
- *
- * Use of this source code is governed by a BSD-style
- * license that can be found in the LICENSE file or at
- * https://developers.google.com/open-source/licenses/bsd
- */
 part of charted.charts;
 
 class PieChartRenderer implements ChartRenderer {
   final Iterable<int> dimensionsUsingBand = const[];
 
-  ChartArea chart;
+  ChartArea area;
   ChartSeries series;
 
   Extent _extent;
@@ -20,11 +13,21 @@ class PieChartRenderer implements ChartRenderer {
   List<List> _prevRows = null;
   double _prevSlice;
 
-  void render(GElement element) {
-    assert(series != null);
-    assert(chart != null);
+  /*
+   * Returns false if the number of dimension axes != 0. Pie chart can only
+   * be rendered on areas with no axes.
+   */
+  bool prepare(ChartArea area, ChartSeries series) {
+    assert(area != null && series != null);
+    if (area.dimensionAxesCount != 0) return false;
+    this.area = area;
+    this.series = series;
+    return true;
+  }
+
+  void draw(GElement element, _, __) {
+    assert(area != null && series != null);
     assert(element != null && element is GElement);
-    assert(_host == null || _host == element);
 
     if (_scope == null) {
       _host = element;
@@ -32,17 +35,16 @@ class PieChartRenderer implements ChartRenderer {
       _group = _scope.selectElements([_host]);
     }
 
-    var width = int.parse(element.attributes['width']),
-        height = int.parse(element.attributes['height']),
-        theme = chart.theme;
+    var geometry = area.layout.renderArea,
+        theme = area.theme;
 
     String color(i) => theme.getColorForKey(i);
 
     var rows = new List()..addAll(series.measures.map((e) {
-      return new List()..addAll(chart.data.rows.map((d) => d[e]));
+      return new List()..addAll(area.data.rows.map((d) => d[e]));
     }));
 
-    var radius = math.min(width, height) / 2;
+    var radius = math.min(geometry.width, geometry.height) / 2;
     var outerRadius = radius - 10;
     var sliceRadius = theme.innerRadius < 0 ?
         (radius - 10) / (rows.length + 1) :
@@ -68,7 +70,7 @@ class PieChartRenderer implements ChartRenderer {
     group.enter.append('g')
         ..classed('row-group')
         ..attrWithCallback('transform', (d, i, c) =>
-            'translate(${width / 2}, ${height / 2})');
+            'translate(${geometry.width / 2}, ${geometry.height / 2})');
     group.exit.remove();
 
     var layout = new PieLayout();
@@ -182,13 +184,10 @@ class PieChartRenderer implements ChartRenderer {
   double get bandOuterPadding => 0.0;
 
   Extent get extent {
-    assert(series != null);
-    assert(chart != null);
+    assert(area != null && series != null);
     if (_extent == null) {
       _extent = new Extent(0, 100);
     }
     return _extent;
   }
-
-  bool isAreaCompatible(ChartArea area) => area.dimensionAxesCount == 0;
 }

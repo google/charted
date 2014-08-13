@@ -150,11 +150,11 @@ void main() {
 
        SvgAxis xAxis = new SvgAxis();
        xAxis.scale = x;
-       xAxis.orientation = SvgAxis.ORIENTATION_BOTTOM;
+       xAxis.orientation = ORIENTATION_BOTTOM;
 
        SvgAxis yAxis = new SvgAxis();
        yAxis.scale = y;
-       yAxis.orientation = SvgAxis.ORIENTATION_LEFT;
+       yAxis.orientation = ORIENTATION_LEFT;
 
        xAxis.axis(g.append('g')
            ..attr('class', 'x-axis')

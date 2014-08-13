@@ -17,6 +17,12 @@ part 'lists.dart';
 part 'math.dart';
 part 'namespace.dart';
 part 'object_factory.dart';
+part 'rect.dart';
+
+const String ORIENTATION_LEFT = 'left';
+const String ORIENTATION_RIGHT = 'right';
+const String ORIENTATION_TOP = 'top';
+const String ORIENTATION_BOTTOM = 'bottom';
 
 /**
  * Callback for all DOM related operations - The first parameter
@@ -46,7 +52,10 @@ class Pair<T1, T2> {
   final T1 first;
   final T2 last;
 
-  Pair(this.first, this.last);
+  const Pair(this.first, this.last);
+
+  bool operator==(Pair other) =>
+      other != null && first == other.first && last == other.last;
 }
 
 /*

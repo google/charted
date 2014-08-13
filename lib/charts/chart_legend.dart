@@ -13,7 +13,14 @@ part of charted.charts;
  * displaying legend.
  */
 abstract class ChartLegend {
+  /**
+   * Called by [ChartArea] to notify changes to legend.
+   */
   update(Iterable<ChartLegendItem> legend, ChartArea chart);
+
+  /*
+   * Factory to create the default implementation of legend.
+   */
   factory ChartLegend(Element host) => new _ChartLegend(host);
 }
 
@@ -28,8 +35,6 @@ class ChartLegendItem {
   String color;
 
   /** The label of the Legend Item. */
-  // TODO (midoringo, prsd): Figure out if this needs to be changed for custom
-  // Legend.
   String label;
 
   /** List of series that this column is part of */

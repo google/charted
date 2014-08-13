@@ -87,7 +87,7 @@ testSvgAxis() {
       }));
       Selection axis2 = scope.select('.charts-axis-async2');
       SvgAxis svgAxis2 = new SvgAxis();
-      svgAxis2.orientation = SvgAxis.ORIENTATION_LEFT;
+      svgAxis2.orientation = ORIENTATION_LEFT;
       svgAxis2.scale.domain = [1, 10];
       svgAxis2.scale.range = [10, 100];
       svgAxis2.axis(axis2);
@@ -106,7 +106,7 @@ testSvgAxis() {
         'and transforms ordinal scale axis ticks to right positions', () {
       Selection axis = scope.select('.charts-axis-async3');
       SvgAxis svgAxis = new SvgAxis();
-      svgAxis.orientation = SvgAxis.ORIENTATION_TOP;
+      svgAxis.orientation = ORIENTATION_TOP;
       svgAxis.scale = new OrdinalScale();
       svgAxis.scale.domain = ['Jan', 'Feb', 'Mar'];
       svgAxis.scale.range = [0, 45, 90];
@@ -126,7 +126,7 @@ testSvgAxis() {
       }));
       Selection axis2 = scope.select('.charts-axis-async4');
       SvgAxis svgAxis2 = new SvgAxis();
-      svgAxis2.orientation = SvgAxis.ORIENTATION_RIGHT;
+      svgAxis2.orientation = ORIENTATION_RIGHT;
       svgAxis2.scale = new OrdinalScale();
       svgAxis2.scale.domain = ['Jan', 'Feb', 'Mar'];
       svgAxis2.scale.range = [0, 45, 90];

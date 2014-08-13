@@ -1,27 +1,31 @@
-/*
- * Copyright 2014 Google Inc. All rights reserved.
- *
- * Use of this source code is governed by a BSD-style
- * license that can be found in the LICENSE file or at
- * https://developers.google.com/open-source/licenses/bsd
- */
 part of charted.charts;
 
 class LineChartRenderer implements ChartRenderer {
   final Iterable<int> dimensionsUsingBand = const[];
 
-  ChartArea chart;
+  ChartArea area;
   ChartSeries series;
 
   Element _host;
   Selection _group;
   SelectionScope _scope;
 
-  void render(Element element) {
-    assert(series != null);
-    assert(chart != null);
+  /*
+   * Returns false if the number of dimension axes on the area is 0.
+   * Otherwise, the first dimension scale is used to render the chart.
+   */
+  bool prepare(ChartArea area, ChartSeries series) {
+    assert(area != null && series != null);
+    if (area.dimensionAxesCount == 0) return false;
+    this.area = area;
+    this.series = series;
+    return true;
+  }
+
+  void draw(Element element,
+      Iterable<Scale> dimensions, Iterable<Scale> measures) {
+    assert(area != null && series != null);
     assert(element != null && element is GElement);
-    assert(_host == null || _host == element);
 
     if (_scope == null) {
       _host = element;
@@ -29,42 +33,34 @@ class LineChartRenderer implements ChartRenderer {
       _group = _scope.selectElements([_host]);
     }
 
-    var width = int.parse(element.attributes['width']),
-        height = int.parse(element.attributes['height']),
-        measureAxisId = ((series.measureAxisIds == null) ?
-            ChartArea.MEASURE_AXIS_IDS.first :
-                series.measureAxisIds.first),
-        yAxis = chart.getMeasureAxis(measureAxisId),
-        yScale = yAxis.scale,
-        dimensionAxisId = ChartArea.DIMENSION_AXIS_IDS.first,
-        xAxis = chart.getDimensionAxis(dimensionAxisId),
-        xScale = xAxis.scale,
-        theme = chart.theme;
+    var geometry = area.layout.renderArea,
+        measuresCount = series.measures.length,
+        measureScale = measures.first,
+        dimensionScale = dimensions.first,
+        theme = area.theme;
 
     String color(i) =>
         theme.getColorForKey(series.measures.elementAt(i));
 
     // Create initial values for transitiion
     var initialValues = series.measures.map((column) {
-      return chart.data.rows.map((values) => 0).toList();
+      return area.data.rows.map((values) => 0).toList();
     }).toList();
 
     // Create lists of values in measure columns.
     var lines = series.measures.map((column) {
-      return chart.data.rows.map((values) => values[column]).toList();
+      return area.data.rows.map((values) => values[column]).toList();
     }).toList();
 
     // We only support one dimension axes, so we always use the
     // first dimension.
-    var x = chart.data.rows.map(
-        (row) => row.elementAt(chart.config.dimensions.first)).toList();
+    var x = area.data.rows.map(
+        (row) => row.elementAt(area.config.dimensions.first)).toList();
 
-    var rangeBandOffset =
-        (xAxis.usingRangeBands == true ? xScale.rangeBand : 0) / 2;
-
+    var rangeBandOffset = dimensionScale.rangeBand / 2;
     var line = new SvgLine();
-    line.xAccessor = (d, i) => xScale.apply(x[i]) + rangeBandOffset;
-    line.yAccessor = (d, i) => yScale.apply(d);
+    line.xAccessor = (d, i) => dimensionScale.apply(x[i]) + rangeBandOffset;
+    line.yAccessor = (d, i) => measureScale.apply(d);
 
     var product = _group.selectAll(".line").data(initialValues);
     product.enter.append("path")
@@ -89,13 +85,12 @@ class LineChartRenderer implements ChartRenderer {
   }
 
   double get bandInnerPadding => 1.0;
-  double get bandOuterPadding => chart.theme.outerPadding;
+  double get bandOuterPadding =>
+      area.theme.dimensionAxisTheme.axisOuterPadding;
 
   Extent get extent {
-    assert(series != null);
-    assert(chart != null);
-
-    var rows = chart.data.rows,
+    assert(area != null && series != null);
+    var rows = area.data.rows,
         max = rows[0][series.measures.first],
         min = max;
 
@@ -107,7 +102,4 @@ class LineChartRenderer implements ChartRenderer {
     });
     return new Extent(min, max);
   }
-
-  // We support drawing as long as we have atleast one dimension axes.
-  bool isAreaCompatible(ChartArea area) => area.dimensionAxesCount >= 1;
 }

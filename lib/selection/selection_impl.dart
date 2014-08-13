@@ -156,7 +156,7 @@ class _SelectionImpl implements Selection {
         each((d, i, Element e){
           var handlers = scope._listeners[e];
           if (handlers == null) scope._listeners[e] = handlers = {};
-          handlers[type] = new Tuple(getEventHandler(d, i, e), capture);
+          handlers[type] = new Pair(getEventHandler(d, i, e), capture);
           e.addEventListener(type, handlers[type].first, capture);
         });
       } else {

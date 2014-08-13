@@ -8,8 +8,6 @@
 
 part of charted.charts;
 
-typedef bool FilterFn(int index, Iterable row);
-
 /**
  * Interface to be implemented by data providers to give tabular access to
  * data for chart renderers.
@@ -29,46 +27,50 @@ abstract class ChartData {
 }
 
 /**
- * Interface implemented by [ChartData] implementations that support filtering
- * of columns and rows.
+ * Interface implemented by [ChartData] transformers.
+ * Examples:
+ *   AggregationTranformer to aggregations rows/columns
+ *   FilterTransformer to filter data
+ *   TransposeTransformer to convert rows to columns and vice-versa
  */
-abstract class ChartDataFilter {
+abstract class ChartDataTransform {
   /**
    * Create a new instance of [ChartData] by selecting a subset
    * of rows and columns from the current one
    */
-  ChartData filter(FilterFn rowFilterFn, FilterFn columnFilterFn);
+  ChartData transform(ChartData source);
 }
 
 /**
- * Interface implemented by [ChartData] implementations that support group by
- * column values
+ * Implementation of [ChangeRecord], that is used to notify when rows get added
+ * or removed to ChartData
  */
-abstract class ChartDataGroupBy {
+class ChartRowChangeRecord implements ChangeRecord {
   /**
-   * Create a new instance of [ChartData] by grouping rows by
-   * the specified fields
+   * Changes to the rows - contains all updates to rows since last notification.
    */
-  ChartData groupBy(Iterable<num> indices);
+  final List<ListChangeRecord> changes;
+
+  const ChartRowChangeRecord(this.changes);
 }
 
 /**
- * Interface to be implemented by [ChartData] implementations
- * that support observing changes to data.
+ * Implementation of [ChangeRecord], that is used to notify changes to
+ * values in [ChartData].
  */
-abstract class ChartDataObservable {
+class ChartValueChangeRecord implements ChangeRecord {
   /**
-   * Stream on which changes to the rows list (adding/removing a row)
-   * are notified. Each update on the stream has a list of rows added
-   * and list of rows removed since the last update.
+   * Row that changes.
    */
-  Stream<ListChangeRecord> get onRowsChanged;
+  final int row;
 
   /**
-   * Stream on which data changes are announced. Each update includes
-   * the columns and row index of the value that got changed
+   * List of changes to data on the row - includes all updates since the
+   * last change notification.
    */
-  Stream<Pair<int,ListChangeRecord>> get onValuesUpdated;
+  final List<ListChangeRecord> changes;
+
+  const ChartValueChangeRecord(this.row, this.changes);
 }
 
 /**
@@ -86,7 +88,7 @@ class ChartColumnSpec {
   static const List TIME_SCALES = const [ TYPE_DATE, TYPE_TIMESTAMP ];
 
   /** Formatter for values that belong to this column */
-  final Formatter formatter;
+  final FormatFunction formatter;
 
   /**
    * Label for the column.  Used in legend, tooltips etc;

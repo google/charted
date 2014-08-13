@@ -13,58 +13,89 @@ part of charted.charts;
  */
 abstract class ChartConfig {
   /**
-   * List of series to visualize on this chart. Setting a new list
-   * or adding/removing items from this list will broadcast a change.
+   * List of series to visualize on this chart.
    *
-   * If [series] is set to an [ObservableList], changes to the list
-   * are broadcast over [changes], which [ChartArea] uses to refresh the chart
+   * If the implementation is observable, setting a new list must broadcast
+   * a change.  Additionally, if [series] is set to an [ObservableList],
+   * changes to the list are broadcast too.
    */
   Iterable<ChartSeries> series;
 
   /**
-   * List of columns that form the dimensions on the chart. Setting
-   * a new list or adding/removing items from this list will broadcast
-   * a change.
+   * List of columns that form the dimensions on the chart.
    *
-   * If [dimensions] is set to an [ObservableList], changes to the list
-   * are broadcast over [changes], which [ChartArea] uses to refresh the chart
+   * If the implementation is observable, setting a new list must broadcast
+   * a change. Additionally, if [dimensions] is set to an [ObservableList],
+   * changes to the list are broadcast too.
    */
   Iterable<int> dimensions;
 
-  /**
-   * User defined number of tick numbers for each dimension axis.
-   * This is only a suggestion value, which itself might not be used
-   * during rendering.
-   */
-  Iterable<int> dimensionTickNumbers;
-
-  /** Implementation of [ChartLegend] that will be used to draw the legend */
+  /** Instance of [ChartLegend] implementation used to render legend */
   ChartLegend legend;
 
-  /**
-   * Stream on which changes are broadcast.  ChartData implementations
-   * must listen to this stream and update the chart.
-   */
-  Stream<ChartConfig> get changes;
+  /** Recommended minimum size for the chart */
+  Rect minimumSize;
 
-  /** Total width of the chart - includes data and axis areas */
-  int width;
-
-  /** Height of the chart - includes data and axis areas */
-  int height;
-
-  /** Width allocated to the y-axis */
-  int yAxisWidth;
-
-  /** Height allocated to the x-axis */
-  int xAxisHeight;
-
-  /* TODO(prsd,midoringo): Find a nice name */
   /** Indicates if the chart has primary dimension on the left axis */
-  bool isRotated;
+  bool leftAxisIsPrimary = false;
+
+  /** Registers axis configuration for the axis represented by [id]. */
+  void registerMeasureAxis(String id, ChartAxisConfig axis);
+
+  /** Return the user-set axis configuration for [id] */
+  ChartAxisConfig getMeasureAxis(String id);
+
+  /** Register axis configuration of the axis used for dimension [column]. */
+  void registerDimensionAxis(int column, ChartAxisConfig axis);
+
+  /**
+   * Return the user set axis configuration for [column].  If a custom scale
+   * was not set, returns null.
+   */
+  ChartAxisConfig getDimensionAxis(int column);
+
+  /**
+   * List of measure axes ids that are displayed. If not specified, the first
+   * two measure axes are displayed.  If the list is empty, none of the
+   * measure axes are displayed.
+   */
+  Iterable<String> displayedMeasureAxes;
+
+  /**
+   * Indicates if the dimension axes should be drawn on this chart. Unless set
+   * to "false", the axes are rendered.
+   */
+  bool renderDimensionAxes;
 
   /** Factory method to create an instance of the default implementation */
-  factory ChartConfig(Iterable<ChartSeries> series, Iterable<int> dimensions,
-      {Iterable<int> dimensionTickNumbers}) => new _ChartConfig(
-          series, dimensions, dimensionTickNumbers: dimensionTickNumbers);
+  factory ChartConfig(Iterable<ChartSeries> series, Iterable<int> dimensions)
+      => new _ChartConfig(series, dimensions);
 }
+
+/**
+ * Implementation of [ChangeRecord] that is used to notify changes to
+ * [ChartConfig].  Currently, changes to list of dimensions and list of series
+ * are monitored.
+ */
+class ChartConfigChangeRecord implements ChangeRecord {
+  const ChartConfigChangeRecord();
+}
+
+/*
+ * Configuration for an axis
+ */
+class ChartAxisConfig {
+  /** Title for the axis */
+  String title;
+
+  /** Scale to be used with the axis */
+  Scale scale;
+
+  /**
+   * For a quantitative scale, values at which ticks should be displayed.
+   * When not specified, the ticks are intepolated evenly over the output
+   * range.
+   */
+  Iterable tickValues;
+}
+

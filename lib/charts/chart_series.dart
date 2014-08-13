@@ -27,12 +27,12 @@ class ChartSeries {
    * of the given axes. If an axis with a matching Id does not exist in
    * [ChartArea] a new axis is created.
    *
-   * When not specified, renderers may use [ChartArea].[defaultMeasureAxis]
-   * where ever necessary.  Refer to the implementaiton of [ChartRenderer] for
+   * When not specified, renderers may use [ChartArea.defaultMeasureAxis]
+   * where ever necessary.  Refer to the implementation of [ChartRenderer] for
    * more information on defaults and how the measure axes are used.
    *
-   * If [measureAxisIds] is set to an [ObservableList], changes to the list
-   * are broadcast over [changes], which [ChartArea] uses to refresh the chart
+   * If the implementation is [Observable] and [measureAxisIds] is set to an
+   * [ObservableList], changes to the list must be broadcasted.
    */
   Iterable<String> measureAxisIds;
 
@@ -45,8 +45,8 @@ class ChartSeries {
    * columns is less than the minimum that the renderer supports, the remaining
    * measures are assumed to have zeros.
    *
-   * If [measures] is set to an [ObservableList], changes to the list
-   * are broadcast over [changes], which [ChartArea] uses to refresh the chart
+   * If the implementation is [Observable] and [measures] is set to an
+   * [ObservableList], changes to the list must be broadcasted.
    */
   Iterable<int> measures;
 
@@ -58,9 +58,6 @@ class ChartSeries {
    */
   ChartRenderer renderer;
 
-  /** Stream on which updates to measures, renderer and axis are announced */
-  Stream<ChartSeries> get changes => null;
-
   /**
    * Factory function to create an instance of internal implementation of
    * [ChartSeries].
@@ -68,4 +65,18 @@ class ChartSeries {
   factory ChartSeries(String name, Iterable<int> measures,
       ChartRenderer renderer, { Iterable<String> measureAxisIds : null })
           => new _ChartSeries(name, measures, renderer, measureAxisIds);
+}
+
+/**
+ * Implementation of [ChangeRecord] that is used to notify changes to
+ * [ChartSeries].  Currently, only changes to measures and measureAxisIds
+ * are supported.
+ */
+class ChartSeriesChangeRecord implements ChangeRecord {
+  /**
+   * Reference to series that changed
+   */
+  final ChartSeries series;
+
+  const ChartSeriesChangeRecord(this.series);
 }

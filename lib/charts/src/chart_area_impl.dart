@@ -1,10 +1,3 @@
-/*
- * Copyright 2014 Google Inc. All rights reserved.
- *
- * Use of this source code is governed by a BSD-style
- * license that can be found in the LICENSE file or at
- * https://developers.google.com/open-source/licenses/bsd
- */
 part of charted.charts;
 
 /**
@@ -18,149 +11,135 @@ part of charted.charts;
  * is always on the right.
  */
 class _ChartArea implements ChartArea {
+  static const List MEASURE_AXIS_IDS = const['_default'];
+  static const List DIMENSION_AXIS_IDS = const['_primary', '_secondary'];
+
+  static const List MEASURE_AXIS_ORIENTATIONS =
+      const[ORIENTATION_LEFT, ORIENTATION_RIGHT];
+  static const List MEASURE_AXIS_ORIENTATIONS_ALT =
+      const[ORIENTATION_BOTTOM, ORIENTATION_TOP];
+
+  static const List DIMENSION_AXIS_ORIENTATIONS =
+      const[ORIENTATION_BOTTOM, ORIENTATION_LEFT];
+  static const List DIMENSION_AXIS_ORIENTATIONS_ALT =
+      const[ORIENTATION_LEFT, ORIENTATION_BOTTOM];
+
   static const int MEASURE_AXES_COUNT = 2;
   static const int MARGIN = 10;
+
+  final LinkedHashMap<String, _ChartAxis> _measureAxes = new LinkedHashMap();
+  final LinkedHashMap<int, _ChartAxis> _dimensionAxes = new LinkedHashMap();
+  final HashSet<int> dimensionsUsingBands = new HashSet();
+  final SubscriptionsDisposer _dataSubscriptions = new SubscriptionsDisposer();
+  final SubscriptionsDisposer _configSubscriptions =
+      new SubscriptionsDisposer();
+
+  final Element host;
+
+  ChartTheme theme;
+  bool autoUpdate = false;
 
   ChartData _data;
   ChartConfig _config;
   int _dimensionAxesCount;
 
-  ChartTheme theme;
-  bool autoUpdate = false;
-  double innerPadding;
-  double outerPadding;
-
-  int xAxisWidth;
-  int yAxisHeight;
-
-  LinkedHashMap<String, ChartAxis> _measureAxes = new LinkedHashMap();
-  LinkedHashMap<String, ChartAxis> _dimensionAxes = new LinkedHashMap();
-
-  Map<String, List<ChartSeries>> _measureAxisUsers = new Map();
-
-  SubscriptionsDisposer _dataSubscriptions = new SubscriptionsDisposer();
-  SubscriptionsDisposer _configSubscriptions = new SubscriptionsDisposer();
-
-  HashSet<int> dimensionsUsingBands = new HashSet();
-
+  _ChartAreaLayout layout = new _ChartAreaLayout();
   SelectionScope _scope;
   Selection _svg;
+  Selection _group;
   Iterable<ChartSeries> _series;
   bool _pendingLegendUpdate = false;
 
-  final Element host;
-
   _ChartArea(Element this.host, ChartData data, ChartConfig config,
-      bool this.autoUpdate, int dimensionAxesCount) {
+      bool this.autoUpdate, this._dimensionAxesCount) {
     assert(host != null);
     assert(isNotInline(host));
 
     this.data = data;
     this.config = config;
-    _dimensionAxesCount = dimensionAxesCount;
     theme = ChartTheme.current;
 
-    outerPadding = theme.outerPadding;
-    innerPadding = 1.0;
-
-    Transition.defaultEasingMode = theme.easingMode;
-    Transition.defaultEasingType = theme.easingType;
+    Transition.defaultEasingMode = theme.transitionEasingMode;
+    Transition.defaultEasingType = theme.transitionEasingType;
     Transition.defaultDuration = theme.transitionDuration;
   }
 
   static bool isNotInline(Element e) =>
       e != null && e.getComputedStyle().display != 'inline';
 
+  /*
+   * If [value] is [Observable], subscribes to changes and updates the
+   * chart when data changes.
+   */
   set data(ChartData value) {
     _data = value;
     _dataSubscriptions.dispose();
 
-    if (autoUpdate && _data != null && _data is ChartDataObservable) {
-      var observable = (_data as ChartDataObservable);
-      _dataSubscriptions.add(observable.onValuesUpdated.listen((_) => draw()));
-      _dataSubscriptions.add(observable.onRowsChanged.listen((_) => draw()));
+    if (autoUpdate && _data != null && _data is Observable) {
+      _dataSubscriptions.add(
+          (_data as Observable).changes.listen((_) => draw()));
     }
   }
 
   ChartData get data => _data;
 
+  /*
+   * If [value] is [Observable], subscribes to changes and updates the
+   * chart when series or dimensions change in configuration.
+   */
   set config(ChartConfig value) {
     _config = value;
     _configSubscriptions.dispose();
     _pendingLegendUpdate = true;
 
     if (_config != null)
-      _configSubscriptions.add(_config.changes.listen(_updateToConfig));
+      _configSubscriptions.add(
+          (_config as Observable).changes.listen((_) {
+      _pendingLegendUpdate = true;
+      draw();
+    }));
   }
 
   ChartConfig get config => _config;
 
+  /*
+   * Number of dimension axes displayed in this chart.
+   */
   set dimensionAxesCount(int count) {
     _dimensionAxesCount = count;
-    if (autoUpdate) {
-      draw();
-    }
+    if (autoUpdate) draw();
   }
 
   int get dimensionAxesCount => _dimensionAxesCount;
 
-  _updateToConfig(_) {
-    _pendingLegendUpdate = true;
-    draw();
-  }
-
-  _updateLegend() {
-    bool hasPieSeries = _seriesWithCompatiblePieRenderer();
-    if (!(_pendingLegendUpdate || hasPieSeries)) return;
-    if (_config == null || _config.legend == null || _series.isEmpty) return;
-
-    List legend = [];
-
-    if (!hasPieSeries) {
-      List seriesByColumn =
-          new List.generate(data.columns.length, (i) => new List());
-
-      _series.forEach((s) =>
-          s.measures.forEach((m) => seriesByColumn[m].add(s)));
-
-      seriesByColumn.asMap().forEach((int i, List s) {
-        if (s.length == 0) return;
-        legend.add(new ChartLegendItem(
-            column:i, label:data.columns.elementAt(i).label, series:s,
-            color:theme.getColorForKey(i)));
-      });
-    } else {
-      for (int i = 0; i < _data.rows.length; i++) {
-        legend.add(new ChartLegendItem(
-            column:i, label: _data.rows.elementAt(i).elementAt(0),
-            color:theme.getColorForKey(i)));
-      }
-    }
-
-    _config.legend.update(legend, this);
-    _pendingLegendUpdate = false;
-  }
-
-  ChartAxis getMeasureAxis(String id, {bool force: false}) {
-    if (force) _measureAxes.putIfAbsent(id, () => new ChartAxis());
+  /*
+   * Gets measure axis from cache - creates a new instance of _ChartAxis
+   * if one was not already created for the given axis [id].
+   */
+  _ChartAxis _getMeasureAxis(String id) {
+    _measureAxes.putIfAbsent(id, () {
+      var axisConf = config.getMeasureAxis(id),
+          axis = axisConf == null ?
+              new _ChartAxis.withAxisConfig(this, axisConf) :
+                  new _ChartAxis(this);
+      return axis;
+    });
     return _measureAxes[id];
   }
 
-  void setMeasureAxis(String id, ChartAxis axis) {
-    assert(axis != null && !isNullOrEmpty(id));
-    _measureAxes[id] = axis;
-  }
-
-  ChartAxis getDimensionAxis(String id, {bool force: false}) {
-    assert(!isNullOrEmpty(id));
-    if (force) _dimensionAxes.putIfAbsent(id, () => new ChartAxis());
-    return _dimensionAxes[id];
-  }
-
-  void setDimensionAxis(String id, ChartAxis axis) {
-    assert(!isNullOrEmpty(id));
-    assert(axis != null);
-    _dimensionAxes[id] = axis;
+  /*
+   * Gets a dimension axis from cache - creates a new instance of _ChartAxis
+   * if one was not already created for the given dimension [column].
+   */
+  _ChartAxis _getDimensionAxis(int column) {
+    _dimensionAxes.putIfAbsent(column, () {
+      var axisConf = config.getDimensionAxis(column),
+          axis = axisConf == null ?
+              new _ChartAxis.withAxisConfig(this, axisConf) :
+                  new _ChartAxis(this);
+      return axis;
+    });
+    return _dimensionAxes[column];
   }
 
   /*
@@ -170,25 +149,53 @@ class _ChartArea implements ChartArea {
    */
   bool _isSeriesValid(ChartSeries s) {
     var first = data.columns.elementAt(s.measures.first).type;
-    return s.measures.every((i) => data.columns.elementAt(i).type == first) &&
-        s.renderer.isAreaCompatible(this);
+    return s.measures.every((i) => data.columns.elementAt(i).type == first);
   }
 
-  /* Indicates if the given ChartSeries needs an ordinal scale */
-  bool _isOrdinalColumn(column) {
-    return column.useOrdinalScale == true || (column.useOrdinalScale == null &&
-        ChartColumnSpec.ORDINAL_SCALES.contains(column.type));
+  /*
+   * Indicates if the given ChartSeries needs an ordinal scale
+   */
+  bool _isOrdinalColumn(column) =>
+      column.useOrdinalScale == true ||
+          (column.useOrdinalScale == null &&
+              ChartColumnSpec.ORDINAL_SCALES.contains(column.type));
+
+  /*
+   * Get a list of dimension scales for this chart.
+   */
+  Iterable<Scale> get _dimensionScales =>
+      config.dimensions.map((int column) => _getDimensionAxis(column).scale);
+
+  /*
+   * Get a list of scales used by [series]
+   */
+  Iterable<Scale> _measureScales(ChartSeries series) {
+    var axisIds = isNullOrEmpty(series.measureAxisIds) ?
+        MEASURE_AXIS_IDS : series.measureAxisIds;
+    return axisIds.map((String id) => _getMeasureAxis(id).scale);
   }
 
-  /* Indicates if there is ChartSeries with compatible piechart renderer */
-  bool _seriesWithCompatiblePieRenderer() {
-    bool hasPieSeries = false;
-    _series.forEach((ChartSeries s) {
-      if (s.renderer is PieChartRenderer && s.renderer.isAreaCompatible(this)) {
-        hasPieSeries = true;
-      }
-    });
-    return hasPieSeries;
+  /*
+   * Computes the size of chart and if changed from the previous time
+   * size was computed, sets attributes on svg element
+   */
+  Rect _computeChartSize() {
+    int width = host.clientWidth,
+        height = host.clientHeight;
+
+    if (config.minimumSize != null) {
+      width = max([width, config.minimumSize.width]);
+      height = max([height, config.minimumSize.height]);
+    }
+
+    Rect current = new Rect.size(width - 2 * MARGIN, height - 2 * MARGIN);
+    if (layout.chartArea == null || layout.chartArea != current) {
+      _svg.attr('width', width.toString());
+      _svg.attr('height', height.toString());
+      _group.attr('transform', 'translate($MARGIN, $MARGIN)');
+      layout.chartArea = current;
+    }
+    return layout.chartArea;
   }
 
   draw() {
@@ -199,45 +206,15 @@ class _ChartArea implements ChartArea {
     if (_scope == null) {
       _scope = new SelectionScope.element(host);
       _svg = _scope.append('svg:svg')..classed('charted-chart');
+      _group = _svg.append('g')..classed('chart-wrapper');
     }
 
-    /*
-     * Used to compute scales for the axis and to count the number of
-     * actively used axes in this chart area.
-     */
-    _measureAxisUsers.clear();
-
-    /* Compute sizes for axes and chart rendering area */
-    var width = config.width != null ? config.width : host.clientWidth,
-        height = config.height != null ? config.height : host.clientHeight,
-        offsetX = 0,
-        offsetY = 0;
-
-    yAxisHeight = height - (2 * MARGIN);
-    xAxisWidth = width - (2 * MARGIN);
-    if (dimensionAxesCount > 0) yAxisHeight -= config.xAxisHeight;
-
-    _svg.attr('width', width.toString());
-    _svg.attr('height', height.toString());
-
-    /* Filter out unsupported series */
-    var series = config.series.where((s) => _isSeriesValid(s)),
-        selection = _svg.selectAll('.series-group').data(series),
+    /* Compute sizes and filter out unsupported series */
+    var size = _computeChartSize(),
+        series = config.series.where((s) =>
+            _isSeriesValid(s) && s.renderer.prepare(this, s)),
+        selection = _group.selectAll('.series-group').data(series),
         axesDomainCompleter = new Completer();
-
-    series.forEach((ChartSeries s) {
-      var ids = isNullOrEmpty(s.measureAxisIds) ?
-          ChartArea.MEASURE_AXIS_IDS : s.measureAxisIds;
-
-      s.renderer.chart = this;
-      s.renderer.series = s;
-
-      ids.forEach((id) {
-        var axis = getMeasureAxis(id, force: true),
-            users = _measureAxisUsers[id];
-        if (users == null) _measureAxisUsers[id] = [s]; else users.add(s);
-      });
-    });
 
     /*
      * Wait till the axes are rendered before rendering series.
@@ -245,46 +222,62 @@ class _ChartArea implements ChartArea {
      */
     axesDomainCompleter.future.then((_) {
       /* If a series was not rendered before, add an SVG group for it */
-      selection.enter.append('svg:g');
+      selection.enter.append('svg:g').classed('series-group');
 
-      /*
-       * For all the existing series (those that existed and the new) recompute
-       * axis ranges and update the rendering.
-       * TODO(prsd): When ChartData is observable, get a list of series that got
-       *     updated, so that only that series, and those that are effected by
-       *     it are updated. Currently we are updating the entire chart.
-       */
+      /* For all series recompute axis ranges and update the rendering */
+      var transform =
+          'translate(${layout.renderArea.x},${layout.renderArea.y})';
       selection.each((ChartSeries s, _, Element group) {
-        /* Wait for the axes domain to be computed before rendering series */
-        group.attributes.addAll({
-          'width': xAxisWidth.toString(),
-          'height': yAxisHeight.toString(),
-          /* Use MARGIN - 1 for the chart ifself to not overlap with the axis */
-          'transform': 'translate(${offsetX}, ${MARGIN - 1})'
-        });
-        s.renderer.render(group);
-        group.attributes['class'] = 'series-group';
+        group.attributes['transform'] = transform;
+        s.renderer.draw(group, _dimensionScales, _measureScales(s));
       });
 
       /* A series that was rendered earlier isn't there anymore, remove it */
       selection.exit.remove();
     });
 
-    /*
-     * TODO(prsd): Ensure that all series that use the same axis also
-     * have columns that are of the same type.
-     */
+    // Save the list of valid series for use with legend and axes.
+    _series = series;
 
-    /* Set extent on each measure axes */
-    _measureAxisUsers.forEach((id, listOfSeries) {
+    // If we have atleast one dimension axis, render the axes.
+    if (dimensionAxesCount != 0) {
+      _initAxes();
+    } else {
+      _computeLayoutWithoutAxes();
+    }
+
+    // Render the chart, now that the axes layer is already in DOM.
+    axesDomainCompleter.complete();
+
+    // Updates the legend if required.
+    _updateLegend();
+  }
+
+  _initAxes() {
+    var measureAxisUsers = {};
+
+    /* Create necessary measures axes */
+    _series.forEach((ChartSeries s) {
+      var ids = isNullOrEmpty(s.measureAxisIds) ?
+          MEASURE_AXIS_IDS : s.measureAxisIds;
+      ids.forEach((id) {
+        var axis = _getMeasureAxis(id),
+            users = measureAxisUsers[id];
+        if (users == null) {
+          measureAxisUsers[id] = [s];
+        } else {
+          users.add(s);
+        }
+      });
+    });
+
+    /* Configure measure axes */
+    measureAxisUsers.forEach((id, listOfSeries) {
       var sampleCol = listOfSeries.first.measures.first,
           sampleColSpec = data.columns.elementAt(sampleCol),
-          measureAxis = _measureAxes[id];
+          axis = _getMeasureAxis(id),
+          domain;
 
-      measureAxis.scale = sampleColSpec.createDefaultScale();
-      if (measureAxis.tickFormatter == null) {
-        measureAxis.tickFormatter = sampleColSpec.formatter;
-      }
       if (sampleColSpec.useOrdinalScale) {
         /* TODO(prsd): Ordinal measure scale */
       } else {
@@ -293,127 +286,187 @@ class _ChartArea implements ChartArea {
 
         // Use default domain if lowest and highest are the same, right now
         // lowest is always 0, change to lowest when we make use of it.
-        if (highest != 0) {
-          /* TODO(prsd): What happens when the minimum value is negative */
-          _measureAxes[id].domain = [0, highest];
-        }
+        if (highest != 0) domain = [0, highest];
       }
+      axis.initAxisDomain(sampleCol, false, domain);
     });
 
-    /*
-     * Draw upto two measure axes.
-     * TODO(prsd): Evaluate if selection of drawn axis should be part
-     *     of config rather than being the first two to be created.
-     */
-    var measureAxesCount = dimensionAxesCount == 1 ? MEASURE_AXES_COUNT : 0,
-        displayed = _measureAxes.keys.take(measureAxesCount);
+    /* Configure dimension axes */
+    config.dimensions.take(dimensionAxesCount).forEach((int column) {
+       var axis = _getDimensionAxis(column),
+           sampleColumnSpec = data.columns.elementAt(column),
+           values = data.rows.map((row) => row.elementAt(column)),
+           domain;
+
+       if (sampleColumnSpec.useOrdinalScale) {
+         domain = values.toList();
+       } else {
+         var extent = new Extent.items(values);
+         domain = [domain.min, domain.max];
+       }
+       axis.initAxisDomain(column, true, domain);
+    });
 
     /* Build a list of dimension axes that use range bands */
     dimensionsUsingBands.clear();
-    series.forEach((ChartSeries s) =>
+    _series.forEach((ChartSeries s) =>
         dimensionsUsingBands.addAll(s.renderer.dimensionsUsingBand));
 
-    /* Width of rendering = (width - space used by vertical axes) */
-    if (dimensionAxesCount == 2) xAxisWidth -= config.yAxisWidth;
-    xAxisWidth -= (displayed.length * config.yAxisWidth);
+    /* List of measure and dimension axes that are displayed */
+    var measureAxesCount = dimensionAxesCount == 1 ? MEASURE_AXES_COUNT : 0,
+        displayedMeasureAxes = (config.displayedMeasureAxes == null ?
+            _measureAxes.keys.take(measureAxesCount) :
+                config.displayedMeasureAxes.take(measureAxesCount)).
+                    toList(growable:false),
+        displayedDimensionAxes =
+            config.dimensions.take(dimensionAxesCount).toList(growable:false);
 
-    /* Display the dimension axes */
-    var displayedDimAxes = config.dimensions.take(dimensionAxesCount),
-        dimAxisGroups = _svg.selectAll('.dim-group').data(displayedDimAxes),
-        hasLeftAxis = (dimensionAxesCount == 2) ||
-            (dimensionAxesCount == 1 && displayed.length != 0),
-        seriesUsingBands = series.where(
-            (s) => !isNullOrEmpty(s.renderer.dimensionsUsingBand));
+    /* Compute size of the dimension axes */
+    if (config.renderDimensionAxes != false) {
+      var dimensionAxisOrientations = config.leftAxisIsPrimary ?
+          DIMENSION_AXIS_ORIENTATIONS_ALT : DIMENSION_AXIS_ORIENTATIONS;
+      displayedDimensionAxes.asMap().forEach((int index, int column) {
+        var axis = _dimensionAxes[column],
+            orientation = dimensionAxisOrientations[index];
+        axis.prepareToDraw(orientation, theme.dimensionAxisTheme);
+        layout.axes[orientation] = axis.size;
+      });
+    }
+
+    /* Compute size of the measure axes */
+    if (displayedMeasureAxes.isNotEmpty) {
+      var measureAxisOrientations = config.leftAxisIsPrimary ?
+          MEASURE_AXIS_ORIENTATIONS_ALT : MEASURE_AXIS_ORIENTATIONS;
+      displayedMeasureAxes.asMap().forEach((int index, String key) {
+        var axis = _measureAxes[key],
+            orientation = measureAxisOrientations[index];
+        axis.prepareToDraw(orientation, theme.measureAxisTheme);
+        layout.axes[orientation] = axis.size;
+      });
+    }
+
+    _computeLayoutWithAxes();
+
+    /* Initialize output range on the invisible measure axes */
+    if (_measureAxes.length != displayedMeasureAxes.length) {
+      _measureAxes.keys.forEach((String axisId) {
+        if (displayedMeasureAxes.contains(axisId)) return;
+        _getMeasureAxis(axisId).initAxisScale(
+            [layout.renderArea.height, 0], theme.measureAxisTheme);
+      });
+    }
 
     /* Display measure axes if we need to */
-    if (measureAxesCount > 0) {
-      var axisGroups = _svg.selectAll('.measure-group').data(displayed);
+    if (displayedMeasureAxes.isNotEmpty) {
+      var axisGroups =
+          _group.selectAll('.measure-group').data(displayedMeasureAxes);
 
       /* Update measure axis (add/remove/update) */
       axisGroups.enter.append('svg:g');
       axisGroups
-          ..attr('width', config.yAxisWidth)
-          ..attr('height', yAxisHeight)
-          ..attrWithCallback('transform', (axisId, index, group) {
-              var offsetX = index == 0 ? config.yAxisWidth + MARGIN : width -
-                  (MARGIN + config.yAxisWidth) * (displayed.length - index);
-              return 'translate(${offsetX}, ${MARGIN})';
-            })
           ..each((axisId, index, group) {
-              _measureAxes[axisId]
-                  ..isMeasureAxis = true
-                  ..orientation = index == 0 ?
-                      ChartAxis.ORIENTATION_LEFT : ChartAxis.ORIENTATION_RIGHT
-                  ..draw(this, group);
-
+              _getMeasureAxis(axisId).draw(group);
               group.classes.clear();
               group.classes.addAll(['measure-group','measure-${index}']);
             });
       axisGroups.exit.remove();
     }
 
+    if (config.renderDimensionAxes != false) {
+      /* Display the dimension axes */
+      var dimAxisGroups =
+              _group.selectAll('.dim-group').data(displayedDimensionAxes);
 
-    offsetX = (hasLeftAxis ? config.yAxisWidth : 0) + MARGIN;
-    offsetY = height -
-        (MARGIN + (displayedDimAxes.length > 0 ? config.xAxisHeight : 0));
-
-    // Update dimension axes (add new / remove old / update remaining)
-    // TODO(prsd): We may be doing unnecessary re-initialization here.
-    dimAxisGroups.enter.append('svg:g');
-    dimAxisGroups
-        ..attrWithCallback('width',
-            (d,i,e) => i == 0 ? xAxisWidth : config.yAxisWidth)
-        ..attrWithCallback('height',
-            (d,i,e) => i == 0 ? config.xAxisHeight : yAxisHeight)
-        ..attr('transform', 'translate($offsetX,$offsetY)')
-        ..each((column, index, group) {
-            var axis = getDimensionAxis(
-                    ChartArea.DIMENSION_AXIS_IDS[index], force:true),
-                colSpec = data.columns.elementAt(column),
-                usingBands = dimensionsUsingBands.contains(index),
-                defaultOuterPadding =
-                    usingBands ? theme.bandOuterPadding : theme.outerPadding,
-                defaultInnerPadding =
-                    usingBands ? theme.bandInnerPadding : 1.0,
-                outerPadding = seriesUsingBands.fold(defaultOuterPadding,
-                    (old, next) =>
-                        math.min(old, next.renderer.bandOuterPadding)),
-                innerPadding = seriesUsingBands.fold(defaultInnerPadding,
-                    (old, next) =>
-                        math.min(old, next.renderer.bandInnerPadding)),
-                values = data.rows.map((row) => row.elementAt(column)),
-                minMax = new Extent.items(values);
-
-            axis..outerPadding = outerPadding
-                ..innerPadding = innerPadding
-                ..orientation = (index == 0) ?
-                    ChartAxis.ORIENTATION_BOTTOM : ChartAxis.ORIENTATION_LEFT
-                ..scale = colSpec.createDefaultScale()
-                ..isOrdinalScale = colSpec.useOrdinalScale
-                ..usingRangeBands = usingBands
-                ..domain = colSpec.useOrdinalScale ?
-                    values.toList() : [minMax.min, minMax.max];
-
-            if (axis.tickFormatter == null) {
-              axis.tickFormatter = colSpec.formatter;
-            }
-            if (config.dimensionTickNumbers != null) {
-              axis.ticks = (config.dimensionTickNumbers as List)[index];
-            }
-            axis.draw(this, group);
-
-            group.classes.clear();
-            group.classes.addAll(['dim-group', 'dim-${index}']);
-          });
-    dimAxisGroups.exit.remove();
-
-    axesDomainCompleter.complete();
-
-    // Save the list of valid series to be used with legend.
-    _series = series;
-
-    // Only update the legend when with the config changed or when drawing
-    // for the first time, or the data is changed when renderer is pie chart.
-    _updateLegend();
+      /* Update dimension axes (add new / remove old / update remaining) */
+      dimAxisGroups.enter.append('svg:g');
+      dimAxisGroups
+          ..each((column, index, group) {
+              _getDimensionAxis(column).draw(group);
+              group.classes.clear();
+              group.classes.addAll(['dim-group', 'dim-${index}']);
+            });
+      dimAxisGroups.exit.remove();
+    } else {
+      /* Initialize output range on the invisible axis */
+      var dimensionAxisOrientations = config.leftAxisIsPrimary ?
+          DIMENSION_AXIS_ORIENTATIONS_ALT : DIMENSION_AXIS_ORIENTATIONS;
+      for (int i = 0; i < dimensionAxesCount; i++) {
+        var column = config.dimensions.elementAt(i),
+            axis = _dimensionAxes[column],
+            orientation = dimensionAxisOrientations[i];
+        axis.initAxisScale(orientation == ORIENTATION_LEFT ?
+            [layout.renderArea.height, 0] : [0, layout.renderArea.width],
+            theme.dimensionAxisTheme);
+      };
+    }
   }
+
+  _computeLayoutWithoutAxes() {
+    layout.renderArea =
+        new Rect(0, 0, layout.chartArea.width, layout.chartArea.height);
+  }
+
+  /* Compute chart render area size and positions of all elements */
+  _computeLayoutWithAxes() {
+    var topAxis = layout.axes[ORIENTATION_TOP],
+        leftAxis = layout.axes[ORIENTATION_LEFT],
+        bottomAxis = layout.axes[ORIENTATION_BOTTOM],
+        rightAxis = layout.axes[ORIENTATION_RIGHT],
+        renderAreaHeight = layout.chartArea.height -
+            (topAxis.height + layout.axes[ORIENTATION_BOTTOM].height),
+        renderAreaWidth = layout.chartArea.width -
+            (leftAxis.width + layout.axes[ORIENTATION_RIGHT].width);
+
+    layout.renderArea = new Rect(
+        leftAxis.width, topAxis.height, renderAreaWidth, renderAreaHeight);
+
+    layout.axes[ORIENTATION_TOP] =
+        new Rect(leftAxis.width, 0, renderAreaWidth, topAxis.height);
+    layout.axes[ORIENTATION_RIGHT] =
+        new Rect(leftAxis.width + renderAreaWidth, topAxis.y,
+            rightAxis.width, renderAreaHeight);
+    layout.axes[ORIENTATION_BOTTOM] =
+        new Rect(leftAxis.width, topAxis.height + renderAreaHeight,
+            renderAreaWidth, bottomAxis.height);
+    layout.axes[ORIENTATION_LEFT] =
+        new Rect(leftAxis.width, topAxis.height,
+            leftAxis.width, renderAreaHeight);
+  }
+
+  /*
+   * Updates the legend, if configuration changed since the last
+   * time the legend was updated.
+   */
+  _updateLegend() {
+    if (!_pendingLegendUpdate) return;
+    if (_config == null || _config.legend == null || _series.isEmpty) return;
+
+    List legend = [];
+    List seriesByColumn =
+        new List.generate(data.columns.length, (i) => new List());
+
+    _series.forEach((s) =>
+        s.measures.forEach((m) => seriesByColumn[m].add(s)));
+
+    seriesByColumn.asMap().forEach((int i, List s) {
+      if (s.length == 0) return;
+      legend.add(new ChartLegendItem(
+          column:i, label:data.columns.elementAt(i).label, series:s,
+          color:theme.getColorForKey(i)));
+    });
+
+    _config.legend.update(legend, this);
+    _pendingLegendUpdate = false;
+  }
+}
+
+class _ChartAreaLayout implements ChartAreaLayout {
+  final Map<String, Rect> axes = {
+    ORIENTATION_LEFT: const Rect(),
+    ORIENTATION_RIGHT: const Rect(),
+    ORIENTATION_TOP: const Rect(),
+    ORIENTATION_BOTTOM: const Rect()
+  };
+  Rect renderArea;
+  Rect chartArea;
 }

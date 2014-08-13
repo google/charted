@@ -1,14 +1,7 @@
-/*
- * Copyright 2014 Google Inc. All rights reserved.
- *
- * Use of this source code is governed by a BSD-style
- * license that can be found in the LICENSE file or at
- * https://developers.google.com/open-source/licenses/bsd
- */
 
 part of charted.charts;
 
-class QuantumChartTheme implements ChartTheme {
+class QuantumChartTheme extends ChartTheme {
   static const List<List<String>> COLORS = const[
     const [ '#C5D9FB', '#4184F3', '#2955C5' ],
     const [ '#F3C6C2', '#DB4437', '#DB4437' ],
@@ -44,26 +37,32 @@ class QuantumChartTheme implements ChartTheme {
         result.elementAt(state) : result;
   }
 
-  /* Implementation of animation theme */
-  String easingType = Transition.EASE_TYPE_CUBIC;
-  String easingMode = Transition.EASE_MODE_IN_OUT;
-  int transitionDuration = 250;
+  ChartAxisTheme get measureAxisTheme =>
+      const _QuantumChartAxisTheme(ChartAxisTheme.FILL_RENDER_AREA, 5);
+  ChartAxisTheme get dimensionAxisTheme =>
+      const _QuantumChartAxisTheme(0, 5);
 
   /* Padding for charts */
   double outerPadding = 0.1;
   double bandInnerPadding = 0.35;
   double bandOuterPadding = 0.175;
-  int separatorWidth = 1;
 
   /* Tick sizes */
   int dimensionTickSize = 0;
   int measureTickSize = -1000;
   int dimensionTickPadding = 6;
   int measureTickPadding = 6;
+}
 
-  /* Default stroke width used for computations */
-  int strokeWidth = 2;
-
-  /* Default innerRadius for drawing pie chart (donut chart). */
-  int innerRadius = -1;
+class _QuantumChartAxisTheme implements ChartAxisTheme {
+  final axisOuterPadding = 0.1;
+  final axisBandInnerPadding = 0.35;
+  final axisBandOuterPadding = 0.175;
+  final axisTickPadding = 6;
+  final axisTickSize;
+  final axisTickCount;
+  final axisAutoResize = true;
+  final verticalAxisWidth = 50;
+  final horizontalAxisHeight = 50;
+  const _QuantumChartAxisTheme(this.axisTickSize, this.axisTickCount);
 }
