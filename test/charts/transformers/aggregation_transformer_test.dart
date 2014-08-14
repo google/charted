@@ -369,6 +369,7 @@ main() {
     // of stats1 for Brazil to drop from 4 to 1.5 and stats3 from 9000 to 6000.
     observableRows.remove(observableRows.last);
     observableRows.deliverListChanges();
+    (observableData as Observable).deliverChanges();
 
     // [Argentina, , , 2000.0, 5.50]
     // [Brazil, , , 6000.0, 2.50]
