@@ -8,8 +8,12 @@
 library charted.transformer.test;
 
 import 'aggregation_transformer_test.dart' as aggregation;
+import 'filter_transformer_test.dart' as filter;
+import 'chain_transform_test.dart' as chain;
 
 main(List<String> args) {
   aggregation.main();
+  filter.main();
+  chain.main();
 }
 
