@@ -8,7 +8,7 @@ part of charted.charts;
  * populated in the label column as values of that column.  All values in the
  * data except for the data in the label column must have the same type.
  */
-class TransposeTransformer extends Observable
+class TransposeTransformer extends ChangeNotifier
     implements ChartDataTransform, ChartData {
   final SubscriptionsDisposer _dataSubscriptions = new SubscriptionsDisposer();
   ObservableList<ChartColumnSpec> columns = new ObservableList();
