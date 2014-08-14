@@ -19,7 +19,7 @@ part of charted.charts;
  * dimension column indices then by the facts column indices.  The data in the
  * cells of each row will also follow this rule.
  */
-class AggregationTransformer extends Observable
+class AggregationTransformer extends ChangeNotifier
     implements ChartDataTransform, ChartData {
 
   static const String AGGREGATION_TYPE_SUM = 'sum';

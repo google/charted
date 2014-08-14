@@ -3,6 +3,7 @@ library charted.test.chaintransform;
 import 'package:charted/charts/charts.dart';
 import 'package:charted/core/core.dart';
 import 'package:unittest/unittest.dart';
+import 'package:observe/observe.dart';
 
 main() {
   List COLUMNS = [
@@ -109,6 +110,7 @@ main() {
 
     FilterDefinition fd = new FilterDefinition(3, (value) => (value >= 8000));
     FilterTransformer transformer = new FilterTransformer([fd]);
+    (aggrResult as Observable).deliverChanges();
     ChartData result = transformer.transform(aggrResult);
 
     // Result at this point:
