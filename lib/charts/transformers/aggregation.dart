@@ -175,8 +175,8 @@ class AggregationModel {
     }
 
     _rows = collection;
-    _dimFields = new List.from(dimensions, growable:false);
-    _factFields = new List.from(facts, growable:false);
+    _dimFields = new List.from(dimensions, growable: false);
+    _factFields = new List.from(facts, growable: false);
     _entityCache = new Map<String, AggregationItem>();
 
     _createBuffers();
@@ -417,7 +417,7 @@ class AggregationModel {
   void compute([AggregationFilterFunc filter = null]) {
     _timeItStart('compute');
 
-    _dimToAggrMap = new Map<String,int>();
+    _dimToAggrMap = new Map<String, int>();
     _aggregations = new Float64List(AGGREGATIONS_BUFFER_LENGTH);
     _filterResults = filter == null ?
         null : new List<int>.filled((_rows.length ~/ SMI_BITS) + 1, 0);
@@ -473,7 +473,7 @@ class AggregationModel {
 
           // Save location to aggregations position in the buffer
           _dimToAggrMap[new List.generate(di + 1,
-                (i) => currentDim[2 * i]).join(':')] = currentBufferPos;
+              (i) => currentDim[2 * i]).join(':')] = currentBufferPos;
 
           // Store items start position
           _aggregations[currentBufferPos + _offsetSortedIndex] = ri.toDouble();
@@ -726,4 +726,3 @@ dynamic walk(initial, String key, Map parsedKeyCache) {
     }
   });
 }
-
