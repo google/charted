@@ -8,23 +8,14 @@ typedef bool FilterFunction(dynamic value);
  * function.  If filter function returns false, the row will be filtered out.
  * This transformer does not modify the column part of the input ChartData.
  */
-<<<<<<< HEAD
 class FilterTransformer extends Observable
     implements ChartDataTransform, ChartData {
-=======
-class FilterTransformer extends Observable implements ChartDataTransformer,
-    ChartData {
->>>>>>> 4c64fe9d43a1bdec0cccc70736bf026e60c996ec
   final SubscriptionsDisposer _dataSubscriptions = new SubscriptionsDisposer();
   Iterable<ChartColumnSpec> columns;
   ObservableList<Iterable> rows = new ObservableList();
   List<FilterDefinition> filterFunctions;
   ChartData _data;
 
-<<<<<<< HEAD
-=======
-
->>>>>>> 4c64fe9d43a1bdec0cccc70736bf026e60c996ec
   FilterTransformer(this.filterFunctions);
 
   /**
@@ -44,18 +35,9 @@ class FilterTransformer extends Observable implements ChartDataTransformer,
   _registerListeners() {
     _dataSubscriptions.dispose();
 
-<<<<<<< HEAD
     if(_data is Observable) {
       var observable = (_data as Observable);
       _dataSubscriptions.add(observable.changes.listen((_) => _transform()));
-=======
-    if(_data is ChartDataObservable) {
-      var observable = (_data as ChartDataObservable);
-      _dataSubscriptions.add(observable.onValuesUpdated.listen((_) =>
-          _transform()));
-      _dataSubscriptions.add(observable.onRowsChanged.listen((_) =>
-          _transform()));
->>>>>>> 4c64fe9d43a1bdec0cccc70736bf026e60c996ec
     }
   }
 
