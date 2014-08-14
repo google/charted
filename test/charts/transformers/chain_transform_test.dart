@@ -94,7 +94,11 @@ main() {
     expect(result.rows.elementAt(4).elementAt(5), equals(6000));
   });
 
+<<<<<<< HEAD
   test('Grouping by country-continent-city with less fact columns, the ' +
+=======
+  test('Grouping by country-continent-city with less fact columns, the' +
+>>>>>>> 4c64fe9d43a1bdec0cccc70736bf026e60c996ec
       'filter out rows whose stats3 (column4) is less than 8000', () {
     AggregationTransformer aggrTransformer = new AggregationTransformer(
         [1, 2, 0], [5, 3]);

@@ -350,8 +350,13 @@ main() {
   });
 
 
+<<<<<<< HEAD
   test('Modifying data row when it is an ObeservableList should cause ' +
       'transform to be called', () {
+=======
+  test('Modifying data row when it is an ObeservableList should cause' +
+      'transforms to be called', () {
+>>>>>>> 4c64fe9d43a1bdec0cccc70736bf026e60c996ec
 
     ObservableList observableRows = new ObservableList.from(DATA);
     ChartData observableData = new ChartData(COLUMNS, observableRows);
