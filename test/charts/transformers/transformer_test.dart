@@ -12,7 +12,7 @@ import 'chain_transform_test.dart' as chain;
 import 'filter_transformer_test.dart' as filter;
 import 'transpose_transformer_test.dart' as transpose;
 
-main(List<String> args) {
+transformerTests() {
   aggregation.main();
   chain.main();
   filter.main();
