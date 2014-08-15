@@ -4,6 +4,7 @@ authors:
 - Prasad Sunkari <prsd@google.com>
 - Michael Cheng <midoringo@google.com>
 description: Visualization toolkit for Dart. Provides D3 (http://d3js.org) like Selection API, utilities to achieve data driven DOM and provides an easy-to-use Charting library based on the Selection API.
+homepage: https://github.com/google/charted
 dependencies:
   browser: any
   csslib: any
