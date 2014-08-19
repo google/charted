@@ -52,6 +52,7 @@ part 'transformers/aggregation.dart';
 part 'transformers/aggregation_item.dart';
 part 'transformers/aggregation_transformer.dart';
 part 'transformers/filter_transformer.dart';
+part 'transformers/transpose_transformer.dart';
 
 final Logger logger = new Logger('charted.charts');
 
