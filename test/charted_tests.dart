@@ -8,6 +8,7 @@
 
 library charted.test;
 
+import 'charts/transformers/transformer_test.dart' as transformer;
 import 'core/core_test.dart' as core;
 import 'event/event_test.dart' as event;
 import 'format/format_test.dart' as format;
@@ -32,4 +33,5 @@ allChartedTests() {
   svg.svgTests();
   time.timeTests();
   transition.transitionTests();
+  transformer.transformerTests();
 }

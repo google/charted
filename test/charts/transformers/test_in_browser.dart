@@ -10,5 +10,5 @@ import 'transformer_test.dart' as tests;
 
 main() {
   useHtmlConfiguration(false);
-  tests.main([]);
+  tests.transformerTests();
 }
