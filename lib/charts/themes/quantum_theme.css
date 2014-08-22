@@ -61,3 +61,10 @@ path.line {
   stroke: #A2A2A2;
 }
 
+/*
+ * Axis markers
+ */
+.axis-marker {
+  stroke: #E0E0E0;
+  stroke-dasharray: 3 3;
+}

@@ -53,7 +53,7 @@ const List DIMENSION_COLUMNS =  const[0];
 int customSeriesCounter = 0;
 
 /*
- * TODO(prsd): save config in hash to let users user the browser's
+ * TODO(psunkari): save config in hash to let users user the browser's
  * forward/back buttons and share the URLs.
  */
 List DEMOS = [
@@ -158,6 +158,8 @@ class DemoChart {
     config = new ChartConfig(series, DIMENSION_COLUMNS);
     area = new ChartArea(host, data, config, autoUpdate:true,
         dimensionAxesCount: dimensionAxesCount);
+
+    area.addChartBehavior(new AxisMarker());
 
     if (demoConfig.containsKey('displayedMeasureAxes')) {
       config.displayedMeasureAxes = demoConfig['displayedMeasureAxes'];

@@ -10,7 +10,7 @@ library charted.charts;
 
 import 'dart:async';
 import 'dart:collection';
-import 'dart:html' show Element,document,window;
+import 'dart:html' show Element, document, window, Event, MouseEvent;
 import 'dart:math' as math;
 import 'dart:svg' hide Rect;
 import 'dart:typed_data';
@@ -30,11 +30,13 @@ import 'package:charted/interpolators/interpolators.dart';
 part 'chart_area.dart';
 part 'chart_config.dart';
 part 'chart_data.dart';
+part 'chart_events.dart';
 part 'chart_legend.dart';
 part 'chart_renderer.dart';
 part 'chart_series.dart';
 part 'chart_theme.dart';
 
+part 'behaviors/axis_marker.dart';
 
 part 'renderers/bar_chart_renderer.dart';
 part 'renderers/line_chart_renderer.dart';
@@ -45,6 +47,7 @@ part 'src/chart_area_impl.dart';
 part 'src/chart_axis_impl.dart';
 part 'src/chart_config_impl.dart';
 part 'src/chart_data_impl.dart';
+part 'src/chart_events_impl.dart';
 part 'src/chart_legend_impl.dart';
 part 'src/chart_series_impl.dart';
 

@@ -45,6 +45,23 @@ abstract class ChartRenderer {
   double get bandOuterPadding;
 
   /**
+   * Stream of events that indicate that user clicked on a displayed value
+   */
+  Stream<ChartEvent> get onValueMouseClick;
+
+  /**
+   * Stream of events that indicate that user moved the mouse pointer out
+   * over a displayed value
+   */
+  Stream<ChartEvent> get onValueMouseOver;
+
+  /**
+   * Stream of events that indicate that user moved the mouse pointer out
+   * of a displayed value
+   */
+  Stream<ChartEvent> get onValueMouseOut;
+
+  /**
    * Prepare the chart for rendering.
    * - [area] represents the [ChartArea] on which the chart is rendered.
    * - [series] represents the [ChartSeries] that is rendered
@@ -55,7 +72,7 @@ abstract class ChartRenderer {
    * Render series data on the passed [host].
    * Draw will not be successful if [prepare] was not already called.
    */
-  void draw(Element host, Iterable<Scale> dimensions, Iterable<Scale> measures);
+  void draw(Element host);
 
   /** Clear the chart */
   void clear();

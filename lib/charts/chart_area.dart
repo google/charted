@@ -60,6 +60,31 @@ abstract class ChartArea {
   ChartAreaLayout get layout;
 
   /**
+   * Scales used to render the measure axis of the given [ChartSeries]
+   */
+  Iterable<Scale> measureScales(ChartSeries s);
+
+  /**
+   * Scales used to render the dimension axes
+   */
+  Iterable<Scale> get dimensionScales;
+
+  /** Add a behavior for ChartArea */
+  void addChartBehavior(ChartBehavior behavior);
+
+  /**
+   * A pane that is rendered below all the chart elements - for use with
+   * behaviors that add elements to chart.
+   */
+  Element get lowerBehaviorPane;
+
+  /**
+   * A pane that is rendered above all the chart elements - for use with
+   * behaviors that add elements to chart.
+   */
+  Element get upperBehaviorPane;
+
+  /**
    * Draw the chart with current data and configuration.
    */
   void draw();

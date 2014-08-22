@@ -1,3 +1,11 @@
+/*
+ * Copyright 2014 Google Inc. All rights reserved.
+ *
+ * Use of this source code is governed by a BSD-style
+ * license that can be found in the LICENSE file or at
+ * https://developers.google.com/open-source/licenses/bsd
+ */
+
 part of charted.charts;
 
 class LineChartRenderer implements ChartRenderer {
@@ -22,8 +30,7 @@ class LineChartRenderer implements ChartRenderer {
     return true;
   }
 
-  void draw(Element element,
-      Iterable<Scale> dimensions, Iterable<Scale> measures) {
+  void draw(Element element) {
     assert(area != null && series != null);
     assert(element != null && element is GElement);
 
@@ -35,8 +42,8 @@ class LineChartRenderer implements ChartRenderer {
 
     var geometry = area.layout.renderArea,
         measuresCount = series.measures.length,
-        measureScale = measures.first,
-        dimensionScale = dimensions.first,
+        measureScale = area.measureScales(series).first,
+        dimensionScale = area.dimensionScales.first,
         theme = area.theme;
 
     String color(i) =>
@@ -101,5 +108,17 @@ class LineChartRenderer implements ChartRenderer {
       });
     });
     return new Extent(min, max);
+  }
+
+  Stream<ChartEvent> get onValueMouseOver {
+    throw new UnimplementedError();
+  }
+
+  Stream<ChartEvent> get onValueMouseOut {
+    throw new UnimplementedError();
+  }
+
+  Stream<ChartEvent> get onValueMouseClick {
+    throw new UnimplementedError();
   }
 }

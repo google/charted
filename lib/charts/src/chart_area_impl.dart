@@ -1,3 +1,11 @@
+/*
+ * Copyright 2014 Google Inc. All rights reserved.
+ *
+ * Use of this source code is governed by a BSD-style
+ * license that can be found in the LICENSE file or at
+ * https://developers.google.com/open-source/licenses/bsd
+ */
+
 part of charted.charts;
 
 /**
@@ -10,7 +18,7 @@ part of charted.charts;
  * The primary dimension axes is always at the bottom, the primary measure axis
  * is always on the right.
  */
-class _ChartArea implements ChartArea {
+class _ChartArea implements ChartArea, ChartAreaEventSource {
   static const List MEASURE_AXIS_IDS = const['_default'];
   static const List DIMENSION_AXIS_IDS = const['_primary', '_secondary'];
 
@@ -36,6 +44,8 @@ class _ChartArea implements ChartArea {
 
   final Element host;
 
+  List<ChartBehavior> _behaviors = new List();
+
   ChartTheme theme;
   bool autoUpdate = false;
 
@@ -49,6 +59,16 @@ class _ChartArea implements ChartArea {
   Selection _group;
   Iterable<ChartSeries> _series;
   bool _pendingLegendUpdate = false;
+
+  StreamController<ChartEvent> _valueMouseOverController;
+  StreamController<ChartEvent> _valueMouseOutController;
+  StreamController<ChartEvent> _valueMouseClickController;
+
+  @override
+  Element upperBehaviorPane;
+
+  @override
+  Element lowerBehaviorPane;
 
   _ChartArea(Element this.host, ChartData data, ChartConfig config,
       bool this.autoUpdate, this._dimensionAxesCount) {
@@ -72,6 +92,7 @@ class _ChartArea implements ChartArea {
    * If [value] is [Observable], subscribes to changes and updates the
    * chart when data changes.
    */
+  @override
   set data(ChartData value) {
     _data = value;
     _dataSubscriptions.dispose();
@@ -82,12 +103,14 @@ class _ChartArea implements ChartArea {
     }
   }
 
+  @override
   ChartData get data => _data;
 
   /*
    * If [value] is [Observable], subscribes to changes and updates the
    * chart when series or dimensions change in configuration.
    */
+  @override
   set config(ChartConfig value) {
     _config = value;
     _configSubscriptions.dispose();
@@ -101,16 +124,19 @@ class _ChartArea implements ChartArea {
     }));
   }
 
+  @override
   ChartConfig get config => _config;
 
   /*
    * Number of dimension axes displayed in this chart.
    */
+  @override
   set dimensionAxesCount(int count) {
     _dimensionAxesCount = count;
     if (autoUpdate) draw();
   }
 
+  @override
   int get dimensionAxesCount => _dimensionAxesCount;
 
   /*
@@ -164,13 +190,15 @@ class _ChartArea implements ChartArea {
   /*
    * Get a list of dimension scales for this chart.
    */
-  Iterable<Scale> get _dimensionScales =>
+  @override
+  Iterable<Scale> get dimensionScales =>
       config.dimensions.map((int column) => _getDimensionAxis(column).scale);
 
   /*
    * Get a list of scales used by [series]
    */
-  Iterable<Scale> _measureScales(ChartSeries series) {
+  @override
+  Iterable<Scale> measureScales(ChartSeries series) {
     var axisIds = isNullOrEmpty(series.measureAxisIds) ?
         MEASURE_AXIS_IDS : series.measureAxisIds;
     return axisIds.map((String id) => _getMeasureAxis(id).scale);
@@ -189,7 +217,8 @@ class _ChartArea implements ChartArea {
       height = max([height, config.minimumSize.height]);
     }
 
-    Rect current = new Rect.size(width - 2 * MARGIN, height - 2 * MARGIN);
+    Rect current =
+        new Rect(MARGIN, MARGIN, width - 2 * MARGIN, height - 2 * MARGIN);
     if (layout.chartArea == null || layout.chartArea != current) {
       _svg.attr('width', width.toString());
       _svg.attr('height', height.toString());
@@ -199,6 +228,7 @@ class _ChartArea implements ChartArea {
     return layout.chartArea;
   }
 
+  @override
   draw() {
     assert(data != null && config != null);
     assert(config.series != null && config.series.isNotEmpty);
@@ -208,6 +238,17 @@ class _ChartArea implements ChartArea {
       _scope = new SelectionScope.element(host);
       _svg = _scope.append('svg:svg')..classed('charted-chart');
       _group = _svg.append('g')..classed('chart-wrapper');
+
+      /* Create groups for behaviors to add any SVG elements */
+      var lower = _group.append('g')..classed('lower-render-pane'),
+          upper = _group.append('g')..classed('upper-first-pane');
+
+      lowerBehaviorPane = lower.first;
+      upperBehaviorPane = upper.first;
+      if (_behaviors.isNotEmpty) {
+        _behaviors.forEach(
+            (b) => b.init(this, upperBehaviorPane, lowerBehaviorPane));
+      }
     }
 
     /* Compute sizes and filter out unsupported series */
@@ -223,14 +264,25 @@ class _ChartArea implements ChartArea {
      */
     axesDomainCompleter.future.then((_) {
       /* If a series was not rendered before, add an SVG group for it */
-      selection.enter.append('svg:g').classed('series-group');
+      selection.enter.append('svg:g')
+          ..classed('series-group')
+          ..each((ChartSeries s, i, e) {
+        try {
+          s.renderer.onValueMouseClick.listen(
+              (ChartEvent e) => _event(_valueMouseClickController, e));
+          s.renderer.onValueMouseOver.listen(
+              (ChartEvent e) => _event(_valueMouseOverController, e));
+          s.renderer.onValueMouseOut.listen(
+              (ChartEvent e) => _event(_valueMouseOutController, e));
+        } on UnimplementedError {};
+      });
 
       /* For all series recompute axis ranges and update the rendering */
       var transform =
           'translate(${layout.renderArea.x},${layout.renderArea.y})';
       selection.each((ChartSeries s, _, Element group) {
         group.attributes['transform'] = transform;
-        s.renderer.draw(group, _dimensionScales, _measureScales(s));
+        s.renderer.draw(group);
       });
 
       /* A series that was rendered earlier isn't there anymore, remove it */
@@ -460,15 +512,83 @@ class _ChartArea implements ChartArea {
     _config.legend.update(legend, this);
     _pendingLegendUpdate = false;
   }
+
+  @override
+  Stream<ChartEvent> get onMouseUp =>
+      host.onMouseUp
+          .map((MouseEvent e) => new _ChartEvent(e, this));
+
+  @override
+  Stream<ChartEvent> get onMouseDown =>
+      host.onMouseDown
+          .map((MouseEvent e) => new _ChartEvent(e, this));
+
+  @override
+  Stream<ChartEvent> get onMouseOver =>
+      host.onMouseOver
+          .map((MouseEvent e) => new _ChartEvent(e, this));
+
+  @override
+  Stream<ChartEvent> get onMouseOut =>
+      host.onMouseOut
+          .map((MouseEvent e) => new _ChartEvent(e, this));
+
+  @override
+  Stream<ChartEvent> get onMouseMove =>
+      host.onMouseMove
+          .map((MouseEvent e) => new _ChartEvent(e, this));
+
+  void _event(StreamController controller, ChartEvent evt) {
+    if (controller == null) return;
+    controller.add(evt);
+  }
+
+  @override
+  Stream<ChartEvent> get onValueClick {
+    if (_valueMouseClickController == null) {
+      _valueMouseClickController = new StreamController.broadcast(sync: true);
+    }
+    return _valueMouseClickController.stream;
+  }
+
+  @override
+  Stream<ChartEvent> get onValueMouseOver {
+    if (_valueMouseOverController == null) {
+      _valueMouseOverController = new StreamController.broadcast(sync: true);
+    }
+    return _valueMouseOverController.stream;
+  }
+
+  @override
+  Stream<ChartEvent> get onValueMouseOut {
+    if (_valueMouseOutController == null) {
+      _valueMouseOutController = new StreamController.broadcast(sync: true);
+    }
+    return _valueMouseOutController.stream;
+  }
+
+  @override
+  void addChartBehavior(ChartBehavior behavior) {
+    if (behavior == null || _behaviors.contains(behavior)) return;
+    _behaviors.add(behavior);
+    if (upperBehaviorPane != null && lowerBehaviorPane != null) {
+      behavior.init(this, upperBehaviorPane, lowerBehaviorPane);
+    }
+  }
 }
 
 class _ChartAreaLayout implements ChartAreaLayout {
+  @override
   final Map<String, Rect> axes = {
     ORIENTATION_LEFT: const Rect(),
     ORIENTATION_RIGHT: const Rect(),
     ORIENTATION_TOP: const Rect(),
     ORIENTATION_BOTTOM: const Rect()
   };
+
+  @override
   Rect renderArea;
+
+  @override
   Rect chartArea;
 }
