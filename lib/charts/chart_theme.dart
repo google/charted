@@ -59,14 +59,6 @@ abstract class ChartTheme {
 
   /** Theme passed to the dimension axes */
   ChartAxisTheme get dimensionAxisTheme;
-
-  /**
-   * Inner radius of the pie chart.  A value of 0 would render a pie chart; any
-   * positive number would cause the inner radius of the pie to be the specified
-   * number; any negative number would cause the inner radius to be proportional
-   * to the number of rows of data being rendered in the pie.
-   */
-  int innerRadius = -1;
 }
 
 abstract class ChartAxisTheme {
