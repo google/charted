@@ -12,6 +12,9 @@ class PieChartRenderer implements ChartRenderer {
   SelectionScope _scope;
   List<List> _prevRows = null;
   double _prevSlice;
+  num innerRadius;
+
+  PieChartRenderer([this.innerRadius = 0]);
 
   /*
    * Returns false if the number of dimension axes != 0. Pie chart can only
@@ -38,17 +41,20 @@ class PieChartRenderer implements ChartRenderer {
     var geometry = area.layout.renderArea,
         theme = area.theme;
 
-    String color(i) => theme.getColorForKey(i);
+    String color(i) =>
+        theme.getColorForKey(series.measures.elementAt(i));
 
-    var rows = new List()..addAll(series.measures.map((e) {
-      return new List()..addAll(area.data.rows.map((d) => d[e]));
+    var rows = new List()..addAll(area.data.rows.map((e) {
+      var row = [];
+      for (var measure in series.measures) {
+        row.add(e[measure]);
+      }
+      return row;
     }));
 
     var radius = math.min(geometry.width, geometry.height) / 2;
     var outerRadius = radius - 10;
-    var sliceRadius = theme.innerRadius < 0 ?
-        (radius - 10) / (rows.length + 1) :
-        (radius - 10 - theme.innerRadius) / rows.length;
+    var sliceRadius = (radius - 10 - innerRadius) / rows.length;
 
     if (_prevRows == null) {
       _prevRows = new List<List>();
