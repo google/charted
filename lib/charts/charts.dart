@@ -37,6 +37,7 @@ part 'chart_series.dart';
 part 'chart_theme.dart';
 
 part 'behaviors/axis_marker.dart';
+part 'behaviors/chart_tooltip.dart';
 
 part 'renderers/bar_chart_renderer.dart';
 part 'renderers/line_chart_renderer.dart';

@@ -118,6 +118,7 @@ ChartRenderer getRendererForType(String name) {
   if (name == 'pie-chart') return new PieChartRenderer();
   return new BarChartRenderer();
 }
+
 String getTypeForRenderer(ChartRenderer renderer) {
   if (renderer is BarChartRenderer) return 'bar-chart';
   if (renderer is LineChartRenderer) return 'line-chart';
@@ -160,6 +161,7 @@ class DemoChart {
         dimensionAxesCount: dimensionAxesCount);
 
     area.addChartBehavior(new AxisMarker());
+    area.addChartBehavior(new ChartTooltip());
 
     if (demoConfig.containsKey('displayedMeasureAxes')) {
       config.displayedMeasureAxes = demoConfig['displayedMeasureAxes'];
@@ -215,7 +217,7 @@ main() {
 
 
 
- /*
+  /*
    * Series selection
    */
 
