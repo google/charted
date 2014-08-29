@@ -302,7 +302,7 @@ class _ChartArea implements ChartArea {
          domain = values.toList();
        } else {
          var extent = new Extent.items(values);
-         domain = [domain.min, domain.max];
+         domain = [extent.min, extent.max];
        }
        axis.initAxisDomain(column, true, domain);
     });
