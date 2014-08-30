@@ -10,6 +10,7 @@ library charted.charts_demo;
 
 import 'dart:html';
 import 'package:charted/charts/charts.dart';
+import 'package:charted/core/core.dart';
 
 List COLUMNS = [
     new ChartColumnSpec(label:'Month'),
@@ -50,12 +51,13 @@ List DATA = [
   ];
 
 main() {
-  var series = new ChartSeries('one', [1], new LineChartRenderer()),
+  var element = querySelector('.climate-chart'),
+      series = new ChartSeries('one', [1], new LineChartRenderer()),
       data = new ChartData(COLUMNS, DATA),
       config = new ChartConfig([series], [0])
           ..displayedMeasureAxes = []
-          ..renderDimensionAxes = false,
-      area = new ChartArea(querySelector('.climate-chart'),
-          data, config, autoUpdate:false, dimensionAxesCount:1);
+          ..renderDimensionAxes = false
+          ..minimumSize = new Rect.size(100,50),
+      area = new ChartArea(element, data, config, dimensionAxesCount:1);
   area.draw();
 }

@@ -88,8 +88,7 @@ List DEMOS = [
         'renderer': 'stacked-bar-chart',
         'columns': [ 1, 2, 3 ]
       }
-    ],
-    'displayedMeasureAxes': []
+    ]
   },
   {
     'name': 'Four',
