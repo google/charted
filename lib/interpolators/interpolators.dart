@@ -29,14 +29,50 @@ typedef InterpolateFn(num t);
 typedef InterpolateFn Interpolator(a, b);
 
 /** [EasingFn] is same as [InterpolateFn] but is for computing easing */
-typedef EasingFn(num t);
+typedef num EasingFn(num t);
+
+/**
+ * [EasingMode] a mode that can be applied on a [Easingfn] and returns a new
+ * EasingFn.
+ */
+typedef EasingFn EasingMode(EasingFn fn);
+
+/**
+ * List of registered interpolators - [interpolator] iterates through
+ * this list from backwards and the first non-null interpolate function
+ * is returned to the caller.
+ */
+List<Interpolator> interpolators = [ interpolatorByType ];
+
+/**
+ * Returns a default interpolator between values [a] and [b]. Unless
+ * more interpolators are added, one of the internal implementations are
+ * selected by the type of [a] and [b].
+ */
+InterpolateFn interpolator(a, b) {
+  var fn, i = interpolators.length;
+  while (--i >= 0 && fn == null) {
+    fn = interpolators[i](a, b);
+  }
+  return fn;
+}
+
+/** Returns an interpolator based on the type of [a] and [b] */
+InterpolateFn interpolatorByType(a, b) =>
+    (a is List && b is List) ? interpolateList(a, b) :
+    (a is Map && b is Map) ? interpolateMap(a, b) :
+    (a is String && b is String) ? interpolateString(a, b) :
+    (a is num && b is num) ? interpolateNumber(a, b) :
+    (a is Color && b is Color) ? interpolateColor(a, b) :
+    (t) => (t <= 0.5) ? a : b;
 
 /*
  * Creates an easing function based on type and mode.
  * Assumes that all easing function generators support calling
  * without any parameters.
  */
-EasingFn easeFunctionByName(String type, [String mode = 'in', List params]) {
+EasingFn easeFunctionByName(String type,
+    [String mode = EASE_MODE_IN, List params]) {
   const Map _easeType = const {
     'linear': identityFunction,
     'poly': easePoly,

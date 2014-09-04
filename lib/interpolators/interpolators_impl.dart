@@ -116,6 +116,54 @@ InterpolateFn interpolateHsl(a, b) {
       ah + bh * t, as + bs * t, al + bl * t).toHexArgbString();
 }
 
+/**
+ * Returns the interpolator that interpolators each element between lists
+ * [a] and [b] using registered interpolators.
+ */
+InterpolateFn interpolateList(List a, List b) {
+  if (a == null || b == null) return (t) => b;
+  var x = [],
+      na = a.length,
+      nb = b.length,
+      n0 = math.min(na, nb),
+      c = new List.filled(math.max(na, nb), null),
+      i;
+
+  for (i = 0; i < n0; i++) x.add(interpolator(a[i], b[i]));
+  for (; i < na; ++i) c[i] = a[i];
+  for (; i < nb; ++i) c[i] = b[i];
+
+  return (t) {
+    for (i = 0; i < n0; ++i) c[i] = x[i](t);
+    return c;
+  };
+}
+
+/**
+ * Returns the interpolator that interpolators each element between maps
+ * [a] and [b] using registered interpolators.
+ */
+InterpolateFn interpolateMap(Map a, Map b) {
+  if (a == null || b == null) return (t) => b;
+  var x = new Map(),
+      c = new Map(),
+      ka = a.keys.toList(),
+      kb = b.keys.toList();
+
+  ka.forEach((k) {
+    if (b[k] != null) x[k] = (interpolator(a[k], b[k]));
+    else c[k] = a[k];
+  });
+  kb.forEach((k) {
+    if (c[k] == null) c[k] = b[k];
+  });
+
+  return (t) {
+    x.forEach((k, v) => c[k] = v(t));
+    return c;
+  };
+}
+
 InterpolateFn uninterpolateNumber(num a, num b) {
   b = 1 / (b - a);
   return (x) => (x - a) * b;

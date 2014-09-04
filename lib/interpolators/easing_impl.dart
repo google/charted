@@ -11,12 +11,16 @@ part of charted.interpolators;
 EasingFn clampEasingFn(EasingFn f) =>
     (t) => t <= 0 ? 0 : t >= 1 ? 1 : f(t);
 
+// Ease-in is defined is the identifyFunction.
+/** Ease-out */
 EasingFn reverseEasingFn(EasingFn f) =>
     (t) => 1 - f(1 - t);
 
+/** Ease-in-out */
 EasingFn reflectEasingFn(EasingFn f) =>
     (t) => .5 * (t < .5 ? f(2 * t) : (2 - f(2 - 2 * t)));
 
+/** Ease-out-in */
 EasingFn reflectReverseEasingFn(EasingFn f) =>
     reflectEasingFn(reverseEasingFn(f));
 

@@ -59,8 +59,9 @@ class _ChartArea implements ChartArea {
     this.config = config;
     theme = ChartTheme.current;
 
-    Transition.defaultEasingMode = theme.transitionEasingMode;
+
     Transition.defaultEasingType = theme.transitionEasingType;
+    Transition.defaultEasingMode = theme.transitionEasingMode;
     Transition.defaultDuration = theme.transitionDuration;
   }
 

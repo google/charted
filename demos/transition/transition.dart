@@ -75,7 +75,7 @@ void main() {
 
   Transition t2 = new Transition(circle2);
   t2
-      ..easeByName(Transition.EASE_TYPE_CUBIC, Transition.EASE_MODE_IN)
+      ..ease = clampEasingFn(identityFunction(easeCubic()))
       ..attr('cx', 400)
       ..duration(4000);
 
@@ -87,7 +87,7 @@ void main() {
 
   Transition t3 = new Transition(circle3);
   t3
-      ..easeByName(Transition.EASE_TYPE_CUBIC, Transition.EASE_MODE_OUT)
+      ..ease = clampEasingFn(reverseEasingFn(easeCubic()))
       ..attr('cx', 400)
       ..duration(4000);
 
@@ -99,7 +99,7 @@ void main() {
 
   Transition t4 = new Transition(circle4);
   t4
-      ..easeByName(Transition.EASE_TYPE_CUBIC, Transition.EASE_MODE_OUT_IN)
+      ..ease = clampEasingFn(reflectReverseEasingFn(easeCubic()))
       ..attr('cx', 400)
       ..duration(4000);
 

@@ -24,6 +24,22 @@ const String ORIENTATION_RIGHT = 'right';
 const String ORIENTATION_TOP = 'top';
 const String ORIENTATION_BOTTOM = 'bottom';
 
+const String EASE_TYPE_LINEAR = 'linear';
+const String EASE_TYPE_POLY = 'poly';
+const String EASE_TYPE_QUAD = 'quad';
+const String EASE_TYPE_CUBIC = 'cubic';
+const String EASE_TYPE_SIN = 'sin';
+const String EASE_TYPE_EXP = 'exp';
+const String EASE_TYPE_CIRCLE = 'circle';
+const String EASE_TYPE_ELASTIC = 'elastic';
+const String EASE_TYPE_BACK = 'back';
+const String EASE_TYPE_BOUNCE = 'bounce';
+
+const String EASE_MODE_IN = 'in';
+const String EASE_MODE_OUT = 'out';
+const String EASE_MODE_IN_OUT = 'in-out';
+const String EASE_MODE_OUT_IN = 'out-in';
+
 /**
  * Callback for all DOM related operations - The first parameter
  * [datum] is the piece of data associated with the node, [ei] is

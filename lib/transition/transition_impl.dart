@@ -27,12 +27,8 @@ class _TransitionImpl implements Transition {
     _timerDelay = delay;
   }
 
-  InterpolateFn ease = easeFunctionByName(
-      Transition.defaultEasingType, Transition.defaultEasingMode);
-
-  void easeByName(String type, String mode) {
-    ease = easeFunctionByName(type, mode);
-  }
+  InterpolateFn ease = clampEasingFn(Transition.defaultEasingMode(
+        Transition.defaultEasingType));
 
   void delay([int millisecond = 0]) {
     delayWithCallback(toCallback(millisecond));
