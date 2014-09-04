@@ -109,7 +109,7 @@ void main() {
   String shape1 = 'M50 100 L50 200 L100 200 Z';
   String shape2 = 'M900 0 L750 200 L900 200 Z';
 
-  var stringInterpolator = interpolator(shape1, shape2);
+  var stringInterpolator = interpolateString(shape1, shape2);
 
   Selection g2 = svg.append('g');
 
@@ -191,7 +191,7 @@ void main() {
   var color = t.transition();
   color.delayWithCallback((d, i, c) => i * 200);
   color.styleTween('fill',
-      (d, i, style) => interpolatorByType(style, '#CC0088'));
+      (d, i, style) => interpolateString(style, '#CC0088'));
 
   Color hslColor1 = new Color.fromRgb(10, 255, 0);
   Color hslColor2 = new Color.fromRgb(40, 0, 255);

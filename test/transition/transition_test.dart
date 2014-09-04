@@ -10,6 +10,7 @@ library charted.test.transition;
 
 import 'dart:async';
 import 'dart:html' show document, Element;
+import 'package:charted/core/core.dart';
 import 'package:charted/interpolators/interpolators.dart';
 import 'package:charted/selection/selection.dart';
 import 'package:charted/transition/transition.dart';
@@ -313,7 +314,7 @@ transitionTests() {
     var colors = ['rgb(255, 0, 0);', 'rgb(0, 255, 0);', 'rgb(0, 0, 255);'];
     transition.transition()
       ..styleTween('background-color', (d, i, style) =>
-          interpolatorByType(style, colors[i]))
+          interpolateString(style, colors[i]))
       ..duration(100);
     transition.each((d, i, Element e) {
       checkColor(e, 'rgb(0, 0, 0)');

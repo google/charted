@@ -19,7 +19,7 @@ class LinearScale extends Scale {
    */
   LinearScale([List domain = defaultDomainRange,
       List range = defaultDomainRange,
-      interpolators.Interpolator interpolator = interpolators.interpolator,
+      interpolators.Interpolator interpolator = interpolators.interpolateNumber,
       bool clamp = false]) {
     _initializeScale(domain, range, interpolator, clamp);
   }
@@ -37,7 +37,7 @@ class LinearScale extends Scale {
         interpolators.uninterpolateNumber;
     if (range[0] is num) {
       input = linear(range, domain, uninterpolator,
-          interpolators.interpolator);
+          interpolators.interpolateNumber);
     }
     output = linear(domain, range, uninterpolator, interpolator);
   }

@@ -61,52 +61,6 @@ interpolatorsTests() {
     expect(interpolator(1), equals('#c89600'));
   });
 
-  test('interpolateList correctly interpolates two [List]s', () {
-    // Same number of elements in two lists
-    InterpolateFn interpolator = interpolateList([1, 2, 3], [3, 10, 5]);
-    expect(interpolator(0), orderedEquals([1, 2, 3]));
-    expect(interpolator(0.5), orderedEquals([2, 6, 4]));
-    expect(interpolator(1), orderedEquals([3, 10, 5]));
-    // First list has more elements
-    interpolator = interpolateList([1, 2, 3, 8], [3, 10, 5]);
-    expect(interpolator(0), orderedEquals([1, 2, 3, 8]));
-    expect(interpolator(0.5), orderedEquals([2, 6, 4, 8]));
-    expect(interpolator(1), orderedEquals([3, 10, 5, 8]));
-    // Second list has more elements
-    interpolator = interpolateList([1, 2, 3], [3, 10, 5, 7]);
-    expect(interpolator(0), orderedEquals([1, 2, 3, 7]));
-    expect(interpolator(0.5), orderedEquals([2, 6, 4, 7]));
-    expect(interpolator(1), orderedEquals([3, 10, 5, 7]));
-  });
-
-  test('interpolateMap correctly interpolates two [Map]s', () {
-    // Same number of elements in two maps
-    Map a = {'a': 1, 'b': 10, 'c': 3},
-        b = {'a': 6, 'b': 2, 'c': 8};
-    InterpolateFn interpolator = interpolateMap(a, b);
-    (interpolator(0) as Map).forEach((k, v) => expect(v, equals(a[k])));
-    (interpolator(0.5) as Map).forEach((k, v) =>
-        expect(v, equals((a[k] + b[k]) / 2)));
-    (interpolator(1) as Map).forEach((k, v) => expect(v, equals(b[k])));
-    // First map has more elements
-    a = {'a': 1, 'b': 10, 'c': 3, 'd': 5};
-    interpolator = interpolateMap(a, b);
-    (interpolator(0) as Map).forEach((k, v) => expect(v, equals(a[k])));
-    (interpolator(0.5) as Map).forEach((k, v) =>
-        expect(v, equals(b[k] == null ? a[k] : (a[k] + b[k]) / 2)));
-    (interpolator(1) as Map).forEach((k, v) =>
-        expect(v, equals(b[k] == null ? a[k] : b[k])));
-    // Second map has more elements
-    a = {'a': 1, 'b': 10, 'c': 3};
-    b = {'a': 6, 'b': 2, 'c': 8, 'd': 10};
-    interpolator = interpolateMap(a, b);
-    (interpolator(0) as Map).forEach((k, v) =>
-        expect(v, equals(a[k] == null ? b[k] : a[k])));
-    (interpolator(0.5) as Map).forEach((k, v) =>
-        expect(v, equals(a[k] == null ? b[k] : (a[k] + b[k]) / 2)));
-    (interpolator(1) as Map).forEach((k, v) => expect(v, equals(b[k])));
-  });
-
   test('uninterpolateNumber returns the reverse of interpolateNumber', () {
     InterpolateFn interpolator = uninterpolateNumber(1, 10);
     expect(interpolator(-3.5), equals(-0.5));
@@ -122,25 +76,6 @@ interpolatorsTests() {
     expect(interpolator(5.5), equals(0.5));
     expect(interpolator(10), equals(1));
     expect(interpolator(15), equals(1));
-  });
-
-  test('interpolateObject correctly interpolates two [Object]s', () {
-    MockObject a = new MockObject(1, [3, 10, 4]),
-               b = new MockObject(5, [9, 3, 1]);
-    InterpolateFn interpolator = interpolateObject(a, b);
-    MockObject c = interpolator(0);
-    expect(c.a, equals(1));
-    expect(c.b, orderedEquals([3, 10, 4]));
-    a = new MockObject(1, [3, 10, 4]);
-    interpolator = interpolateObject(a, b);
-    c = interpolator(0.5);
-    expect(c.a, equals(3));
-    expect(c.b, orderedEquals([6, 6.5, 2.5]));
-    a = new MockObject(1, [3, 10, 4]);
-    interpolator = interpolateObject(a, b);
-    c = interpolator(1);
-    expect(c.a, equals(5));
-    expect(c.b, orderedEquals([9, 3, 1]));
   });
 
   test('interpolateTransform correctly interpolates two transforms', () {
@@ -213,30 +148,5 @@ interpolatorsTests() {
     expect(zoom[0], closeTo(5, EPSILON));
     expect(zoom[1], closeTo(10, EPSILON));
     expect(zoom[2], closeTo(4, EPSILON));
-  });
-
-  test('interpolatorByType returns a interpolator based on paramater type', () {
-    InterpolateFn interpolator = interpolatorByType(1, 1);   // Num
-    expect(interpolator(0), new isInstanceOf<num>());
-
-    interpolator = interpolatorByType([1], [1]);             // List
-    expect(interpolator(0), new isInstanceOf<List>());
-
-    interpolator = interpolatorByType({'a': 1}, {'a': 1});   // List
-    expect(interpolator(0), new isInstanceOf<Map>());
-
-    interpolator = interpolatorByType('#ffffff', '#ffffff'); // Color
-    expect(interpolator(0), new isInstanceOf<Color>());
-
-    interpolator = interpolatorByType(new Color.fromColorString('#ffffff'),
-        new Color.fromColorString('#ffffff'));
-    expect(interpolator(0), new isInstanceOf<Color>());
-
-    interpolator = interpolatorByType('M1,1', 'M1,1');       // String
-    expect(interpolator(0), new isInstanceOf<String>());
-
-    interpolator = interpolatorByType(
-        new MockObject(0, []), new MockObject(0, []));       // Object
-    expect(interpolator(0), new isInstanceOf<MockObject>());
   });
 }

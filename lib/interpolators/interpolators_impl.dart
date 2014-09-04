@@ -32,6 +32,10 @@ InterpolateFn interpolateRound(num a, num b) {
  */
 InterpolateFn interpolateString(String a, String b) {
   if (a == null || b == null) return (t) => b;
+  if (Color.isColorString(a) && Color.isColorString(b)) {
+    return interpolateColor(new Color.fromColorString(a),
+              new Color.fromColorString(b));
+  }
   var numberRegEx =
           new RegExp(r'[-+]?(?:\d+\.?\d*|\.?\d+)(?:[eE][-+]?\d+)?'),
       numMatchesInA = numberRegEx.allMatches(a),
@@ -112,54 +116,6 @@ InterpolateFn interpolateHsl(a, b) {
       ah + bh * t, as + bs * t, al + bl * t).toHexArgbString();
 }
 
-/**
- * Returns the interpolator that interpolators each element between lists
- * [a] and [b] using registered interpolators.
- */
-InterpolateFn interpolateList(List a, List b) {
-  if (a == null || b == null) return (t) => b;
-  var x = [],
-      na = a.length,
-      nb = b.length,
-      n0 = math.min(na, nb),
-      c = new List.filled(math.max(na, nb), null),
-      i;
-
-  for (i = 0; i < n0; i++) x.add(interpolator(a[i], b[i]));
-  for (; i < na; ++i) c[i] = a[i];
-  for (; i < nb; ++i) c[i] = b[i];
-
-  return (t) {
-    for (i = 0; i < n0; ++i) c[i] = x[i](t);
-    return c;
-  };
-}
-
-/**
- * Returns the interpolator that interpolators each element between maps
- * [a] and [b] using registered interpolators.
- */
-InterpolateFn interpolateMap(Map a, Map b) {
-  if (a == null || b == null) return (t) => b;
-  var x = new Map(),
-      c = new Map(),
-      ka = a.keys.toList(),
-      kb = b.keys.toList();
-
-  ka.forEach((k) {
-    if (b[k] != null) x[k] = (interpolator(a[k], b[k]));
-    else c[k] = a[k];
-  });
-  kb.forEach((k) {
-    if (c[k] == null) c[k] = b[k];
-  });
-
-  return (t) {
-    x.forEach((k, v) => c[k] = v(t));
-    return c;
-  };
-}
-
 InterpolateFn uninterpolateNumber(num a, num b) {
   b = 1 / (b - a);
   return (x) => (x - a) * b;
@@ -168,51 +124,6 @@ InterpolateFn uninterpolateNumber(num a, num b) {
 InterpolateFn uninterpolateClamp(num a, num b) {
   b = 1 / (b - a);
   return (x) => math.max(0, math.min(1, (x - a) * b));
-}
-
-/**
- * Returns the interpolator between two objects [a] and [b].
- *
- * [a] and [b] must be of the same type during runtime. The interpolator will
- * recursively interpolate all the public non-const, non-static, non-final
- * properties of [a] and its counterpart in [b]. The interpolating result is
- * saved in [a] and returned.
- */
-InterpolateFn interpolateObject(Object a, Object b) {
-  if (a == null || b == null) return (t) => b;
-  assert(a.runtimeType == b.runtimeType);
-
-  InstanceMirror instanceMirrorA = reflect(a);
-  InstanceMirror instanceMirrorB = reflect(b);
-
-  ClassMirror classMirror = instanceMirrorA.type;
-
-  final List symbols = new List(),
-       aValue = new List(),
-       bValue = new List();
-  classMirror.declarations.forEach((k, v) {
-    if (v is VariableMirror &&
-        !(v.isConst || v.isFinal || v.isPrivate || v.isStatic)) {
-      symbols.add(k);
-      aValue.add(instanceMirrorA.getField(k).reflectee);
-      bValue.add(instanceMirrorB.getField(k).reflectee);
-    }
-  });
-
-  return (t) {
-    for (int i = 0; i < symbols.length; i++) {
-      // TODO(songrenchu): The reason we modify the properties of [a] instead
-      // of creating a new Object instance is that Dart does not support clone,
-      // and we cannot construct a new Object of the same type as [a] and [b]
-      // during runtime. The change of [a] will influence the following
-      // interpolation since [a] is more approaching to [b] than its original
-      // state, which is not the expected behavior for the interpolator. But
-      // that is all we can do for now.
-      instanceMirrorA.setField(symbols[i],interpolator(
-          aValue[i], bValue[i])(t));
-    }
-    return a;
-  };
 }
 
 /**
@@ -335,12 +246,12 @@ InterpolateFn interpolateTransform(String a, String b) {
 
   return (t) {
     return "translate("+
-        interpolator(numSetA[0], numSetB[0])(t).toString()+"," +
-        interpolator(numSetA[1], numSetB[1])(t).toString()+")scale("+
-        interpolator(numSetA[2], numSetB[2])(t).toString()+","+
-        interpolator(numSetA[3], numSetB[3])(t).toString()+")rotate("+
-        interpolator(numSetA[4], numSetB[4])(t).toString()+")skewX("+
-        interpolator(numSetA[5], numSetB[5])(t).toString()+")";
+        interpolateNumber(numSetA[0], numSetB[0])(t).toString()+"," +
+        interpolateNumber(numSetA[1], numSetB[1])(t).toString()+")scale("+
+        interpolateNumber(numSetA[2], numSetB[2])(t).toString()+","+
+        interpolateNumber(numSetA[3], numSetB[3])(t).toString()+")rotate("+
+        interpolateNumber(numSetA[4], numSetB[4])(t).toString()+")skewX("+
+        interpolateNumber(numSetA[5], numSetB[5])(t).toString()+")";
   };
 }
 

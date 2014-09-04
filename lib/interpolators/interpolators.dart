@@ -9,7 +9,6 @@
 library charted.interpolators;
 
 import 'dart:math' as math;
-import 'dart:mirrors';
 import 'package:charted/core/core.dart';
 import 'package:csslib/parser.dart' as cssParser;
 
@@ -31,38 +30,6 @@ typedef InterpolateFn Interpolator(a, b);
 
 /** [EasingFn] is same as [InterpolateFn] but is for computing easing */
 typedef EasingFn(num t);
-
-/**
- * List of registered interpolators - [interpolator] iterates through
- * this list from backwards and the first non-null interpolate function
- * is returned to the caller.
- */
-List<Interpolator> interpolators = [ interpolatorByType ];
-
-/**
- * Returns a default interpolator between values [a] and [b]. Unless
- * more interpolators are added, one of the internal implementations are
- * selected by the type of [a] and [b].
- */
-InterpolateFn interpolator(a, b) {
-  var fn, i = interpolators.length;
-  while (--i >= 0 && fn == null) {
-    fn = interpolators[i](a, b);
-  }
-  return fn;
-}
-
-/** Returns an interpolator based on the type of [a] and [b] */
-InterpolateFn interpolatorByType(a, b) =>
-    (a is List && b is List) ? interpolateList(a, b) :
-    (a is Map && b is Map) ? interpolateMap(a, b) :
-    (a is String && b is String && Color.isColorString(a) &&
-        Color.isColorString(a)) ? interpolateColor(new Color.fromColorString(a),
-            new Color.fromColorString(b)) :
-    (a is String && b is String) ? interpolateString(a, b) :
-    (a is num && b is num) ? interpolateNumber(a, b) :
-    (a is Color && b is Color) ? interpolateColor(a, b) :
-        interpolateObject(a, b);
 
 /*
  * Creates an easing function based on type and mode.
