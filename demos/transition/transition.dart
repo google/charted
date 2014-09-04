@@ -75,7 +75,7 @@ void main() {
 
   Transition t2 = new Transition(circle2);
   t2
-      ..easeByName(Transition.EASE_TYPE_CUBIC, Transition.EASE_MODE_IN)
+      ..ease = clampEasingFn(identityFunction(easeCubic()))
       ..attr('cx', 400)
       ..duration(4000);
 
@@ -87,7 +87,7 @@ void main() {
 
   Transition t3 = new Transition(circle3);
   t3
-      ..easeByName(Transition.EASE_TYPE_CUBIC, Transition.EASE_MODE_OUT)
+      ..ease = clampEasingFn(reverseEasingFn(easeCubic()))
       ..attr('cx', 400)
       ..duration(4000);
 
@@ -99,7 +99,7 @@ void main() {
 
   Transition t4 = new Transition(circle4);
   t4
-      ..easeByName(Transition.EASE_TYPE_CUBIC, Transition.EASE_MODE_OUT_IN)
+      ..ease = clampEasingFn(reflectReverseEasingFn(easeCubic()))
       ..attr('cx', 400)
       ..duration(4000);
 
@@ -109,7 +109,7 @@ void main() {
   String shape1 = 'M50 100 L50 200 L100 200 Z';
   String shape2 = 'M900 0 L750 200 L900 200 Z';
 
-  var stringInterpolator = interpolator(shape1, shape2);
+  var stringInterpolator = interpolateString(shape1, shape2);
 
   Selection g2 = svg.append('g');
 
@@ -191,7 +191,7 @@ void main() {
   var color = t.transition();
   color.delayWithCallback((d, i, c) => i * 200);
   color.styleTween('fill',
-      (d, i, style) => interpolatorByType(style, '#CC0088'));
+      (d, i, style) => interpolateString(style, '#CC0088'));
 
   Color hslColor1 = new Color.fromRgb(10, 255, 0);
   Color hslColor2 = new Color.fromRgb(40, 0, 255);

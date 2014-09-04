@@ -64,7 +64,7 @@ class TimeScale extends LinearScale {
 
   TimeScale([List domain = LinearScale.defaultDomainRange,
       List range = LinearScale.defaultDomainRange,
-      interpolators.Interpolator interpolator = interpolators.interpolator,
+      interpolators.Interpolator interpolator = interpolators.interpolateNumber,
       bool clamp = false]) : super(domain, range, interpolator, clamp);
 
   DateTime _timeScaleDate(num t) {

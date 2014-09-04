@@ -46,10 +46,10 @@ abstract class ChartTheme {
   int get defaultStrokeWidth => 2;
 
   /** Easing function for the transition */
-  String get transitionEasingType => Transition.EASE_TYPE_CUBIC;
+  EasingFn  get transitionEasingType => Transition.defaultEasingType;
 
   /** Easing mode for the transition */
-  String get transitionEasingMode => Transition.EASE_MODE_IN_OUT;
+  EasingMode get transitionEasingMode => Transition.defaultEasingMode;
 
   /** Total duration of the transision in milli-seconds */
   int get transitionDuration => 250;

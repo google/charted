@@ -25,42 +25,19 @@ typedef InterpolateFn StyleTweenCallback(datum, int ei, String style);
  * minimal (~17ms) delay, pending the first timer callback.
  * Transitions have a default duration of 250ms.
  */
-// TODO(midoringo): Port sub transitions and controls and transition events.
-// Also, add transition() to Selection.
 abstract class Transition {
-  static const String EASE_TYPE_LINEAR = 'linear';
-  static const String EASE_TYPE_POLY = 'poly';
-  static const String EASE_TYPE_QUAD = 'quad';
-  static const String EASE_TYPE_CUBIC = 'cubic';
-  static const String EASE_TYPE_SIN = 'sin';
-  static const String EASE_TYPE_EXP = 'exp';
-  static const String EASE_TYPE_CIRCLE = 'circle';
-  static const String EASE_TYPE_ELASTIC = 'elastic';
-  static const String EASE_TYPE_BACK = 'back';
-  static const String EASE_TYPE_BOUNCE = 'bounce';
-
-  static const String EASE_MODE_IN = 'in';
-  static const String EASE_MODE_OUT = 'out';
-  static const String EASE_MODE_IN_OUT = 'in-out';
-  static const String EASE_MODE_OUT_IN = 'out-in';
 
   /** A settable default easing type */
-  static String defaultEasingType = 'cubic';
+  static EasingFn defaultEasingType = easeCubic();
 
   /** A settable default easing mode */
-  static String defaultEasingMode = 'in-out';
+  static EasingMode defaultEasingMode = reflectEasingFn;
 
   /** A settable default transition duration */
   static int defaultDuration = 250;
 
   /** Sets the ease function of the transition, default is cubic-in-out. */
   InterpolateFn ease;
-
-  /**
-   * Sets the ease function by type and mode.  The ease function used will
-   * be clamped by 0 < t < 1.
-   */
-  void easeByName(String type, String mode);
 
   /**
    * Specifies the transition delay in milliseconds. All elements are given the

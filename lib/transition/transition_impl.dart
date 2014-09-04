@@ -27,12 +27,8 @@ class _TransitionImpl implements Transition {
     _timerDelay = delay;
   }
 
-  InterpolateFn ease = easeFunctionByName(
-      Transition.defaultEasingType, Transition.defaultEasingMode);
-
-  void easeByName(String type, String mode) {
-    ease = easeFunctionByName(type, mode);
-  }
+  InterpolateFn ease = clampEasingFn(Transition.defaultEasingMode(
+        Transition.defaultEasingType));
 
   void delay([int millisecond = 0]) {
     delayWithCallback(toCallback(millisecond));
@@ -110,8 +106,7 @@ class _TransitionImpl implements Transition {
   // Returns the correct interpolator function for the old and new attribute.
   _getAttrInterpolator(Element element, String attrName, newValue) {
     var attr = element.attributes[attrName];
-    var interpolator = interpolatorByType(
-        attr, newValue.toString());
+    var interpolator = interpolateString(attr, newValue.toString());
     return (t) => element.setAttribute(attrName, interpolator(t).toString());
   }
 
@@ -119,8 +114,7 @@ class _TransitionImpl implements Transition {
   _getStyleInterpolator(Element element, String styleName, newValue, priority) {
     var style = element.style.getPropertyValue(styleName);
 
-    var interpolator = interpolatorByType(
-        style, newValue.toString());
+    var interpolator = interpolateString(style, newValue.toString());
 
     return (t) => element.style.setProperty(styleName,
         interpolator(t).toString(), priority);

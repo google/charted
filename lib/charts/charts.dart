@@ -25,6 +25,7 @@ import 'package:charted/transition/transition.dart';
 import 'package:collection/equality.dart';
 import 'package:logging/logging.dart';
 import 'package:observe/observe.dart';
+import 'package:charted/interpolators/interpolators.dart';
 
 part 'chart_area.dart';
 part 'chart_config.dart';
@@ -33,6 +34,7 @@ part 'chart_legend.dart';
 part 'chart_renderer.dart';
 part 'chart_series.dart';
 part 'chart_theme.dart';
+
 
 part 'renderers/bar_chart_renderer.dart';
 part 'renderers/line_chart_renderer.dart';

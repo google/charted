@@ -31,7 +31,8 @@ testLinearScale() {
   });
 
   test('LinearScale supports setting clamp to clamp range', () {
-    LinearScale linear = new LinearScale([1, 2], [5, 8], interpolator, true);
+    LinearScale linear = new LinearScale([1, 2], [5, 8],
+        interpolateNumber, true);
     expect(linear.apply(0), equals(5));
     expect(linear.apply(1), equals(5));
     expect(linear.apply(1.5), equals(6.5));

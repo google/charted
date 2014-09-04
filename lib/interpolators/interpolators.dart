@@ -9,7 +9,6 @@
 library charted.interpolators;
 
 import 'dart:math' as math;
-import 'dart:mirrors';
 import 'package:charted/core/core.dart';
 import 'package:csslib/parser.dart' as cssParser;
 
@@ -30,7 +29,13 @@ typedef InterpolateFn(num t);
 typedef InterpolateFn Interpolator(a, b);
 
 /** [EasingFn] is same as [InterpolateFn] but is for computing easing */
-typedef EasingFn(num t);
+typedef num EasingFn(num t);
+
+/**
+ * [EasingMode] a mode that can be applied on a [Easingfn] and returns a new
+ * EasingFn.
+ */
+typedef EasingFn EasingMode(EasingFn fn);
 
 /**
  * List of registered interpolators - [interpolator] iterates through
@@ -56,20 +61,18 @@ InterpolateFn interpolator(a, b) {
 InterpolateFn interpolatorByType(a, b) =>
     (a is List && b is List) ? interpolateList(a, b) :
     (a is Map && b is Map) ? interpolateMap(a, b) :
-    (a is String && b is String && Color.isColorString(a) &&
-        Color.isColorString(a)) ? interpolateColor(new Color.fromColorString(a),
-            new Color.fromColorString(b)) :
     (a is String && b is String) ? interpolateString(a, b) :
     (a is num && b is num) ? interpolateNumber(a, b) :
     (a is Color && b is Color) ? interpolateColor(a, b) :
-        interpolateObject(a, b);
+    (t) => (t <= 0.5) ? a : b;
 
 /*
  * Creates an easing function based on type and mode.
  * Assumes that all easing function generators support calling
  * without any parameters.
  */
-EasingFn easeFunctionByName(String type, [String mode = 'in', List params]) {
+EasingFn easeFunctionByName(String type,
+    [String mode = EASE_MODE_IN, List params]) {
   const Map _easeType = const {
     'linear': identityFunction,
     'poly': easePoly,
