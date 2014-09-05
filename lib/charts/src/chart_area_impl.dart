@@ -311,7 +311,8 @@ class _ChartArea implements ChartArea {
     /* Build a list of dimension axes that use range bands */
     dimensionsUsingBands.clear();
     _series.forEach((ChartSeries s) =>
-        dimensionsUsingBands.addAll(s.renderer.dimensionsUsingBand));
+        dimensionsUsingBands.addAll(s.renderer.dimensionsUsingBand.map((i) =>
+            config.dimensions.elementAt(i))));
 
     /* List of measure and dimension axes that are displayed */
     var measureAxesCount = dimensionAxesCount == 1 ? MEASURE_AXES_COUNT : 0,
