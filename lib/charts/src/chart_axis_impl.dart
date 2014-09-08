@@ -38,19 +38,25 @@ class _ChartAxis {
 
   void initAxisScale(Iterable range, ChartAxisTheme theme) {
     assert(scale != null);
-    _scale.domain = _domain;
-    _scale.nice(theme.axisTickCount);
 
+    // Sets the domain if not using a custom scale.
+    if (config == null || (config != null && config.scale == null)) {
+      scale.domain = _domain;
+      scale.nice(theme.axisTickCount);
+    }
+
+    // Sets the range if not using a custom scale, or the custom scale uses
+    // default range.
     /* TODO(prsd): Scale needs some cleanup */
-    if (_scale is OrdinalScale) {
+    if (scale is OrdinalScale) {
       var usingBands = area.dimensionsUsingBands.contains(_column),
           innerPadding = usingBands ? theme.axisBandInnerPadding : 1.0,
           outerPadding = usingBands ?
               theme.axisBandOuterPadding : theme.axisOuterPadding;
-      (_scale as OrdinalScale).
+      (scale as OrdinalScale).
           rangeRoundBands(range, innerPadding, outerPadding);
     } else {
-      _scale.range = range;
+      scale.range = range;
     }
   }
 
@@ -99,6 +105,10 @@ class _ChartAxis {
           ..innerTickSize = tickSize
           ..outerTickSize = 0
           ..tickFormat = _columnSpec.formatter;
+
+      if (config != null && config.tickValues != null) {
+        _axis.tickValues = config.tickValues;
+      }
 
       _scope = new SelectionScope.element(_element);
       _group = _scope.selectElements([_element]);

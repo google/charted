@@ -120,7 +120,7 @@ class _ChartArea implements ChartArea {
   _ChartAxis _getMeasureAxis(String id) {
     _measureAxes.putIfAbsent(id, () {
       var axisConf = config.getMeasureAxis(id),
-          axis = axisConf == null ?
+          axis = axisConf != null ?
               new _ChartAxis.withAxisConfig(this, axisConf) :
                   new _ChartAxis(this);
       return axis;
@@ -135,7 +135,7 @@ class _ChartArea implements ChartArea {
   _ChartAxis _getDimensionAxis(int column) {
     _dimensionAxes.putIfAbsent(column, () {
       var axisConf = config.getDimensionAxis(column),
-          axis = axisConf == null ?
+          axis = axisConf != null ?
               new _ChartAxis.withAxisConfig(this, axisConf) :
                   new _ChartAxis(this);
       return axis;
