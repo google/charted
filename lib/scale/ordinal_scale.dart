@@ -173,4 +173,20 @@ class OrdinalScale extends Scale {
         .._rangeSetupFunction = _rangeSetupFunction
         .._rangeSetupArgs = _rangeSetupArgs;
   }
+
+  /**
+   * Returns the value in input domain x for the corresponding value in the
+   * output range y.  In Ordinal scale, the output are String values and are not
+   * interpolated, so y must match an element in the output range.  Null is
+   * returned if the specified y is not an element in range or if the index of
+   * the element in range is out of bound of domain's length.
+   */
+  invert(y) {
+    var valueIndex = _range.indexOf(y);
+    if (valueIndex > -1 && valueIndex < _domain.length) {
+      return _domain[_range.indexOf(y)];
+    } else {
+      return null;
+    }
+  }
 }
