@@ -1,3 +1,11 @@
+/*
+ * Copyright 2014 Google Inc. All rights reserved.
+ *
+ * Use of this source code is governed by a BSD-style
+ * license that can be found in the LICENSE file or at
+ * https://developers.google.com/open-source/licenses/bsd
+ */
+
 part of charted.charts;
 
 class PieChartRenderer implements ChartRenderer {
@@ -28,7 +36,7 @@ class PieChartRenderer implements ChartRenderer {
     return true;
   }
 
-  void draw(GElement element, _, __) {
+  void draw(GElement element) {
     assert(area != null && series != null);
     assert(element != null && element is GElement);
 
@@ -195,5 +203,17 @@ class PieChartRenderer implements ChartRenderer {
       _extent = new Extent(0, 100);
     }
     return _extent;
+  }
+
+  Stream<ChartEvent> get onValueMouseOver {
+    throw new UnimplementedError();
+  }
+
+  Stream<ChartEvent> get onValueMouseOut {
+    throw new UnimplementedError();
+  }
+
+  Stream<ChartEvent> get onValueMouseClick {
+    throw new UnimplementedError();
   }
 }

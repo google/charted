@@ -27,6 +27,12 @@ class Rect {
 
   bool isSamePositionAs(Rect other) =>
       other != null && x == other.x && y == other.y;
+
+  bool contains(num otherX, num otherY) =>
+      otherX >= x && otherX <= x + width &&
+      otherY >= y && otherY <= y + height;
+
+  String toString() => '$x, $y, $width, $height';
 }
 
 /**
@@ -51,4 +57,8 @@ class EditableRect implements Rect {
 
   bool isSamePositionAs(Rect other) =>
       other != null && x == other.x && y == other.y;
+
+  bool contains(num otherX, num otherY) =>
+      otherX >= x && otherX <= x + width &&
+      otherY >= y && otherY <= y + height;
 }

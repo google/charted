@@ -1,3 +1,11 @@
+/*
+ * Copyright 2014 Google Inc. All rights reserved.
+ *
+ * Use of this source code is governed by a BSD-style
+ * license that can be found in the LICENSE file or at
+ * https://developers.google.com/open-source/licenses/bsd
+ */
+
 part of charted.charts;
 
 /*
@@ -15,10 +23,15 @@ class BarChartRenderer implements ChartRenderer {
   Selection _group;
   SelectionScope _scope;
 
+  StreamController<ChartEvent> _mouseOverController;
+  StreamController<ChartEvent> _mouseOutController;
+  StreamController<ChartEvent> _mouseClickController;
+
   /*
    * Returns false if the number of dimension axes on the area is 0.
    * Otherwise, the first dimension scale is used to render the chart.
    */
+  @override
   bool prepare(ChartArea area, ChartSeries series) {
     assert(area != null && series != null);
     if (area.dimensionAxesCount == 0) return false;
@@ -27,8 +40,8 @@ class BarChartRenderer implements ChartRenderer {
     return true;
   }
 
-  void draw(Element element,
-      Iterable<Scale> dimensions, Iterable<Scale> measures) {
+  @override
+  void draw(Element element) {
     assert(series != null && area != null);
     assert(element != null && element is GElement);
 
@@ -40,8 +53,8 @@ class BarChartRenderer implements ChartRenderer {
 
     var geometry = area.layout.renderArea,
         measuresCount = series.measures.length,
-        measureScale = measures.first,
-        dimensionScale = dimensions.first,
+        measureScale = area.measureScales(series).first,
+        dimensionScale = area.dimensionScales.first,
         theme = area.theme;
 
     String color(i) =>
@@ -85,8 +98,11 @@ class BarChartRenderer implements ChartRenderer {
         ..attr('height', 0)
         ..styleWithCallback('fill', (d, i, c) => color(i))
         ..attrWithCallback(
-            'x', (d, i, c) => bars.apply(i) + theme.defaultStrokeWidth)
-        ..attr('width', barWidth);
+            'x', (d, i, e) => bars.apply(i) + theme.defaultStrokeWidth)
+        ..attr('width', barWidth)
+        ..on('click', (d, i, e) => _event(_mouseClickController, d, i, e))
+        ..on('mouseover', (d, i, e) => _event(_mouseOverController, d, i, e))
+        ..on('mouseout', (d, i, e) => _event(_mouseOutController, d, i, e));
 
     bar.transition()
         ..attrWithCallback(
@@ -114,11 +130,13 @@ class BarChartRenderer implements ChartRenderer {
     bar.exit.remove();
   }
 
+  @override
   void clear() {
     if (_group == null) return;
     _group.selectAll('.row-group').remove();
   }
 
+  @override
   double get bandInnerPadding {
     assert(series != null && area != null);
     var measuresCount = series.measures.length;
@@ -126,11 +144,13 @@ class BarChartRenderer implements ChartRenderer {
         area.theme.dimensionAxisTheme.axisBandInnerPadding;
   }
 
+  @override
   double get bandOuterPadding {
     assert(series != null && area != null);
     return area.theme.dimensionAxisTheme.axisBandOuterPadding;
   }
 
+  @override
   Extent get extent {
     assert(series != null && area != null);
     var rows = area.data.rows,
@@ -144,5 +164,35 @@ class BarChartRenderer implements ChartRenderer {
       });
     });
     return new Extent(min, max);
+  }
+
+  void _event(StreamController controller, data, int index, Element e) {
+    if (controller == null) return;
+    controller.add(
+        new _ChartEvent(_scope.event, area, series, null, index, data));
+  }
+
+  @override
+  Stream<ChartEvent> get onValueMouseOver {
+    if (_mouseOverController == null) {
+      _mouseOverController = new StreamController.broadcast(sync: true);
+    }
+    return _mouseOverController.stream;
+  }
+
+  @override
+  Stream<ChartEvent> get onValueMouseOut {
+    if (_mouseOutController == null) {
+      _mouseOutController = new StreamController.broadcast(sync: true);
+    }
+    return _mouseOutController.stream;
+  }
+
+  @override
+  Stream<ChartEvent> get onValueMouseClick {
+    if (_mouseClickController == null) {
+      _mouseClickController = new StreamController.broadcast(sync: true);
+    }
+    return _mouseClickController.stream;
   }
 }
