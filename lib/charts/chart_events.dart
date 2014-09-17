@@ -71,12 +71,6 @@ abstract class ChartEvent {
   /** Value from ChartData on which the event occurred */
   num get value;
 
-  /** X position the rendered area */
-  num get scaledX;
-
-  /** Y position on the rendered area */
-  num get scaledY;
-
   /** X position relative to the rendered chart */
   num get chartX;
 
