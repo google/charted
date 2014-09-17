@@ -83,9 +83,11 @@ class BarChartRenderer implements ChartRenderer {
             'translate(${dimensionScale.apply(x[i])}, 0)');
     group.exit.remove();
 
+    // TODO(psunkari): Try not to set an attribute with row index on the gorup.
     group.transition()
         ..attrWithCallback('transform', (d, i, c) =>
             'translate(${dimensionScale.apply(x[i])}, 0)')
+        ..attrWithCallback('data-row', (d, i, e) => i)
         ..duration(theme.transitionDuration);
 
     int barWidth = bars.rangeBand -
@@ -168,8 +170,10 @@ class BarChartRenderer implements ChartRenderer {
 
   void _event(StreamController controller, data, int index, Element e) {
     if (controller == null) return;
+    var rowStr = e.parent.dataset['row'];
+    var row = rowStr != null ? int.parse(rowStr) : null;
     controller.add(
-        new _ChartEvent(_scope.event, area, series, null, index, data));
+        new _ChartEvent(_scope.event, area, series, row, index, data));
   }
 
   @override
