@@ -18,6 +18,10 @@ class LineChartRenderer implements ChartRenderer {
   Selection _group;
   SelectionScope _scope;
 
+  StreamController<ChartEvent> _mouseOverController;
+  StreamController<ChartEvent> _mouseOutController;
+  StreamController<ChartEvent> _mouseClickController;
+
   /*
    * Returns false if the number of dimension axes on the area is 0.
    * Otherwise, the first dimension scale is used to render the chart.
@@ -65,25 +69,67 @@ class LineChartRenderer implements ChartRenderer {
         (row) => row.elementAt(area.config.dimensions.first)).toList();
 
     var rangeBandOffset = dimensionScale.rangeBand / 2;
-    var line = new SvgLine();
-    line.xAccessor = (d, i) => dimensionScale.apply(x[i]) + rangeBandOffset;
-    line.yAccessor = (d, i) => measureScale.apply(d);
+    var _xAccessor = (d, i) => dimensionScale.apply(x[i]) + rangeBandOffset;
+    var _yAccessor = (d, i) => measureScale.apply(d);
 
-    var product = _group.selectAll(".line").data(initialValues);
-    product.enter.append("path")
-        ..classed("line", true)
+    var line = new SvgLine();
+    line.xAccessor = _xAccessor;
+    line.yAccessor = _yAccessor;
+
+
+    // Draw the lines.
+    // TODO (midoringo): Right now the default stroke-width is 2px, which is
+    // hard for user to hover over. Maybe add an larger, invisible capture area?
+    var svgLines = _group.selectAll('.line').data(initialValues);
+    svgLines.enter.append('path')
+        ..classed('line', true)
         ..attrWithCallback('d', (d, i, e) => line.path(d, i, e))
         ..styleWithCallback('stroke', (d, i, e) => color(i))
+        ..on('mouseover', (d, i, e) {
+          // Thickens the line on hover and show the points.
+          _group.selectAll('.line-point-${i}')..style('opacity', '1');
+          e.classes.add('active');
+        })
+        ..on('mouseout', (d, i, e) {
+          // Thins the line on mouse out and hide the points.
+          _group.selectAll('.line-point-${i}')..style('opacity', '0');
+          e.classes.remove('active');
+        })
         ..style('fill', 'none');
 
     int delay = 0;
-    product = _group.selectAll(".line").data(lines);
-    product.transition()
+    svgLines = _group.selectAll('.line').data(lines);
+    svgLines.transition()
         ..attrWithCallback('d', (d, i, e) => line.path(d, i, e))
         ..styleWithCallback('stroke', (d, i, e) => color(i))
         ..duration(theme.transitionDuration)
         ..delayWithCallback((d, i, c) => delay += 50 ~/ series.measures.length);
-    product.exit.remove();
+    svgLines.exit.remove();
+
+    // Draw the circle for each point in line for events.
+    for (var columnIndex = 0; columnIndex < lines.length; columnIndex++) {
+      _group.selectAll('.line-point-${columnIndex}').remove();
+      var points = _group.selectAll('point').data(lines[columnIndex]);
+      points.enter.append('circle')
+        ..classed('line-point line-point-${columnIndex}', true)
+        ..attr('r', 4)
+        ..attrWithCallback('data-row', (d, i, e) => i)
+        ..attrWithCallback('cx', (d, i, e) => _xAccessor(d, i))
+        ..attrWithCallback('cy', (d, i, e) => _yAccessor(d, i))
+        ..styleWithCallback('stroke', (d, i, e) => color(columnIndex))
+        ..styleWithCallback('fill', (d, i, e) => color(columnIndex))
+        ..style('opacity', '0')
+        ..on('click', (d, i, e) => _event(_mouseClickController,
+            d, columnIndex, e))
+        ..on('mouseover', (d, i, e) {
+          e.style.opacity = '1';
+          _event(_mouseOverController, d, columnIndex, e);
+        })
+        ..on('mouseout', (d, i, e) {
+          e.style.opacity = '0';
+          _event(_mouseOutController, d, columnIndex, e);
+        });
+    }
   }
 
   void clear() {
@@ -110,15 +156,35 @@ class LineChartRenderer implements ChartRenderer {
     return new Extent(min, max);
   }
 
+  void _event(StreamController controller, data, int index, Element e) {
+    if (controller == null) return;
+    var rowStr = e.dataset['row'];
+    var row = rowStr != null ? int.parse(rowStr) : null;
+    controller.add(
+        new _ChartEvent(_scope.event, area, series, row, index, data));
+  }
+
+  @override
   Stream<ChartEvent> get onValueMouseOver {
-    throw new UnimplementedError();
+    if (_mouseOverController == null) {
+      _mouseOverController = new StreamController.broadcast(sync: true);
+    }
+    return _mouseOverController.stream;
   }
 
+  @override
   Stream<ChartEvent> get onValueMouseOut {
-    throw new UnimplementedError();
+    if (_mouseOutController == null) {
+      _mouseOutController = new StreamController.broadcast(sync: true);
+    }
+    return _mouseOutController.stream;
   }
 
+  @override
   Stream<ChartEvent> get onValueMouseClick {
-    throw new UnimplementedError();
+    if (_mouseClickController == null) {
+      _mouseClickController = new StreamController.broadcast(sync: true);
+    }
+    return _mouseClickController.stream;
   }
 }

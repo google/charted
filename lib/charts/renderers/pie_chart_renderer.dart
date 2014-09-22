@@ -22,6 +22,10 @@ class PieChartRenderer implements ChartRenderer {
   double _prevSlice;
   num innerRadius;
 
+  StreamController<ChartEvent> _mouseOverController;
+  StreamController<ChartEvent> _mouseOutController;
+  StreamController<ChartEvent> _mouseClickController;
+
   PieChartRenderer([this.innerRadius = 0]);
 
   /*
@@ -83,6 +87,7 @@ class PieChartRenderer implements ChartRenderer {
     var group = _group.selectAll('.row-group').data(rows);
     group.enter.append('g')
         ..classed('row-group')
+        ..attrWithCallback('data-row', (d, i, e) => i)
         ..attrWithCallback('transform', (d, i, c) =>
             'translate(${geometry.width / 2}, ${geometry.height / 2})');
     group.exit.remove();
@@ -122,7 +127,7 @@ class PieChartRenderer implements ChartRenderer {
           return arc.path(d, i, _host);
         })
         ..attr('stroke-width', '1px')
-        ..style('stroke', "#ffffff");;
+        ..style('stroke', "#ffffff");
 
     pie.dataWithCallback((d, i, c) => arcData[i]);
     pie.transition()
@@ -133,6 +138,10 @@ class PieChartRenderer implements ChartRenderer {
             prevArcData[o][i], arcData[o][i])(t), i, _host);
         })
       ..duration(theme.transitionDuration);
+    pie
+      ..on('click', (d, i, e) => _event(_mouseClickController, d, i, e))
+      ..on('mouseover', (d, i, e) => _event(_mouseOverController, d, i, e))
+      ..on('mouseout', (d, i, e) => _event(_mouseOutController, d, i, e));
     pie.exit.remove();
 
     for (int i = 0; i < rows.length; i++) {
@@ -171,6 +180,7 @@ class PieChartRenderer implements ChartRenderer {
           return _processSliceText(d.data, total[order]);
         })
         ..attr('opacity', '0')
+        ..style('pointer-events', 'none')
         ..attrWithCallback('transform', (d, i, c) {
           var offsets = arc.centroid(d, i, c);
           return 'translate(${offsets[0]}, ${offsets[1]})';
@@ -205,15 +215,35 @@ class PieChartRenderer implements ChartRenderer {
     return _extent;
   }
 
-  Stream<ChartEvent> get onValueMouseOver {
-    throw new UnimplementedError();
-  }
+  void _event(StreamController controller, data, int index, Element e) {
+     if (controller == null) return;
+     var rowStr = e.parent.dataset['row'];
+     var row = rowStr != null ? int.parse(rowStr) : null;
+     controller.add(
+         new _ChartEvent(_scope.event, area, series, row, index, data.value));
+   }
 
-  Stream<ChartEvent> get onValueMouseOut {
-    throw new UnimplementedError();
-  }
+   @override
+   Stream<ChartEvent> get onValueMouseOver {
+     if (_mouseOverController == null) {
+       _mouseOverController = new StreamController.broadcast(sync: true);
+     }
+     return _mouseOverController.stream;
+   }
 
-  Stream<ChartEvent> get onValueMouseClick {
-    throw new UnimplementedError();
-  }
+   @override
+   Stream<ChartEvent> get onValueMouseOut {
+     if (_mouseOutController == null) {
+       _mouseOutController = new StreamController.broadcast(sync: true);
+     }
+     return _mouseOutController.stream;
+   }
+
+   @override
+   Stream<ChartEvent> get onValueMouseClick {
+     if (_mouseClickController == null) {
+       _mouseClickController = new StreamController.broadcast(sync: true);
+     }
+     return _mouseClickController.stream;
+   }
 }

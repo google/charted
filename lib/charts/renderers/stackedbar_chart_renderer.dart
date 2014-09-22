@@ -18,6 +18,10 @@ class StackedBarChartRenderer implements ChartRenderer {
   Selection _group;
   SelectionScope _scope;
 
+  StreamController<ChartEvent> _mouseOverController;
+  StreamController<ChartEvent> _mouseOutController;
+  StreamController<ChartEvent> _mouseClickController;
+
   /*
    * Returns false if the number of dimension axes on the area is 0.
    * Otherwise, the first dimension scale is used to render the chart.
@@ -72,7 +76,8 @@ class StackedBarChartRenderer implements ChartRenderer {
     group.transition()
         ..attrWithCallback('transform', (d, i, c) =>
             'translate(${dimensionScale.apply(x[i])}, 0)')
-        ..duration(theme.transitionDuration);
+        ..duration(theme.transitionDuration)
+        ..attrWithCallback('data-row', (d, i, e) => i);
 
     /* TODO(prsd): Handle cases where x and y axes are swapped */
     var bar = group.selectAll('.bar').dataWithCallback((d, i, c) => rows[i]);
@@ -107,7 +112,10 @@ class StackedBarChartRenderer implements ChartRenderer {
             ic = i;
             return tempY;
           })
-        ..attr('height', 0);
+        ..attr('height', 0)
+        ..on('click', (d, i, e) => _event(_mouseClickController, d, i, e))
+        ..on('mouseover', (d, i, e) => _event(_mouseOverController, d, i, e))
+        ..on('mouseout', (d, i, e) => _event(_mouseOutController, d, i, e));
 
     bar.transition()
         ..styleWithCallback('fill', (d, i, c) => color(i))
@@ -115,7 +123,8 @@ class StackedBarChartRenderer implements ChartRenderer {
         ..duration(theme.transitionDuration);
 
     var y = 0,
-        length = bar.length;
+        length = bar.length,
+        prevZeroHeight = true;
     bar.transition()
         ..attrWithCallback('y', (d, i, c) {
             if (i == 0) y = measureScale.apply(0).round();
@@ -124,9 +133,16 @@ class StackedBarChartRenderer implements ChartRenderer {
         ..attrWithCallback('height', (d, i, c) {
             var ht = geometry.height - measureScale.apply(d).round();
             if (i != 0) {
-              ht -= (theme.defaultSeparatorWidth + theme.defaultStrokeWidth);
+              // If previous bars has 0 height, don't offset for spacing
+              // If any of the previous bar has non 0 height, do the offset.
+              ht -= prevZeroHeight ? 0 :
+                (theme.defaultSeparatorWidth + theme.defaultStrokeWidth);
+            } else {
+              ht -= 1;  // -1 so bar does not overlap x axis.
             }
             if (ht < 0) ht = 0;
+            //
+            prevZeroHeight = (ht == 0) && prevZeroHeight;
             return ht;
           })
         ..duration(theme.transitionDuration)
@@ -173,15 +189,35 @@ class StackedBarChartRenderer implements ChartRenderer {
     return new Extent(min, max);
   }
 
+  void _event(StreamController controller, data, int index, Element e) {
+    if (controller == null) return;
+    var rowStr = e.parent.dataset['row'];
+    var row = rowStr != null ? int.parse(rowStr) : null;
+    controller.add(
+        new _ChartEvent(_scope.event, area, series, row, index, data));
+  }
+
+  @override
   Stream<ChartEvent> get onValueMouseOver {
-    throw new UnimplementedError();
+    if (_mouseOverController == null) {
+      _mouseOverController = new StreamController.broadcast(sync: true);
+    }
+    return _mouseOverController.stream;
   }
 
+  @override
   Stream<ChartEvent> get onValueMouseOut {
-    throw new UnimplementedError();
+    if (_mouseOutController == null) {
+      _mouseOutController = new StreamController.broadcast(sync: true);
+    }
+    return _mouseOutController.stream;
   }
 
+  @override
   Stream<ChartEvent> get onValueMouseClick {
-    throw new UnimplementedError();
+    if (_mouseClickController == null) {
+      _mouseClickController = new StreamController.broadcast(sync: true);
+    }
+    return _mouseClickController.stream;
   }
 }
