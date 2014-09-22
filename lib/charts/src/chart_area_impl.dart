@@ -42,7 +42,7 @@ class _ChartArea implements ChartArea, ChartAreaEventSource {
   final SubscriptionsDisposer _configSubscriptions =
       new SubscriptionsDisposer();
 
-  final Element host;
+  final Element _host;
 
   List<ChartBehavior> _behaviors = new List();
 
@@ -70,10 +70,10 @@ class _ChartArea implements ChartArea, ChartAreaEventSource {
   @override
   Element lowerBehaviorPane;
 
-  _ChartArea(Element this.host, ChartData data, ChartConfig config,
+  _ChartArea(Element this._host, ChartData data, ChartConfig config,
       bool this.autoUpdate, this._dimensionAxesCount) {
-    assert(host != null);
-    assert(isNotInline(host));
+    assert(_host != null);
+    assert(isNotInline(_host));
 
     this.data = data;
     this.config = config;
@@ -87,6 +87,8 @@ class _ChartArea implements ChartArea, ChartAreaEventSource {
 
   static bool isNotInline(Element e) =>
       e != null && e.getComputedStyle().display != 'inline';
+
+  Element get host => _host;
 
   /*
    * If [value] is [Observable], subscribes to changes and updates the

@@ -42,31 +42,8 @@ class _ChartEvent implements ChartEvent {
   _ChartEvent(this.source, this.area,
       [this.series, this.row, this.column, this.value]) {
     var host = area.host;
-    var rect = getElementPosition(host);
-    chartX = source.page.x - (rect.x + _ChartArea.MARGIN);
-    chartY = source.page.y - (rect.y + _ChartArea.MARGIN);
-  }
-
-  static Rect getElementPosition(Element host) {
-    var x = 0,
-        y = 0,
-        element = host;
-    if (element.offsetParent != null) {
-      do {
-        x += element.offsetLeft;
-        y += element.offsetTop;
-      } while ((element = element.offsetParent) != null);
-    }
-
-    // TODO(psunkari): Look for a better way to compensate scroll.
-    element = host;
-    if (element.parent != null) {
-      do {
-        x -= element.scrollLeft;
-        y -= element.scrollTop;
-      } while ((element = element.parent) != null);
-    }
-
-    return new Rect.position(x, y);
+    var hostRect = host.getBoundingClientRect();
+    chartX = source.client.x - hostRect.left - _ChartArea.MARGIN;
+    chartY = source.client.y - hostRect.top - _ChartArea.MARGIN;
   }
 }

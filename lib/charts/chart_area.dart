@@ -72,6 +72,9 @@ abstract class ChartArea {
   /** Add a behavior for ChartArea */
   void addChartBehavior(ChartBehavior behavior);
 
+  /** Host of the ChartArea */
+  Element get host;
+
   /**
    * A pane that is rendered below all the chart elements - for use with
    * behaviors that add elements to chart.
