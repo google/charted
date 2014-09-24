@@ -21,7 +21,8 @@ abstract class ChartLegend {
   /*
    * Factory to create the default implementation of legend.
    */
-  factory ChartLegend(Element host) => new _ChartLegend(host);
+  factory ChartLegend(Element host, [maxItems = 0]) => new _ChartLegend(host,
+      maxItems);
 }
 
 /**
