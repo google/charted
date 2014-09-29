@@ -24,18 +24,46 @@
   font-size: 18px;
 }
 
-.legend-row {
+.legend-row, .legend-more {
   width: 200px;
+  display: flex;
+  font-size: 14px;
+  margin-top: 10px;
+  position: relative;
+}
+
+.legend-more-row {
+  white-space: nowrap;
   display: flex;
   font-size: 14px;
   margin-top: 10px;
 }
 
-.legend-color {
+.legend-more-row:first-child {
+  margin-top: 0px;
+}
+
+.legend-color, .legend-more-color {
   align-self: center;
   width: 12px;
   height: 12px;
   margin-right: 8px;
+}
+
+.legend-more-tooltip {
+  position: absolute;
+  left: 70px;
+  padding: 10px;
+  top: 0px;
+  border-radius: 2px;
+  border: 1px solid #C1C1C1;
+  box-shadow: 0px 2px 1px rgba(0, 0, 0, 0.2);
+  z-index: 9999;
+  background-color: white;
+  font-size: 14px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity .4s;
 }
 
 /*

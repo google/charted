@@ -9,14 +9,16 @@
 part of charted.charts;
 
 class _ChartLegend implements ChartLegend {
-  Element host;
+  final Element host;
+  final int _maxItems;
   SelectionScope _scope;
   Selection _selected;
 
-  _ChartLegend(Element this.host) {
+  _ChartLegend(Element this.host, int this._maxItems) {
     assert(host != null);
   }
 
+  /** Updates the legend base on a new list of ChartLegendItems. */
   update(Iterable<ChartLegendItem> items, ChartArea chart) {
     assert(items != null);
 
@@ -25,28 +27,64 @@ class _ChartLegend implements ChartLegend {
       _selected = _scope.selectElements([host]);
     }
 
-    var rows = _selected.selectAll('.legend-row')
-        .data(items, (ChartLegendItem item) => item.label);
+    _createLegendItems(_selected, 'legend',
+        (_maxItems > 0) ? items.take(_maxItems) : items);
 
-    var columns = chart.data.columns;
+    // Add more item label if there's more items than the max display items.
+    if (_maxItems < items.length) {
+      _selected.select('.legend-more').remove();
+      _selected.append('div')
+        ..on('mouseover', (d, i, e) => _displayMoreItem(items.skip(_maxItems)))
+        ..on('mouseleave', (d, i, e) => _hideMoreItem())
+        ..text('${items.length - _maxItems} more...')
+        ..classed('legend-more');
+    }
+  }
+
+  /** Hides extra legend items. */
+  void _hideMoreItem() {
+    var tooltip = _selected.select('.legend-more-tooltip');
+    tooltip.style('opacity', '0');
+  }
+
+  /** Display more legend items. */
+  void _displayMoreItem(Iterable<ChartLegendItem> items) {
+    var tooltip = _selected.select('.legend-more-tooltip');
+    if (tooltip.isEmpty) {
+      tooltip = _selected.select('.legend-more').append('div')
+          ..classed('legend-more-tooltip');
+    }
+    tooltip.style('opacity', '1');
+
+    _createLegendItems(tooltip, 'legend-more', items);
+  }
+
+  /**
+   * Creates a list of legend items base on the label of the [items], appending
+   * legend item classes and prefix them with [classPrefix] and attatch the
+   * items to [host].
+   */
+  void _createLegendItems(Selection host, String classPrefix,
+      Iterable<ChartLegendItem> items) {
+    var rows = host.selectAll('.${classPrefix}-row').data(items);
     rows.enter.appendWithCallback((d, i, e) {
       Element row = new Element.tag('div')
           ..append(new Element.tag('div')
-              ..className = 'legend-color')
+              ..className = '${classPrefix}-color')
           ..append(new Element.tag('div')
-              ..className = 'legend-column');
+              ..className = '${classPrefix}-column');
       return row;
     });
 
-    rows.classed('legend-row');
+    rows.classed('${classPrefix}-row');
     rows.exit.remove();
 
     // This is needed to update legend colors when a column is removed or
     // inserted not at the tail of the list of ChartLegendItem.
-    _selected.selectAll('.legend-color').data(items).styleWithCallback(
+    _selected.selectAll('.${classPrefix}-color').data(items).styleWithCallback(
         'background-color', (d, i, c) => d.color);
 
-    _selected.selectAll('.legend-column').data(items)
+    _selected.selectAll('.${classPrefix}-column').data(items)
         ..textWithCallback((d, i, e) => d.label);
   }
 }
