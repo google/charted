@@ -124,6 +124,8 @@ class StackedBarChartRenderer implements ChartRenderer {
 
     var y = 0,
         length = bar.length,
+        // Keeps track of heights of previously graphed bars. If all bars before
+        // current one have 0 height, the current bar doesn't need offset.
         prevZeroHeight = true;
     bar.transition()
         ..attrWithCallback('y', (d, i, c) {
@@ -135,13 +137,14 @@ class StackedBarChartRenderer implements ChartRenderer {
             if (i != 0) {
               // If previous bars has 0 height, don't offset for spacing
               // If any of the previous bar has non 0 height, do the offset.
-              ht -= prevZeroHeight ? 0 :
+              ht -= prevZeroHeight ? 1 :
                 (theme.defaultSeparatorWidth + theme.defaultStrokeWidth);
             } else {
+              // When rendering next group of bars, reset prevZeroHeight.
+              prevZeroHeight = true;
               ht -= 1;  // -1 so bar does not overlap x axis.
             }
             if (ht < 0) ht = 0;
-            //
             prevZeroHeight = (ht == 0) && prevZeroHeight;
             return ht;
           })

@@ -341,7 +341,7 @@ class _ChartArea implements ChartArea, ChartAreaEventSource {
 
         // Use default domain if lowest and highest are the same, right now
         // lowest is always 0, change to lowest when we make use of it.
-        if (highest != 0) domain = [0, highest];
+        domain = (highest != 0) ? [0, highest] : [0, 1];
       }
       axis.initAxisDomain(sampleCol, false, domain);
     });
@@ -354,7 +354,7 @@ class _ChartArea implements ChartArea, ChartAreaEventSource {
            domain;
 
        if (sampleColumnSpec.useOrdinalScale) {
-         domain = values.toList();
+         domain = values.map((e) => e.toString()).toList();
        } else {
          var extent = new Extent.items(values);
          domain = [extent.min, extent.max];
