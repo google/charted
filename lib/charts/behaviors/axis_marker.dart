@@ -10,7 +10,6 @@ part of charted.charts;
 
 class AxisMarker implements ChartBehavior {
   ChartArea _area;
-  ChartAreaEventSource _eventSource;
   Rect _rect;
 
   Element _markerX;
@@ -31,23 +30,26 @@ class AxisMarker implements ChartBehavior {
     _area = area;
     _lower = lower;
     _upper = upper;
-    _eventSource = area as ChartAreaEventSource;
 
-    _mouseInSubscription = _eventSource.onMouseOver.listen(_show);
-    _mouseOutSubscription = _eventSource.onMouseOut.listen(_hide);
+    if (_area.dimensionAxesCount != 0) {
+      _mouseInSubscription = _area.onMouseOver.listen(_show);
+      _mouseOutSubscription = _area.onMouseOut.listen(_hide);
+    }
   }
 
-  void destroy() {
+  void dispose() {
     if (_mouseInSubscription != null) _mouseInSubscription.cancel();
     if (_mouseOutSubscription != null) _mouseOutSubscription.cancel();
     if (_mouseMoveSubscription != null) _mouseOutSubscription.cancel();
+    if (_markerX != null) _markerX.remove();
+    if (_markerY != null) _markerY.remove();
   }
 
   void _show(ChartEvent e) {
     if (_mouseMoveSubscription != null) return;
     _create();
     _visibility(true);
-    _mouseMoveSubscription = _eventSource.onMouseMove.listen(_update);
+    _mouseMoveSubscription = _area.onMouseMove.listen(_update);
   }
 
   void _hide(ChartEvent e) {

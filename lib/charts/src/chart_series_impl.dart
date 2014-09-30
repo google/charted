@@ -25,7 +25,7 @@ class _ChartSeries extends ChangeNotifier implements ChartSeries {
 
   set renderer(ChartRenderer value) {
     if (value != null && value == _renderer) return;
-    _renderer.clear();
+    _renderer.dispose();
     _renderer = value;
     notifyChange(new ChartSeriesChangeRecord(this));
   }

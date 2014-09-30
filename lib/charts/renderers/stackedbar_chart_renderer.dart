@@ -158,7 +158,7 @@ class StackedBarChartRenderer implements ChartRenderer {
     bar.exit.remove();
   }
 
-  void clear() {
+  void dispose() {
     if (_group == null) return;
     _group.selectAll('.row-group').remove();
   }

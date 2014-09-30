@@ -132,7 +132,7 @@ class LineChartRenderer implements ChartRenderer {
     }
   }
 
-  void clear() {
+  void dispose() {
     if (_group == null) return;
     _group.selectAll('.line').remove();
   }

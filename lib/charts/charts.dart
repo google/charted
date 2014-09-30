@@ -71,6 +71,12 @@ class SubscriptionsDisposer {
     _subscriptions.add(value);
   }
 
+  void addAll(List<StreamSubscription> values, [Object handle]) {
+    for (var subscription in values) {
+      add(subscription, handle);
+    }
+  }
+
   void unsubscribe(Object handle) {
     StreamSubscription s = _byObject[handle];
     if (s != null) {

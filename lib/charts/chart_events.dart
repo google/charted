@@ -8,7 +8,7 @@
 
 part of charted.charts;
 
-abstract class ChartAreaEventSource {
+abstract class ChartBehaviorSource {
   /**
    * Stream of events that notify when a mouse button was pressed anywhere
    * on the [ChartArea]
@@ -50,6 +50,28 @@ abstract class ChartAreaEventSource {
    * Stream of events that notify when user moves mouse out of rendered value
    */
   Stream<ChartEvent> get onValueMouseOut;
+
+  /**
+   * A pane that is rendered below all the chart elements - for use with
+   * behaviors that add elements to chart.
+   */
+  Element get lowerBehaviorPane;
+
+  /**
+   * A pane that is rendered above all the chart elements - for use with
+   * behaviors that add elements to chart.
+   */
+  Element get upperBehaviorPane;
+
+  /**
+   * Add a behavior of ChartArea
+   */
+  void addChartBehavior(ChartBehavior behavior);
+
+  /**
+   * Remove a behavior of ChartArea
+   */
+  void removeChartBehavior(ChartBehavior behavior);
 }
 
 /**
@@ -84,5 +106,19 @@ abstract class ChartEvent {
  * handle them appropriately.
  */
 abstract class ChartBehavior {
+  /**
+   * Called while ChartArea is being initialized.
+   *  - [area] is the ChartArea on which this behavior is installed
+   *  - [upperRenderPane] is an Element that is rendered on top of the
+   *      chart.  Behaviors can use it to draw any visualization in response
+   *      to user actions.
+   *  - [lowerRenderPane] is an Element that is rendered below the chart.
+   */
   void init(ChartArea area, Element upperRenderPane, Element lowerRenderPane);
+
+  /**
+   * Clears all DOM created by this behavior, unsubscribes to event listeners
+   * and clears any state.
+   */
+  void dispose();
 }

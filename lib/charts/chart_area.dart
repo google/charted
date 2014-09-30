@@ -13,7 +13,7 @@ part of charted.charts;
  * passing relevant parameters to chart renderers that draw the actual
  * data visualizations.
  */
-abstract class ChartArea {
+abstract class ChartArea implements ChartBehaviorSource {
   /**
    * Data used by the chart. Chart isn't updated till the next call to
    * draw function if [autoUpdate] is set to false.
@@ -69,28 +69,22 @@ abstract class ChartArea {
    */
   Iterable<Scale> get dimensionScales;
 
-  /** Add a behavior for ChartArea */
-  void addChartBehavior(ChartBehavior behavior);
-
-  /** Host of the ChartArea */
+  /**
+   * Host of the ChartArea
+   */
   Element get host;
-
-  /**
-   * A pane that is rendered below all the chart elements - for use with
-   * behaviors that add elements to chart.
-   */
-  Element get lowerBehaviorPane;
-
-  /**
-   * A pane that is rendered above all the chart elements - for use with
-   * behaviors that add elements to chart.
-   */
-  Element get upperBehaviorPane;
 
   /**
    * Draw the chart with current data and configuration.
    */
   void draw();
+
+  /*
+   * Force destroy the ChartArea.
+   *   - Clear references to all passed objects and subscriptions.
+   *   - Call dispose on all renderers and behaviors.
+   */
+  void dispose();
 
   /**
    * Factory method to create an instance of the default implementation
