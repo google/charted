@@ -74,6 +74,9 @@ abstract class ChartRenderer {
    */
   void draw(Element host);
 
-  /** Clear the chart */
-  void clear();
+  /**
+   * Clears DOM created by this renderer and releases
+   * references to passed objects.
+   */
+  void dispose();
 }

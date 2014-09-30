@@ -10,31 +10,37 @@ class ChartTooltip implements ChartBehavior {
   final String orientation;
   final bool showDimensionValue;
   final bool showMeasureTotal;
-  ChartArea chartArea;
+
+  ChartArea _area;
   Selection _tooltipSelection;
-  StreamSubscription _valueMouseInSubscription;
-  StreamSubscription _valueMouseOutSubscription;
+  SubscriptionsDisposer _disposer = new SubscriptionsDisposer();
 
   /**
    * Constructs the tooltip, display extra fields base on [config] and position
    * the tooltip base on [orientation] specified in the constructor.
    */
-  ChartTooltip([this.showDimensionValue = false,
-      this.showMeasureTotal = false, this.orientation = ORIENTATION_RIGHT]) {
-  }
+  ChartTooltip({this.showDimensionValue: false,
+      this.showMeasureTotal: false, this.orientation: ORIENTATION_RIGHT});
 
   /** Sets up listeners for triggering tooltip. */
   void init(ChartArea area, Element upperRenderPane, Element lowerRenderPane) {
-    chartArea = area;
-    var eventSource = area as ChartAreaEventSource;
-    _valueMouseInSubscription = eventSource.onValueMouseOver.listen(show);
-    _valueMouseOutSubscription = eventSource.onValueMouseOut.listen(hide);
+    _area = area;
+    _disposer.addAll([
+        area.onValueMouseOver.listen(show),
+        area.onValueMouseOut.listen(hide)
+    ]);
 
     // Tooltip requires host to be position: relative.
-    chartArea.host.style.position = 'relative';
-    var _scope = new SelectionScope.element(chartArea.host);
+    area.host.style.position = 'relative';
+
+    var _scope = new SelectionScope.element(_area.host);
     _scope.append('div')..classed('tooltip');
     _tooltipSelection = _scope.select('.tooltip');
+  }
+
+  void dispose() {
+    _disposer.dispose();
+    if (_tooltipSelection != null) _tooltipSelection.remove();
   }
 
   /**
@@ -47,34 +53,33 @@ class ChartTooltip implements ChartBehavior {
 
     // Display dimension value if set in config.
     if (showDimensionValue) {
-      var dimensionColumn = chartArea.config.dimensions.elementAt(0);
-      var dimensionValue = chartArea.data.rows.elementAt(e.row).elementAt(
-          dimensionColumn);
-      var dimensionValueFormatter = _getFormatterForColumn(dimensionColumn);
+      var column = _area.config.dimensions.elementAt(0),
+          value =
+              _area.data.rows.elementAt(e.row).elementAt(column),
+          formatter = _getFormatterForColumn(column);
+
       _tooltipSelection.append('div')
         ..classed('tooltip-title')
-        ..text((dimensionValueFormatter != null) ? dimensionValueFormatter(
-            dimensionValue) : dimensionValue.toString());
+        ..text((formatter != null) ? formatter(value) : value.toString());
     }
 
     // Display sum of the values in active row if set in config.
     if (showMeasureTotal) {
-      var totalFormatFunc = _getFormatterForColumn(
-          e.series.measures.elementAt(0));
+      var formatter =
+          _getFormatterForColumn(e.series.measures.elementAt(0));
       var total = 0;
       for (var i = 0; i < e.series.measures.length; i++) {
-        total += chartArea.data.rows.elementAt(e.row).elementAt(
-            e.series.measures.elementAt(i));
+        total += _area.data.rows.elementAt(e.row).
+            elementAt(e.series.measures.elementAt(i));
       }
       _tooltipSelection.append('div')
           ..classed('tooltip-total')
-          ..text((totalFormatFunc != null) ? totalFormatFunc(total) :
-              total.toString());
+          ..text((formatter != null) ? formatter(total) : total.toString());
     }
 
     // Create the tooltip items base on the number of measures in the series.
-    var items = _tooltipSelection.selectAll('.tooltip-item').data(
-        e.series.measures);
+    var items = _tooltipSelection.selectAll('.tooltip-item').
+        data(e.series.measures);
     items.enter.append('div')
         ..classed('tooltip-item')
         ..classedWithCallback('active', (d, i, c) => (i == e.column));
@@ -83,19 +88,18 @@ class ChartTooltip implements ChartBehavior {
     var tooltipItems = _tooltipSelection.selectAll('.tooltip-item');
     tooltipItems.append('div')
         ..classed('tooltip-item-label')
-        ..textWithCallback((d, i, c) => chartArea.data.columns.elementAt(
-            e.series.measures.elementAt(i)).label);
+        ..textWithCallback((d, i, c) => _area.data.columns.
+            elementAt(e.series.measures.elementAt(i)).label);
 
     // Display the value of the currently active series
     tooltipItems.append('div')
         ..classed('tooltip-item-value')
         ..styleWithCallback('color', (d, i, c) =>
-            chartArea.theme.getColorForKey(d))
+            _area.theme.getColorForKey(d))
         ..textWithCallback((d, i, c) {
-      var valueFormatter = _getFormatterForColumn(d);
-      var value = chartArea.data.rows.elementAt(e.row).elementAt(d);
-      return (valueFormatter != null) ? valueFormatter(value) :
-          value.toString();
+      var formatter = _getFormatterForColumn(d),
+          value = _area.data.rows.elementAt(e.row).elementAt(d);
+      return (formatter != null) ? formatter(value) : value.toString();
     });
 
     math.Point position = computeTooltipPosition(
@@ -110,7 +114,7 @@ class ChartTooltip implements ChartBehavior {
         ..style('opacity', '1');
   }
 
-  /** Computes the ideal tooltip position base on orientation. */
+  /** Computes the ideal tooltip position based on orientation. */
   math.Point computeTooltipPosition(math.Point coord,
       math.Rectangle rect) {
     var x, y;
@@ -128,13 +132,13 @@ class ChartTooltip implements ChartBehavior {
       y = coord.y - rect.height / 2;
     }
 
-    return boundTooltipPosition(new math.Rectangle(x, y, rect.width,
-        rect.height));
+    return boundTooltipPosition(
+        new math.Rectangle(x, y, rect.width, rect.height));
   }
 
   /** Positions the tooltip to be inside of the window boundary. */
   math.Point boundTooltipPosition(math.Rectangle rect) {
-    var hostRect = chartArea.host.getBoundingClientRect();
+    var hostRect = _area.host.getBoundingClientRect();
     var windowWidth = window.innerWidth;
     var windowHeight = window.innerHeight;
 
@@ -158,19 +162,12 @@ class ChartTooltip implements ChartBehavior {
     return new math.Point(left, top);
   }
 
-  FormatFunction _getFormatterForColumn(int column) {
-    return chartArea.data.columns.elementAt(column).formatter;
-  }
+  FormatFunction _getFormatterForColumn(int column) =>
+      _area.data.columns.elementAt(column).formatter;
 
   hide(ChartEvent e) {
-    if (_tooltipSelection == null) {
-      return;
-    }
+    if (_tooltipSelection == null) return;
     _tooltipSelection.style('opacity', '0');
   }
-
-  void destroy() {
-    if (_valueMouseInSubscription != null) _valueMouseInSubscription.cancel();
-    if (_valueMouseOutSubscription != null) _valueMouseOutSubscription.cancel();
-  }
 }
+

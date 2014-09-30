@@ -134,7 +134,7 @@ class BarChartRenderer implements ChartRenderer {
   }
 
   @override
-  void clear() {
+  void dispose() {
     if (_group == null) return;
     _group.selectAll('.row-group').remove();
   }

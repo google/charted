@@ -193,7 +193,6 @@ main() {
   Element columnButtons = querySelector('#column-buttons');
 
 
-
   /*
    * Updating rows
    */

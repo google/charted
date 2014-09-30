@@ -194,7 +194,7 @@ class PieChartRenderer implements ChartRenderer {
     statistic.exit.remove();
   }
 
-  void clear() {
+  void dispose() {
     if (_group == null) return;
     _group.selectAll('.row-group').remove();
   }

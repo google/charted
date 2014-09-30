@@ -111,5 +111,6 @@ class _ChartConfig extends ChangeNotifier implements ChartConfig {
   }
 
   @override
-  ChartAxisConfig getDimensionAxis(int column) => _dimensionAxisRegistry[column];
+  ChartAxisConfig getDimensionAxis(int column) =>
+      _dimensionAxisRegistry[column];
 }

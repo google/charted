@@ -18,7 +18,7 @@ part of charted.charts;
  * The primary dimension axes is always at the bottom, the primary measure axis
  * is always on the right.
  */
-class _ChartArea implements ChartArea, ChartAreaEventSource {
+class _ChartArea implements ChartArea {
   static const List MEASURE_AXIS_IDS = const['_default'];
   static const List DIMENSION_AXIS_IDS = const['_primary', '_secondary'];
 
@@ -38,13 +38,14 @@ class _ChartArea implements ChartArea, ChartAreaEventSource {
   final LinkedHashMap<String, _ChartAxis> _measureAxes = new LinkedHashMap();
   final LinkedHashMap<int, _ChartAxis> _dimensionAxes = new LinkedHashMap();
   final HashSet<int> dimensionsUsingBands = new HashSet();
-  final SubscriptionsDisposer _dataSubscriptions = new SubscriptionsDisposer();
-  final SubscriptionsDisposer _configSubscriptions =
+  final SubscriptionsDisposer _dataEventsDisposer = new SubscriptionsDisposer();
+  final SubscriptionsDisposer _configEventsDisposer =
       new SubscriptionsDisposer();
 
   final Element _host;
 
   List<ChartBehavior> _behaviors = new List();
+  Map<ChartSeries, _ChartSeriesInfo> _seriesInfoCache = new Map();
 
   ChartTheme theme;
   bool autoUpdate = false;
@@ -85,6 +86,11 @@ class _ChartArea implements ChartArea, ChartAreaEventSource {
     Transition.defaultDuration = theme.transitionDuration;
   }
 
+  void dispose() {
+    _configEventsDisposer.dispose();
+    _dataEventsDisposer.dispose();
+  }
+
   static bool isNotInline(Element e) =>
       e != null && e.getComputedStyle().display != 'inline';
 
@@ -97,10 +103,10 @@ class _ChartArea implements ChartArea, ChartAreaEventSource {
   @override
   set data(ChartData value) {
     _data = value;
-    _dataSubscriptions.dispose();
+    _dataEventsDisposer.dispose();
 
     if (autoUpdate && _data != null && _data is Observable) {
-      _dataSubscriptions.add(
+      _dataEventsDisposer.add(
           (_data as Observable).changes.listen((_) => draw()));
     }
   }
@@ -115,15 +121,15 @@ class _ChartArea implements ChartArea, ChartAreaEventSource {
   @override
   set config(ChartConfig value) {
     _config = value;
-    _configSubscriptions.dispose();
+    _configEventsDisposer.dispose();
     _pendingLegendUpdate = true;
 
-    if (_config != null)
-      _configSubscriptions.add(
-          (_config as Observable).changes.listen((_) {
-      _pendingLegendUpdate = true;
-      draw();
-    }));
+    if (_config != null) {
+      _configEventsDisposer.add((_config as Observable).changes.listen((_) {
+        _pendingLegendUpdate = true;
+        draw();
+      }));
+    }
   }
 
   @override
@@ -257,7 +263,8 @@ class _ChartArea implements ChartArea, ChartAreaEventSource {
     var size = _computeChartSize(),
         series = config.series.where((s) =>
             _isSeriesValid(s) && s.renderer.prepare(this, s)),
-        selection = _group.selectAll('.series-group').data(series),
+        selection = _group.selectAll('.series-group').
+            data(series, (x) => x.hashCode),
         axesDomainCompleter = new Completer();
 
     /*
@@ -267,28 +274,29 @@ class _ChartArea implements ChartArea, ChartAreaEventSource {
     axesDomainCompleter.future.then((_) {
       /* If a series was not rendered before, add an SVG group for it */
       selection.enter.append('svg:g')
-          ..classed('series-group')
-          ..each((ChartSeries s, i, e) {
-        try {
-          s.renderer.onValueMouseClick.listen(
-              (ChartEvent e) => _event(_valueMouseClickController, e));
-          s.renderer.onValueMouseOver.listen(
-              (ChartEvent e) => _event(_valueMouseOverController, e));
-          s.renderer.onValueMouseOut.listen(
-              (ChartEvent e) => _event(_valueMouseOutController, e));
-        } on UnimplementedError {};
-      });
+          ..classed('series-group');
 
       /* For all series recompute axis ranges and update the rendering */
       var transform =
           'translate(${layout.renderArea.x},${layout.renderArea.y})';
       selection.each((ChartSeries s, _, Element group) {
+        var info = _seriesInfoCache[s];
+        if (info == null) {
+          info = _seriesInfoCache[s] = new _ChartSeriesInfo(this, s);
+        }
+        info.check();
         group.attributes['transform'] = transform;
         s.renderer.draw(group);
       });
 
       /* A series that was rendered earlier isn't there anymore, remove it */
-      selection.exit.remove();
+      selection.exit
+          ..each((ChartSeries s, _, __) {
+            var info = _seriesInfoCache[s];
+            if (info != null) info.dispose();
+            _seriesInfoCache.remove(s);
+          })
+          ..remove();
     });
 
     // Save the list of valid series for use with legend and axes.
@@ -540,11 +548,6 @@ class _ChartArea implements ChartArea, ChartAreaEventSource {
       host.onMouseMove
           .map((MouseEvent e) => new _ChartEvent(e, this));
 
-  void _event(StreamController controller, ChartEvent evt) {
-    if (controller == null) return;
-    controller.add(evt);
-  }
-
   @override
   Stream<ChartEvent> get onValueClick {
     if (_valueMouseClickController == null) {
@@ -577,6 +580,15 @@ class _ChartArea implements ChartArea, ChartAreaEventSource {
       behavior.init(this, upperBehaviorPane, lowerBehaviorPane);
     }
   }
+
+  @override
+  void removeChartBehavior(ChartBehavior behavior) {
+    if (behavior == null || !_behaviors.contains(behavior)) return;
+    if (upperBehaviorPane != null && lowerBehaviorPane != null) {
+      behavior.dispose();
+    }
+    _behaviors.remove(behavior);
+  }
 }
 
 class _ChartAreaLayout implements ChartAreaLayout {
@@ -593,4 +605,35 @@ class _ChartAreaLayout implements ChartAreaLayout {
 
   @override
   Rect chartArea;
+}
+
+class _ChartSeriesInfo {
+  ChartRenderer _renderer;
+  SubscriptionsDisposer _disposer = new SubscriptionsDisposer();
+
+  _ChartSeries _series;
+  _ChartArea _area;
+  _ChartSeriesInfo(this._area, this._series);
+
+  _event(StreamController controller, ChartEvent evt) {
+    if (controller == null) return;
+    controller.add(evt);
+  }
+
+  check() {
+    if (_renderer != _series.renderer) dispose();
+    _renderer = _series.renderer;
+    try {
+      _disposer.addAll([
+          _renderer.onValueMouseClick.listen(
+              (ChartEvent e) => _event(_area._valueMouseClickController, e)),
+          _renderer.onValueMouseOver.listen(
+              (ChartEvent e) => _event(_area._valueMouseOverController, e)),
+          _renderer.onValueMouseOut.listen(
+              (ChartEvent e) => _event(_area._valueMouseOutController, e))
+      ]);
+    } on UnimplementedError {};
+  }
+
+  dispose() => _disposer.dispose();
 }
