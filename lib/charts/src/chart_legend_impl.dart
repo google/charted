@@ -31,7 +31,7 @@ class _ChartLegend implements ChartLegend {
         (_maxItems > 0) ? items.take(_maxItems) : items);
 
     // Add more item label if there's more items than the max display items.
-    if (_maxItems < items.length) {
+    if ((_maxItems > 0) && (_maxItems < items.length)) {
       _selected.select('.legend-more').remove();
       _selected.append('div')
         ..on('mouseover', (d, i, e) => _displayMoreItem(items.skip(_maxItems)))
