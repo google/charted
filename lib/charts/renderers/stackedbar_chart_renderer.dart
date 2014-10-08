@@ -194,10 +194,13 @@ class StackedBarChartRenderer implements ChartRenderer {
 
   void _event(StreamController controller, data, int index, Element e) {
     if (controller == null) return;
+    // Because stacked bar chart render the row in reverse order to match the
+    // legend, we need to reverse the index here as well.
+    var reverseIdx = series.measures.length - 1 - index;
     var rowStr = e.parent.dataset['row'];
     var row = rowStr != null ? int.parse(rowStr) : null;
     controller.add(
-        new _ChartEvent(_scope.event, area, series, row, index, data));
+        new _ChartEvent(_scope.event, area, series, row, reverseIdx, data));
   }
 
   @override
