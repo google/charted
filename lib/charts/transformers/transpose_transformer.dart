@@ -13,8 +13,11 @@ part of charted.charts;
  * index in the original data will need to be specified (default to 0), all
  * values in the specified label column will be used as the label for the
  * transformed data, all the labels in the original Chart data columns will be
- * populated in the label column as values of that column.  All values in the
- * data except for the data in the label column must have the same type.
+ * populated in the label column as values of that column.
+ *
+ * All values in the data except for the data in the label column must have the
+ * same type; All columns except for the lable column must have the same
+ * formatter if a formatter exist for columns.
  */
 class TransposeTransformer extends ChangeNotifier
     implements ChartDataTransform, ChartData {
@@ -57,14 +60,21 @@ class TransposeTransformer extends ChangeNotifier
    * and on changes if ChartData is Observable.
    */
   _transform() {
-    // Assert all columns are of the same type, excluding the label column.
+    // Assert all columns are of the same type and formatter, excluding the
+    // label column.
     var type;
+    var formatter;
     for (var i = 0; i < _data.columns.length; i++) {
       if (i != _labelColumn) {
         if (type == null) {
           type = _data.columns.elementAt(i).type;
         } else {
           assert(type == _data.columns.elementAt(i).type);
+        }
+        if (formatter == null) {
+          formatter = _data.columns.elementAt(i).formatter;
+        } else {
+          assert(formatter == _data.columns.elementAt(i).formatter);
         }
       }
     }
@@ -98,7 +108,8 @@ class TransposeTransformer extends ChangeNotifier
 
     // Construct new ColumnSpaces base on the label column.
     for (var label in columnLabels) {
-      columns.add(new ChartColumnSpec(type: type, label: label));
+      columns.add(new ChartColumnSpec(type: type, label: label,
+          formatter: formatter));
     }
     columns.insert(_labelColumn,
         new ChartColumnSpec(type: ChartColumnSpec.TYPE_STRING, label:
