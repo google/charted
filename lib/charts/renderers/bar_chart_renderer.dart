@@ -117,8 +117,10 @@ class BarChartRenderer implements ChartRenderer {
     bar.transition()
         ..attrWithCallback('y', (d, i, c) => measureScale.apply(d).round())
         // height -1 so bar does not overlap x axis.
-        ..attrWithCallback('height',
-            (d, i, c) => geometry.height - measureScale.apply(d).round() - 1)
+        ..attrWithCallback('height', (d, i, c) {
+            var height = geometry.height - measureScale.apply(d).round() - 1;
+            return (height < 0) ? 0 : height;
+        })
         ..delayWithCallback((d, i, c) =>
             delay += theme.transitionDuration ~/
               (series.measures.length * rows.length));
