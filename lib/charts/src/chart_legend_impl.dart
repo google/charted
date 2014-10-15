@@ -11,10 +11,11 @@ part of charted.charts;
 class _ChartLegend implements ChartLegend {
   final Element host;
   final int _maxItems;
+  final String _title;
   SelectionScope _scope;
   Selection _selected;
 
-  _ChartLegend(Element this.host, int this._maxItems) {
+  _ChartLegend(Element this.host, int this._maxItems, String this._title) {
     assert(host != null);
   }
 
@@ -25,6 +26,13 @@ class _ChartLegend implements ChartLegend {
     if (_scope == null) {
       _scope = new SelectionScope.element(host);
       _selected = _scope.selectElements([host]);
+    }
+
+    if (_title.isNotEmpty && _selected.select('.legend-title').length == 0) {
+      _selected.select('.legend-title');
+      _selected.append('div')
+        ..classed('legend-title')
+        ..text(_title);
     }
 
     _createLegendItems(_selected, 'legend',

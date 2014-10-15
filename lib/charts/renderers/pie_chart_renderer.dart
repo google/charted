@@ -9,7 +9,12 @@
 part of charted.charts;
 
 class PieChartRenderer implements ChartRenderer {
+  static const STATS_PERCENTAGE = 'percentage-only';
+  static const STATS_VALUE = 'value-only';
+  static const STATS_VALUE_PERCENTAGE = 'value-percentage';
+
   final Iterable<int> dimensionsUsingBand = const[];
+  final statsMode;
 
   ChartArea area;
   ChartSeries series;
@@ -26,7 +31,7 @@ class PieChartRenderer implements ChartRenderer {
   StreamController<ChartEvent> _mouseOutController;
   StreamController<ChartEvent> _mouseClickController;
 
-  PieChartRenderer([this.innerRadius = 0]);
+  PieChartRenderer({this.innerRadius: 0, this.statsMode: STATS_PERCENTAGE});
 
   /*
    * Returns false if the number of dimension axes != 0. Pie chart can only
@@ -200,8 +205,15 @@ class PieChartRenderer implements ChartRenderer {
   }
 
   String _processSliceText(value, total) {
-    return value * 100 / total >= 5 ?
-        '${(value * 100 / total).toStringAsFixed(0)}%': '';
+    var significant = value * 100 / total >= 5;
+    if (statsMode == STATS_PERCENTAGE) {
+      return (significant) ? '${(value * 100 / total).toStringAsFixed(0)}%': '';
+    } else if (statsMode == STATS_VALUE) {
+      return (significant) ? value.toString() : '';
+    } else {
+      return (significant) ?
+          '${value} (${(value * 100 / total).toStringAsFixed(0)}%)': '';
+    }
   }
 
   double get bandInnerPadding => 0.0;

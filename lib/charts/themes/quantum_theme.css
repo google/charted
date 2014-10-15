@@ -21,7 +21,8 @@
 
 .legend-title {
   font-weight: bold;
-  font-size: 18px;
+  font-size: 14px;
+  color: #434343;
 }
 
 .legend-row, .legend-more {
