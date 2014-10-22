@@ -106,8 +106,10 @@ class _ChartArea implements ChartArea {
     _dataEventsDisposer.dispose();
 
     if (autoUpdate && _data != null && _data is Observable) {
-      _dataEventsDisposer.add(
-          (_data as Observable).changes.listen((_) => draw()));
+      _dataEventsDisposer.add((_data as Observable).changes.listen((_) {
+        _pendingLegendUpdate = (_data is TransposeTransformer);
+        draw();
+      }));
     }
   }
 
@@ -184,7 +186,8 @@ class _ChartArea implements ChartArea {
    */
   bool _isSeriesValid(ChartSeries s) {
     var first = data.columns.elementAt(s.measures.first).type;
-    return s.measures.every((i) => data.columns.elementAt(i).type == first);
+    return s.measures.every((i) =>
+        (i < data.columns.length) && data.columns.elementAt(i).type == first);
   }
 
   /*

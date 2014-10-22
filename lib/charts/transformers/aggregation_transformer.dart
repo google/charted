@@ -65,7 +65,14 @@ class AggregationTransformer extends ChangeNotifier
 
     if(_data is Observable) {
       var observable = (_data as Observable);
-      _dataSubscriptions.add(observable.changes.listen((_) => _transform()));
+      _dataSubscriptions.add(observable.changes.listen((records) {
+        _transform();
+
+        // NOTE: Currently we're only passing the first change because the chart
+        // area just draw with the updated data.  When we add partial update
+        // to chart area, we'll need to handle this better.
+        notifyChange(records.first);
+      }));
     }
   }
 
