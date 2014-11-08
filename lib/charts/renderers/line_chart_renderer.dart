@@ -26,6 +26,7 @@ class LineChartRenderer implements ChartRenderer {
    * Returns false if the number of dimension axes on the area is 0.
    * Otherwise, the first dimension scale is used to render the chart.
    */
+  @override
   bool prepare(ChartArea area, ChartSeries series) {
     assert(area != null && series != null);
     if (area.dimensionAxesCount == 0) return false;
@@ -34,6 +35,7 @@ class LineChartRenderer implements ChartRenderer {
     return true;
   }
 
+  @override
   void draw(Element element) {
     assert(area != null && series != null);
     assert(element != null && element is GElement);
@@ -132,15 +134,19 @@ class LineChartRenderer implements ChartRenderer {
     }
   }
 
+  @override
   void dispose() {
     if (_group == null) return;
     _group.selectAll('.line').remove();
   }
 
+  @override
   double get bandInnerPadding => 1.0;
-  double get bandOuterPadding =>
-      area.theme.dimensionAxisTheme.axisOuterPadding;
 
+  @override
+  double get bandOuterPadding => area.theme.dimensionAxisTheme.axisOuterPadding;
+
+  @override
   Extent get extent {
     assert(area != null && series != null);
     var rows = area.data.rows,

@@ -33,14 +33,14 @@ abstract class ChartRenderer {
   /**
    * Hint for padding between two bands that the ChartArea could use. This
    * getter is called only for renderers that have [dimensionsUsingBand]
-   * set to true on an axis.
+   * set to non-empty list.
    */
   double get bandInnerPadding;
 
   /**
    * Hint for padding before the first and after the last bands that the
    * ChartArea could use.  This getter is called only for renderers that have
-   * [dimensionsUsingBand] set to true.
+   * [dimensionsUsingBand] set to non-empty list.
    */
   double get bandOuterPadding;
 
