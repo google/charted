@@ -2,4 +2,4 @@ build/
 *.swp
 packages
 .pub
-.pubspec.lock
+pubspec.lock
