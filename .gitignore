@@ -1,4 +1,5 @@
 build/
 *.swp
 packages
-pubspec.lock
+.pub
+.pubspec.lock
