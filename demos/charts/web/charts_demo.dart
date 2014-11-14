@@ -34,21 +34,9 @@ const List DATA = const [
     const['October',   2.46,  3, 29, 30],
     const['November',  4.46, 33,  9, 35],
     const['December',  8.46,  3, 19, 20],
-    const['Next Jan',  4.50,  7,  6, 10],
-    const['Next Feb',  5.61, 16,  8,  5],
-    const['Next Mar',  8.26, 36,  9, 15],
-    const['Next Apr', 15.46, 63, 49,  6],
-    const['Next May', 18.50, 77, 46, 16],
-    const['Next Jun', 14.61, 60,  8,  3],
-    const['Next Jul',  3.26,  6,  9,  9],
-    const['Next Aug',  1.46,  3,  9, 30],
-    const['Next Sep',  1.46, 13,  9, 30],
-    const['Next Oct',  2.46,  3, 29, 30],
-    const['Next Nov',  4.46, 33,  9, 35],
-    const['Next Dec',  8.46,  3, 19, 20],
   ];
 
-const List DIMENSION_COLUMNS =  const[0];
+const List DIMENSION_COLUMNS =  const[0, 4];
 
 int customSeriesCounter = 0;
 
@@ -91,8 +79,20 @@ List DEMOS = [
     ]
   },
   {
-    'name': 'Four',
+    'name': 'Four - 2 Dimensions',
     'title': 'Four: Use left panel to configure the chart',
+    'series': [
+      {
+        'name': 'Series-01',
+        'renderer': 'bubble-chart',
+        'columns': [ 1, 2 ]
+      }
+    ],
+    'dimensionAxesCount': 2,
+  },
+  {
+    'name': 'Five - 0 Dimensions',
+    'title': 'Five: Use left panel to configure the chart',
     'series': [
       {
         'name': 'Series-01',
@@ -109,6 +109,7 @@ Map RENDERERS = {
   'line-chart': 'Line chart',
   'stacked-bar-chart': 'Stacked bar chart',
   'pie-chart': 'Pie chart',
+  'bubble-chart': 'Bubble chart'
 };
 
 ChartRenderer getRendererForType(String name) {
@@ -116,6 +117,7 @@ ChartRenderer getRendererForType(String name) {
   if (name == 'line-chart') return new LineChartRenderer();
   if (name == 'stacked-bar-chart') return new StackedBarChartRenderer();
   if (name == 'pie-chart') return new PieChartRenderer();
+  if (name == 'bubble-chart') return new BubbleChartRenderer();
   return new BarChartRenderer();
 }
 
@@ -124,6 +126,7 @@ String getTypeForRenderer(ChartRenderer renderer) {
   if (renderer is LineChartRenderer) return 'line-chart';
   if (renderer is StackedBarChartRenderer) return 'stacked-bar-chart';
   if (renderer is PieChartRenderer) return 'pie-chart';
+  if (renderer is BubbleChartRenderer) return 'bubble-chart';
   return 'bar-chart';
 }
 

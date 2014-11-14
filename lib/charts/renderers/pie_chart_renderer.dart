@@ -37,6 +37,7 @@ class PieChartRenderer implements ChartRenderer {
    * Returns false if the number of dimension axes != 0. Pie chart can only
    * be rendered on areas with no axes.
    */
+  @override
   bool prepare(ChartArea area, ChartSeries series) {
     assert(area != null && series != null);
     if (area.dimensionAxesCount != 0) return false;
@@ -45,6 +46,7 @@ class PieChartRenderer implements ChartRenderer {
     return true;
   }
 
+  @override
   void draw(GElement element) {
     assert(area != null && series != null);
     assert(element != null && element is GElement);
@@ -199,6 +201,7 @@ class PieChartRenderer implements ChartRenderer {
     statistic.exit.remove();
   }
 
+  @override
   void dispose() {
     if (_group == null) return;
     _group.selectAll('.row-group').remove();
@@ -216,9 +219,13 @@ class PieChartRenderer implements ChartRenderer {
     }
   }
 
+  @override
   double get bandInnerPadding => 0.0;
+
+  @override
   double get bandOuterPadding => 0.0;
 
+  @override
   Extent get extent {
     assert(area != null && series != null);
     if (_extent == null) {
