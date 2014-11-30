@@ -1,0 +1,160 @@
+
+@import '//fonts.googleapis.com/css?family=Roboto:400,700';
+
+.charted-chart {
+  font-family: 'Roboto';
+  display: block;
+}
+
+.charted-chart text {
+  fill: #666666;
+  shape-rendering: crispEdges;
+}
+
+/*
+ * Styles for the legend
+ */
+.chart-legend {
+  margin-left: 40px;
+  align-self: flex-start;
+}
+
+.legend-title {
+  font-weight: bold;
+  font-size: 14px;
+  color: #434343;
+}
+
+.legend-row, .legend-more {
+  width: 200px;
+  display: flex;
+  font-size: 14px;
+  margin-top: 10px;
+  position: relative;
+}
+
+.legend-more-row {
+  white-space: nowrap;
+  display: flex;
+  font-size: 14px;
+  margin-top: 10px;
+}
+
+.legend-more-row:first-child {
+  margin-top: 0px;
+}
+
+.legend-color, .legend-more-color {
+  align-self: center;
+  width: 12px;
+  height: 12px;
+  margin-right: 8px;
+}
+
+.legend-more-tooltip {
+  position: absolute;
+  left: 70px;
+  padding: 10px;
+  top: 0px;
+  border-radius: 2px;
+  border: 1px solid #C1C1C1;
+  box-shadow: 0px 2px 1px rgba(0, 0, 0, 0.2);
+  z-index: 9999;
+  background-color: white;
+  font-size: 14px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity .4s;
+}
+
+/*
+ * Lines in line chart
+ */
+path.line {
+  stroke-width: 2px;
+  transition: stroke-width .4s;
+}
+
+path.line.active {
+  stroke-width: 4px;
+}
+
+/*
+ * Circle for data point in line chart
+ */
+.line-point {
+  opacity: 0;
+  transition: opacity .2s;
+}
+
+/*
+ * Axes styles
+ */
+.tick line, .domain {
+  fill: none;
+  stroke: #E0E0E0;
+  stroke-width: 1px;
+  shape-rendering: crispEdges;
+}
+.measure-group .domain {
+  stroke-width: 0;
+}
+.dim-group .domain {
+  stroke: #A2A2A2;
+}
+
+/*
+ * Axis markers
+ */
+.axis-marker {
+  stroke: #E0E0E0;
+  stroke-dasharray: 3 3;
+}
+
+/*
+ * Styles for the tooltip.
+ */
+.tooltip {
+  opacity: 0;
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  border-radius: 2px;
+  border: 1px solid #C1C1C1;
+  padding: 20px;
+  box-shadow: 0px 2px 1px rgba(0, 0, 0, 0.2);
+  z-index: 9999;
+  background-color: white;
+  font-size: 14px;
+  pointer-events: none;
+  transition: opacity .4s;
+}
+
+.tooltip-title {
+  color: #434343;
+  font-weight: bold;
+  margin-bottom: 16px;
+}
+
+.tooltip-total {
+  color: #636363;
+  font-weight: bold;
+  margin-bottom: 16px;
+}
+
+.tooltip-item {
+  white-space: nowrap;
+  display: flex;
+  flex-direction: row;
+  color: #838383;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.tooltip-item:last-child {
+  margin-bottom: 0px;
+}
+
+.tooltip-item-value {
+  margin-left: 24px;
+}
