@@ -1,0 +1,45 @@
+@import url(http://fonts.googleapis.com/css?family=Roboto);
+@import url(packages/charted/charts/themes/quantum_theme.css);
+
+body {
+  font-family: Roboto, sans-serif;
+  color: #666;
+  font-size: 13px;
+  padding: 20px;
+}
+
+h1, h2, h3, h4, h5 {
+  font-weight: normal;
+  color: #333;
+}
+
+h1 {
+  font-size: 20px;
+}
+h2 {
+  font-size: 18px;
+}
+h3 {
+  font-size: 15px;
+}
+
+a:link, a:visited {
+  text-decoration: none;
+  color: #4D90FE;
+}
+
+.chart-wrapper {
+  display: flex;
+  padding: 20px;
+}
+
+.chart-host {
+  min-width: 600px;
+  max-width: 600px;
+  margin-right: 50px;
+}
+
+.chart-controls {
+  border-bottom: 1px solid #d3d3d3;
+  background-color: #eee;
+}

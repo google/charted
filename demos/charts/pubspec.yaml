@@ -1,8 +1,0 @@
-name: charted_demo
-version: 0.1.0
-author: Prasad Sunkari
-description: Demo package for charted vizualization and charting library
-dependencies:
-  charted:
-    path: ../../
-  browser: any
