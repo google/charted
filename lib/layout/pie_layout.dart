@@ -16,21 +16,21 @@ class PieLayout {
    * Callback to convert datum to values used for layout
    * Defaults to [defaultValueAccessor]
    */
-  ChartedValueAccessor<num> accessor = defaultValueAccessor;
+  SelectionValueAccessor<num> accessor = defaultValueAccessor;
 
   /**
    * Callback to get the start angle for the pie. This callback is
    * called once per list of value (i.e once per call to [layout])
    * Defaults to [defaultStartAngleCallback]
    */
-  ChartedCallback<num> startAngleCallback = defaultStartAngleCallback;
+  SelectionCallback<num> startAngleCallback = defaultStartAngleCallback;
 
   /**
    * Callback to get the start angle for the pie. This callback is
    * called once per list of value (i.e once per call to [layout])
    * Defaults to [defaultEndAngleCallback]
    */
-  ChartedCallback<num> endAngleCallback = defaultEndAngleCallback;
+  SelectionCallback<num> endAngleCallback = defaultEndAngleCallback;
 
   /**
    * Comparator that is used to set the sort order of values. If not

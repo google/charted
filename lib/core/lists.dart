@@ -42,7 +42,7 @@ class Extent<T> extends Pair<T, T> {
     return new Extent(min, max);
   }
 
-  Extent(T min, T max) : min = min, max = max, super(min, max);
+  const Extent(T min, T max) : min = min, max = max, super(min, max);
 }
 
 /**

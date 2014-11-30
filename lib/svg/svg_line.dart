@@ -35,20 +35,20 @@ class SvgLine implements SvgPathGenerator {
    * [xAccessor] is used to access/convert datum to x coordinate value.
    * If not specified, [defaultDataToX] is used.
    */
-  ChartedValueAccessor<num> xAccessor = defaultDataToX;
+  SelectionValueAccessor<num> xAccessor = defaultDataToX;
 
   /**
    * [yAccessor] is used to access/convert datum to y coordinate value.
    * If not specified, [defaultDataToY] is used.
    */
-  ChartedValueAccessor<num> yAccessor = defaultDataToY;
+  SelectionValueAccessor<num> yAccessor = defaultDataToY;
 
   /**
    * [defined] is used to determine if a value is considered valid.
    * If this function returns false for any value, that value isn't
    * included in the line and the line gets split.
    */
-  ChartedCallback<bool> defined = (d, i, e) => true;
+  SelectionCallback<bool> defined = (d, i, e) => true;
 
   LineInterpolator _interpolate = DEFAULT_INTERPOLATOR;
 

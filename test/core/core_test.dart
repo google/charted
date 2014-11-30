@@ -23,13 +23,13 @@ part 'object_factory_test.dart';
 coreTests() {
   test('toCallback() creates a callback to return the given value', () {
     num value = 100;
-    ChartedCallback<num> cb = toCallback(value);
+    SelectionCallback<num> cb = toCallback(value);
     expect(cb(null, null, null), equals(value));
   });
 
   test('toValueAccessor() creates an accessor to return the given value', () {
     num value = 100;
-    ChartedValueAccessor<num> cb = toValueAccessor(value);
+    SelectionValueAccessor<num> cb = toValueAccessor(value);
     expect(cb(null, null), equals(value));
   });
 

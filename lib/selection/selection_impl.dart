@@ -32,7 +32,7 @@ class _SelectionImpl implements Selection {
    * "element" itself passed as parameters.  [fn] must return an iterable of
    * elements to be used in each group.
    */
-  _SelectionImpl.all({String selector, ChartedCallback<Iterable<Element>> fn,
+  _SelectionImpl.all({String selector, SelectionCallback<Iterable<Element>> fn,
       SelectionScope this.scope, Selection source}) {
     assert(selector != null || fn != null);
     assert(source != null || scope != null);
@@ -69,7 +69,7 @@ class _SelectionImpl implements Selection {
    * [selector] is speficied.  Otherwise, call [fn] which must return the
    * element to be selected.
    */
-  _SelectionImpl.single({String selector, ChartedCallback<Element> fn,
+  _SelectionImpl.single({String selector, SelectionCallback<Element> fn,
       SelectionScope this.scope, Selection source}) {
     assert(selector != null || fn != null);
     assert(source != null || scope != null);
@@ -123,12 +123,12 @@ class _SelectionImpl implements Selection {
    * or invokes a callback to get the value) and calls [action] for
    * each non-null element in this selection
    */
-  void _do(ChartedCallback f, Function action) {
+  void _do(SelectionCallback f, Function action) {
     each((d, i, e) => action(e, f == null ? null : f(scope.datum(e), i, e)));
   }
 
   /** Calls a function on each non-null element in the selection */
-  void each(ChartedCallback fn) {
+  void each(SelectionCallback fn) {
     if (fn == null) return;
     groups.forEach((SelectionGroup g) {
       var index = 0;
@@ -139,7 +139,7 @@ class _SelectionImpl implements Selection {
     });
   }
 
-  void on(String type, [ChartedCallback listener, bool capture]) {
+  void on(String type, [SelectionCallback listener, bool capture]) {
     Function getEventHandler(d, i, e) => (Event event) {
       var old = scope.event;
       scope.event = event;
@@ -210,7 +210,7 @@ class _SelectionImpl implements Selection {
     attrWithCallback(name, toCallback(val));
   }
 
-  void attrWithCallback(String name, ChartedCallback fn) {
+  void attrWithCallback(String name, SelectionCallback fn) {
     assert(fn != null);
     _do(fn, (e, v) => v == null ?
         e.attributes.remove(name) : e.attributes[name] = "$v");
@@ -221,7 +221,7 @@ class _SelectionImpl implements Selection {
     classedWithCallback(name, toCallback(val));
   }
 
-  void classedWithCallback(String name, ChartedCallback<bool> fn) {
+  void classedWithCallback(String name, SelectionCallback<bool> fn) {
     assert(fn != null);
     _do(fn, (e, v) =>
         v == false ? e.classes.remove(name) : e.classes.add(name));
@@ -234,7 +234,7 @@ class _SelectionImpl implements Selection {
   }
 
   void styleWithCallback(String property,
-      ChartedCallback<String> fn, {String priority}) {
+      SelectionCallback<String> fn, {String priority}) {
     assert(fn != null);
     _do(fn, (Element e, String v) =>
         v == null || v.isEmpty ?
@@ -244,14 +244,14 @@ class _SelectionImpl implements Selection {
 
   void text(String val) => textWithCallback(toCallback(val));
 
-  void textWithCallback(ChartedCallback<String> fn) {
+  void textWithCallback(SelectionCallback<String> fn) {
     assert(fn != null);
     _do(fn, (e, v) => e.text = v == null ? '' : v);
   }
 
   void html(String val) => htmlWithCallback(toCallback(val));
 
-  void htmlWithCallback(ChartedCallback<String> fn) {
+  void htmlWithCallback(SelectionCallback<String> fn) {
     assert(fn != null);
     _do(fn, (e, v) => e.innerHtml = v == null ? '' : v);
   }
@@ -263,7 +263,7 @@ class _SelectionImpl implements Selection {
     return new _SelectionImpl.single(selector: selector, source: this);
   }
 
-  Selection selectWithCallback(ChartedCallback<Element> fn) {
+  Selection selectWithCallback(SelectionCallback<Element> fn) {
     assert(fn != null);
     return new _SelectionImpl.single(fn: fn, source:this);
   }
@@ -274,7 +274,7 @@ class _SelectionImpl implements Selection {
         (d, ei, e) => Namespace.createChildElement(tag, e));
   }
 
-  Selection appendWithCallback(ChartedCallback<Element> fn) {
+  Selection appendWithCallback(SelectionCallback<Element> fn) {
     assert(fn != null);
     return new _SelectionImpl.single(fn: (datum, ei, e) {
           Element child = fn(datum, ei, e);
@@ -283,15 +283,15 @@ class _SelectionImpl implements Selection {
   }
 
   Selection insert(String tag,
-      {String before, ChartedCallback<Element> beforeFn}) {
+      {String before, SelectionCallback<Element> beforeFn}) {
     assert(tag != null && tag.isNotEmpty);
     return insertWithCallback(
         (d, ei, e) => Namespace.createChildElement(tag, e),
         before: before, beforeFn: beforeFn);
   }
 
-  Selection insertWithCallback(ChartedCallback<Element> fn,
-      {String before, ChartedCallback<Element> beforeFn}) {
+  Selection insertWithCallback(SelectionCallback<Element> fn,
+      {String before, SelectionCallback<Element> beforeFn}) {
     assert(fn != null);
     beforeFn =
         before == null ? beforeFn : (d, ei, e) => e.querySelector(before);
@@ -309,18 +309,18 @@ class _SelectionImpl implements Selection {
     return new _SelectionImpl.all(selector: selector, source: this);
   }
 
-  Selection selectAllWithCallback(ChartedCallback<Iterable<Element>> fn) {
+  Selection selectAllWithCallback(SelectionCallback<Iterable<Element>> fn) {
     assert(fn != null);
     return new _SelectionImpl.all(fn: fn, source:this);
   }
 
-  DataSelection data(Iterable vals, [KeyFunction keyFn]) {
+  DataSelection data(Iterable vals, [SelectionKeyFunction keyFn]) {
     assert(vals != null);
     return dataWithCallback(toCallback(vals), keyFn);
   }
 
   DataSelection dataWithCallback(
-      ChartedCallback<Iterable> fn, [KeyFunction keyFn]) {
+      SelectionCallback<Iterable> fn, [SelectionKeyFunction keyFn]) {
     assert(fn != null);
 
     var enterGroups = [],
@@ -436,7 +436,7 @@ class _SelectionImpl implements Selection {
     throw new UnimplementedError();
   }
 
-  void datumWithCallback(ChartedCallback<Iterable> fn) {
+  void datumWithCallback(SelectionCallback<Iterable> fn) {
     throw new UnimplementedError();
   }
 
@@ -471,15 +471,15 @@ class _EnterSelectionImpl implements EnterSelection {
   bool get isEmpty => false;
 
   Selection insert(String tag,
-      {String before, ChartedCallback<Element> beforeFn}) {
+      {String before, SelectionCallback<Element> beforeFn}) {
     assert(tag != null && tag.isNotEmpty);
     return insertWithCallback(
         (d, ei, e) => Namespace.createChildElement(tag, e),
         before: before, beforeFn: beforeFn);
   }
 
-  Selection insertWithCallback(ChartedCallback<Element> fn,
-      {String before, ChartedCallback<Element> beforeFn}) {
+  Selection insertWithCallback(SelectionCallback<Element> fn,
+      {String before, SelectionCallback<Element> beforeFn}) {
     assert(fn != null);
     return selectWithCallback((d, ei, e) {
       Element child = fn(d, ei, e);
@@ -494,7 +494,7 @@ class _EnterSelectionImpl implements EnterSelection {
         (d, ei, e) => Namespace.createChildElement(tag, e));
   }
 
-  Selection appendWithCallback(ChartedCallback<Element> fn) {
+  Selection appendWithCallback(SelectionCallback<Element> fn) {
     assert(fn != null);
     return selectWithCallback((datum, ei, e) {
           Element child = fn(datum, ei, e);
@@ -508,7 +508,7 @@ class _EnterSelectionImpl implements EnterSelection {
     return selectWithCallback((d, ei, e) => e.querySelector(selector));
   }
 
-  Selection selectWithCallback(ChartedCallback<Element> fn) {
+  Selection selectWithCallback(SelectionCallback<Element> fn) {
     var subgroups = [],
         gi = 0;
     groups.forEach((SelectionGroup g) {

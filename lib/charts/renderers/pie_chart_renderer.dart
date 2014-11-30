@@ -8,28 +8,18 @@
 
 part of charted.charts;
 
-class PieChartRenderer implements ChartRenderer {
+class PieChartRenderer extends BaseRenderer {
   static const STATS_PERCENTAGE = 'percentage-only';
   static const STATS_VALUE = 'value-only';
   static const STATS_VALUE_PERCENTAGE = 'value-percentage';
 
   final Iterable<int> dimensionsUsingBand = const[];
   final statsMode;
+  final num innerRadius;
 
-  ChartArea area;
-  ChartSeries series;
-
-  Extent _extent;
-  Element _host;
-  Selection _group;
   SelectionScope _scope;
   List<List> _prevRows = null;
   double _prevSlice;
-  num innerRadius;
-
-  StreamController<ChartEvent> _mouseOverController;
-  StreamController<ChartEvent> _mouseOutController;
-  StreamController<ChartEvent> _mouseClickController;
 
   PieChartRenderer({this.innerRadius: 0, this.statsMode: STATS_PERCENTAGE});
 
@@ -39,29 +29,13 @@ class PieChartRenderer implements ChartRenderer {
    */
   @override
   bool prepare(ChartArea area, ChartSeries series) {
-    assert(area != null && series != null);
-    if (area.dimensionAxesCount != 0) return false;
-    this.area = area;
-    this.series = series;
-    return true;
+    _ensureAreaAndSeries(area, series);
+    return area.dimensionAxesCount == 0;
   }
 
   @override
   void draw(GElement element) {
-    assert(area != null && series != null);
-    assert(element != null && element is GElement);
-
-    if (_scope == null) {
-      _host = element;
-      _scope = new SelectionScope.element(element);
-      _group = _scope.selectElements([_host]);
-    }
-
-    var geometry = area.layout.renderArea,
-        theme = area.theme;
-
-    String color(i) =>
-        theme.getColorForKey(series.measures.elementAt(i));
+    _ensureReadyToDraw(element);
 
     var rows = new List()..addAll(area.data.rows.map((e) {
       var row = [];
@@ -71,7 +45,7 @@ class PieChartRenderer implements ChartRenderer {
       return row;
     }));
 
-    var radius = math.min(geometry.width, geometry.height) / 2;
+    var radius = math.min(rect.width, rect.height) / 2;
     var outerRadius = radius - 10;
     var sliceRadius = (radius - 10 - innerRadius) / rows.length;
 
@@ -91,12 +65,12 @@ class PieChartRenderer implements ChartRenderer {
         _prevRows[i].add(0);
     }
 
-    var group = _group.selectAll('.row-group').data(rows);
+    var group = root.selectAll('.row-group').data(rows);
     group.enter.append('g')
         ..classed('row-group')
         ..attrWithCallback('data-row', (d, i, e) => i)
         ..attrWithCallback('transform', (d, i, c) =>
-            'translate(${geometry.width / 2}, ${geometry.height / 2})');
+            'translate(${rect.width / 2}, ${rect.height / 2})');
     group.exit.remove();
 
     var layout = new PieLayout();
@@ -129,26 +103,26 @@ class PieChartRenderer implements ChartRenderer {
         .dataWithCallback((d, i, c) => prevArcData[i]);
     pie.enter.append('path')
         ..classed('pie-path')
-        ..attrWithCallback('fill', (d, i, e) => color(i))
+        ..attrWithCallback('fill', (d, i, e) => colorForKey(i))
         ..attrWithCallback('d', (d, i, e) {
-          return arc.path(d, i, _host);
+          return arc.path(d, i, host);
         })
         ..attr('stroke-width', '1px')
         ..style('stroke', "#ffffff");
 
     pie.dataWithCallback((d, i, c) => arcData[i]);
     pie.transition()
-      ..attrWithCallback('fill', (d, i, e) => color(i))
+      ..attrWithCallback('fill', (d, i, e) => colorForKey(i))
       ..attrTween('d', (d, i, e) {
           int o = ((outerRadius - d.outerRadius) / sliceRadius).round();
           return (t) => arc.path(interpolateSvgArcData(
-            prevArcData[o][i], arcData[o][i])(t), i, _host);
+            prevArcData[o][i], arcData[o][i])(t), i, host);
         })
       ..duration(theme.transitionDuration);
     pie
-      ..on('click', (d, i, e) => _event(_mouseClickController, d, i, e))
-      ..on('mouseover', (d, i, e) => _event(_mouseOverController, d, i, e))
-      ..on('mouseout', (d, i, e) => _event(_mouseOutController, d, i, e));
+      ..on('click', (d, i, e) => _event(mouseClickController, d, i, e))
+      ..on('mouseover', (d, i, e) => _event(mouseOverController, d, i, e))
+      ..on('mouseout', (d, i, e) => _event(mouseOutController, d, i, e));
     pie.exit.remove();
 
     for (int i = 0; i < rows.length; i++) {
@@ -203,8 +177,8 @@ class PieChartRenderer implements ChartRenderer {
 
   @override
   void dispose() {
-    if (_group == null) return;
-    _group.selectAll('.row-group').remove();
+    if (root == null) return;
+    root.selectAll('.row-group').remove();
   }
 
   String _processSliceText(value, total) {
@@ -226,43 +200,13 @@ class PieChartRenderer implements ChartRenderer {
   double get bandOuterPadding => 0.0;
 
   @override
-  Extent get extent {
-    assert(area != null && series != null);
-    if (_extent == null) {
-      _extent = new Extent(0, 100);
-    }
-    return _extent;
-  }
+  Extent get extent => const Extent(0, 100);
 
   void _event(StreamController controller, data, int index, Element e) {
      if (controller == null) return;
      var rowStr = e.parent.dataset['row'];
      var row = rowStr != null ? int.parse(rowStr) : null;
      controller.add(
-         new _ChartEvent(_scope.event, area, series, row, index, data.value));
-   }
-
-   @override
-   Stream<ChartEvent> get onValueMouseOver {
-     if (_mouseOverController == null) {
-       _mouseOverController = new StreamController.broadcast(sync: true);
-     }
-     return _mouseOverController.stream;
-   }
-
-   @override
-   Stream<ChartEvent> get onValueMouseOut {
-     if (_mouseOutController == null) {
-       _mouseOutController = new StreamController.broadcast(sync: true);
-     }
-     return _mouseOutController.stream;
-   }
-
-   @override
-   Stream<ChartEvent> get onValueMouseClick {
-     if (_mouseClickController == null) {
-       _mouseClickController = new StreamController.broadcast(sync: true);
-     }
-     return _mouseClickController.stream;
+         new _ChartEvent(scope.event, area, series, row, index, data.value));
    }
 }

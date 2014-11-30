@@ -40,23 +40,6 @@ const String EASE_MODE_OUT = 'out';
 const String EASE_MODE_IN_OUT = 'in-out';
 const String EASE_MODE_OUT_IN = 'out-in';
 
-/**
- * Callback for all DOM related operations - The first parameter
- * [datum] is the piece of data associated with the node, [ei] is
- * the index of the element in it's group and [c] is the Element to
- * which the data is associated to.
- */
-typedef E ChartedCallback<E>(datum, int ei, Element c);
-
-/** Callback used to access a value from a datum */
-typedef E ChartedValueAccessor<E>(datum, int ei);
-
-/** Create a ChartedCallback that always returns [val] */
-ChartedCallback toCallback(val) => (d, i, e) => val;
-
-/** Create a ChartedValueAccessor that always returns [val] */
-ChartedValueAccessor toValueAccessor(val) => (d, i) => val;
-
 /** IdentityFunction */
 identityFunction(x) => x;
 
