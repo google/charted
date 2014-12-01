@@ -1,22 +1,37 @@
 <!DOCTYPE html>
-
 <html>
   <head>
     <meta charset="utf-8">
-    <title>Combo Chart</title>
-    <link rel="stylesheet" href="demo_theme.css">
-    <link rel="stylesheet" href="packages/charted/charts/themes/quantum_theme.css">
+    <title>Charted &mdash; Renderers Demo</title>
+    <link rel="stylesheet" href="charts_demo.css">
     <style>
-      .climate-chart {
-        width: 500px;
-        height: 300px;
+      .chart {
+        max-width: 900px;
+        float: left;
+      }
+      .title {
+        padding: 20px 0;
+      }
+      .chart-wrapper h2 {
+        border-bottom: 1px solid #333;
+      }
+      .demos-container {
+        clear: both;
       }
     </style>
   </head>
   <body>
-    <div>
-      <h1>Bar &amp; Line Chart</h1>
-      <div class="climate-chart"></div>
+    <div class="demos-container">
+      <div class="title"><h1>Charts with one dimension axis</h1></div>
+      <div class="chart bar-chart"></div>
+      <div class="chart line-chart"></div>
+      <div class="chart stacked-bar-chart"></div>
+      <div class="chart combo-chart"></div>
+    </div>
+    <div class="demos-container">
+      <div class="title"><h1>Charts with zero dimension axes</h1></div>
+      <div class="chart pie-chart"></div>
+      <div class="chart multi-pie-chart"></div>
     </div>
     <script type="application/dart" src="renderers_demo.dart"></script>
     <script src="packages/browser/dart.js"></script>
