@@ -43,3 +43,4 @@ void checkTestsOutput(TaskContext context, ProcessResult process) {
     context.fail('FAIL: $failCount\nERROR: $errorCount');
   }
 }
+

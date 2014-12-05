@@ -9,8 +9,8 @@ part of charted.transition;
 
 class _TransitionImpl implements Transition {
 
-  ChartedCallback _delay = (d, i, c) => 0;
-  ChartedCallback _duration = (d, i, c) => Transition.defaultDuration;
+  SelectionCallback _delay = (d, i, c) => 0;
+  SelectionCallback _duration = (d, i, c) => Transition.defaultDuration;
   Selection _selection;
   Map _attrs = {};
   Map _styles = {};
@@ -34,7 +34,7 @@ class _TransitionImpl implements Transition {
     delayWithCallback(toCallback(millisecond));
   }
 
-  void delayWithCallback(ChartedCallback fn) {
+  void delayWithCallback(SelectionCallback fn) {
     _delay = fn;
   }
 
@@ -42,7 +42,7 @@ class _TransitionImpl implements Transition {
     durationWithCallback(toCallback(millisecond));
   }
 
-  void durationWithCallback(ChartedCallback fn) {
+  void durationWithCallback(SelectionCallback fn) {
     _duration = fn;
   }
 
@@ -50,7 +50,7 @@ class _TransitionImpl implements Transition {
     attrWithCallback(name, toCallback(val));
   }
 
-  void attrWithCallback(String name, ChartedCallback fn) {
+  void attrWithCallback(String name, SelectionCallback fn) {
     _attrs[name] = fn;
   }
 
@@ -62,7 +62,7 @@ class _TransitionImpl implements Transition {
     styleWithCallback(property, toCallback(val), priority);
   }
 
-  void styleWithCallback(String property, ChartedCallback<String> fn,
+  void styleWithCallback(String property, SelectionCallback<String> fn,
       [String priority = '']) {
     _styles[property] = {'callback': fn, 'priority': priority};
   }

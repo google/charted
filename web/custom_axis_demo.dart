@@ -6,7 +6,7 @@
  * https://developers.google.com/open-source/licenses/bsd
  */
 
-library charted.charts_demo;
+library charted.demo.custom_axis;
 
 import 'dart:html';
 import 'package:charted/charts/charts.dart';

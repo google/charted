@@ -8,19 +8,8 @@
 
 part of charted.charts;
 
-class LineChartRenderer implements ChartRenderer {
+class LineChartRenderer extends BaseRenderer {
   final Iterable<int> dimensionsUsingBand = const[];
-
-  ChartArea area;
-  ChartSeries series;
-
-  Element _host;
-  Selection _group;
-  SelectionScope _scope;
-
-  StreamController<ChartEvent> _mouseOverController;
-  StreamController<ChartEvent> _mouseOutController;
-  StreamController<ChartEvent> _mouseClickController;
 
   /*
    * Returns false if the number of dimension axes on the area is 0.
@@ -28,32 +17,17 @@ class LineChartRenderer implements ChartRenderer {
    */
   @override
   bool prepare(ChartArea area, ChartSeries series) {
-    assert(area != null && series != null);
-    if (area.dimensionAxesCount == 0) return false;
-    this.area = area;
-    this.series = series;
-    return true;
+    _ensureAreaAndSeries(area, series);
+    return area.dimensionAxesCount != 0;
   }
 
   @override
   void draw(Element element) {
-    assert(area != null && series != null);
-    assert(element != null && element is GElement);
+    _ensureReadyToDraw(element);
 
-    if (_scope == null) {
-      _host = element;
-      _scope = new SelectionScope.element(element);
-      _group = _scope.selectElements([_host]);
-    }
-
-    var geometry = area.layout.renderArea,
-        measuresCount = series.measures.length,
+    var measuresCount = series.measures.length,
         measureScale = area.measureScales(series).first,
-        dimensionScale = area.dimensionScales.first,
-        theme = area.theme;
-
-    String color(i) =>
-        theme.getColorForKey(series.measures.elementAt(i));
+        dimensionScale = area.dimensionScales.first;
 
     // Create initial values for transitiion
     var initialValues = series.measures.map((column) {
@@ -78,88 +52,65 @@ class LineChartRenderer implements ChartRenderer {
     line.xAccessor = _xAccessor;
     line.yAccessor = _yAccessor;
 
-
     // Draw the lines.
     // TODO (midoringo): Right now the default stroke-width is 2px, which is
     // hard for user to hover over. Maybe add an larger, invisible capture area?
-    var svgLines = _group.selectAll('.line').data(initialValues);
+    var svgLines = root.selectAll('.line').data(initialValues);
     svgLines.enter.append('path')
         ..classed('line', true)
         ..attrWithCallback('d', (d, i, e) => line.path(d, i, e))
-        ..styleWithCallback('stroke', (d, i, e) => color(i))
+        ..styleWithCallback('stroke', (d, i, e) => colorForKey(i))
         ..on('mouseover', (d, i, e) {
           // Thickens the line on hover and show the points.
-          _group.selectAll('.line-point-${i}')..style('opacity', '1');
+          root.selectAll('.line-point-${i}')..style('opacity', '1');
           e.classes.add('active');
         })
         ..on('mouseout', (d, i, e) {
           // Thins the line on mouse out and hide the points.
-          _group.selectAll('.line-point-${i}')..style('opacity', '0');
+          root.selectAll('.line-point-${i}')..style('opacity', '0');
           e.classes.remove('active');
         })
         ..style('fill', 'none');
 
     int delay = 0;
-    svgLines = _group.selectAll('.line').data(lines);
+    svgLines = root.selectAll('.line').data(lines);
     svgLines.transition()
         ..attrWithCallback('d', (d, i, e) => line.path(d, i, e))
-        ..styleWithCallback('stroke', (d, i, e) => color(i))
+        ..styleWithCallback('stroke', (d, i, e) => colorForKey(i))
         ..duration(theme.transitionDuration)
         ..delayWithCallback((d, i, c) => delay += 50 ~/ series.measures.length);
     svgLines.exit.remove();
 
     // Draw the circle for each point in line for events.
     for (var columnIndex = 0; columnIndex < lines.length; columnIndex++) {
-      _group.selectAll('.line-point-${columnIndex}').remove();
-      var points = _group.selectAll('point').data(lines[columnIndex]);
+      root.selectAll('.line-point-${columnIndex}').remove();
+      var points = root.selectAll('point').data(lines[columnIndex]);
       points.enter.append('circle')
         ..classed('line-point line-point-${columnIndex}', true)
         ..attr('r', 4)
         ..attrWithCallback('data-row', (d, i, e) => i)
         ..attrWithCallback('cx', (d, i, e) => _xAccessor(d, i))
         ..attrWithCallback('cy', (d, i, e) => _yAccessor(d, i))
-        ..styleWithCallback('stroke', (d, i, e) => color(columnIndex))
-        ..styleWithCallback('fill', (d, i, e) => color(columnIndex))
+        ..styleWithCallback('stroke', (d, i, e) => colorForKey(columnIndex))
+        ..styleWithCallback('fill', (d, i, e) => colorForKey(columnIndex))
         ..style('opacity', '0')
-        ..on('click', (d, i, e) => _event(_mouseClickController,
-            d, columnIndex, e))
+        ..on('click',
+            (d, i, e) => _event(mouseClickController, d, columnIndex, e))
         ..on('mouseover', (d, i, e) {
           e.style.opacity = '1';
-          _event(_mouseOverController, d, columnIndex, e);
+          _event(mouseOverController, d, columnIndex, e);
         })
         ..on('mouseout', (d, i, e) {
           e.style.opacity = '0';
-          _event(_mouseOutController, d, columnIndex, e);
+          _event(mouseOutController, d, columnIndex, e);
         });
     }
   }
 
   @override
   void dispose() {
-    if (_group == null) return;
-    _group.selectAll('.line').remove();
-  }
-
-  @override
-  double get bandInnerPadding => 1.0;
-
-  @override
-  double get bandOuterPadding => area.theme.dimensionAxisTheme.axisOuterPadding;
-
-  @override
-  Extent get extent {
-    assert(area != null && series != null);
-    var rows = area.data.rows,
-        max = rows[0][series.measures.first],
-        min = max;
-
-    rows.forEach((row) {
-      series.measures.forEach((idx){
-        if (row[idx] > max) max = row[idx];
-        if (row[idx] < min) min = row[idx];
-      });
-    });
-    return new Extent(min, max);
+    if (root == null) return;
+    root.selectAll('.line').remove();
   }
 
   void _event(StreamController controller, data, int index, Element e) {
@@ -168,29 +119,5 @@ class LineChartRenderer implements ChartRenderer {
     var row = rowStr != null ? int.parse(rowStr) : null;
     controller.add(
         new _ChartEvent(_scope.event, area, series, row, index, data));
-  }
-
-  @override
-  Stream<ChartEvent> get onValueMouseOver {
-    if (_mouseOverController == null) {
-      _mouseOverController = new StreamController.broadcast(sync: true);
-    }
-    return _mouseOverController.stream;
-  }
-
-  @override
-  Stream<ChartEvent> get onValueMouseOut {
-    if (_mouseOutController == null) {
-      _mouseOutController = new StreamController.broadcast(sync: true);
-    }
-    return _mouseOutController.stream;
-  }
-
-  @override
-  Stream<ChartEvent> get onValueMouseClick {
-    if (_mouseClickController == null) {
-      _mouseClickController = new StreamController.broadcast(sync: true);
-    }
-    return _mouseClickController.stream;
   }
 }

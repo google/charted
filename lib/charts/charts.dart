@@ -40,6 +40,7 @@ part 'behaviors/axis_marker.dart';
 part 'behaviors/chart_tooltip.dart';
 
 part 'renderers/bar_chart_renderer.dart';
+part 'renderers/base_renderer.dart';
 part 'renderers/bubble_chart_renderer.dart';
 part 'renderers/line_chart_renderer.dart';
 part 'renderers/pie_chart_renderer.dart';

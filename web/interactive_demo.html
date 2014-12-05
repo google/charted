@@ -3,13 +3,11 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <title>Charts</title>
+    <title>Charted &mdash; Interactive demo</title>
+    <link rel="stylesheet" href="charts_demo.css">
     <link rel="stylesheet" href="packages/charted/charts/themes/quantum_theme.css">
     <style>
       body {
-        font-family: Roboto;
-        font-size: smaller;
-        color: #666666;
         padding: 0;
         margin: 0;
         display: flex;
@@ -28,38 +26,11 @@
         min-width: 250px;
         max-width: 250px;
       }
+
       .charts-container {
-        width: 500px;
         padding: 30px;
-        overflow: auto;
-        flex: 1;
-      }
-      .controls-inner:first-child {
-        flex: 1;
-        overflow: auto;
       }
 
-      h1 {
-        margin-top: 0;
-      }
-      h2 {
-        font-size: 16px;
-        color: #838383;
-        font-weight: normal;
-      }
-
-      .charts-container h2 {
-        margin-bottom: 35px;
-      }
-      .charts-container > div {
-        display: flex;
-      }
-
-      .chart {
-        min-width: 500px;
-        height: 300px;
-        margin-bottom: 30px;
-      }
       .control-category {
         padding: 10px 0;
         border-bottom: 1px solid #ccc;
@@ -71,23 +42,12 @@
       button, select {
         margin-bottom: 10px;
       }
-      .climate-chart-pie {
-        width: 500px;
-        height: 450px;
-      }
-      a:link {
-        text-decoration: none;
-      }
     </style>
   </head>
   <body>
     <div class="controls">
       <div class="controls-inner">
         <h1 class="title">Charted Demo</h1>
-        <div class="control-category">
-          <h2>Select chart</h2>
-          <select id="select-chart"></select>
-        </div>
         <div class="control-category">
           <h2>Series</h2>
           <select id="select-series"></select>
@@ -106,14 +66,14 @@
           <button id="remove-row">Remove last row</button>
         </div>
       </div>
-      <div class="controls-inner">
-        <div class="foot-notes">
-          <div>Source: <a href="http://github.com/google/charted" target="_blank">http://github.com/google/charted</a></div>
-        </div>
+    </div>
+    <div class="charts-container">
+      <div class="chart-wrapper">
+        <div class="chart-host"></div>
+        <div class="legend-host"></div>
       </div>
     </div>
-    <div class="charts-container"></div>
-    <script type="application/dart" src="charts_demo.dart"></script>
+    <script type="application/dart" src="interactive_demo.dart"></script>
     <script src="packages/browser/dart.js"></script>
   </body>
 </html>

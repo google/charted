@@ -5,7 +5,7 @@
  * license that can be found in the LICENSE file or at
  * https://developers.google.com/open-source/licenses/bsd
  */
-library charted.demos.transition;
+library charted.demos.transitions;
 
 import 'package:charted/charted.dart';
 

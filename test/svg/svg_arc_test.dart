@@ -41,7 +41,7 @@ testSvgArc() {
   group('SvgArc.innerRadiusCallback', () {
     test('is assigned defaultInnerRadiusCallback by default', () {
       SvgArc svgArc = new SvgArc();
-      ChartedCallback<num> callBack = svgArc.innerRadiusCallback;
+      SelectionCallback<num> callBack = svgArc.innerRadiusCallback;
       mockSvgData.forEach((e) =>
           expect(callBack(e, 0, null), equals(e.innerRadius)));
       expect(callBack(null, 0, null), equals(0));
@@ -50,7 +50,7 @@ testSvgArc() {
     test('is assigned to (value) => value when set by value', () {
       SvgArc svgArc = new SvgArc();
       svgArc.innerRadius = 30;
-      ChartedCallback<num> callBack = svgArc.innerRadiusCallback;
+      SelectionCallback<num> callBack = svgArc.innerRadiusCallback;
       mockSvgData.forEach((e) =>
           expect(callBack(e, 0, null), equals(30)));
     });
@@ -59,7 +59,7 @@ testSvgArc() {
   group('SvgArc.outerRadiusCallback', () {
     test('is assigned defaultOuterRadiusCallback by default', () {
       SvgArc svgArc = new SvgArc();
-      ChartedCallback<num> callBack = svgArc.outerRadiusCallback;
+      SelectionCallback<num> callBack = svgArc.outerRadiusCallback;
       mockSvgData.forEach((e) =>
           expect(callBack(e, 0, null), equals(e.outerRadius)));
       expect(callBack(null, 0, null), equals(0));
@@ -68,7 +68,7 @@ testSvgArc() {
     test('is assigned to (value) => value when set by value', () {
       SvgArc svgArc = new SvgArc();
       svgArc.outerRadius = 30;
-      ChartedCallback<num> callBack = svgArc.outerRadiusCallback;
+      SelectionCallback<num> callBack = svgArc.outerRadiusCallback;
       mockSvgData.forEach((e) =>
           expect(callBack(e, 0, null), equals(30)));
     });
@@ -77,7 +77,7 @@ testSvgArc() {
   group('SvgArc.startAngleCallback', () {
     test('is assigned defaultStartAngleCallback by default', () {
       SvgArc svgArc = new SvgArc();
-      ChartedCallback<num> callBack = svgArc.startAngleCallback;
+      SelectionCallback<num> callBack = svgArc.startAngleCallback;
       mockSvgData.forEach((e) =>
           expect(callBack(e, 0, null), equals(e.startAngle)));
       expect(callBack(null, 0, null), equals(0));
@@ -86,7 +86,7 @@ testSvgArc() {
     test('is assigned to (value) => value when set by value', () {
       SvgArc svgArc = new SvgArc();
       svgArc.startAngle = 30;
-      ChartedCallback<num> callBack = svgArc.startAngleCallback;
+      SelectionCallback<num> callBack = svgArc.startAngleCallback;
       mockSvgData.forEach((e) =>
           expect(callBack(e, 0, null), equals(30)));
     });
@@ -95,7 +95,7 @@ testSvgArc() {
   group('SvgArc.endAngleCallback', () {
     test('is assigned defaultEndAngleCallback by default', () {
       SvgArc svgArc = new SvgArc();
-      ChartedCallback<num> callBack = svgArc.endAngleCallback;
+      SelectionCallback<num> callBack = svgArc.endAngleCallback;
       mockSvgData.forEach((e) =>
           expect(callBack(e, 0, null), equals(e.endAngle)));
       expect(callBack(null, 0, null), equals(0));
@@ -104,7 +104,7 @@ testSvgArc() {
     test('is assigned to (value) => value when set by value', () {
       SvgArc svgArc = new SvgArc();
       svgArc.endAngle = 30;
-      ChartedCallback<num> callBack = svgArc.endAngleCallback;
+      SelectionCallback<num> callBack = svgArc.endAngleCallback;
       mockSvgData.forEach((e) =>
           expect(callBack(e, 0, null), equals(30)));
     });

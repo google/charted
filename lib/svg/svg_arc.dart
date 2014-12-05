@@ -22,7 +22,7 @@ class SvgArc implements SvgPathGenerator {
    *
    * If not specified, [defaultInnerRadiusCallback] is used.
    */
-  ChartedCallback<num> innerRadiusCallback = defaultInnerRadiusCallback;
+  SelectionCallback<num> innerRadiusCallback = defaultInnerRadiusCallback;
 
   /**
    * [outerRadiusCallback] is called to get outer radius of the arc.
@@ -31,7 +31,7 @@ class SvgArc implements SvgPathGenerator {
    *
    * If not specified, [defaultOuterRadiusCallback] is used.
    */
-  ChartedCallback<num> outerRadiusCallback = defaultOuterRadiusCallback;
+  SelectionCallback<num> outerRadiusCallback = defaultOuterRadiusCallback;
 
   /**
    * [startAngleCallback] is called to get the start angle of the arc.
@@ -40,7 +40,7 @@ class SvgArc implements SvgPathGenerator {
    *
    * If not specified, [defaultStartAngleCallback] is used.
    */
-  ChartedCallback<num> startAngleCallback = defaultStartAngleCallback;
+  SelectionCallback<num> startAngleCallback = defaultStartAngleCallback;
 
   /**
    * [endAngleCallback] is called to get the start angle of the arc.
@@ -49,7 +49,7 @@ class SvgArc implements SvgPathGenerator {
    *
    * If not specified, [defaultEndAngleCallback] is used.
    */
-  ChartedCallback<num> endAngleCallback = defaultEndAngleCallback;
+  SelectionCallback<num> endAngleCallback = defaultEndAngleCallback;
 
   /** Sets a constant value as inner radius of the arc. */
   set innerRadius(num value) => innerRadiusCallback = toCallback(value);

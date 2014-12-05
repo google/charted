@@ -51,7 +51,7 @@ abstract class Transition {
    * current index i, and the current DOM element. The function's return value
    * is then used to set each element's delay.
    */
-  void delayWithCallback(ChartedCallback fn);
+  void delayWithCallback(SelectionCallback fn);
 
   /**
    * Specifies per-element duration in milliseconds. All elements are given the
@@ -65,7 +65,7 @@ abstract class Transition {
    * index i, and the current DOM element.  The function's return value is then
    * used to set each element's duration.
    */
-  void durationWithCallback(ChartedCallback fn);
+  void durationWithCallback(SelectionCallback fn);
 
   /**
    * Sets the attribute [name] on all elements when [val] is not null.
@@ -79,7 +79,7 @@ abstract class Transition {
    * element in it's group and the element itself) to get the value
    * of the attribute.
    */
-  void attrWithCallback(String name, ChartedCallback fn);
+  void attrWithCallback(String name, SelectionCallback fn);
 
   /**
    * Transitions the value of the attribute with the specified name according to
@@ -110,7 +110,7 @@ abstract class Transition {
    * style property.
    */
   void styleWithCallback(String property,
-      ChartedCallback<String> fn, [String priority]);
+      SelectionCallback<String> fn, [String priority]);
 
   /**
    * Transitions the value of the CSS style property with the specified name
