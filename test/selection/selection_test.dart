@@ -45,6 +45,18 @@ testSelections() {
     root.remove();
   }
 
+  test('toCallback() creates a callback to return the given value', () {
+    num value = 100;
+    SelectionCallback<num> cb = toCallback(value);
+    expect(cb(null, null, null), equals(value));
+  });
+
+  test('toValueAccessor() creates an accessor to return the given value', () {
+    num value = 100;
+    SelectionValueAccessor<num> cb = toValueAccessor(value);
+    expect(cb(null, null), equals(value));
+  });
+
   group('Selection created from scope', () {
     setUp(setup);
     tearDown(teardown);

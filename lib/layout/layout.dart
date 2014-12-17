@@ -12,6 +12,7 @@ library charted.layout;
 
 import 'dart:html' show Element;
 import 'package:charted/core/core.dart';
+import 'package:charted/selection/selection.dart';
 import 'package:charted/svg/svg.dart' show SvgArcData;
 
 part 'pie_layout.dart';
