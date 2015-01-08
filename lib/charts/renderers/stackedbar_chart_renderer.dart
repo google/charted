@@ -75,7 +75,7 @@ class StackedBarChartRenderer extends BaseRenderer {
     ic = 1e100;
     var enter = bar.enter.append('rect')
       ..classed('bar')
-      ..styleWithCallback('fill', (d, i, c) => colorForKey(i))
+      ..styleWithCallback('fill', (d, i, c) => colorForKey(_reverseIdx(i)))
       ..attr('width', dimensionScale.rangeBand - theme.defaultStrokeWidth)
       ..attrWithCallback('y', (d, i, c) {
       var tempY;
@@ -94,7 +94,7 @@ class StackedBarChartRenderer extends BaseRenderer {
       ..on('mouseout', (d, i, e) => _event(mouseOutController, d, i, e));
 
     bar.transition()
-      ..styleWithCallback('fill', (d, i, c) => colorForKey(i))
+      ..styleWithCallback('fill', (d, i, c) => colorForKey(_reverseIdx(i)))
       ..attr('width', dimensionScale.rangeBand - theme.defaultStrokeWidth)
       ..duration(theme.transitionDuration);
 
@@ -142,9 +142,10 @@ class StackedBarChartRenderer extends BaseRenderer {
 
     if (theme.defaultStrokeWidth > 0) {
       enter.attr('stroke-width', '${theme.defaultStrokeWidth}px');
-      enter.styleWithCallback('stroke', (d, i, c) => colorForKey(i));
+      enter.styleWithCallback('stroke', (d, i, c) =>
+          colorForKey(_reverseIdx(i)));
       bar.transition()
-        ..styleWithCallback('stroke', (d, i, c) => colorForKey(i));
+        ..styleWithCallback('stroke', (d, i, c) => colorForKey(_reverseIdx(i)));
     }
 
     bar.exit.remove();
@@ -177,12 +178,13 @@ class StackedBarChartRenderer extends BaseRenderer {
 
   void _event(StreamController controller, data, int index, Element e) {
     if (controller == null) return;
-    // Because stacked bar chart render the row in reverse order to match the
-    // legend, we need to reverse the index here as well.
-    var reverseIdx = series.measures.length - 1 - index;
     var rowStr = e.parent.dataset['row'];
     var row = rowStr != null ? int.parse(rowStr) : null;
-    controller.add(
-        new _ChartEvent(scope.event, area, series, row, reverseIdx, data));
+    controller.add(new _ChartEvent(
+        scope.event, area, series, row, _reverseIdx(index), data));
   }
+
+  // Because waterfall bar chart render the measures in reverse order to match
+  // the legend, we need to reverse the index for color and event.
+  int _reverseIdx(int index) => series.measures.length - 1 - index;
 }

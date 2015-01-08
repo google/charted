@@ -15,10 +15,10 @@ List SMALL_DATA = const [
     const ['April',    15.46, 63, 49],
     const ['May',      18.50, 77, 46],
     const ['June',     14.61, 60,  8],
-    const ['July',      3.26,  6,  9],
-    const ['August',    1.46,  3,  9],
+    const ['July',      3.26,  9,  6],
+    const ['August',    1.46,  9,  3],
     const ['September', 1.46, 13,  9],
-    const ['October',   2.46,  3, 29],
+    const ['October',   2.46, 29,  3],
     const ['November',  4.46, 33,  9],
-    const ['December',  8.46,  3, 19]
+    const ['December',  8.46, 19,  3]
   ];
