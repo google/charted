@@ -37,7 +37,7 @@ class _ChartData extends ChangeNotifier implements ChartData {
     _rows = value;
     if (_rows is ObservableList) {
       _disposer.add(
-          (_rows as ObservableList).listChanges.listen(_rowsChanged));
+          (_rows as ObservableList).listChanges.listen(rowsChanged));
     }
 
     if (_rows.every((row) => row is ObservableList)) {
@@ -54,7 +54,7 @@ class _ChartData extends ChangeNotifier implements ChartData {
 
   Iterable<Iterable> get rows => _rows;
 
-  _rowsChanged(List<ListChangeRecord> changes) {
+  rowsChanged(List<ListChangeRecord> changes) {
     if (_rows is! ObservableList) return;
     notifyChange(new ChartRowChangeRecord(changes));
 
