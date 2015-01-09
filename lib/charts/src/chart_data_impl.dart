@@ -81,4 +81,56 @@ class _ChartData extends ChangeNotifier implements ChartData {
     if (!_hasObservableRows) return;
     notifyChange(new ChartValueChangeRecord(index, changes));
   }
+
+  @override
+  String toString() {
+    var cellDataLength = new List.filled(rows.elementAt(0).length, 0);
+    for (var i = 0; i < columns.length; i++) {
+      if (cellDataLength[i] < columns.elementAt(i).label.toString().length) {
+        cellDataLength[i] = columns.elementAt(i).label.toString().length;
+      }
+    }
+    for (var row in rows) {
+      for (var i = 0; i < row.length; i++) {
+        if (cellDataLength[i] < row.elementAt(i).toString().length) {
+          cellDataLength[i] = row.elementAt(i).toString().length;
+        }
+      }
+    }
+
+    var totalLength = 1;  // 1 for the leading '|'.
+    for (var length in cellDataLength) {
+      // 3 for the leading and trailing ' ' padding and trailing '|'.
+      totalLength += length + 3;
+    }
+
+    // Second pass for building the string buffer and padd each cell with space
+    // according to the difference between cell string length and max length.
+    var strBuffer = new StringBuffer();
+    strBuffer.write('-' * totalLength + '\n');
+    strBuffer.write('|');
+
+    // Process columns.
+    for (var i = 0; i < columns.length; i++) {
+      var label = columns.elementAt(i).label;
+      var lengthDiff = cellDataLength[i] - label.length;
+      strBuffer.write(' ' * lengthDiff + ' ${label} |');
+    }
+    strBuffer.write('\n' + '-' * totalLength + '\n');
+
+    // Process rows.
+    for (var row in rows) {
+      strBuffer.write('|');
+      for (var i = 0; i < row.length; i++) {
+        var data = row.elementAt(i).toString();
+        var lengthDiff = cellDataLength[i] - data.length;
+        strBuffer.write(' ' * lengthDiff + ' ${data} |');
+
+        if (i == row.length - 1) {
+          strBuffer.write('\n' + '-' * totalLength + '\n');
+        }
+      }
+    }
+    return strBuffer.toString();
+  }
 }

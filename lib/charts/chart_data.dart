@@ -24,6 +24,9 @@ abstract class ChartData {
 
   /** Read-only access to rows */
   Iterable<Iterable> get rows;
+
+  @override
+  String toString();
 }
 
 /**
