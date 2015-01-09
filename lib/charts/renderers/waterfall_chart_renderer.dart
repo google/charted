@@ -33,7 +33,7 @@ class WaterfallChartRenderer extends BaseRenderer {
     var x = area.data.rows.map(
             (row) => row.elementAt(area.config.dimensions.first)).toList();
 
-    var rows = new List()
+    List<Iterable> rows = new List()
       ..addAll(area.data.rows.map((e) {
       var row = [];
       for (var i = measuresCount - 1; i >= 0; i--) {
@@ -46,11 +46,23 @@ class WaterfallChartRenderer extends BaseRenderer {
     var yShift = new List(),
         runningTotal = 0;
     for (int i = 0; i < rows.length; i++) {
+      var row = rows[i];
       if (_isBaseRow(i)) {
         runningTotal = 0;
       }
       yShift.add(runningTotal);
-      rows[i].forEach((val) => runningTotal += val);
+      var bar = 0;
+      row.forEach((value) => bar += value);
+      runningTotal += bar;
+
+      // Handle Nagative incremental values:
+      if (row.elementAt(0) < 0) {
+        assert(row.every((value) => value < 0));
+        for (int j = 0; j < row.length; j++) {
+          row[j] = 0 - row[j];
+        }
+        yShift[yShift.length - 1] += bar;
+      }
     }
 
     var group = root.selectAll('.row-group').data(rows);
@@ -172,19 +184,20 @@ class WaterfallChartRenderer extends BaseRenderer {
     assert(area != null && series != null);
     var rows = area.data.rows,
     max = rows[0][series.measures.first],
-    min = max;
+    min = max,
+    runningTotal = 0;
 
-    rows.forEach((row) {
-      if (row[series.measures.first] < min)
-        min = row[series.measures.first];
-
-      var bar = 0;
+    for (int i = 0; i < rows.length; i++) {
+      var row = rows[i];
+      if (_isBaseRow(i)) {
+        runningTotal = 0;
+      }
       series.measures.forEach((idx) {
-        bar += row[idx];
+        runningTotal += row[idx];
       });
-      if (bar > max) max = bar;
-    });
-
+      if (runningTotal > max) max = runningTotal;
+      if (runningTotal < min) min = runningTotal;
+    }
     return new Extent(min, max);
   }
 
