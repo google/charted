@@ -15,6 +15,8 @@ import 'charts_demo.dart';
 
 main() {
   var data = new ChartData(SMALL_DATA_COLUMNS, SMALL_DATA);
+  var dataWaterfall = new WaterfallChartData(
+      SMALL_WATERFALL_DATA_COLUMNS, SMALL_WATERFALL_DATA);
 
   // Bar Chart
   var bar_series = new ChartSeries("one", [2, 3], new BarChartRenderer()),
@@ -37,6 +39,15 @@ main() {
       stacked_demo = new ChartDemo('Stacked bar chart',
           querySelector('.stacked-bar-chart'), stacked_config, data);
   stacked_demo.draw();
+
+  // Waterfall Chart
+  var waterfall_series = new ChartSeries("one", [1, 2],
+                                         new WaterfallChartRenderer()),
+      waterfall_config = new ChartConfig([waterfall_series], [0]),
+      waterfall_demo = new ChartDemo(
+          'Waterfall chart', querySelector('.waterfall-chart'),
+          waterfall_config, dataWaterfall);
+  waterfall_demo.draw();
 
   // Combo chart
   var combo_bar_series = new ChartSeries("one", [2, 3], new BarChartRenderer()),

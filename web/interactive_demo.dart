@@ -37,12 +37,14 @@ Map RENDERERS = {
   'bar-chart': 'Bar chart',
   'line-chart': 'Line chart',
   'stacked-bar-chart': 'Stacked bar chart',
+  'waterfall-chart': 'Waterfall chart',
 };
 
 ChartRenderer getRendererForType(String name) {
   if (name == 'bar-chart') return new BarChartRenderer();
   if (name == 'line-chart') return new LineChartRenderer();
   if (name == 'stacked-bar-chart') return new StackedBarChartRenderer();
+  if (name == 'waterfall-chart') return new WaterfallChartRenderer();
   return new BarChartRenderer();
 }
 
@@ -50,6 +52,7 @@ String getTypeForRenderer(ChartRenderer renderer) {
   if (renderer is BarChartRenderer) return 'bar-chart';
   if (renderer is LineChartRenderer) return 'line-chart';
   if (renderer is StackedBarChartRenderer) return 'stacked-bar-chart';
+  if (renderer is WaterfallChartRenderer) return 'waterfall-chart';
   return 'bar-chart';
 }
 
@@ -86,7 +89,6 @@ main() {
       rendererSelect = querySelector('#select-renderer');
 
   Element columnButtons = querySelector('#column-buttons');
-
 
 
   /*
@@ -162,8 +164,16 @@ main() {
     });
   }
 
-  rendererSelect.onChange.listen(
-      (_) => activeSeries.renderer = getRendererForType(rendererSelect.value));
+  rendererSelect.onChange.listen((_) {
+      if (rendererSelect.value == "waterfall-chart" &&
+          area.data is! WaterfallChartData) {
+        area.data = new WaterfallChartData(columns, rows);
+      } else if (rendererSelect.value != "waterfall-chart" &&
+          area.data is WaterfallChartData) {
+        area.data = new ChartData(columns, rows);
+      }
+      activeSeries.renderer = getRendererForType(rendererSelect.value);
+    });
 
 
   /*

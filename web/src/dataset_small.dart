@@ -21,4 +21,19 @@ List SMALL_DATA = const [
     const ['October',   2.46, 29,  3],
     const ['November',  4.46, 33,  9],
     const ['December',  8.46, 19,  3]
-  ];
+];
+
+List SMALL_WATERFALL_DATA_COLUMNS = [
+    new ChartColumnSpec(label: 'Category', type: ChartColumnSpec.TYPE_STRING),
+    new ChartColumnSpec(label: 'Quater 1'),
+    new ChartColumnSpec(label: 'Quater 2'),
+    new ChartColumnSpec(label: 'Quater 3'),
+    new ChartColumnSpec(label: 'Quater 4'),
+];
+
+List SMALL_WATERFALL_DATA = const [
+    const ['Product Revenue', 4200,   6000,  6000,  7000],
+    const ['Service Revenue', 2100,   1600,  3000,  4000],
+    const ['Fixed Costs',    -1700,  -1700, -1700, -1700],
+    const ['Viriable Costs', -1000,  -2000, -3000, -4500]
+];
