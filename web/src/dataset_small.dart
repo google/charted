@@ -31,9 +31,11 @@ List SMALL_WATERFALL_DATA_COLUMNS = [
     new ChartColumnSpec(label: 'Quater 4'),
 ];
 
-List SMALL_WATERFALL_DATA = const [
-    const ['Product Revenue', 4200,   6000,  6000,  7000],
-    const ['Service Revenue', 2100,   1600,  3000,  4000],
-    const ['Fixed Costs',    -1700,  -1700, -1700, -1700],
-    const ['Viriable Costs', -1000,  -2000, -3000, -4500]
+List SMALL_WATERFALL_DATA_WITH_SUM = const [
+    const ['Product Revenue',  4200,   6000,  6000,  7000],
+    const ['Service Revenue',  2100,   1600,  3000,  4000],
+    const ['Revenue Subtotal', 6300,   7600,  9000, 11000],
+    const ['Fixed Costs',     -1700,  -1700, -1700, -1700],
+    const ['Viriable Costs',  -1000,  -2000, -3000, -4500],
+    const ['Gross Earning',    3600,   3900,  4300,  4800],
 ];

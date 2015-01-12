@@ -57,7 +57,7 @@ class WaterfallChartRenderer extends BaseRenderer {
 
       // Handle Nagative incremental values:
       if (row.elementAt(0) < 0) {
-        assert(row.every((value) => value < 0));
+        assert(row.every((value) => value <= 0));
         for (int j = 0; j < row.length; j++) {
           row[j] = 0 - row[j];
         }
