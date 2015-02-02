@@ -88,7 +88,7 @@ class TransposeTransformer extends ChangeNotifier
 
     columns.clear();
     rows.clear();
-    rows.addAll(new List.generate(_data.columns.length - 1, (i) => []));
+    rows.addAll(new List<Iterable>.generate(_data.columns.length - 1, (i) => []));
 
     // Populate the transposed rows' data, excluding the label column, visit
     // each value in the original data once.

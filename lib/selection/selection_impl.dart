@@ -43,7 +43,7 @@ class _SelectionImpl implements Selection {
           c.querySelectorAll(selector);
     }
 
-    var tmpGroups = new List(),
+    var tmpGroups = new List<SelectionGroup>(),
         index = 0;
     if (source != null) {
       scope = source.scope;
@@ -82,7 +82,7 @@ class _SelectionImpl implements Selection {
 
     if (source != null) {
       scope = source.scope;
-      groups = new List.generate(source.groups.length, (gi) {
+      groups = new List<SelectionGroup>.generate(source.groups.length, (gi) {
         SelectionGroup g = source.groups.elementAt(gi);
         return new _SelectionGroupImpl(
             new List.generate(g.elements.length, (ei) {
@@ -100,7 +100,7 @@ class _SelectionImpl implements Selection {
         }), parent: g.parent);
       });
     } else {
-      groups = new List.generate(1,
+      groups = new List<SelectionGroup>.generate(1,
           (_) => new _SelectionGroupImpl(new List.generate(1,
               (_) => fn(null, 0, null), growable: false)), growable: false);
     }
@@ -115,7 +115,7 @@ class _SelectionImpl implements Selection {
    * be part of the same group, with [SelectionScope.root] as the group's parent
    */
   _SelectionImpl.elements(Iterable elements, SelectionScope this.scope) {
-    groups = new List()..add(new _SelectionGroupImpl(elements));
+    groups = new List<SelectionGroup>()..add(new _SelectionGroupImpl(elements));
   }
 
   /**
@@ -227,10 +227,10 @@ class _SelectionImpl implements Selection {
         v == false ? e.classes.remove(name) : e.classes.add(name));
   }
 
-  void style(String property, String val, {String priority}) {
+  void style(String property, val, {String priority}) {
     assert(property != null && property.isNotEmpty);
     styleWithCallback(property,
-        toCallback(val), priority: priority);
+        toCallback(val as String), priority: priority);
   }
 
   void styleWithCallback(String property,
@@ -538,7 +538,7 @@ class _EnterSelectionImpl implements EnterSelection {
 class _ExitSelectionImpl extends _SelectionImpl implements ExitSelection {
   final DataSelection update;
   _ExitSelectionImpl(Iterable groups, DataSelection update)
-      :super.selectionGroups(groups, update.scope), update = update;
+      : update = update, super.selectionGroups(groups, update.scope);
 }
 
 class _SelectionGroupImpl implements SelectionGroup {

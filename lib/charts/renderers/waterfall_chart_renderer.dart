@@ -96,7 +96,7 @@ class WaterfallChartRenderer extends BaseRenderer {
       ic = i;
     });
 
-    ic = 1e100;
+    ic = 1000000000;
     var enter = bar.enter.append('rect')
       ..classed('bar')
       ..styleWithCallback('fill', (d, i, c) => colorForKey(_reverseIdx(i)))

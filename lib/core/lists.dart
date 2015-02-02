@@ -91,7 +91,7 @@ class Range extends IterableBase<num> {
   num elementAt(int index) => _range.elementAt(index);
 
   @override
-  Iterator get iterator => _range.iterator;
+  Iterator<num> get iterator => _range.iterator;
 
   static int _integerConversionFactor(num val) {
     int k = 1;

@@ -19,8 +19,8 @@ class Rect {
   const Rect.size(this.width, this.height) : x = 0, y = 0;
   const Rect.position(this.x, this.y) : width = 0, height = 0;
 
-  bool operator==(Rect other) =>
-      isSameSizeAs(other) && isSamePositionAs(other);
+  bool operator==(other) =>
+      other is Rect && isSameSizeAs(other) && isSamePositionAs(other);
 
   bool isSameSizeAs(Rect other) =>
       other != null && width == other.width && height == other.height;
@@ -49,8 +49,8 @@ class EditableRect implements Rect {
   EditableRect.size(this.width, this.height);
   EditableRect.position(this.x, this.y);
 
-  bool operator==(Rect other) =>
-      isSameSizeAs(other) && isSamePositionAs(other);
+  bool operator==(other) =>
+      other is Rect && isSameSizeAs(other) && isSamePositionAs(other);
 
   bool isSameSizeAs(Rect other) =>
       other != null && width == other.width && height == other.height;

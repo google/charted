@@ -121,8 +121,7 @@ class TimeScale extends LinearScale {
   TimeScale copy() => new TimeScale(domain, range, interpolator, clamp);
 
   List niceInterval(var interval, [int skip = 1]) {
-    var extent = scaleExtent(domain);
-    extent = new Extent(extent[0], extent[1]);
+    var extent = _scaleDomainExtent();
 
     var method = interval == null ? _tickMethod(extent, 10) :
                  interval is int ? _tickMethod(extent, interval) : null;
@@ -166,9 +165,13 @@ class TimeScale extends LinearScale {
     domain = niceInterval(ticks);
   }
 
-  List ticksInterval(var interval, [int skip = 1]) {
+  Extent _scaleDomainExtent() {
     var extent = scaleExtent(domain);
-    extent = new Extent(extent[0], extent[1]);
+    return new Extent(extent[0], extent[1]);
+  }
+
+  List ticksInterval(var interval, [int skip = 1]) {
+    var extent = _scaleDomainExtent();
     var method = interval == null ? _tickMethod(extent, 10) :
         interval is int ? _tickMethod(extent, interval) :
         [interval, skip];

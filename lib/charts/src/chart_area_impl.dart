@@ -396,7 +396,7 @@ class _ChartArea implements ChartArea {
         var axis = _dimensionAxes[column],
             orientation = dimensionAxisOrientations[index];
         axis.prepareToDraw(orientation, theme.dimensionAxisTheme);
-        layout.axes[orientation] = axis.size;
+        layout._axes[orientation] = axis.size;
       });
     }
 
@@ -408,7 +408,7 @@ class _ChartArea implements ChartArea {
         var axis = _measureAxes[key],
             orientation = measureAxisOrientations[index];
         axis.prepareToDraw(orientation, theme.measureAxisTheme);
-        layout.axes[orientation] = axis.size;
+        layout._axes[orientation] = axis.size;
       });
     }
 
@@ -487,15 +487,16 @@ class _ChartArea implements ChartArea {
     layout.renderArea = new Rect(
         leftAxis.width, topAxis.height, renderAreaWidth, renderAreaHeight);
 
-    layout.axes[ORIENTATION_TOP] =
-        new Rect(leftAxis.width, 0, renderAreaWidth, topAxis.height);
-    layout.axes[ORIENTATION_RIGHT] =
+    layout._axes
+      ..[ORIENTATION_TOP] =
+        new Rect(leftAxis.width, 0, renderAreaWidth, topAxis.height)
+      ..[ORIENTATION_RIGHT] =
         new Rect(leftAxis.width + renderAreaWidth, topAxis.y,
-            rightAxis.width, renderAreaHeight);
-    layout.axes[ORIENTATION_BOTTOM] =
+            rightAxis.width, renderAreaHeight)
+      ..[ORIENTATION_BOTTOM] =
         new Rect(leftAxis.width, topAxis.height + renderAreaHeight,
-            renderAreaWidth, bottomAxis.height);
-    layout.axes[ORIENTATION_LEFT] =
+            renderAreaWidth, bottomAxis.height)
+      ..[ORIENTATION_LEFT] =
         new Rect(leftAxis.width, topAxis.height,
             leftAxis.width, renderAreaHeight);
   }
@@ -508,7 +509,7 @@ class _ChartArea implements ChartArea {
     if (!_pendingLegendUpdate) return;
     if (_config == null || _config.legend == null || _series.isEmpty) return;
 
-    List legend = [];
+    var legend = <ChartLegendItem>[];
     List seriesByColumn =
         new List.generate(data.columns.length, (i) => new List());
 
@@ -596,18 +597,26 @@ class _ChartArea implements ChartArea {
 
 class _ChartAreaLayout implements ChartAreaLayout {
   @override
-  final Map<String, Rect> axes = {
-    ORIENTATION_LEFT: const Rect(),
-    ORIENTATION_RIGHT: const Rect(),
-    ORIENTATION_TOP: const Rect(),
-    ORIENTATION_BOTTOM: const Rect()
-  };
+  final _axes = <String, Rect>{
+        ORIENTATION_LEFT: const Rect(),
+        ORIENTATION_RIGHT: const Rect(),
+        ORIENTATION_TOP: const Rect(),
+        ORIENTATION_BOTTOM: const Rect()
+      };
+
+  UnmodifiableMapView<String, Rect> _axesView;
+
+  get axes => _axesView;
 
   @override
   Rect renderArea;
 
   @override
   Rect chartArea;
+
+  _ChartAreaLayout() {
+    _axesView = new UnmodifiableMapView(_axes);
+  }
 }
 
 class _ChartSeriesInfo {

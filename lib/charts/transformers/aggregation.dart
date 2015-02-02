@@ -254,9 +254,9 @@ class AggregationModel {
 
     // Create both when object is created and groupBy is called
     // Reuse dimension enumerations if possible.
-    List<Map> oldDimToInt = _dimToIntMap;
-    _dimToIntMap = new List.generate(_dimFields.length,
-        (i) => i < _dimPrefixLength ? oldDimToInt[i] : new Map());
+    var oldDimToInt = _dimToIntMap;
+    _dimToIntMap = new List<Map<dynamic, int>>.generate(_dimFields.length,
+        (i) => i < _dimPrefixLength ? oldDimToInt[i] : new Map<dynamic, int>());
   }
 
   /**
