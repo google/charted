@@ -98,14 +98,14 @@ class AggregationTransformer extends ChangeNotifier
 
     // Process rows.
     rows.clear();
-    var transformedRows = [];
+    var transformedRows = <Iterable>[];
     for (var value in _model.valuesForDimension(_dimensionColumnIndices[0])) {
       _generateAggregatedRow(transformedRows, [value]);
     }
     rows.addAll(transformedRows);
 
     // Process columns.
-    columns = new List.generate(_selectedColumns.length, (index) =>
+    columns = new List<ChartColumnSpec>.generate(_selectedColumns.length, (index) =>
         _data.columns.elementAt(_selectedColumns[index]));
   }
 
@@ -116,7 +116,7 @@ class AggregationTransformer extends ChangeNotifier
    * logic to include itself, just move the expand check around the else clause
    * and always write a row of data whether it's expanded or not.
    */
-  _generateAggregatedRow(List aggregatedRows, List dimensionValues) {
+  _generateAggregatedRow(List<Iterable> aggregatedRows, List dimensionValues) {
     var entity = _model.facts(dimensionValues);
     var dimensionLevel = dimensionValues.length - 1;
     var currentDimValue = dimensionValues.last;

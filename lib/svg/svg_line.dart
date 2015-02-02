@@ -73,10 +73,10 @@ class SvgLine implements SvgPathGenerator {
    * Get Svg path description for the given [data], element index [index]
    * and element [e] to which the data is associated.
    */
-  String path(List data, int index, Element e) {
+  String path(data, int index, Element e) {
     var segments = [],
         points = [];
-
+    assert(data is List);
     data.asMap().forEach((int i, d) {
       if (defined(d, i, e)) {
         points.add(new math.Point(xAccessor(d, i), yAccessor(d, i)));

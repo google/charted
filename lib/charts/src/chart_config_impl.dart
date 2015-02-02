@@ -30,7 +30,7 @@ class _ChartConfig extends ChangeNotifier implements ChartConfig {
   ChartLegend legend;
 
   @override
-  List<String> displayedMeasureAxes;
+  Iterable<String> displayedMeasureAxes;
 
   @override
   bool renderDimensionAxes = true;

@@ -53,8 +53,8 @@ class Pair<T1, T2> {
 
   const Pair(this.first, this.last);
 
-  bool operator==(Pair other) =>
-      other != null && first == other.first && last == other.last;
+  bool operator==(other) =>
+      other is Pair && first == other.first && last == other.last;
 }
 
 /*

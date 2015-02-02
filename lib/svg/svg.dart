@@ -30,5 +30,5 @@ abstract class SvgPathGenerator {
    * and the element [e].  This method follows the same signature as the
    * other callbacks used by selection API - [ChartedCallback<String>]
    */
-  String path(d, num i, Element e);
+  String path(d, int i, Element e);
 }

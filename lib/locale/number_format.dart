@@ -74,22 +74,19 @@ class NumberFormat {
         symbol = match.group(4) != null ? match.group(4) : '',
         zfill = match.group(5),
         width = match.group(6) != null ? int.parse(match.group(6)) : 0,
-        comma = match.group(7),
-        precision = match.group(8),
+        comma = match.group(7) != null,
+        precision = match.group(8) != null ?
+            int.parse(match.group(8).substring(1)) : null,
         type = match.group(9),
         scale = 1,
         prefix = '',
         suffix = '',
         integer = false;
 
-    if (precision != null) {
-      precision = int.parse(precision.substring(1));
-    }
-
     if (zfill != null || fill == '0' && align == '=') {
       zfill = fill = '0';
       align = '=';
-      if (comma != null) {
+      if (comma) {
         width -= ((width - 1) / 4).floor();
       }
     }
@@ -128,7 +125,7 @@ class NumberFormat {
 
     NumberFormatFunction formatFunction = _getFormatFunction(type);
 
-    var zcomma = (zfill != null) && (comma != null);
+    var zcomma = (zfill != null) && comma;
 
     return (value) {
       var fullSuffix = suffix;
@@ -172,7 +169,7 @@ class NumberFormat {
 
       // If the fill character is not '0', grouping is applied before
       //padding.
-      if (zfill == null && comma != null) {
+      if (zfill == null && comma) {
         before = formatGroup(before);
       }
 

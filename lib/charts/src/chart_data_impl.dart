@@ -26,7 +26,7 @@ class _ChartData extends ChangeNotifier implements ChartData {
     // Create a copy of columns.  We do not currently support
     // changes to the list of columns.  Any changes to the spec
     // will be applied at the next ChartBase.draw();
-    this._columns = new List.from(value);
+    this._columns = new List<ChartColumnSpec>.from(value);
   }
 
   Iterable<ChartColumnSpec> get columns => _columns;
