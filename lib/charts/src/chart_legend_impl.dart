@@ -11,12 +11,38 @@ part of charted.charts;
 class _ChartLegend implements ChartLegend {
   final Element host;
   final int _maxItems;
-  final String _title;
+  String _title;
   SelectionScope _scope;
   Selection _selected;
 
   _ChartLegend(Element this.host, int this._maxItems, String this._title) {
     assert(host != null);
+  }
+
+  /**
+   * Sets the title of the legend, if the legend is already drawn, updates the
+   * title on the legend as well.
+   */
+  void set title(String title) {
+    _title = title;
+    if (_scope == null) return;
+    _updateTitle();
+  }
+
+  String get title => _title;
+
+  /** Updates the title of the legend. */
+  void _updateTitle() {
+    if (_title.isNotEmpty) {
+      if (_selected.select('.legend-title').length == 0) {
+        _selected.select('.legend-title');
+        _selected.append('div')
+          ..classed('legend-title')
+          ..text(_title);
+      } else {
+        _selected.select('.legend-title').text(_title);
+      }
+    }
   }
 
   /** Updates the legend base on a new list of ChartLegendItems. */
@@ -28,12 +54,7 @@ class _ChartLegend implements ChartLegend {
       _selected = _scope.selectElements([host]);
     }
 
-    if (_title.isNotEmpty && _selected.select('.legend-title').length == 0) {
-      _selected.select('.legend-title');
-      _selected.append('div')
-        ..classed('legend-title')
-        ..text(_title);
-    }
+    _updateTitle();
 
     _createLegendItems(_selected, 'legend',
         (_maxItems > 0) ? items.take(_maxItems) : items);

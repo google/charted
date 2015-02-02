@@ -13,6 +13,10 @@ part of charted.charts;
  * displaying legend.
  */
 abstract class ChartLegend {
+
+  /** Title of the legend, dynamically updates the legend title when set. */
+  String title;
+
   /**
    * Called by [ChartArea] to notify changes to legend.
    */
