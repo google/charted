@@ -243,6 +243,10 @@ abstract class Selection {
    * To summarize, [type] can be any DOM event type optionally in the format
    * "event.namespace" where event is the DOM event type and namespace is
    * used to distinguish between added listeners.
+   *
+   * When [listener] is called, it is passed the current value associated with
+   * the element.  Please note that index passed to the listener contains a
+   * value as it was at the time of adding the listener.
    */
   void on(String type, [SelectionCallback listener, bool capture]);
 

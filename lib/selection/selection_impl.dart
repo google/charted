@@ -140,13 +140,13 @@ class _SelectionImpl implements Selection {
   }
 
   void on(String type, [SelectionCallback listener, bool capture]) {
-    Function getEventHandler(d, i, e) => (Event event) {
-      var old = scope.event;
+    Function getEventHandler(i, e) => (Event event) {
+      var previous = scope.event;
       scope.event = event;
       try {
-        Function.apply(listener, [d, i, e]);
+        Function.apply(listener, [scope.datum(e), i, e]);
       } finally {
-        scope.event = old;
+        scope.event = previous;
       }
     };
 
@@ -156,7 +156,7 @@ class _SelectionImpl implements Selection {
         each((d, i, Element e){
           var handlers = scope._listeners[e];
           if (handlers == null) scope._listeners[e] = handlers = {};
-          handlers[type] = new Pair(getEventHandler(d, i, e), capture);
+          handlers[type] = new Pair(getEventHandler(i, e), capture);
           e.addEventListener(type, handlers[type].first, capture);
         });
       } else {
