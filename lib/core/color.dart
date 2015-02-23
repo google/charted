@@ -29,6 +29,10 @@ class Color {
     if (hex.startsWith('#')) {
       hex = hex.substring(1);
     }
+    if (hex.length == 3) {
+      // expand to 6-digit hex code
+      hex = hex[0]*2 + hex[1]*2 + hex[2]*2;
+    }
     rgb.add(int.parse(hex.substring(0, 2), radix: 16));
     rgb.add(int.parse(hex.substring(2, 4), radix: 16));
     rgb.add(int.parse(hex.substring(4, 6), radix: 16));
