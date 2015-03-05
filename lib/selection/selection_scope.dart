@@ -44,7 +44,7 @@ class SelectionScope {
   /**
    * Returns the [root] element for this scope.
    * All [Selection]s and elements created using the Charted API,
-   * are created as decendants of root.
+   * are created as descendants of root.
    */
   Element get root => _root;
 
@@ -78,7 +78,7 @@ class SelectionScope {
 
   /**
    * Creates a new [Selection] containing [elements].  Assumes that
-   * all the given elements are decendants of [root] in DOM.
+   * all the given elements are descendants of [root] in DOM.
    */
   Selection selectElements(List<Element> elements) =>
       new _SelectionImpl.elements(elements, this);

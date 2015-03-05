@@ -78,12 +78,12 @@ abstract class Selection {
    * Creates and returns a new [Selection] containing the first element
    * matching [selector] under each element in the current selection.
    *
-   * If an element does not have a matching decendant, a placeholder is used
+   * If an element does not have a matching descendant, a placeholder is used
    * in it's position - thus being able to match the indices of elements in
    * the current and the created sub-selection.
    *
    * Any data bound to elements in this selection is inherited by the
-   * selected decendants.
+   * selected descendants.
    */
   Selection select(String selector);
 
@@ -100,12 +100,12 @@ abstract class Selection {
    * [selector] under each element in the current selection.
    *
    * The resulting [Selection] is nested with elements from current selection
-   * as parents and the selected decendants grouped by elements in the
-   * current selection.  When no decendants match the selector, the
+   * as parents and the selected descendants grouped by elements in the
+   * current selection.  When no descendants match the selector, the
    * collection of selected elements in a group is empty.
    *
    * Data bound to the elements is not automatically inherited by the
-   * selected decendants.
+   * selected descendants.
    */
   Selection selectAll(String selector);
 
@@ -347,7 +347,7 @@ abstract class EnterSelection {
 
   /**
    * For each element in the current selection, select exactly one
-   * decendant and return [Selection] containing the selected elements.
+   * descendant and return [Selection] containing the selected elements.
    *
    * See [Selection.select] for more information.
    */
