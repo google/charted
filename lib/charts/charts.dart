@@ -15,7 +15,7 @@ import 'dart:math' as math;
 import 'dart:svg' hide Rect;
 import 'dart:typed_data';
 
-import 'package:charted/core/core.dart';
+import 'package:charted/core/utils.dart';
 import 'package:charted/layout/layout.dart';
 import 'package:charted/locale/locale.dart';
 import 'package:charted/scale/scale.dart';
@@ -25,7 +25,7 @@ import 'package:charted/transition/transition.dart';
 import 'package:collection/equality.dart';
 import 'package:logging/logging.dart';
 import 'package:observe/observe.dart';
-import 'package:charted/interpolators/interpolators.dart';
+import 'package:charted/core/interpolators.dart';
 
 part 'chart_area.dart';
 part 'chart_config.dart';

@@ -1,31 +1,42 @@
-/*
- * Copyright 2014 Google Inc. All rights reserved.
- *
- * Use of this source code is governed by a BSD-style
- * license that can be found in the LICENSE file or at
- * https://developers.google.com/open-source/licenses/bsd
- */
+//
+// Copyright 2014 Google Inc. All rights reserved.
+//
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file or at
+// https://developers.google.com/open-source/licenses/bsd
+//
 
-part of charted.core;
+part of charted.core.utils;
 
-/** Returns a sum of all values in the given list of values */
+/// Returns a sum of all values in the given list of values
 num sum(List values) =>
     values == null || values.isEmpty ?
         0: values.fold(0.0, (old, next) => old + next);
 
-/** Returns the smallest number in the given list of values */
+/// Returns the smallest number in the given list of values
 num min(Iterable values) =>
     values == null || values.isEmpty ?
         null : values.fold(values.elementAt(0), math.min);
 
-/** Returns the largest number in the given list of values */
+/// Returns the largest number in the given list of values
 num max(Iterable values) =>
     values == null || values.isEmpty ?
         null : values.fold(values.elementAt(0), math.max);
 
-/**
- * Represents a tuple of mininum and maximum values in a List.
- */
+/// Represents a constant pair of values
+class Pair<T1, T2> {
+  final T1 first;
+  final T2 last;
+  
+  const Pair(this.first, this.last);
+  
+  bool operator==(other) =>
+      other is Pair && first == other.first && last == other.last;
+  
+  int get hashCode => hash2(first, last);
+}
+
+/// Represents a pair of mininum and maximum values in a List.
 class Extent<T> extends Pair<T, T> {
   final T min;
   final T max;
@@ -45,17 +56,15 @@ class Extent<T> extends Pair<T, T> {
   const Extent(T min, T max) : min = min, max = max, super(min, max);
 }
 
-/**
- * Iterable representing a range of values containing the start, stop
- * and each of the step values between them.
- */
-class Range extends IterableBase<num> {
-  final List<num> _range = <num>[];
-
+/// Iterable representing a range of values containing the start, stop
+/// and each of the step values between them.
+class Range extends DelegatingList<num> {
   factory Range.integers(num start, [num stop, num step = 1]) =>
       new Range(start, stop, step, true);
 
-  Range(num start, [num stop, num step = 1, bool integers = false]) {
+  factory Range(num start, [num stop, num step = 1, bool integers = false]) {
+    List<num> values = <num>[];
+    
     if (stop == null) {
       stop = start;
       start = 0;
@@ -75,23 +84,18 @@ class Range extends IterableBase<num> {
 
     if (step < 0) {
       while ((j = start + step * ++i) > stop) {
-        _range.add(integers ? j ~/ k : j / k);
+        values.add(integers ? j ~/ k : j / k);
       }
     } else {
       while ((j = start + step * ++i) < stop) {
-        _range.add(integers ? j ~/ k : j / k);
+        values.add(integers ? j ~/ k : j / k);
       }
     }
+    
+    return new Range._internal(values);
   }
-
-  @override
-  int get length => _range.length;
-
-  @override
-  num elementAt(int index) => _range.elementAt(index);
-
-  @override
-  Iterator<num> get iterator => _range.iterator;
+  
+  Range._internal(List values) : super(values);
 
   static int _integerConversionFactor(num val) {
     int k = 1;

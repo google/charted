@@ -8,7 +8,7 @@
 
 library charted.test.layout;
 
-import 'package:charted/core/core.dart';
+import 'package:charted/core/utils.dart';
 import 'package:charted/layout/layout.dart';
 import 'package:unittest/unittest.dart';
 

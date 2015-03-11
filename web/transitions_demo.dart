@@ -14,9 +14,8 @@ void main() {
 
 
   Selection svg = scope.append('svg:svg')
-      ..style('width', '4000')
-      ..style('height', '4000');
-
+      ..style('width', '4000px')
+      ..style('height', '4000px');
 
   Selection g1 = svg.append('g');
   g1.attr('transform', 'translate(30, 30)');
@@ -104,8 +103,8 @@ void main() {
       ..duration(4000);
 
 
-  Color dotColor1 = new Color.fromRgb(10, 255, 0);
-  Color dotColor2 = new Color.fromRgb(40, 0, 255);
+  Color dotColor1 = new Color.fromRgba(10, 255, 0, 1.0);
+  Color dotColor2 = new Color.fromRgba(40, 0, 255, 1.0);
   String shape1 = 'M50 100 L50 200 L100 200 Z';
   String shape2 = 'M900 0 L750 200 L900 200 Z';
 
@@ -132,7 +131,6 @@ void main() {
   t5.attr('fill', dotColor2);
 
   Selection g3 = svg.append('g');
-
   var text6 = g3.append('text');
   text6..attr('x', 0)
        ..attr('y', 0)
@@ -193,8 +191,8 @@ void main() {
   color.styleTween('fill',
       (d, i, style) => interpolateString(style, '#CC0088'));
 
-  Color hslColor1 = new Color.fromRgb(10, 255, 0);
-  Color hslColor2 = new Color.fromRgb(40, 0, 255);
+  Color hslColor1 = new Color.fromRgba(10, 255, 0, 1.0);
+  Color hslColor2 = new Color.fromRgba(40, 0, 255, 1.0);
   Selection g5 = svg.append('g');
   var text7 = g5.append('text');
   text7..attr('x', 0)
@@ -211,7 +209,7 @@ void main() {
       ..attr('height', 60);
   rect2.transition()
       ..attrTween('fill', (d, i, e) {
-        return interpolateHsl(hslColor1, hslColor2);})
+        return interpolateHslColor(hslColor1, hslColor2);})
       ..duration(2000);
 
   rect2.transition()
@@ -219,6 +217,5 @@ void main() {
           "translate(10,10)rotate(30)skewX(0.5)scale(1,1)",
           "translate(100,100)rotate(360)skewX(45)scale(3,3)"))
       ..duration(5000);
-
 }
 

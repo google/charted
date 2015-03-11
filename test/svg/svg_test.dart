@@ -10,7 +10,7 @@ library charted.test.svg;
 
 import 'dart:async';
 import 'dart:html' show document, Element;
-import 'package:charted/core/core.dart';
+import 'package:charted/core/utils.dart';
 import 'package:charted/scale/scale.dart';
 import 'package:charted/selection/selection.dart';
 import 'package:charted/svg/svg.dart';

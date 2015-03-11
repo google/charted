@@ -11,9 +11,9 @@
 library charted;
 
 export 'charts/charts.dart';
-export 'core/core.dart';
+export 'core/utils.dart';
 export 'event/event.dart';
-export 'interpolators/interpolators.dart';
+export 'core/interpolators.dart';
 export 'layout/layout.dart';
 export 'locale/locale.dart';
 export 'scale/scale.dart';

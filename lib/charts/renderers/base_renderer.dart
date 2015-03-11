@@ -8,7 +8,7 @@
 
 part of charted.charts;
 
-class BaseRenderer implements ChartRenderer {
+abstract class BaseRenderer implements ChartRenderer {
   ChartArea area;
   ChartSeries series;
   ChartTheme theme;

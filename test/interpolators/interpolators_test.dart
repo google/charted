@@ -8,7 +8,7 @@
 
 library charted.test.interpolators;
 
-import 'package:charted/core/core.dart';
+import 'package:charted/core/utils.dart';
 import 'package:charted/interpolators/interpolators.dart';
 import 'package:unittest/unittest.dart';
 
@@ -46,7 +46,7 @@ interpolatorsTests() {
   });
 
   test('interpolateColor interpolates two [Color]s in RGB color system', () {
-    InterpolateFn interpolator = interpolateColor(
+    InterpolateFn interpolator = interpolateRgbColor(
         new Color.fromRgb(100, 0, 150), new Color.fromRgb(200, 150, 0));
     expect(interpolator(0).hexString, equals('#640096'));
     expect(interpolator(0.5).hexString, equals('#964b4b'));
@@ -54,7 +54,7 @@ interpolatorsTests() {
   });
 
   test('interpolateHsl interpolates two [Color]s in HSL color system', () {
-    InterpolateFn interpolator = interpolateHsl(
+    InterpolateFn interpolator = interpolateHslColor(
         new Color.fromRgb(100, 0, 150), new Color.fromRgb(200, 150, 0));
     expect(interpolator(0), equals('#640096'));
     expect(interpolator(0.5), equals('#00af7c'));

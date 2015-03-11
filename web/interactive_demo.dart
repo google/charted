@@ -127,7 +127,7 @@ main() {
         rendererSelect.selectedIndex = i;
     }
 
-    List<InputElement> buttons = querySelectorAll('.column-button');
+    List buttons = querySelectorAll('.column-button');
     Iterable measures = series.measures;
     for (int i = 0; i < buttons.length; i++) {
       buttons[i].checked = measures.contains(i + 1);

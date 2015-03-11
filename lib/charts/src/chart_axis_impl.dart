@@ -30,7 +30,7 @@ class _ChartAxis {
   SelectionScope _scope;
   Selection _group;
 
-  EditableRect size;
+  MutableRect size;
 
   _ChartAxis.withAxisConfig(this.area, this.config);
   _ChartAxis(this.area);
@@ -82,7 +82,7 @@ class _ChartAxis {
           _theme.verticalAxisWidth : area.layout.chartArea.width;
       var height = _isVertical ?
           area.layout.chartArea.height : _theme.horizontalAxisHeight;
-      size = new EditableRect.size(width, height);
+      size = new MutableRect.size(width, height);
     }
   }
 

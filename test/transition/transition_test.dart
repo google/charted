@@ -10,7 +10,7 @@ library charted.test.transition;
 
 import 'dart:async';
 import 'dart:html' show document, Element;
-import 'package:charted/core/core.dart';
+import 'package:charted/core/utils.dart';
 import 'package:charted/interpolators/interpolators.dart';
 import 'package:charted/selection/selection.dart';
 import 'package:charted/transition/transition.dart';

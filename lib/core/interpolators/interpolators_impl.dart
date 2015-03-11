@@ -6,7 +6,7 @@
  * https://developers.google.com/open-source/licenses/bsd
  */
 
-part of charted.interpolators;
+part of charted.core.interpolators;
 
 /** Returns a numeric interpolator between numbers [a] and [b] */
 InterpolateFn interpolateNumber(num a, num b) {
@@ -32,10 +32,17 @@ InterpolateFn interpolateRound(num a, num b) {
  */
 InterpolateFn interpolateString(String a, String b) {
   if (a == null || b == null) return (t) => b;
-  if (Color.isColorString(a) && Color.isColorString(b)) {
-    return interpolateColor(new Color.fromColorString(a),
-              new Color.fromColorString(b));
+  
+  // Check if the strings are colors
+  if (Color.isRgbColorString(a) && Color.isRgbColorString(b)) {
+    return interpolateRgbColor(
+        new Color.fromRgbString(a), new Color.fromRgbString(b));
   }
+  if (Color.isHslColorString(a) && Color.isHslColorString(b)) {
+    return interpolateHslColor(
+        new Color.fromHslString(a), new Color.fromHslString(b));
+  }
+  
   var numberRegEx =
           new RegExp(r'[-+]?(?:\d+\.?\d*|\.?\d+)(?:[eE][-+]?\d+)?'),
       numMatchesInA = numberRegEx.allMatches(a),
@@ -84,7 +91,7 @@ InterpolateFn interpolateString(String a, String b) {
 }
 
 /** Returns the interpolator for RGB values. */
-InterpolateFn interpolateColor(Color a, Color b) {
+InterpolateFn interpolateRgbColor(Color a, Color b) {
   if (a == null || b == null) return (t) => b;
   var ar = a.r,
       ag = a.g,
@@ -93,27 +100,22 @@ InterpolateFn interpolateColor(Color a, Color b) {
       bg = b.g - ag,
       bb = b.b - ab;
 
-  return (t) => new Color.fromRgb(
-      (ar + br * t).round(), (ag + bg * t).round(), (ab + bb * t).round());
+  return (t) => new Color.fromRgba((ar + br * t).round(),
+      (ag + bg * t).round(), (ab + bb * t).round(), 1.0).toRgbaString();
 }
 
 /** Returns the interpolator using HSL color system converted to Hex string. */
-InterpolateFn interpolateHsl(a, b) {
+InterpolateFn interpolateHslColor(Color a, Color b) {
   if (a == null || b == null) return (t) => b;
-  if (a is String && Color.isColorString(a)) a = new Color.fromColorString(a);
-  if (a is Color) a = new cssParser.Hsla.fromString(a.hexString);
-  if (b is String && Color.isColorString(b)) b = new Color.fromColorString(b);
-  if (b is Color) b = new cssParser.Hsla.fromString(b.hexString);
+  var ah = a.h,
+      as = a.s,
+      al = a.l,
+      bh = b.h - ah,
+      bs = b.s - as,
+      bl = b.l - al;
 
-  var ah = a.hue,
-      as = a.saturation,
-      al = a.lightness,
-      bh = b.hue - ah,
-      bs = b.saturation - as,
-      bl = b.lightness - al;
-
-  return (t) => "#" + new cssParser.Hsla(
-      ah + bh * t, as + bs * t, al + bl * t).toHexArgbString();
+  return (t) => new Color.fromHsla((ah + bh * t).round(),
+      (as + bs * t).round(), (al + bl * t).round(), 1.0).toHslaString();
 }
 
 /**

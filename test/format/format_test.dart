@@ -8,7 +8,7 @@
 
 library charted.test.format;
 
-import 'package:charted/core/core.dart';
+import 'package:charted/core/utils.dart';
 import 'package:charted/format/format.dart';
 import 'package:unittest/unittest.dart';
 

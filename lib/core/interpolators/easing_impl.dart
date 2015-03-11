@@ -6,7 +6,7 @@
  * https://developers.google.com/open-source/licenses/bsd
  */
 
-part of charted.interpolators;
+part of charted.core.interpolators;
 
 EasingFn clampEasingFn(EasingFn f) =>
     (t) => t <= 0 ? 0 : t >= 1 ? 1 : f(t);

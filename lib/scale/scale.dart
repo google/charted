@@ -11,10 +11,10 @@
 library charted.scale;
 
 import 'dart:math' as math;
-import 'package:charted/core/core.dart';
+import 'package:charted/core/utils.dart';
 import 'package:charted/format/format.dart';
 import 'package:charted/locale/locale.dart';
-import 'package:charted/interpolators/interpolators.dart' as interpolators;
+import 'package:charted/core/interpolators.dart' as interpolators;
 
 part 'ordinal_scale.dart';
 part 'linear_scale.dart';

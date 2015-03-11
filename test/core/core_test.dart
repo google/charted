@@ -10,7 +10,7 @@ library charted.test.core;
 
 import 'dart:html' show document, Element;
 import 'package:unittest/unittest.dart';
-import 'package:charted/core/core.dart';
+import 'package:charted/core/utils.dart';
 
 import 'dart:math' as math;
 

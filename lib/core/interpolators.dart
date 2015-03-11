@@ -1,31 +1,29 @@
-/*
- * Copyright 2014 Google Inc. All rights reserved.
- *
- * Use of this source code is governed by a BSD-style
- * license that can be found in the LICENSE file or at
- * https://developers.google.com/open-source/licenses/bsd
- */
+//
+// Copyright 2014 Google Inc. All rights reserved.
+//
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file or at
+// https://developers.google.com/open-source/licenses/bsd
+//
 
-library charted.interpolators;
+/// A collection of interpolator generators for various types, including
+/// basic types like numbers, colors, strings, transforms and for iterables.
+library charted.core.interpolators;
 
 import 'dart:math' as math;
-import 'package:charted/core/core.dart';
-import 'package:csslib/parser.dart' as cssParser;
+import 'package:charted/core/utils.dart';
 
-part 'interpolators_impl.dart';
-part 'easing_impl.dart';
+part 'interpolators/interpolators_impl.dart';
+part 'interpolators/easing_impl.dart';
 
-/**
- * [InterpolateFn] accepts [t], such that 0.0 < t < 1.0 and returns
- * a value in a pre-defined range.
- */
+/// [InterpolateFn] accepts [t], such that 0.0 < t < 1.0 and returns
+/// a value in a pre-defined range.
 typedef InterpolateFn(num t);
 
-/**
- * [Interpolator] accepts two parameters [a], [b] and returns a function
- * that takes a number t, such that 0.0 <= t <= 1.0 and interpolates it
- * to a value between [a] and [b]
- */
+
+/// [Interpolator] accepts two parameters [a], [b] and returns a function
+/// that takes a number t, such that 0.0 <= t <= 1.0 and interpolates it
+/// to a value between [a] and [b]
 typedef InterpolateFn Interpolator(a, b);
 
 /** [EasingFn] is same as [InterpolateFn] but is for computing easing */
@@ -63,7 +61,7 @@ InterpolateFn interpolatorByType(a, b) =>
     (a is Map && b is Map) ? interpolateMap(a, b) :
     (a is String && b is String) ? interpolateString(a, b) :
     (a is num && b is num) ? interpolateNumber(a, b) :
-    (a is Color && b is Color) ? interpolateColor(a, b) :
+    (a is Color && b is Color) ? interpolateRgbColor(a, b) :
     (t) => (t <= 0.5) ? a : b;
 
 /*

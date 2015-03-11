@@ -1,7 +1,7 @@
 library charted.test.chaintransform;
 
 import 'package:charted/charts/charts.dart';
-import 'package:charted/core/core.dart';
+import 'package:charted/core/utils.dart';
 import 'package:unittest/unittest.dart';
 import 'package:observe/observe.dart';
 

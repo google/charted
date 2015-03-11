@@ -1,37 +1,31 @@
-/*
- * Copyright 2014 Google Inc. All rights reserved.
- *
- * Use of this source code is governed by a BSD-style
- * license that can be found in the LICENSE file or at
- * https://developers.google.com/open-source/licenses/bsd
- */
+//
+// Copyright 2014 Google Inc. All rights reserved.
+//
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file or at
+// https://developers.google.com/open-source/licenses/bsd
+//
 
-part of charted.core;
+part of charted.core.utils;
 
 typedef T ObjectCreator<T>();
 
-/**
- * Provides a registry and factory service.
- *
- * Registration:
- * ObjectFactory.register(“type”, () => { new TypeCreator(); });
- *
- * Usage:
- * instance = ObjectFactory.create('type');
- */
+/// Provides a registry and factory service.
+///
+/// Registration:
+/// ObjectFactory.register(“type”, () => { new TypeCreator(); });
+///
+/// Usage:
+/// instance = ObjectFactory.create('type');
 class ObjectFactory<T> {
   Map<String, ObjectCreator<T>> _components = {};
 
-  /**
-   * Registers a component.
-   */
+  /// Register a component [creator] for [name].
   void register(String name, ObjectCreator<T> creator) {
     _components[name] = creator;
   }
 
-  /**
-   * Creates an instance of the component.
-   */
+  /// Create an instance for [name].
   T create(String name) {
     if (!_components.containsKey(name)) {
       throw new ArgumentError('Element $name not found in ComponentFactory');

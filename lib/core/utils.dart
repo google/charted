@@ -1,28 +1,53 @@
-/*
- * Copyright 2014 Google Inc. All rights reserved.
- *
- * Use of this source code is governed by a BSD-style
- * license that can be found in the LICENSE file or at
- * https://developers.google.com/open-source/licenses/bsd
- */
+//
+// Copyright 2014 Google Inc. All rights reserved.
+//
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file or at
+// https://developers.google.com/open-source/licenses/bsd
+//
 
-library charted.core;
+/// A collection of utilities for use by rest of the library and it's users
+library charted.core.utils;
 
 import "dart:html" show Element;
 import "dart:math" as math;
-import "dart:collection";
+import "package:collection/collection.dart";
+import "package:quiver/core.dart";
 
-part 'color.dart';
-part 'lists.dart';
-part 'math.dart';
-part 'namespace.dart';
-part 'object_factory.dart';
-part 'rect.dart';
+part 'utils/color.dart';
+part 'utils/lists.dart';
+part 'utils/math.dart';
+part 'utils/namespace.dart';
+part 'utils/object_factory.dart';
+part 'utils/rect.dart';
 
-const String ORIENTATION_LEFT = 'left';
-const String ORIENTATION_RIGHT = 'right';
-const String ORIENTATION_TOP = 'top';
+const String ORIENTATION_LEFT   = 'left';
+const String ORIENTATION_RIGHT  = 'right';
+const String ORIENTATION_TOP    = 'top';
 const String ORIENTATION_BOTTOM = 'bottom';
+
+/// Identity function that returns the value passed as it's parameter.
+identityFunction(x) => x;
+
+/// Test if the given String or Iterable, [val] is null or empty
+bool isNullOrEmpty(val) {
+  assert(val is String || val is Iterable);
+  return val == null || val.isEmpty;
+}
+
+
+
+
+
+
+
+
+
+
+/*
+ * TODO(prsd): Move everything below this comment to the respective
+ * sub-libraries.
+ */
 
 const String EASE_TYPE_LINEAR = 'linear';
 const String EASE_TYPE_POLY = 'poly';
@@ -39,28 +64,6 @@ const String EASE_MODE_IN = 'in';
 const String EASE_MODE_OUT = 'out';
 const String EASE_MODE_IN_OUT = 'in-out';
 const String EASE_MODE_OUT_IN = 'out-in';
-
-/** IdentityFunction */
-identityFunction(x) => x;
-
-/** Utility method to test if [val] is null or isEmpty */
-bool isNullOrEmpty(val) => val == null || val.isEmpty;
-
-/** Class representing a pair of values */
-class Pair<T1, T2> {
-  final T1 first;
-  final T2 last;
-
-  const Pair(this.first, this.last);
-
-  bool operator==(other) =>
-      other is Pair && first == other.first && last == other.last;
-}
-
-/*
- * TODO(prsd): Move everything below this comment to the respective
- * sub-libraries.
- */
 
 class ScaleUtil {
   static List nice(List domain, Nice nice) {

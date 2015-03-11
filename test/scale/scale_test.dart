@@ -8,7 +8,7 @@
 
 library charted.test.scale;
 
-import 'package:charted/core/core.dart';
+import 'package:charted/core/utils.dart';
 import 'package:charted/interpolators/interpolators.dart';
 import 'package:charted/locale/locale.dart';
 import 'package:charted/scale/scale.dart';
