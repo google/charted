@@ -97,7 +97,7 @@ class LogScale extends Scale {
   }
 
   /** Sets the interpolator used in the scale. */
-  set interpolator(interpolators.Interpolator newInterpolator) {
+  set interpolator(interpolators.InterpolatorGenerator newInterpolator) {
     _linear.interpolator = newInterpolator;
   }
 

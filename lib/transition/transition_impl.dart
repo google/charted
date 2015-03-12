@@ -27,7 +27,7 @@ class _TransitionImpl implements Transition {
     _timerDelay = delay;
   }
 
-  InterpolateFn ease = clampEasingFn(Transition.defaultEasingMode(
+  Interpolator ease = clampEasingFn(Transition.defaultEasingMode(
         Transition.defaultEasingType));
 
   void delay([int millisecond = 0]) {
@@ -129,7 +129,7 @@ class _TransitionImpl implements Transition {
     }
     var activeNode = _timerMap[ChartTimer.activeTimer];
     var t = elapsed / _durationMap[activeNode];
-    for (InterpolateFn tween in _attrMap[activeNode]) {
+    for (Interpolator tween in _attrMap[activeNode]) {
       tween(ease(t));
     }
     return (t >= 1) ? true : false;

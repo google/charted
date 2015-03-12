@@ -14,7 +14,7 @@ import 'dart:math' as math;
 import 'package:charted/core/utils.dart';
 import 'package:charted/format/format.dart';
 import 'package:charted/locale/locale.dart';
-import 'package:charted/core/interpolators.dart' as interpolators;
+import 'package:charted/core/interpolation.dart' as interpolators;
 
 part 'ordinal_scale.dart';
 part 'linear_scale.dart';
@@ -25,7 +25,7 @@ abstract class Scale {
   var rangeBand = 0;
   List _domain;
   List _range;
-  interpolators.Interpolator _interpolator;
+  interpolators.InterpolatorGenerator _interpolator;
   bool _clamp;
 
 

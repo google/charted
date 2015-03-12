@@ -19,13 +19,13 @@ class LinearScale extends Scale {
    */
   LinearScale([List domain = defaultDomainRange,
       List range = defaultDomainRange,
-      interpolators.Interpolator interpolator = interpolators.interpolateNumber,
+      interpolators.InterpolatorGenerator interpolator = interpolators.interpolateNumber,
       bool clamp = false]) {
     _initializeScale(domain, range, interpolator, clamp);
   }
 
   _initializeScale(List domain, List range,
-      interpolators.Interpolator interpolator, bool clamp) {
+      interpolators.InterpolatorGenerator interpolator, bool clamp) {
     _domain = domain;
     _range = range;
     _interpolator = interpolator;
@@ -102,7 +102,7 @@ class LinearScale extends Scale {
    * Sets the interpolator of the scale.  If it's not set, the scale will try to
    * find the correct interpolator base on the domain and range input.
    */
-  set interpolator(interpolators.Interpolator newInterpolator) {
+  set interpolator(interpolators.InterpolatorGenerator newInterpolator) {
     _interpolator = newInterpolator;
   }
 

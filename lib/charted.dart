@@ -13,7 +13,7 @@ library charted;
 export 'charts/charts.dart';
 export 'core/utils.dart';
 export 'event/event.dart';
-export 'core/interpolators.dart';
+export 'core/interpolation.dart';
 export 'layout/layout.dart';
 export 'locale/locale.dart';
 export 'scale/scale.dart';

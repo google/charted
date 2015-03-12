@@ -46,7 +46,7 @@ abstract class ChartTheme {
   int get defaultStrokeWidth => 2;
 
   /** Easing function for the transition */
-  EasingFn  get transitionEasingType => Transition.defaultEasingType;
+  EasingFunction  get transitionEasingType => Transition.defaultEasingType;
 
   /** Easing mode for the transition */
   EasingMode get transitionEasingMode => Transition.defaultEasingMode;

@@ -142,7 +142,7 @@ class SvgArcData {
  * newer ones, as well as older startAngle and endAngle with newer ones.
  *
  */
-InterpolateFn interpolateSvgArcData(SvgArcData a, SvgArcData b) {
+Interpolator interpolateSvgArcData(SvgArcData a, SvgArcData b) {
   var ast = a.startAngle,
       aen = a.endAngle,
       ai = a.innerRadius,

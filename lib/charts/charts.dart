@@ -25,7 +25,7 @@ import 'package:charted/transition/transition.dart';
 import 'package:collection/equality.dart';
 import 'package:logging/logging.dart';
 import 'package:observe/observe.dart';
-import 'package:charted/core/interpolators.dart';
+import 'package:charted/core/interpolation.dart';
 
 part 'chart_area.dart';
 part 'chart_config.dart';

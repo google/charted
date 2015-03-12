@@ -10,12 +10,12 @@ library charted.transition;
 import "dart:html" show Element,document;
 import "package:charted/event/event.dart";
 import "package:charted/selection/selection.dart";
-import "package:charted/core/interpolators.dart";
+import "package:charted/core/interpolation.dart";
 
 part "transition_impl.dart";
 
-typedef InterpolateFn AttrTweenCallback(datum, int ei, String attr);
-typedef InterpolateFn StyleTweenCallback(datum, int ei, String style);
+typedef Interpolator AttrTweenCallback(datum, int ei, String attr);
+typedef Interpolator StyleTweenCallback(datum, int ei, String style);
 
 /**
  * Transitions are created using the transition operator on a selection.
@@ -27,7 +27,7 @@ typedef InterpolateFn StyleTweenCallback(datum, int ei, String style);
 abstract class Transition {
 
   /** A settable default easing type */
-  static EasingFn defaultEasingType = easeCubic();
+  static EasingFunction defaultEasingType = easeCubic();
 
   /** A settable default easing mode */
   static EasingMode defaultEasingMode = reflectEasingFn;
@@ -36,7 +36,7 @@ abstract class Transition {
   static int defaultDuration = 250;
 
   /** Sets the ease function of the transition, default is cubic-in-out. */
-  InterpolateFn ease;
+  Interpolator ease;
 
   /**
    * Specifies the transition delay in milliseconds. All elements are given the
