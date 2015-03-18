@@ -89,10 +89,10 @@ class BubbleChartRenderer implements ChartRenderer {
         ..classed('bubble')
         ..attrWithCallback('transform',
             (d, i, e) => 'translate('
-                '${xDimensionScale.apply(xDimensionVals[i])},'
-                '${yDimensionScale.apply(yDimensionVals[i])})')
+                '${xDimensionScale.scale(xDimensionVals[i])},'
+                '${yDimensionScale.scale(yDimensionVals[i])})')
         ..attrWithCallback('r',
-            (d, i, e) => '${bubbleRadiusScale.apply(d) * bubbleRadiusFactor}');
+            (d, i, e) => '${bubbleRadiusScale.scale(d) * bubbleRadiusFactor}');
     measures.exit.remove();
   }
 

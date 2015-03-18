@@ -39,7 +39,7 @@ class QuantumChartTheme extends ChartTheme {
 
   /* Implementation of ChartTheme */
   String getColorForKey(key, [int state = ChartTheme.STATE_NORMAL]) {
-    var result = _scale.apply(key);
+    var result = _scale.scale(key);
     return (result is List && result.length > state) ?
         result.elementAt(state) : result;
   }

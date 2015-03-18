@@ -13,8 +13,8 @@ library charted.svg;
 import "dart:math" as math;
 import "dart:html" show Element;
 import "package:charted/core/utils.dart";
-import 'package:charted/core/interpolation.dart';
-import "package:charted/scale/scale.dart";
+import 'package:charted/core/interpolators.dart';
+import "package:charted/core/scales.dart";
 import "package:charted/selection/selection.dart";
 
 part 'svg_arc.dart';

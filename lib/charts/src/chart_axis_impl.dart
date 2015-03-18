@@ -49,7 +49,9 @@ class _ChartAxis {
     // Sets the domain if not using a custom scale.
     if (config == null || (config != null && config.scale == null)) {
       scale.domain = _domain;
-      scale.nice(theme.axisTickCount);
+      if (scale is QuantitativeScale) {
+        (scale as QuantitativeScale).nice = true;
+      }
     }
 
     // Sets the range if not using a custom scale, or the custom scale uses
@@ -113,7 +115,7 @@ class _ChartAxis {
       _scope = new SelectionScope.element(_element);
       _group = _scope.selectElements([_element]);
     }
-    
+
     _axis.innerTickSize = _theme.axisTickSize;
     if (_axis.innerTickSize <= ChartAxisTheme.FILL_RENDER_AREA) {
       _axis.innerTickSize =

@@ -9,7 +9,7 @@
 part of charted.locale;
 
 class TimeScale extends LinearScale {
-  static List _scaleSteps = [
+  static const _scaleSteps = const [
     1e3,    // 1-second
     5e3,    // 5-second
     15e3,   // 15-second
@@ -30,7 +30,7 @@ class TimeScale extends LinearScale {
     31536e6 // 1-year
   ];
 
-  static List _scaleLocalMethods = [
+  static final _scaleLocalMethods = [
     [chartTime.Time.second, 1],
     [chartTime.Time.second, 5],
     [chartTime.Time.second, 15],
@@ -62,9 +62,9 @@ class TimeScale extends LinearScale {
       ["%Y", (d) => true]
   ]);
 
-  TimeScale([List domain = LinearScale.defaultDomainRange,
-      List range = LinearScale.defaultDomainRange,
-      interpolators.InterpolatorGenerator interpolator = interpolators.interpolateNumber,
+  TimeScale([List domain = LinearScale.defaultDomain,
+      List range = LinearScale.defaultRange,
+      interpolators.InterpolatorGenerator interpolator = interpolators.createNumberInterpolator,
       bool clamp = false]) : super(domain, range, interpolator, clamp);
 
   DateTime _timeScaleDate(num t) {
@@ -161,9 +161,11 @@ class TimeScale extends LinearScale {
     return domain;
   }
 
-  void nice([int ticks]) {
+  set nice(bool val) {
     domain = niceInterval(ticks);
   }
+
+  bool get nice => true;
 
   Extent _scaleDomainExtent() {
     var extent = scaleExtent(domain);

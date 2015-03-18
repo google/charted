@@ -10,7 +10,7 @@ library charted.transition;
 import "dart:html" show Element,document;
 import "package:charted/event/event.dart";
 import "package:charted/selection/selection.dart";
-import "package:charted/core/interpolation.dart";
+import "package:charted/core/interpolators.dart";
 
 part "transition_impl.dart";
 
@@ -30,7 +30,7 @@ abstract class Transition {
   static EasingFunction defaultEasingType = easeCubic();
 
   /** A settable default easing mode */
-  static EasingMode defaultEasingMode = reflectEasingFn;
+  static EasingModeFunction defaultEasingMode = reflectEasingFn;
 
   /** A settable default transition duration */
   static int defaultDuration = 250;

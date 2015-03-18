@@ -49,13 +49,13 @@ class BarChartRenderer extends BaseRenderer {
     groups.enter.append('g')
         ..classed('row-group')
         ..attrWithCallback('transform', (d, i, c) =>
-            'translate(${dimensionScale.apply(x[i])}, 0)');
+            'translate(${dimensionScale.scale(x[i])}, 0)');
     groups.exit.remove();
 
     // TODO(psunkari): Try not to set an attribute with row index on the gorup.
     groups.transition()
         ..attrWithCallback('transform', (d, i, c) =>
-            'translate(${dimensionScale.apply(x[i])}, 0)')
+            'translate(${dimensionScale.scale(x[i])}, 0)')
         ..attrWithCallback('data-row', (d, i, e) => i)
         ..duration(theme.transitionDuration);
 
@@ -69,7 +69,7 @@ class BarChartRenderer extends BaseRenderer {
         ..attr('height', 0)
         ..styleWithCallback('fill', (d, i, c) => colorForKey(i))
         ..attrWithCallback(
-            'x', (d, i, e) => bars.apply(i) + theme.defaultStrokeWidth)
+            'x', (d, i, e) => bars.scale(i) + theme.defaultStrokeWidth)
         ..attr('width', barWidth)
         ..on('click', (d, i, e) => _event(mouseClickController, d, i, e))
         ..on('mouseover', (d, i, e) => _event(mouseOverController, d, i, e))
@@ -77,17 +77,17 @@ class BarChartRenderer extends BaseRenderer {
 
     bar.transition()
         ..attrWithCallback(
-            'x', (d, i, c) => bars.apply(i) + theme.defaultStrokeWidth)
+            'x', (d, i, c) => bars.scale(i) + theme.defaultStrokeWidth)
         ..styleWithCallback('fill', (d, i, c) => colorForKey(i))
         ..attr('width', barWidth)
         ..duration(theme.transitionDuration);
 
     int delay = 0;
     bar.transition()
-        ..attrWithCallback('y', (d, i, c) => measureScale.apply(d).round())
+        ..attrWithCallback('y', (d, i, c) => measureScale.scale(d).round())
         // height -1 so bar does not overlap x axis.
         ..attrWithCallback('height', (d, i, c) {
-            var height = rect.height - measureScale.apply(d).round() - 1;
+            var height = rect.height - measureScale.scale(d).round() - 1;
             return (height < 0) ? 0 : height;
         })
         ..delayWithCallback((d, i, c) =>

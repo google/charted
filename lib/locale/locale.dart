@@ -14,11 +14,11 @@ import 'dart:math' as math;
 import 'package:charted/core/utils.dart';
 import 'package:charted/format/format.dart';
 import 'package:charted/time/time.dart' as chartTime;
-import 'package:charted/scale/scale.dart';
+import 'package:charted/core/scales.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 
-import 'package:charted/core/interpolation.dart' as interpolators;
+import 'package:charted/core/interpolators.dart' as interpolators;
 
 part 'en_us.dart';
 part 'number_format.dart';

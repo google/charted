@@ -6,7 +6,23 @@
 // https://developers.google.com/open-source/licenses/bsd
 //
 
-part of charted.core.interpolation;
+part of charted.core.interpolators;
+
+const String EASE_TYPE_LINEAR   = 'linear';
+const String EASE_TYPE_POLY     = 'poly';
+const String EASE_TYPE_QUAD     = 'quad';
+const String EASE_TYPE_CUBIC    = 'cubic';
+const String EASE_TYPE_SIN      = 'sin';
+const String EASE_TYPE_EXP      = 'exp';
+const String EASE_TYPE_CIRCLE   = 'circle';
+const String EASE_TYPE_ELASTIC  = 'elastic';
+const String EASE_TYPE_BACK     = 'back';
+const String EASE_TYPE_BOUNCE   = 'bounce';
+
+const String EASE_MODE_IN       = 'in';
+const String EASE_MODE_OUT      = 'out';
+const String EASE_MODE_IN_OUT   = 'in-out';
+const String EASE_MODE_OUT_IN   = 'out-in';
 
 /// [EasingFunction] manipulates progression of an animation.  The returned
 /// value is passed to an [Interpolator] to generate intermediate state.
@@ -14,33 +30,33 @@ typedef num EasingFunction(num t);
 
 /// Alters behavior of the [EasingFunction].  Takes [fn] and returns an
 /// altered [EasingFunction].
-typedef EasingFunction EasingMode(EasingFunction fn);
+typedef EasingFunction EasingModeFunction(EasingFunction fn);
 
 /// Creates an easing function based on type and mode.
 EasingFunction easingFunctionByName(
     String type, [String mode = EASE_MODE_IN, List params]) {
   const Map easingTypes = const {
-    'linear': identityFunction,
-    'poly': easePoly,
-    'quad': easeQuad,
-    'cubic': easeCubic,
-    'sin': easeSin,
-    'exp': easeExp,
-    'circle': easeCircle,
-    'elastic': easeElastic,
-    'back': easeBack,
-    'bounce': easeBounce
+    EASE_TYPE_LINEAR: identityFunction,
+    EASE_TYPE_POLY: easePoly,
+    EASE_TYPE_QUAD: easeQuad,
+    EASE_TYPE_CUBIC: easeCubic,
+    EASE_TYPE_SIN: easeSin,
+    EASE_TYPE_EXP: easeExp,
+    EASE_TYPE_CIRCLE: easeCircle,
+    EASE_TYPE_ELASTIC: easeElastic,
+    EASE_TYPE_BACK: easeBack,
+    EASE_TYPE_BOUNCE: easeBounce
   };
   
   const Map easingModes = const {
-    'in': identityFunction,
-    'out': reverseEasingFn,
-    'in-out': reflectEasingFn,
-    'out-in': reflectReverseEasingFn
+    EASE_MODE_IN: identityFunction,
+    EASE_MODE_OUT: reverseEasingFn,
+    EASE_MODE_IN_OUT: reflectEasingFn,
+    EASE_MODE_OUT_IN: reflectReverseEasingFn
   };
   
   const Map customEasingFunctions = const {
-    'cubic-in-out': easeCubicInOut 
+    '$EASE_TYPE_CUBIC-$EASE_MODE_IN_OUT': easeCubicInOut 
   };
 
   assert(easingTypes.containsKey(type));

@@ -45,8 +45,8 @@ class LineChartRenderer extends BaseRenderer {
         (row) => row.elementAt(area.config.dimensions.first)).toList();
 
     var rangeBandOffset = dimensionScale.rangeBand / 2;
-    var _xAccessor = (d, i) => dimensionScale.apply(x[i]) + rangeBandOffset;
-    var _yAccessor = (d, i) => measureScale.apply(d);
+    var _xAccessor = (d, i) => dimensionScale.scale(x[i]) + rangeBandOffset;
+    var _yAccessor = (d, i) => measureScale.scale(d);
 
     var line = new SvgLine();
     line.xAccessor = _xAccessor;

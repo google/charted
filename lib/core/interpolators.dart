@@ -15,7 +15,7 @@
 /// 
 /// Currently provides interpolator for various types, including basic types
 /// like numbers, colors, strings, transforms and for iterables.
-library charted.core.interpolation;
+library charted.core.interpolators;
 
 import 'dart:math' as math;
 import 'package:charted/core/utils.dart';

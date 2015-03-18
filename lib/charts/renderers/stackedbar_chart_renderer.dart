@@ -46,12 +46,12 @@ class StackedBarChartRenderer extends BaseRenderer {
     group.enter.append('g')
       ..classed('row-group')
       ..attrWithCallback('transform', (d, i, c) =>
-    'translate(${dimensionScale.apply(x[i])}, 0)');
+    'translate(${dimensionScale.scale(x[i])}, 0)');
     group.exit.remove();
 
     group.transition()
       ..attrWithCallback('transform', (d, i, c) =>
-    'translate(${dimensionScale.apply(x[i])}, 0)')
+    'translate(${dimensionScale.scale(x[i])}, 0)')
       ..duration(theme.transitionDuration)
       ..attrWithCallback('data-row', (d, i, e) => i);
 
@@ -111,11 +111,11 @@ class StackedBarChartRenderer extends BaseRenderer {
 
     bar.transition()
       ..attrWithCallback('y', (d, i, c) {
-      if (i == 0) y = measureScale.apply(0).round();
-      return (y -= (rect.height - measureScale.apply(d).round()));
+      if (i == 0) y = measureScale.scale(0).round();
+      return (y -= (rect.height - measureScale.scale(d).round()));
     })
       ..attrWithCallback('height', (d, i, c) {
-      var ht = rect.height - measureScale.apply(d).round();
+      var ht = rect.height - measureScale.scale(d).round();
       if (i != 0) {
         // If previous bars has 0 height, don't offset for spacing
         // If any of the previous bar has non 0 height, do the offset.

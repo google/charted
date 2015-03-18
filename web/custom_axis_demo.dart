@@ -10,7 +10,7 @@ library charted.demo.custom_axis;
 
 import 'dart:html';
 import 'package:charted/charts/charts.dart';
-import 'package:charted/scale/scale.dart';
+import 'package:charted/core/scales.dart';
 
 List COLUMNS = [
     new ChartColumnSpec(label:'Month', type:ChartColumnSpec.TYPE_STRING),

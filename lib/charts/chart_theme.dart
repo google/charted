@@ -49,7 +49,7 @@ abstract class ChartTheme {
   EasingFunction  get transitionEasingType => Transition.defaultEasingType;
 
   /** Easing mode for the transition */
-  EasingMode get transitionEasingMode => Transition.defaultEasingMode;
+  EasingModeFunction get transitionEasingMode => Transition.defaultEasingMode;
 
   /** Total duration of the transision in milli-seconds */
   int get transitionDuration => 250;

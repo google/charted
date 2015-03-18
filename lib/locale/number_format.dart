@@ -8,7 +8,6 @@
 part of charted.locale;
 
 typedef String NumberFormatFunction(num x, [int precision]);
-typedef String FormatFunction(num x);
 
 // TODO(midoringo): Add more test on NumberFormat.
 

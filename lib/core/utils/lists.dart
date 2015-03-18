@@ -59,6 +59,10 @@ class Extent<T> extends Pair<T, T> {
 /// Iterable representing a range of values containing the start, stop
 /// and each of the step values between them.
 class Range extends DelegatingList<num> {
+  final num start;
+  final num stop;
+  final num step;
+  
   factory Range.integers(num start, [num stop, num step = 1]) =>
       new Range(start, stop, step, true);
 
@@ -92,10 +96,11 @@ class Range extends DelegatingList<num> {
       }
     }
     
-    return new Range._internal(values);
+    return new Range._internal(start, stop, step, values);
   }
   
-  Range._internal(List values) : super(values);
+  Range._internal(this.start, this.stop, this.step, List values)
+      : super(values);
 
   static int _integerConversionFactor(num val) {
     int k = 1;

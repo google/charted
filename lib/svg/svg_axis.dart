@@ -48,15 +48,15 @@ class SvgAxis {
   _create(Element e, SelectionScope scope) {
     var group = scope.selectElements([e]),
         older = _scales[e],
-        current = _scales[e] = scale.copy();
+        current = _scales[e] = scale.clone();
 
     if (older == null) older = scale;
     var tickFormat = this.tickFormat == null ?
-            current.tickFormat(suggestedTickCount) : this.tickFormat,
+            current.tickFormatter() : this.tickFormat,
         tickValues = this.tickValues == null ?
             current.ticks(suggestedTickCount) : this.tickValues;
 
-    var ticks = group.selectAll('.tick').data(tickValues, current.apply),
+    var ticks = group.selectAll('.tick').data(tickValues, current.scale),
         tickEnter = ticks.enter.insert('g', before:'.domain')
             ..classed('tick')
             ..style('opacity', EPSILON.toString()),
@@ -64,12 +64,10 @@ class SvgAxis {
         tickUpdate = ticks..style('opacity', '1'),
         tickTransform;
 
-    var range = current.rangeExtent(),
+    var range = current.rangeExtent,
         path = group.selectAll('.domain').data([0]);
         path.enter.append('path');
         path.attr('class', 'domain');
-
-    num axisLength = range[1] - range[0];
 
     tickEnter.append('line');
     tickEnter.append('text');
@@ -80,13 +78,6 @@ class SvgAxis {
         textUpdate = tickUpdate.select('text'),
         text = ticks.select('text')
             ..textWithCallback((d,i,e) => tickFormat(d));
-
-    var ellipsis = group.selectAll('.ellipsis').data(["... ..."]);
-    ellipsis.enter.append('text')
-        ..attr('class', 'ellipsis')
-        ..style('text-anchor', 'middle')
-        ..textWithCallback((d, i, e) => d)
-        ..attr('opacity', 0);
 
     switch (orientation) {
       case ORIENTATION_BOTTOM: {
@@ -103,11 +94,8 @@ class SvgAxis {
         textEnter
             ..attr('dy', '.71em')
             ..style('text-anchor', 'middle');
-        ellipsis
-            ..attr('x', axisLength / 2)
-            ..attr('y', '.71em');
         path.attr('d',
-            'M${range[0]},${outerTickSize}V0H${range[1]}V${outerTickSize}');
+            'M${range.min},${outerTickSize}V0H${range.max}V${outerTickSize}');
       }
         break;
       case ORIENTATION_TOP: {
@@ -123,11 +111,8 @@ class SvgAxis {
         textEnter
             ..attr('dy', '0em')
             ..style('text-anchor', 'middle');
-        ellipsis
-            ..attr('x', axisLength / 2)
-            ..attr('y', 0);
         path.attr('d',
-            'M${range[0]},${-outerTickSize}V0H${range[1]}V${-outerTickSize}');
+            'M${range.min},${-outerTickSize}V0H${range.max}V${-outerTickSize}');
       }
         break;
       case ORIENTATION_LEFT: {
@@ -143,11 +128,8 @@ class SvgAxis {
         textEnter
             ..attr('dy', '.32em')
             ..style('text-anchor', 'end');
-        ellipsis
-            ..attr("transform",
-                "translate(${-tickPadding}, ${axisLength / 2})rotate(90)");
         path.attr('d',
-            'M${-outerTickSize},${range[0]}H0V${range[1]}H${-outerTickSize}');
+            'M${-outerTickSize},${range.min}H0V${range.max}H${-outerTickSize}');
       }
       break;
       case ORIENTATION_RIGHT: {
@@ -163,92 +145,11 @@ class SvgAxis {
         textEnter
             ..attr('dy', '.32em')
             ..style('text-anchor', 'start');
-        ellipsis
-            ..attr("transform",
-                "translate(${tickPadding}, ${axisLength / 2})rotate(90)");
         path.attr('d',
-            'M${outerTickSize},${range[0]}H0V${range[1]}H${outerTickSize}');
+            'M${outerTickSize},${range.min}H0V${range.max}H${outerTickSize}');
       }
       break;
     }
-
-    num currentRotate = 0;
-    num prevRotate = _prevRotate;
-
-    lineEnter..attr('opacity', '0');
-    textEnter..attr('opacity', '0');
-    lineEnter.transition()
-      ..attr('opacity', '1')
-      ..delay(100);
-
-    List textOpacity = new List.filled(text.length, 1);
-
-    if (orientation == ORIENTATION_BOTTOM || orientation == ORIENTATION_TOP) {
-      num maxTextWidth = 0,
-          textHeight = text.first.clientHeight;
-      text.each((d, i, e)
-          => maxTextWidth = math.max(maxTextWidth, e.clientWidth));
-      if (maxTextWidth > axisLength / text.length) currentRotate = 45;
-      if (textHeight * 1.5 > axisLength / text.length) {
-        currentRotate = 90;
-      }
-      _prevRotate = currentRotate;
-      List preTransX = new List(),
-           nowTransX = new List(),
-           preTransY = new List(),
-           nowTransY = new List();
-      num prevArc = prevRotate * math.PI / 180,
-          nowArc = currentRotate * math.PI / 180;
-      text.each((d, i, e) {
-        preTransX.add(prevRotate > 0 ?
-            e.clientWidth * math.cos(prevArc) / 2 : 0);
-        nowTransX.add(currentRotate > 0 ? e.clientWidth * math.cos(nowArc) / 2 : 0);
-        preTransY.add(e.clientWidth * math.sin(prevArc) / 2);
-        nowTransY.add(e.clientWidth * math.sin(nowArc) / 2);
-      });
-      text.transition()
-          ..attrTween('transform', (d, i, e) {
-            return interpolateTransform(
-              "translate(${preTransX[i]},${preTransY[i]})rotate(${prevRotate})",
-              "translate(${nowTransX[i]},${nowTransY[i]})rotate(${currentRotate})");
-          })
-          ..attr('dx', '${.71 * math.sin(nowArc)}em')
-          ..attr('dy', '${.71 * math.cos(nowArc)}em');
-      if (currentRotate == 90) {
-        text.each((d, i, Element e) {
-          if (i > 0 && i < text.length - 1) {
-            textOpacity[i] = 0;
-          }
-          group.selectAll('.ellipsis').transition()
-              ..delay(100)
-              ..attr('opacity', '1');
-        });
-      } else {
-        group.selectAll('.ellipsis').transition()
-          ..delay(100)
-          ..attr('opacity', '0');
-      }
-    } else {
-      num textHeight = text.first.clientHeight;
-      if (textHeight > axisLength / text.length) {
-        text.each((d, i, Element e) {
-          if (i > 0 && i < text.length - 1) {
-            textOpacity[i] = 0;
-          }
-          group.selectAll('.ellipsis').transition()
-              ..delay(100)
-              ..attr('opacity', '1');
-        });
-      } else {
-        group.selectAll('.ellipsis').transition()
-            ..delay(100)
-            ..attr('opacity', '0');
-      }
-    }
-
-    text.transition()
-      ..attrWithCallback('opacity', (d, i, e) => textOpacity[i])
-      ..delay(100);
 
     // If either the new or old scale is ordinal,
     // entering ticks are undefined in the old scale,
@@ -256,31 +157,29 @@ class SvgAxis {
     // Exiting ticks are likewise undefined in the new scale,
     // and so can fade-out in the old scale’s position.
     var transformFn;
-    if (current.rangeBand != 0) {
+    if (current is OrdinalScale && current.rangeBand != 0) {
       var dx = current.rangeBand / 2;
-      transformFn = (d) => current.apply(d) + dx;
-    } else if (older.rangeBand != 0) {
+      transformFn = (d) => current.scale(d) + dx;
+    } else if (older is OrdinalScale && older.rangeBand != 0) {
       older = current;
     } else {
-      tickTransform(tickExit, current.apply);
+      tickTransform(tickExit, current.scale);
     }
 
-    tickTransform(tickEnter, transformFn != null ? transformFn : older.apply);
-    tickTransform(tickUpdate, transformFn != null ?
-        transformFn : current.apply);
+    tickTransform(tickEnter, transformFn != null ? transformFn : older.scale);
+    tickTransform(
+        tickUpdate, transformFn != null ? transformFn : current.scale);
   }
 
   _xAxisTransform(selection, transformFn) {
-    selection.transition()
-      ..attrWithCallback('transform', (d, i, e) =>
-        'translate(${transformFn(d)},0)'
+    selection.attrWithCallback(
+        'transform', (d, i, e) => 'translate(${transformFn(d)},0)'
     );
   }
 
   _yAxisTransform(selection, transformFn) {
-    selection.transition()
-      ..attrWithCallback('transform', (d, i, e) =>
-        'translate(0,${transformFn(d)})'
+    selection.attrWithCallback(
+        'transform', (d, i, e) => 'translate(0,${transformFn(d)})'
     );
   }
 }
