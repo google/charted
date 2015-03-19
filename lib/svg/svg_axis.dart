@@ -29,7 +29,7 @@ class SvgAxis {
   num tickPadding = 3;
 
   /** Suggested number of ticks to be displayed on the axis */
-  num suggestedTickCount = 10;
+  num suggestedTickCount = 5;
 
   /** List of values to be used on the ticks */
   List tickValues;
@@ -51,10 +51,11 @@ class SvgAxis {
         current = _scales[e] = scale.clone();
 
     if (older == null) older = scale;
+    current.ticksCount = suggestedTickCount;
+
     var tickFormat = this.tickFormat == null ?
-            current.tickFormatter() : this.tickFormat,
-        tickValues = this.tickValues == null ?
-            current.ticks(suggestedTickCount) : this.tickValues;
+            current.createTickFormatter() : this.tickFormat,
+        tickValues = this.tickValues == null ? current.ticks : this.tickValues;
 
     var ticks = group.selectAll('.tick').data(tickValues, current.scale),
         tickEnter = ticks.enter.insert('g', before:'.domain')

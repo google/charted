@@ -49,9 +49,7 @@ class _ChartAxis {
     // Sets the domain if not using a custom scale.
     if (config == null || (config != null && config.scale == null)) {
       scale.domain = _domain;
-      if (scale is QuantitativeScale) {
-        (scale as QuantitativeScale).nice = true;
-      }
+      scale.nice = true;
     }
 
     // Sets the range if not using a custom scale, or the custom scale uses

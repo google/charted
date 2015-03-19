@@ -26,6 +26,7 @@ part 'scales/ordinal_scale.dart';
 part 'scales/linear_scale.dart';
 part 'scales/log_scale.dart';
 
+typedef num RoundFunction(num value);
 
 /// Minimum common interface supported by all scales. [QuantitativeScale] and
 /// [OrdinalScale] contain the interface for their respective types.
@@ -48,17 +49,36 @@ abstract class Scale {
   /// Maximum and minimum values of the scale's output range.
   Extent get rangeExtent;
 
+  /// Creates tick values over the input domain.
+  Iterable get ticks;
+
+  /// Creates a formatter for ticks.
+  FormatFunction createTickFormatter([String format]);
+
   /// Creates a clone of this scale.
   Scale clone();
 
-  /// Creates ten tick values over the input domain.
-  Iterable ticks([int count = 10]);
+  /// Suggested number of ticks on this scale.
+  /// Note: This property is only valid on quantitative scales.
+  int ticksCount;
 
-  /// Creates a formatter for ticks.
-  FormatFunction tickFormatter();
+  /// Indicates if the current scale is using niced values for ticks.
+  /// Note: This property is only valid on quantitative scales.
+  bool nice;
+
+  /// Indicates if output range is clamped.  When clamp is not true, any input
+  /// value that is not within the input domain may result in a value that is
+  /// outside the output range.
+  /// Note: This property is only valid on quantitative scales.
+  bool clamp;
+
+  /// Indicates that the scaled values must be rounded to the nearest
+  /// integer.  Helps avoid anti-aliasing artifacts in the visualizations.
+  /// Note: This property is only valid on quantitative scales.
+  bool rounded;
 }
 
-/// Minimum common interface supported by all scales whose input domain
+/// Minimum common interface supported by scales whose input domain
 /// contains discreet values (Ordinal scales).
 abstract class OrdinalScale extends Scale {
   factory OrdinalScale() = _OrdinalScale;
@@ -83,66 +103,47 @@ abstract class OrdinalScale extends Scale {
   void rangeRoundBands(Iterable range, [double padding, double outerPadding]);
 }
 
-/// Minimum common interface supported by all scales that use a mathematical
-/// function to map input domain to output range (Quantitative scales)
-/// Examples:
-///   - Linear scale which uses a multiplier
-///   - Logarithmic scale
-abstract class QuantitativeScale extends Scale {
+class RoundingFunctions extends Pair<RoundFunction,RoundFunction> {
+  RoundingFunctions(RoundFunction floor, RoundFunction ceil)
+      : super(floor, ceil);
+
+  factory RoundingFunctions.defaults() =>
+      new RoundingFunctions((x) => x.floor(), (x) => x.ceil());
+
+  factory RoundingFunctions.identity() =>
+      new RoundingFunctions(identityFunction, identityFunction);
+
+  RoundFunction get floor => super.first;
+  RoundFunction get ceil => super.last;
+}
+
+/// Namespacing container for utilities used by scales.
+abstract class ScaleUtils {
   /// Utility to return extent of sorted [values].
   static Extent extent(Iterable values) =>
       values.first < values.last
           ? new Extent(values.first, values.last)
           : new Extent(values.last, values.first);
 
-  /// Utility method to compute nice extent of input domain.
-  static Extent niceExtent(List values, {int floor(num), int ceil(num) }) {
-    if (values.first > values.last) {
-      values[0] = floor != null ? floor(values.last) : values.last.floor();
-      values[values.length - 1] =
-          ceil != null ? ceil(values.first) : values.first.floor();
-    } else {
-      values[0] = floor != null ? floor(values.first) : values.first.floor();
-      values[values.length - 1] =
-          ceil != null ? ceil(values.last) : values.last.floor();
-    }
-    return new Extent(values.first, values.last);
-  }
-
-  /// Indicates if the current scale is using niced values for ticks
-  bool nice;
-
-  /// Indicates if output range is clamped.  When clamp is not true, any input
-  /// value that is not within the input domain may result in a value that is
-  /// outside the output range.
-  bool clamp;
-
-  /// Indicates that the scaled values must be rounded to the nearest
-  /// integer.  Helps avoid anti-aliasing artifacts in the visualizations.
-  bool rounded;
-}
-
-
-typedef num FloorFunction(num value);
-typedef num CeilFunction(num value);
-
-class ScaleUtil {
-  static List nice(List values, Pair<FloorFunction, CeilFunction> functions) {
+  /// Extends [values] to round numbers based on the given pair of
+  /// floor and ceil functions.  [functions] is a pair of rounding function
+  /// among which the first is used to compute floor of a number and the
+  /// second for ceil of the number.
+  static List nice(List values, RoundingFunctions functions) {
     if (values.last >= values.first) {
-      values[0] = functions.first(values.first);
-      values[values.length - 1] = functions.last(values.last);
+      values[0] = functions.floor(values.first);
+      values[values.length - 1] = functions.ceil(values.last);
     } else {
-      values[values.length - 1] = functions.first(values.last);
-      values[0] = functions.last(values.first);
+      values[values.length - 1] = functions.floor(values.last);
+      values[0] = functions.ceil(values.first);
     }
     return values;
   }
 
-  static Pair<FloorFunction, CeilFunction> niceStep(num step) => (step > 0)
-      ? new Pair(
-          (x) => (x / step).ceil() * step, (x) => (x / step).floor() * step)
-      : new Pair(identityFunction, identityFunction);
-
+  static RoundingFunctions niceStep(num step) => (step > 0)
+      ? new RoundingFunctions(
+          (x) => (x / step).floor() * step, (x) => (x / step).ceil() * step)
+      : new RoundingFunctions.identity();
 
   /// Returns a Function that given a value x on the domain, returns the
   /// corrsponding value on the range on a bilinear scale.

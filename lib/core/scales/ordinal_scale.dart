@@ -92,10 +92,10 @@ class _OrdinalScale implements OrdinalScale {
   num get rangeBand => _rangeBand;
 
   @override
-  FormatFunction tickFormatter() => identityFunction;
+  FormatFunction createTickFormatter([String format]) => identityFunction;
 
   @override
-  Iterable ticks([int number]) => _domain;
+  Iterable get ticks => _domain;
 
   @override
   OrdinalScale clone() => new _OrdinalScale._clone(this);
@@ -163,4 +163,13 @@ class _OrdinalScale implements OrdinalScale {
       scale._reset(scale);
     }
   }
+
+  //
+  // Properties that are valid only on quantitative scales.
+  //
+
+  bool clamp;
+  bool nice;
+  bool rounded;
+  int ticksCount;
 }

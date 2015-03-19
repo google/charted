@@ -7,7 +7,7 @@
 //
 part of charted.core.scales;
 
-class LinearScale implements QuantitativeScale {
+class LinearScale implements Scale {
   static const defaultDomain = const [0, 1];
   static const defaultRange = const [0, 1];
 
@@ -15,9 +15,9 @@ class LinearScale implements QuantitativeScale {
   Iterable _domain = defaultDomain;
   Iterable _range = defaultRange;
 
-  int _ticksCount = 10;
-  bool _clamp = true;
-  bool _nice = true;
+  int _ticksCount = 5;
+  bool _clamp = false;
+  bool _nice = false;
 
   Function _invert;
   Function _scale;
@@ -30,16 +30,18 @@ class LinearScale implements QuantitativeScale {
         _ticksCount = source._ticksCount,
         _clamp = source._clamp,
         _nice = source._nice,
-        _rounded = source._rounded;
+        _rounded = source._rounded {
+    _reset();
+  }
 
   void _reset() {
     if (nice) {
-      _domain = ScaleUtil.nice(
-          domain, ScaleUtil.niceStep(_linearTickRange().step));
+      _domain = ScaleUtils.nice(
+          _domain, ScaleUtils.niceStep(_linearTickRange().step));
     }
 
     Function linear = math.min(_domain.length, _range.length) > 2 ?
-        ScaleUtil.polylinearScale : ScaleUtil.bilinearScale;
+        ScaleUtils.polylinearScale : ScaleUtils.bilinearScale;
 
     Function uninterpolator = clamp ? uninterpolateClamp : uninterpolateNumber;
     InterpolatorGenerator interpolator =
@@ -69,11 +71,9 @@ class LinearScale implements QuantitativeScale {
   Iterable get domain => _domain;
 
   @override
-  Extent get rangeExtent => QuantitativeScale.extent(_range);
-
-  @override
   set rounded(bool value) {
     if (_rounded != value) {
+      _rounded = value;
       _reset();
     }
   }
@@ -82,13 +82,18 @@ class LinearScale implements QuantitativeScale {
   bool get rounded => _rounded;
 
   @override
-  Iterable ticks([int count=10]) {
-    if (count != _ticksCount) {
-      _ticksCount = count;
+  set ticksCount(int value) {
+    if (_ticksCount != value) {
+      _ticksCount = value;
       _reset();
     }
-    return _linearTickRange();
   }
+
+  @override
+  int get ticksCount => _ticksCount;
+
+  @override
+  Iterable get ticks => _linearTickRange();
 
   @override
   set clamp(bool value) {
@@ -113,13 +118,16 @@ class LinearScale implements QuantitativeScale {
   bool get nice => _nice;
 
   @override
+  Extent get rangeExtent => ScaleUtils.extent(_range);
+
+  @override
   num scale(num value) => _scale(value);
 
   @override
   num invert(num value) => _invert(value);
 
   Range _linearTickRange() {
-    var extent = QuantitativeScale.extent(_domain),
+    var extent = ScaleUtils.extent(_domain),
         span = extent.max - extent.min,
         step =
             math.pow(10, (math.log(span / _ticksCount) / math.LN10).floor()),
@@ -141,12 +149,12 @@ class LinearScale implements QuantitativeScale {
   }
 
   @override
-  FormatFunction tickFormatter([String format = null]) {
+  FormatFunction createTickFormatter([String formatStr]) {
     int precision(value) => -(math.log(value) / math.LN10 + .01).floor();
     Range tickRange = _linearTickRange();
     // TODO(prsd): Revisit use of EnusLocale()
-    return new EnusLocale().numberFormat.format((format != null) ?
-        format : ",." + precision(tickRange.step).toString() + "f");
+    return new EnusLocale().numberFormat.format((formatStr != null) ?
+        formatStr : ",." + precision(tickRange.step).toString() + "f");
   }
 
   @override

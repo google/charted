@@ -1,11 +1,10 @@
-/*
- * Copyright 2014 Google Inc. All rights reserved.
- *
- * Use of this source code is governed by a BSD-style
- * license that can be found in the LICENSE file or at
- * https://developers.google.com/open-source/licenses/bsd
- */
-
+//
+// Copyright 2014 Google Inc. All rights reserved.
+//
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file or at
+// https://developers.google.com/open-source/licenses/bsd
+//
 part of charted.locale;
 
 class TimeScale extends LinearScale {
@@ -74,7 +73,7 @@ class TimeScale extends LinearScale {
   List _tickMethod(Extent extent, int count) {
     var span  = extent.max - extent.min,
         target = span / count,
-        i = ScaleUtil.bisect(_scaleSteps, target);
+        i = ScaleUtils.bisect(_scaleSteps, target);
 
     return i == _scaleSteps.length ?
         [chartTime.Time.year, linearTickRange(
@@ -186,7 +185,7 @@ class TimeScale extends LinearScale {
     return interval.range(extent.min, extent.max + 1, skip < 1 ? 1 : skip);
   }
 
-  List ticks([int ticks = 10]) {
+  List get ticks {
     return ticksInterval(ticks);
   }
 }

@@ -64,19 +64,19 @@ testLinearScale() {
   test('LinearScale.tickFormat formats tick values by specified formatter', () {
     // Default formatter
     LinearScale linear = new LinearScale([0, 1], [1, 100]);
-    expect(linear.ticks(2).map((d) => linear.tickFormatter(2)(d)),
+    expect(linear.ticks(2).map((d) => linear.createTickFormatter(2)(d)),
         orderedEquals(['0.0', '0.5', '1.0']));
-    expect(linear.ticks(5).map((d) => linear.tickFormatter(5)(d)),
+    expect(linear.ticks(5).map((d) => linear.createTickFormatter(5)(d)),
         orderedEquals(['0.0', '0.2', '0.4', '0.6', '0.8', '1.0']));
-    expect(linear.ticks(10).map((d) => linear.tickFormatter(10)(d)),
+    expect(linear.ticks(10).map((d) => linear.createTickFormatter(10)(d)),
         orderedEquals(['0.0', '0.1', '0.2', '0.3', '0.4', '0.5',
                        '0.6', '0.7', '0.8', '0.9', '1.0' ]));
     // Specified formatter
-    expect(linear.ticks(2).map((d) => linear.tickFormatter(2, '+%')(d)),
+    expect(linear.ticks(2).map((d) => linear.createTickFormatter(2, '+%')(d)),
         orderedEquals(['+0%', '+50%', '+100%']));
-    expect(linear.ticks(5).map((d) => linear.tickFormatter(5, '+%')(d)),
+    expect(linear.ticks(5).map((d) => linear.createTickFormatter(5, '+%')(d)),
         orderedEquals(['+0%', '+20%', '+40%', '+60%', '+80%', '+100%']));
-    expect(linear.ticks(10).map((d) => linear.tickFormatter(10, '+%')(d)),
+    expect(linear.ticks(10).map((d) => linear.createTickFormatter(10, '+%')(d)),
         orderedEquals(['+0%', '+10%', '+20%', '+30%', '+40%', '+50%',
                        '+60%', '+70%', '+80%', '+90%', '+100%']));
   });

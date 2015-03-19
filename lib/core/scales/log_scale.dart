@@ -10,30 +10,38 @@ part of charted.core.scales;
 /// Log scale is similar to linear scale, except there's a logarithmic
 /// transform that is applied to the input domain value before the output
 /// range value is computed.
-/// 
+///
 /// The mapping to the output range value y can be expressed as a function
 /// of the input domain value x: y = m log(x) + b.
 ///
 /// As log(0) is negative infinity, a log scale must have either an
 /// exclusively-positive or exclusively-negative domain; the domain must not
 /// include or cross zero.
-class LogScale extends QuantitativeScale {
+class LogScale implements Scale {
   static const defaultBase = 10;
   static const defaultDomain = const [1, 10];
+  static final negativeNumbersRoundFunctionsPair =
+      new RoundingFunctions(
+          (x) => -((-x).floor()),
+          (x) => -((-x).ceil()));
 
   final LinearScale _linear;
-  
+
+  bool _nice = false;
   int _base = defaultBase;
+  int _ticksCount = 10;
   bool _positive = true;
   List _domain = defaultDomain;
 
   LogScale() : _linear = new LinearScale();
-  
+
   LogScale._clone(LogScale source)
       : _linear = source._linear.clone(),
         _domain = source._domain.toList(),
         _positive = source._positive,
-        _base = source._base;
+        _base = source._base,
+        _nice = source._nice,
+        _ticksCount = source._ticksCount;
 
   num _log(x) => (_positive ?
       math.log(x < 0 ? 0 : x) : -math.log(x > 0 ? 0 : -x)) / math.log(base);
@@ -41,12 +49,14 @@ class LogScale extends QuantitativeScale {
   num _pow(x) => _positive ? math.pow(base, x) : -math.pow(base, -x);
 
   set base(int value) {
-    _base = value;
-    _linear.domain = _domain.map((e) => _log(e)).toList();
+    if (_base != value) {
+      _base = value;
+      _reset();
+    }
   }
-  
+
   get base => _base;
-  
+
   @override
   num scale(x) => _linear.scale(_log(x));
 
@@ -54,12 +64,12 @@ class LogScale extends QuantitativeScale {
   num invert(x) => _pow(_linear.invert(x));
 
   @override
-  set domain(Iterable x) {
-    _positive = x.first >= 0;
-    _domain = x;
-    _linear.domain = _domain.map((e) => _log(e)).toList();
+  set domain(Iterable values) {
+    _positive = values.first >= 0;
+    _domain = values;
+    _reset();
   }
-  
+
   @override
   Iterable get domain => _domain;
 
@@ -67,7 +77,7 @@ class LogScale extends QuantitativeScale {
   set range(Iterable newRange) {
     _linear.range = newRange;
   }
-  
+
   @override
   Iterable get range => _linear.range;
 
@@ -75,28 +85,62 @@ class LogScale extends QuantitativeScale {
   set rounded(bool value) {
     _linear.rounded = value;
   }
-  
+
   @override
   bool get rounded => _linear.rounded;
 
-  nice_([int ticks]) {
-    var niced;
-    if (_positive) {
-      niced = scaleNice(_domain.map((e) => _log(e)).toList());
-    } else {
-      var floor = (x) => -(-x).ceil();
-      var ceil = (x) => -(-x).floor();
-      niced = scaleNice(_domain.map((e) => _log(e)).toList(), floor, ceil);
+  @override
+  set nice(bool value) {
+    if (_nice != value) {
+      _nice = value;
+      _reset();
     }
-    _linear.domain = niced;
-    domain = niced.map((e) => _pow(e)).toList();
   }
 
-  List ticks([int ticks = 10]) {
-    var extent = scaleExtent(_domain),
+  @override
+  bool get nice => _nice;
+
+  @override
+  set ticksCount(int value) {
+    if (_ticksCount != value) {
+      _ticksCount = value;
+      _reset();
+    }
+  }
+
+  @override
+  int get ticksCount => _ticksCount;
+
+  @override
+  set clamp(bool value) {
+    _linear.clamp = value;
+  }
+
+  @override
+  bool get clamp => _linear.clamp;
+
+  @override
+  Extent get rangeExtent => _linear.rangeExtent;
+
+  _reset() {
+    if (_nice) {
+      var niced = _domain.map((e) => _log(e)).toList();
+      var roundFunctions = _positive
+          ? new RoundingFunctions.defaults()
+          : negativeNumbersRoundFunctionsPair;
+
+      _linear.domain = ScaleUtils.nice(niced, roundFunctions);
+      _domain = niced.map((e) => _pow(e)).toList();
+    } else {
+      _linear.domain = _domain.map((e) => _log(e)).toList();
+    }
+  }
+
+  Iterable get ticks {
+    var extent = ScaleUtils.extent(_domain),
         ticks = [],
-        u = extent[0],
-        v = extent[1],
+        u = extent.min,
+        v = extent.max,
         i = (_log(u)).floor(),
         j = (_log(v)).ceil(),
         n = (_base % 1 > 0) ? 2 : _base;
@@ -116,10 +160,10 @@ class LogScale extends QuantitativeScale {
     return ticks;
   }
 
-  FormatFunction tickFormat(int ticks, [String formatString = null]) {
-    var logFormatFunction = formatString != null ?
-        format(formatString) : format(".0e");
-    var k = math.max(.1, ticks / this.ticks().length),
+  FormatFunction createTickFormatter([String formatStr]) {
+    var logFormatFunction = formatStr != null ?
+        format(formatStr) : format(".0e");
+    var k = math.max(.1, ticksCount / this.ticks.length),
         e = _positive ? 1e-12 : -1e-12;
     return (d) {
       if (_positive) {

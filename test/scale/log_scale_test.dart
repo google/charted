@@ -78,12 +78,12 @@ testLogScale() {
     // Default formatter
     LogScale log = new LogScale();
     log.domain = [1, 10];
-    expect(log.ticks().map((d) => log.tickFormatter(20)(d)),
+    expect(log.ticks().map((d) => log.createTickFormatter(20)(d)),
         orderedEquals(['1e+0', '2e+0', '3e+0', '4e+0', '5e+0', '6e+0', '7e+0',
                        '8e+0', '9e+0', '1e+1']));
     // Specified formatter
     log.domain = [0.1, 1];
-    expect(log.ticks().map((d) => log.tickFormatter(20, '+%')(d)),
+    expect(log.ticks().map((d) => log.createTickFormatter(20, '+%')(d)),
         orderedEquals(['+10%', '+20%', '+30%', '+40%', '+50%', '+60%', '+70%',
                        '+80%', '+90%', '+100%']));
   });
