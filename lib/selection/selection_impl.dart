@@ -43,20 +43,20 @@ class _SelectionImpl implements Selection {
           c.querySelectorAll(selector);
     }
 
-    var tmpGroups = new List<SelectionGroup>(),
-        index = 0;
+    var tmpGroups = new List<SelectionGroup>();
     if (source != null) {
       scope = source.scope;
-      source.groups.forEach((g) {
-        g.elements.forEach((e) {
+      for (int gi = 0; gi < source.groups.length; ++gi) {
+        final g = source.groups.elementAt(gi);
+        for (int ei = 0; ei < g.elements.length; ++ei) {
+          final e = g.elements.elementAt(ei);
           if (e != null) {
             tmpGroups.add(
-              new _SelectionGroupImpl(
-                  fn(scope.datum(e), index, e), parent: e));
+                new _SelectionGroupImpl(
+                    fn(scope.datum(e), gi, e), parent: e));
           }
-          index++;
-        });
-      });
+        }
+      }
     } else {
       tmpGroups.add(
           new _SelectionGroupImpl(fn(null, 0, null), parent: scope.root));
@@ -115,7 +115,8 @@ class _SelectionImpl implements Selection {
    * be part of the same group, with [SelectionScope.root] as the group's parent
    */
   _SelectionImpl.elements(Iterable elements, SelectionScope this.scope) {
-    groups = new List<SelectionGroup>()..add(new _SelectionGroupImpl(elements));
+    groups = new List<SelectionGroup>()
+        ..add(new _SelectionGroupImpl(elements));
   }
 
   /**
@@ -130,13 +131,13 @@ class _SelectionImpl implements Selection {
   /** Calls a function on each non-null element in the selection */
   void each(SelectionCallback fn) {
     if (fn == null) return;
-    groups.forEach((SelectionGroup g) {
-      var index = 0;
-      g.elements.forEach((Element e) {
-        if (e != null) fn(scope.datum(e), index, e);
-        index++;
-      });
-    });
+    for (int gi = 0; gi < groups.length; ++gi) {
+      final g = groups.elementAt(gi);
+      for (int ei = 0; ei < g.elements.length; ++ei) {
+        final e = g.elements.elementAt(ei);
+        if (e != null) fn(scope.datum(e), ei, e);
+      }
+    }
   }
 
   void on(String type, [SelectionCallback listener, bool capture]) {
@@ -173,11 +174,10 @@ class _SelectionImpl implements Selection {
       // Remove all listeners on the event type (ignoring the namespace)
       each((d, i, Element e) {
         var handlers = scope._listeners[e],
-            keys = handlers.keys,
             t = type.substring(1);
-        keys.forEach((String s) {
+        handlers.forEach((String s, Pair<Function, bool> value) {
           if (s.split('.')[0] == t) {
-            e.removeEventListener(s, handlers[s].first, handlers[s].last);
+            e.removeEventListener(s, value.first, value.last);
           }
         });
       });
@@ -348,13 +348,12 @@ class _SelectionImpl implements Selection {
       if (keyFn != null) {
         var keysOnDOM = [],
             elementsByKey = {},
-            valuesByKey = {},
-            ei = 0,
-            vi = 0;
+            valuesByKey = {};
 
         // Create a key to DOM element map.
         // Used later to see if an element already exists for a key.
-        g.elements.forEach((e) {
+        for (int ei = 0; ei < g.elements.length; ++ei) {
+          final e = g.elements.elementAt(ei);
           var keyValue = keyFn(scope.datum(e));
           if (elementsByKey.containsKey(keyValue)) {
             exit[ei] = e;
@@ -362,12 +361,12 @@ class _SelectionImpl implements Selection {
             elementsByKey[keyValue] = e;
           }
           keysOnDOM.add(keyValue);
-          ei++;
-        });
+        }
 
         // Iterate through the values and find values that don't have
         // corresponding elements in the DOM, collect the entering elements.
-        vals.forEach((v) {
+        for (int vi = 0; vi < vals.length; ++vi) {
+          final v = vals.elementAt(vi);
           var keyValue = keyFn(v);
           Element e = elementsByKey[keyValue];
           if (e != null) {
@@ -378,14 +377,13 @@ class _SelectionImpl implements Selection {
           }
           valuesByKey[keyValue] = v;
           elementsByKey.remove(keyValue);
-          vi++;
-        });
+        }
 
         // Iterate through the previously saved keys to
         // find a list of elements that don't have data anymore.
         // We don't use elementsByKey.keys() becuase that does not
         // guarantee the order of returned keys.
-        for (int i = 0; i < g.elements.length; i++) {
+        for (int i = 0; i < g.elements.length; ++i) {
           if (elementsByKey.containsKey(keysOnDOM[i])) {
             exit[i] = g.elements.elementAt(i);
           }
@@ -396,7 +394,7 @@ class _SelectionImpl implements Selection {
         int i = 0;
 
         // Collect a list of elements getting updated in this group
-        for (; i < updateElementsCount; i++) {
+        for (; i < updateElementsCount; ++i) {
           var e = g.elements.elementAt(i);
           if (e != null) {
             scope.associate(e, vals.elementAt(i));
@@ -407,12 +405,12 @@ class _SelectionImpl implements Selection {
         }
 
         // List of elements newly getting added
-        for (; i < vals.length; i++) {
+        for (; i < vals.length; ++i) {
           enter[i] = dummy(vals.elementAt(i));
         }
 
         // List of elements exiting this group
-        for (; i < g.elements.length; i++) {
+        for (; i < g.elements.length; ++i) {
           exit[i] = g.elements.elementAt(i);
         }
       }
@@ -423,10 +421,10 @@ class _SelectionImpl implements Selection {
       exitGroups.add(new _SelectionGroupImpl(exit, parent: g.parent));
     };
 
-    var index = 0;
-    groups.forEach((SelectionGroup g) {
-      join(g, fn(scope.datum(g.parent), index++, g.parent));
-    });
+    for (int gi = 0; gi < groups.length; ++gi) {
+      final g = groups.elementAt(gi);
+      join(g, fn(scope.datum(g.parent), gi, g.parent));
+    }
 
     return new _DataSelectionImpl(
         updateGroups, enterGroups, exitGroups, scope);
@@ -511,11 +509,12 @@ class _EnterSelectionImpl implements EnterSelection {
   Selection selectWithCallback(SelectionCallback<Element> fn) {
     var subgroups = [],
         gi = 0;
-    groups.forEach((SelectionGroup g) {
-      var u = update.groups.elementAt(gi),
-          subgroup = [],
-          ei = 0;
-      g.elements.forEach((Element e) {
+    for (int gi = 0; gi < groups.length; ++gi) {
+      final g = groups.elementAt(gi);
+      final u = update.groups.elementAt(gi);
+      final subgroup = [];
+      for (int ei = 0; ei < g.elements.length; ++ei) {
+        final e = g.elements.elementAt(ei);
         if (e != null) {
           var datum = scope.datum(e),
               selected = fn(datum, ei, g.parent);
@@ -525,11 +524,9 @@ class _EnterSelectionImpl implements EnterSelection {
         } else {
           subgroup.add(null);
         }
-        ei++;
-      });
+      }
       subgroups.add(new _SelectionGroupImpl(subgroup, parent: g.parent));
-      gi++;
-    });
+    }
     return new _SelectionImpl.selectionGroups(subgroups, scope);
   }
 }
