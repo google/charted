@@ -15,15 +15,13 @@ import 'package:charted/core/utils.dart';
 import 'package:charted/format/format.dart';
 import 'package:charted/time/time.dart' as chartTime;
 import 'package:charted/core/scales.dart';
-import 'package:intl/date_symbol_data_local.dart';
-import 'package:intl/intl.dart';
 
 import 'package:charted/core/interpolators.dart' as interpolators;
 
 part 'en_us.dart';
 part 'number_format.dart';
 part 'time_format.dart';
-part 'time_scale.dart';
+//part 'time_scale.dart';
 
 abstract class Locale {
   String get identifier;
@@ -40,9 +38,7 @@ abstract class Locale {
   List get months;
   List get shortMonths;
 
-  Locale() {
-    initializeDateFormatting(this.identifier, null);
-  }
+  Locale();
 
   NumberFormat get numberFormat => new NumberFormat(this);
   // TODO(songrenchu): port time format.

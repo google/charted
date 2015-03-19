@@ -38,7 +38,8 @@ class LineChartRenderer extends BaseRenderer {
     var x = area.data.rows.map(
         (row) => row.elementAt(area.config.dimensions.first)).toList();
 
-    var rangeBandOffset = dimensionScale.rangeBand / 2;
+    var rangeBandOffset =
+        dimensionScale is OrdinalScale ? dimensionScale.rangeBand / 2 : 0;
     var _xAccessor = (d, i) => dimensionScale.scale(x[i]) + rangeBandOffset;
     var _yAccessor = (d, i) => measureScale.scale(d);
 

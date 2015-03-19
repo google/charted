@@ -145,7 +145,7 @@ class _SelectionImpl implements Selection {
       var previous = scope.event;
       scope.event = event;
       try {
-        Function.apply(listener, [scope.datum(e), i, e]);
+        listener(scope.datum(e), i, e);
       } finally {
         scope.event = previous;
       }
