@@ -5,8 +5,9 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 //
-part of charted.locale;
+part of charted.core.scales;
 
+/// TimeScale is a linear scale that operates on time.
 class TimeScale extends LinearScale {
   static const _scaleSteps = const [
     1e3,    // 1-second
@@ -51,14 +52,14 @@ class TimeScale extends LinearScale {
   ];
 
   static TimeFormatFunction _scaleLocalFormat = new TimeFormat().multi([
-      [".%L", (DateTime d) => d.millisecond > 0],
-      [":%S", (DateTime d) => d.second > 0],
+      [".%L",   (DateTime d) => d.millisecond > 0],
+      [":%S",   (DateTime d) => d.second > 0],
       ["%I:%M", (DateTime d) => d.minute > 0],
       ["%I %p", (DateTime d) => d.hour > 0],
       ["%a %d", (DateTime d) => (d.weekday % 7) > 0 && d.day != 1],
       ["%b %d", (DateTime d) => d.day != 1],
-      ["%B", (DateTime d) => d.month > 1],
-      ["%Y", (d) => true]
+      ["%B",    (DateTime d) => d.month > 1],
+      ["%Y",    (d) => true]
   ]);
 
   TimeScale([List domain = LinearScale.defaultDomain,

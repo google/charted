@@ -161,8 +161,9 @@ class LogScale implements Scale {
   }
 
   FormatFunction createTickFormatter([String formatStr]) {
-    var logFormatFunction = formatStr != null ?
-        format(formatStr) : format(".0e");
+    NumberFormat formatter =
+        new NumberFormat(formatStr != null ? formatStr : ".0E");
+    FormatFunction logFormatFunction = (x) => formatter.format(x);
     var k = math.max(.1, ticksCount / this.ticks.length),
         e = _positive ? 1e-12 : -1e-12;
     return (d) {

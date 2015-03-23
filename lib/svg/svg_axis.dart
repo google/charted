@@ -53,8 +53,8 @@ class SvgAxis {
     if (older == null) older = scale;
     current.ticksCount = suggestedTickCount;
 
-    var tickFormat = this.tickFormat == null ?
-            current.createTickFormatter() : this.tickFormat,
+    var tickFormat = this.tickFormat == null
+            ? current.createTickFormatter() : this.tickFormat,
         tickValues = this.tickValues == null ? current.ticks : this.tickValues;
 
     var ticks = group.selectAll('.tick').data(tickValues, current.scale),

@@ -150,11 +150,19 @@ class LinearScale implements Scale {
 
   @override
   FormatFunction createTickFormatter([String formatStr]) {
-    int precision(value) => -(math.log(value) / math.LN10 + .01).floor();
+    /*
+     * TODO(prsd): Re-enable precision based formatting.
+     *
+    int precision(value) {
+      return -(math.log(value) / math.LN10 + .01).floor();
+    }
     Range tickRange = _linearTickRange();
-    // TODO(prsd): Revisit use of EnusLocale()
-    return new EnusLocale().numberFormat.format((formatStr != null) ?
-        formatStr : ",." + precision(tickRange.step).toString() + "f");
+    if (formatStr == null) {
+      formatStr = ".${precision(tickRange.step)}f";
+    }
+     */
+    NumberFormat formatter = new NumberFormat(formatStr);
+    return (x) => formatter.format(x);
   }
 
   @override

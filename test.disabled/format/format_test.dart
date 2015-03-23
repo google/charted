@@ -9,7 +9,7 @@
 library charted.test.format;
 
 import 'package:charted/core/utils.dart';
-import 'package:charted/format/format.dart';
+import 'package:charted/locale/format.dart';
 import 'package:unittest/unittest.dart';
 
 formatTests() {

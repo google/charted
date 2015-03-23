@@ -18,13 +18,13 @@ library charted.core.scales;
 
 import 'dart:math' as math;
 import 'package:charted/core/utils.dart';
-import 'package:charted/format/format.dart';
-import 'package:charted/locale/locale.dart';
 import 'package:charted/core/interpolators.dart';
+import 'package:intl/intl.dart';
 
 part 'scales/ordinal_scale.dart';
 part 'scales/linear_scale.dart';
 part 'scales/log_scale.dart';
+part 'scales/time_scale.dart';
 
 typedef num RoundFunction(num value);
 
@@ -52,7 +52,8 @@ abstract class Scale {
   /// Creates tick values over the input domain.
   Iterable get ticks;
 
-  /// Creates a formatter for ticks.
+  /// Creates a formatter that is suitable for formatting the ticks.
+  /// For ordinal scale, the returned function is an identity function.
   FormatFunction createTickFormatter([String format]);
 
   /// Creates a clone of this scale.

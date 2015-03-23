@@ -5,7 +5,7 @@
  * license that can be found in the LICENSE file or at
  * https://developers.google.com/open-source/licenses/bsd
  */
-part of charted.locale;
+part of charted.locale.format;
 
 typedef String TimeFormatFunction(DateTime date);
 

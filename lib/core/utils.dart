@@ -29,6 +29,9 @@ const String ORIENTATION_BOTTOM = 'bottom';
 /// Identity function that returns the value passed as it's parameter.
 identityFunction(x) => x;
 
+/// Function that formats a value to String.
+typedef String FormatFunction(value);
+
 /// Test if the given String or Iterable, [val] is null or empty
 bool isNullOrEmpty(val) {
   assert(val == null || val is String || val is Iterable);

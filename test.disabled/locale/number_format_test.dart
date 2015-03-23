@@ -9,7 +9,7 @@
 part of charted.test.locale;
 
 testNumberFormat() {
-  EnusLocale locale = new EnusLocale();
+  EnUsLocale locale = new EnUsLocale();
   NumberFormat formatter = new NumberFormat(locale);
 
   group('NumberFormat.format returns a format function that', () {

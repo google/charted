@@ -9,7 +9,7 @@
 part of charted.test.locale;
 
 testTimeFormat() {
-  EnusLocale locale = new EnusLocale();
+  EnUsLocale locale = new EnUsLocale();
 
   group('TimeFormat.apply()', () {
     test('correctly applies %a and %A', () {

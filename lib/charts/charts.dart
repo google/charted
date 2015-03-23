@@ -18,7 +18,7 @@ import 'dart:typed_data';
 import 'package:charted/core/utils.dart';
 import 'package:charted/layout/layout.dart';
 import 'package:charted/locale/locale.dart';
-import 'package:charted/format/format.dart';
+import 'package:charted/locale/format.dart';
 import 'package:charted/core/scales.dart';
 import 'package:charted/selection/selection.dart';
 import 'package:charted/svg/svg.dart';

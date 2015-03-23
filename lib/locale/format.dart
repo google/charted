@@ -6,10 +6,14 @@
  * https://developers.google.com/open-source/licenses/bsd
  */
 
-library charted.format;
+@deprecated('Use package:intl/intll.dart')
+library charted.locale.format;
 
 import 'dart:math' as math;
 import 'package:charted/locale/locale.dart';
+
+part 'format/number_format.dart';
+part 'format/time_format.dart';
 
 typedef String NumberFormatFunction(num x, [int precision]);
 typedef String FormatFunction(num x);
@@ -26,7 +30,7 @@ typedef String FormatFunction(num x);
  */
 FormatFunction format(String specifier, [Locale locale = null]) {
   if (locale == null) {
-    locale = new EnusLocale();
+    locale = new EnUsLocale();
   }
   return locale.numberFormat.format(specifier);
 }

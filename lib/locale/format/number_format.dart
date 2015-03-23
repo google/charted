@@ -5,11 +5,7 @@
  * license that can be found in the LICENSE file or at
  * https://developers.google.com/open-source/licenses/bsd
  */
-part of charted.locale;
-
-typedef String NumberFormatFunction(num x, [int precision]);
-
-// TODO(midoringo): Add more test on NumberFormat.
+part of charted.locale.format;
 
 /**
  * The number formatter of a given locale.  Applying the locale specific
