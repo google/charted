@@ -78,5 +78,21 @@ class Color {
   static bool isColorString(String input) {
     return (input.startsWith('#') || input.startsWith('rgb'));
   }
+  
+  bool operator ==(other) {
+    if (other is! Color) return false;
+    Color color = other;
+    return r == color.r && g == color.g && b == color.b && a == color.a;
+  }
+
+  // Override hashCode using strategy from Effective Java, Chapter 3.
+  int get hashCode {
+    int result = 17;
+    result = 37 * result + r.hashCode;
+    result = 37 * result + g.hashCode;
+    result = 37 * result + b.hashCode;
+    result = 37 * result + a.hashCode;
+    return result;
+  }
 }
 
