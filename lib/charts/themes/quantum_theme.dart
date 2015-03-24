@@ -71,5 +71,6 @@ class _QuantumChartAxisTheme implements ChartAxisTheme {
   final axisAutoResize = true;
   final verticalAxisWidth = 50;
   final horizontalAxisHeight = 50;
+  final ticksFont = '123';
   const _QuantumChartAxisTheme(this.axisTickSize, this.axisTickCount);
 }

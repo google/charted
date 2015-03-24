@@ -1,3 +1,11 @@
+//
+// Copyright 2014 Google Inc. All rights reserved.
+//
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file or at
+// https://developers.google.com/open-source/licenses/bsd
+//
+
 library charted.tool.hop_runner;
 
 import 'package:hop/hop.dart';
@@ -17,11 +25,9 @@ Task createUnitTestsTask() =>
                 checkTestsOutput(context, process));
   });
 
-/**
- * Reads the output from content_shell and checks for number of tests
- * passed/failed/erred. This method requires that the tests be done
- * in simple html unit test configuration - useHtmlConfiguration().
- */
+/// Reads the output from content_shell and checks for number of tests
+/// passed/failed/erred. This method requires that the tests be done
+/// in simple html unit test configuration - useHtmlConfiguration().
 void checkTestsOutput(TaskContext context, ProcessResult process) {
   var output = (process.stdout as String),
       passRegEx = new RegExp(r"^[0-9]+\s+PASS\s"),

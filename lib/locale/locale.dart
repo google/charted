@@ -6,7 +6,6 @@
 // https://developers.google.com/open-source/licenses/bsd
 //
 
-@deprecated('Use package:intl/intl.dart')
 library charted.locale;
 
 import 'package:charted/locale/format.dart';

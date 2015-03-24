@@ -5,6 +5,7 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 //
+/*
 part of charted.core.scales;
 
 /// TimeScale is a linear scale that operates on time.
@@ -203,3 +204,4 @@ class ScaleMilliSeconds extends chartTime.Interval {
         (d) => new DateTime.fromMillisecondsSinceEpoch(d)).toList();
   }
 }
+*/

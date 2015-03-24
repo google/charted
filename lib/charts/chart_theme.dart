@@ -135,4 +135,11 @@ abstract class ChartAxisTheme {
    * visualization.
    */
   int get horizontalAxisHeight => 200;
+
+  /**
+   * Font used by axis ticks.
+   * When specified Charted falls back to efficient off-screen computation of
+   * text metrics.  When not specified, SVGTextElement API is used.
+   */
+  String get ticksFont;
 }

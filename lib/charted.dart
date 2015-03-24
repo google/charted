@@ -15,7 +15,6 @@ export 'core/utils.dart';
 export 'event/event.dart';
 export 'core/interpolators.dart';
 export 'layout/layout.dart';
-export 'locale/locale.dart';
 export 'core/scales.dart';
 export 'selection/selection.dart';
 export 'transition/transition.dart';

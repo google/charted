@@ -43,9 +43,10 @@ class SvgAxis {
   /* Store of axis roots mapped to currently used scales */
   static Expando<Scale> _scales = new Expando<Scale>();
 
-  axis(Selection g) => g.each((d, i, e) => _create(e, g.scope));
+  axis(Selection g, { Rect rect, String font }) =>
+      g.each((d, i, e) => _create(e, g.scope, rect, font));
 
-  _create(Element e, SelectionScope scope) {
+  _create(Element e, SelectionScope scope, Rect rect, String font) {
     var group = scope.selectElements([e]),
         older = _scales[e],
         current = _scales[e] = scale.clone();
@@ -55,7 +56,36 @@ class SvgAxis {
 
     var tickFormat = this.tickFormat == null
             ? current.createTickFormatter() : this.tickFormat,
-        tickValues = this.tickValues == null ? current.ticks : this.tickValues;
+        tickValues = this.tickValues == null ? current.ticks : this.tickValues,
+        formatted = tickValues.map((x) => tickFormat(x)).toList();
+
+    var range = current.rangeExtent,
+        path = group.selectAll('.domain').data([0]);
+        path.enter.append('path');
+        path.attr('class', 'domain');
+
+    bool rotateTicks = false;
+    if (orientation == ORIENTATION_BOTTOM &&
+        rect != null && font != null && font.isNotEmpty) {
+      var textMetrics = new TextMetrics(fontStyle: font);
+      var allowedWidth = (range.max - range.min) ~/ formatted.length;
+      var maxLabelWidth = textMetrics.getLongestTextWidth(formatted);
+
+      // Check if we need rotation
+      if (0.8 * allowedWidth < maxLabelWidth) {
+        rotateTicks = true;
+        
+        // Check if we have enough space to render full chart
+        allowedWidth = 1.4142 * rect.height;
+        if (maxLabelWidth > allowedWidth) {
+          print('Ellipsizing text...');
+          for (int i = 0; i < formatted.length; ++i) {
+            formatted[i] = textMetrics.ellipsizeText(formatted[i], allowedWidth);
+          }
+          print('Done ellipsizing...');
+        }
+      }
+    }
 
     var ticks = group.selectAll('.tick').data(tickValues, current.scale),
         tickEnter = ticks.enter.insert('g', before:'.domain')
@@ -65,11 +95,6 @@ class SvgAxis {
         tickUpdate = ticks..style('opacity', '1'),
         tickTransform;
 
-    var range = current.rangeExtent,
-        path = group.selectAll('.domain').data([0]);
-        path.enter.append('path');
-        path.attr('class', 'domain');
-
     tickEnter.append('line');
     tickEnter.append('text');
 
@@ -78,7 +103,7 @@ class SvgAxis {
         textEnter = tickEnter.select('text'),
         textUpdate = tickUpdate.select('text'),
         text = ticks.select('text')
-            ..textWithCallback((d,i,e) => tickFormat(d));
+            ..textWithCallback((d,i,e) => formatted[i]);
 
     switch (orientation) {
       case ORIENTATION_BOTTOM: {
@@ -150,6 +175,12 @@ class SvgAxis {
             'M${outerTickSize},${range.min}H0V${range.max}H${outerTickSize}');
       }
       break;
+    }
+
+    if (rotateTicks) {
+      textUpdate
+          ..attr('transform', 'rotate(45)')
+          ..style('text-anchor', 'start');
     }
 
     // If either the new or old scale is ordinal,

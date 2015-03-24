@@ -15,6 +15,7 @@ import "dart:html" show Element;
 import "package:charted/core/utils.dart";
 import 'package:charted/core/interpolators.dart';
 import "package:charted/core/scales.dart";
+import "package:charted/core/text_metrics.dart";
 import "package:charted/selection/selection.dart";
 
 part 'svg_arc.dart';

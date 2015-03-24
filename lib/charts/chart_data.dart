@@ -124,7 +124,8 @@ class ChartColumnSpec {
   Scale createDefaultScale() {
     if (useOrdinalScale == true) return new OrdinalScale();
     if (LINEAR_SCALES.contains(type)) return new LinearScale();
-    if (TIME_SCALES.contains(type)) return new TimeScale();
+    //TODO(prsd): Reenable after refactoring TimeScale.
+    if (TIME_SCALES.contains(type)) return new LinearScale();
     return null;
   }
 

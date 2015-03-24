@@ -6,17 +6,17 @@
  * https://developers.google.com/open-source/licenses/bsd
  */
 
-@deprecated('Use package:intl/intll.dart')
 library charted.locale.format;
 
 import 'dart:math' as math;
+import 'package:intl/intl.dart';
 import 'package:charted/locale/locale.dart';
+import 'package:charted/core/utils.dart';
 
 part 'format/number_format.dart';
 part 'format/time_format.dart';
 
 typedef String NumberFormatFunction(num x, [int precision]);
-typedef String FormatFunction(num x);
 
 /**
  * Returns a new format function with the given string specifier.

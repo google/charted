@@ -24,7 +24,7 @@ import 'package:intl/intl.dart';
 part 'scales/ordinal_scale.dart';
 part 'scales/linear_scale.dart';
 part 'scales/log_scale.dart';
-part 'scales/time_scale.dart';
+//part 'scales/time_scale.dart';
 
 typedef num RoundFunction(num value);
 

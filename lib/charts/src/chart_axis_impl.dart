@@ -40,7 +40,14 @@ class _ChartAxis {
     _column = column;
     _domain = domain;
     _isDimension = isDimension;
-    if (scale == null) _scale = _columnSpec.createDefaultScale();
+    if (scale == null) {
+      _scale = _columnSpec.createDefaultScale();
+      print(_isDimension);
+      if (_isDimension) {
+        _scale.nice = false;
+        _scale.ticksCount = 10;
+      }
+    }
   }
 
   void initAxisScale(Iterable range, ChartAxisTheme theme) {
@@ -121,7 +128,7 @@ class _ChartAxis {
     }
     initAxisScale(range, _theme);
     if (_axis.scale != scale) _axis.scale = scale;
-    _axis.axis(_group);
+    _axis.axis(_group, rect: rect, font: _theme.ticksFont);
   }
 
   void clear() {
