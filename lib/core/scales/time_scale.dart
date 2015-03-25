@@ -5,7 +5,7 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 //
-/*
+
 part of charted.core.scales;
 
 /// TimeScale is a linear scale that operates on time.
@@ -32,24 +32,24 @@ class TimeScale extends LinearScale {
   ];
 
   static final _scaleLocalMethods = [
-    [chartTime.Time.second, 1],
-    [chartTime.Time.second, 5],
-    [chartTime.Time.second, 15],
-    [chartTime.Time.second, 30],
-    [chartTime.Time.minute, 1],
-    [chartTime.Time.minute, 5],
-    [chartTime.Time.minute, 15],
-    [chartTime.Time.minute, 30],
-    [chartTime.Time.hour,   1],
-    [chartTime.Time.hour,   3],
-    [chartTime.Time.hour,   6],
-    [chartTime.Time.hour,   12],
-    [chartTime.Time.day,    1],
-    [chartTime.Time.day,    2],
-    [chartTime.Time.week,   1],
-    [chartTime.Time.month,  1],
-    [chartTime.Time.month,  3],
-    [chartTime.Time.year,   1]
+    [TimeInterval.second, 1],
+    [TimeInterval.second, 5],
+    [TimeInterval.second, 15],
+    [TimeInterval.second, 30],
+    [TimeInterval.minute, 1],
+    [TimeInterval.minute, 5],
+    [TimeInterval.minute, 15],
+    [TimeInterval.minute, 30],
+    [TimeInterval.hour,   1],
+    [TimeInterval.hour,   3],
+    [TimeInterval.hour,   6],
+    [TimeInterval.hour,   12],
+    [TimeInterval.day,    1],
+    [TimeInterval.day,    2],
+    [TimeInterval.week,   1],
+    [TimeInterval.month,  1],
+    [TimeInterval.month,  3],
+    [TimeInterval.year,   1]
   ];
 
   static TimeFormatFunction _scaleLocalFormat = new TimeFormat().multi([
@@ -63,67 +63,41 @@ class TimeScale extends LinearScale {
       ["%Y",    (d) => true]
   ]);
 
-  TimeScale([List domain = LinearScale.defaultDomain,
-      List range = LinearScale.defaultRange,
-      interpolators.InterpolatorGenerator interpolator = interpolators.createNumberInterpolator,
-      bool clamp = false]) : super(domain, range, interpolator, clamp);
+  TimeScale();
+  TimeScale._clone(TimeScale source) : super._clone(source);
 
-  DateTime _timeScaleDate(num t) {
-    return new DateTime.fromMillisecondsSinceEpoch(t);
+  @override
+  scale(dynamic val) =>
+      super.scale(val is DateTime ? val.millisecondsSinceEpoch : val);
+
+  @override
+  set domain(Iterable value) {
+    super.domain = value.map(
+        (d) => d is DateTime ? d.millisecondsSinceEpoch : d).toList();
   }
+
+  @override
+  Function createTickFormatter([String format]) => _scaleLocalFormat;
+
+  @override
+  TimeScale clone() => new TimeScale._clone(this);
 
   List _tickMethod(Extent extent, int count) {
     var span  = extent.max - extent.min,
         target = span / count,
         i = ScaleUtils.bisect(_scaleSteps, target);
 
-    return i == _scaleSteps.length ?
-        [chartTime.Time.year, linearTickRange(
-            [extent.min / 31536e6, extent.max / 31536e6], count)[2]] :
-        i == 0 ? [new ScaleMilliSeconds(),
-            linearTickRange([extent.min, extent.max], count)[2]] :
-        _scaleLocalMethods[target / _scaleSteps[i - 1] <
-            _scaleSteps[i] / target ? i - 1 : i];
+    return i == _scaleSteps.length
+        ? [ TimeInterval.year, _linearTickRange(
+            new Extent(extent.min / 31536e6, extent.max / 31536e6)).step ]
+        : i == 0
+            ? [ new ScaleMilliSeconds(), _linearTickRange(extent).step ]
+            : _scaleLocalMethods[
+                target / _scaleSteps[i - 1] < _scaleSteps[i] / target ? i - 1 : i];
   }
-
-  /**
-   * Given a value x as DateTime or TimeStamp, returns the corresponding value
-   * in the output range.
-   */
-  apply(x){
-    return super.apply(x is DateTime ? x.millisecondsSinceEpoch: x);
-  }
-
-  /**
-   * Returns the value in the input domain x for the corresponding value in the
-   * output range y. This represents the inverse mapping from range to domain.
-   * If elements in range are not number, the invert function returns null.
-   */
-  invert(y) {
-    return super.invert(y);
-  }
-
-  /** Sets the domain of the scale. */
-  set domain(List newDomain) {
-    assert(newDomain.length > 1);
-    super.domain = newDomain.map(
-        (d) => d is DateTime ? d.millisecondsSinceEpoch : d).toList();
-  }
-
-  Function tickFormat(int ticks, [String format = null]) {
-    return _scaleLocalFormat;
-  }
-
-
-  /**
-   * Returns an exact copy of this time scale. Changes to this scale will not
-   * affect the returned scale, and vice versa.
-   **/
-  TimeScale copy() => new TimeScale(domain, range, interpolator, clamp);
 
   List niceInterval(var interval, [int skip = 1]) {
-    var extent = _scaleDomainExtent();
-
+    var extent = ScaleUtils.extent(domain);
     var method = interval == null ? _tickMethod(extent, 10) :
                  interval is int ? _tickMethod(extent, interval) : null;
 
@@ -134,47 +108,46 @@ class TimeScale extends LinearScale {
 
     bool skipped(var date) {
       if (date is DateTime) date = date.millisecondsSinceEpoch;
-      return (interval as chartTime.Interval)
+      return (interval as TimeInterval)
           .range(date, date + 1, skip).length == 0;
     }
 
     if (skip > 1) {
-      domain = scaleNice(domain,
+      domain = ScaleUtils.nice(domain, new RoundingFunctions(
         (date) {
-          while (skipped(date = (interval as chartTime.Interval).floor(date))) {
-            date = _timeScaleDate(date.millisecondsSinceEpoch - 1);
+          while (skipped(date = (interval as TimeInterval).floor(date))) {
+            date = new DateTime.fromMillisecondsSinceEpoch(
+                date.millisecondsSinceEpoch - 1);
           }
           return date.millisecondsSinceEpoch;
         },
         (date) {
-          while (skipped(date = (interval as chartTime.Interval).ceil(date))) {
-            date = _timeScaleDate(date.millisecondsSinceEpoch + 1);
+          while (skipped(date = (interval as TimeInterval).ceil(date))) {
+            date = new DateTime.fromMillisecondsSinceEpoch(
+                date.millisecondsSinceEpoch + 1);
           }
           return date.millisecondsSinceEpoch;
         }
-      );
+      ));
     } else {
-      domain = scaleNice(domain,
+      domain = ScaleUtils.nice(domain, new RoundingFunctions(
         (date) => interval.floor(date).millisecondsSinceEpoch,
         (date) => interval.ceil(date).millisecondsSinceEpoch
-      );
+      ));
     }
     return domain;
   }
 
+  @override
   set nice(bool val) {
-    domain = niceInterval(ticks);
-  }
-
-  bool get nice => true;
-
-  Extent _scaleDomainExtent() {
-    var extent = scaleExtent(domain);
-    return new Extent(extent[0], extent[1]);
+    if (_nice != val) {
+      _nice = val;
+      domain = niceInterval(_ticksCount);
+    }
   }
 
   List ticksInterval(var interval, [int skip = 1]) {
-    var extent = _scaleDomainExtent();
+    var extent = ScaleUtils.extent(domain);
     var method = interval == null ? _tickMethod(extent, 10) :
         interval is int ? _tickMethod(extent, interval) :
         [interval, skip];
@@ -188,15 +161,25 @@ class TimeScale extends LinearScale {
   }
 
   List get ticks {
-    return ticksInterval(ticks);
+    return ticksInterval(_ticksCount);
   }
 }
 
-class ScaleMilliSeconds extends chartTime.Interval {
-  DateTime floor(var date) =>
-      date is num ? new DateTime.fromMillisecondsSinceEpoch(date) : date;
-  DateTime ceil(var date) =>
-      date is num ? new DateTime.fromMillisecondsSinceEpoch(date) : date;
+class ScaleMilliSeconds implements TimeInterval {
+  DateTime _toDateTime(x) {
+    assert (x is int || x is DateTime);
+    return x is num ? new DateTime.fromMillisecondsSinceEpoch(x) : x;
+  }
+  DateTime floor(dynamic val) => _toDateTime(val);
+  DateTime ceil(dynamic val) => _toDateTime(val);
+  DateTime round(dynamic val) => _toDateTime(val);
+
+  DateTime offset(dynamic val, num dt) {
+    assert(val is int || val is DateTime);
+    return new DateTime.fromMillisecondsSinceEpoch(
+        val is int ? val + dt : (val as DateTime).millisecondsSinceEpoch + dt);
+  }
+
   List range(var t0, var t1, int step) {
     int start = t0 is DateTime ? t0.millisecondsSinceEpoch : t0,
         stop = t1 is DateTime ? t1.millisecondsSinceEpoch : t1;
@@ -204,4 +187,3 @@ class ScaleMilliSeconds extends chartTime.Interval {
         (d) => new DateTime.fromMillisecondsSinceEpoch(d)).toList();
   }
 }
-*/

@@ -42,7 +42,6 @@ class _ChartAxis {
     _isDimension = isDimension;
     if (scale == null) {
       _scale = _columnSpec.createDefaultScale();
-      print(_isDimension);
       if (_isDimension) {
         _scale.nice = false;
         _scale.ticksCount = 10;

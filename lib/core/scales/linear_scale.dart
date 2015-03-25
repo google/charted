@@ -126,9 +126,11 @@ class LinearScale implements Scale {
   @override
   num invert(num value) => _invert(value);
 
-  Range _linearTickRange() {
-    var extent = ScaleUtils.extent(_domain),
-        span = extent.max - extent.min,
+  Range _linearTickRange([Extent extent]) {
+    if (extent == null) {
+      extent = ScaleUtils.extent(_domain);
+    }
+    var span = extent.max - extent.min,
         step =
             math.pow(10, (math.log(span / _ticksCount) / math.LN10).floor()),
         err = _ticksCount / span * step;
@@ -150,9 +152,6 @@ class LinearScale implements Scale {
 
   @override
   FormatFunction createTickFormatter([String formatStr]) {
-    /*
-     * TODO(prsd): Re-enable precision based formatting.
-     *
     int precision(value) {
       return -(math.log(value) / math.LN10 + .01).floor();
     }
@@ -160,9 +159,8 @@ class LinearScale implements Scale {
     if (formatStr == null) {
       formatStr = ".${precision(tickRange.step)}f";
     }
-     */
-    NumberFormat formatter = new NumberFormat(formatStr);
-    return (x) => formatter.format(x);
+    NumberFormat formatter = new NumberFormat(new EnUsLocale());
+    return formatter.format(formatStr);
   }
 
   @override

@@ -6,9 +6,10 @@ import 'dart:html';
 import 'dart:math' as math;
 
 // A constant representing the start time for generating fake time data.
-const START_TIME_MS = 600000000000;
+var START_TIME_MS = new DateTime.now().millisecondsSinceEpoch;
+
 // A constant offset for incrementally adding new time domain values.
-const INCREMENT_MS = 1000 * 60 * 24;
+const INCREMENT_MS = 1000 * 60 * 60 * 24;
 
 const CHART_WIDTH = 600;
 const CHART_HEIGHT = 400;
@@ -24,7 +25,7 @@ void main() {
 
     List getChartedColumns() {
       return [
-        new ChartColumnSpec(label:'domain'),
+        new ChartColumnSpec(label:'domain', type: ChartColumnSpec.TYPE_TIMESTAMP),
         new ChartColumnSpec(label:'m1'),
         new ChartColumnSpec(label:'m2'),
         new ChartColumnSpec(label:'m3'),

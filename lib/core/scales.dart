@@ -19,12 +19,14 @@ library charted.core.scales;
 import 'dart:math' as math;
 import 'package:charted/core/utils.dart';
 import 'package:charted/core/interpolators.dart';
-import 'package:intl/intl.dart';
+import 'package:charted/core/time_interval.dart';
+import 'package:charted/locale/locale.dart';
+import 'package:charted/locale/format.dart';
 
 part 'scales/ordinal_scale.dart';
 part 'scales/linear_scale.dart';
 part 'scales/log_scale.dart';
-//part 'scales/time_scale.dart';
+part 'scales/time_scale.dart';
 
 typedef num RoundFunction(num value);
 
