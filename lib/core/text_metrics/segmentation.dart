@@ -18,22 +18,23 @@ const UNICODE_VERSION = '7.0.0';
 
 // Code table based on:
 // http://www.unicode.org/Public/7.0.0/ucd/auxiliary/GraphemeBreakTest.html
-// GRAPHEME_BREAK_TABLE[previousTypeIndex][currentTypeIndex] == 1 means break.
+// GRAPHEME_BREAK_TABLE[prevType * TYPE_COUNT + curType] == 1 means break.
 const GRAPHEME_BREAK_TABLE = const[
-  const[1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1],
-  const[1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-  const[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-  const[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-  const[1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1],
-  const[1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1],
-  const[1, 1, 1, 1, 0, 0, 0, 0, 1, 0, 0, 1],
-  const[1, 1, 1, 1, 0, 0, 1, 0, 0, 1, 1, 1],
-  const[1, 1, 1, 1, 0, 0, 1, 1, 0, 1, 1, 1],
-  const[1, 1, 1, 1, 0, 0, 1, 0, 0, 1, 1, 1],
-  const[1, 1, 1, 1, 0, 0, 1, 1, 0, 1, 1, 1],
-  const[1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 0]
+    1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1,
+    1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+    1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1,
+    1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1,
+    1, 1, 1, 1, 0, 0, 0, 0, 1, 0, 0, 1,
+    1, 1, 1, 1, 0, 0, 1, 0, 0, 1, 1, 1,
+    1, 1, 1, 1, 0, 0, 1, 1, 0, 1, 1, 1,
+    1, 1, 1, 1, 0, 0, 1, 0, 0, 1, 1, 1,
+    1, 1, 1, 1, 0, 0, 1, 1, 0, 1, 1, 1,
+    1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 0
 ];
 
+/// Get type of a given char code.
 int _typeForRune(int rune) {
   int position = binarySearch(CODE_POINT_BLOCKS, rune,
       compare: (CodeRange a, int value) =>
@@ -46,10 +47,10 @@ int _typeForRune(int rune) {
 Iterable<int> graphemeBreakIndices(String s) {
   Runes runes = s.runes;
   List<int> indices = [];
-  int previousTypeIndex = 0;
+  int previousType = 0;
   for (int i = 0, len = runes.length; i < len; ++i) {
-    int currentTypeIndex = _typeForRune(runes.elementAt(i));
-    if (GRAPHEME_BREAK_TABLE[previousTypeIndex][currentTypeIndex] == 1) {
+    int currentType = _typeForRune(runes.elementAt(i));
+    if (GRAPHEME_BREAK_TABLE[previousType * 12 + currentType] == 1) {
       indices.add(i);
     }
   }

@@ -74,15 +74,13 @@ class SvgAxis {
       // Check if we need rotation
       if (0.8 * allowedWidth < maxLabelWidth) {
         rotateTicks = true;
-        
+
         // Check if we have enough space to render full chart
         allowedWidth = 1.4142 * rect.height;
         if (maxLabelWidth > allowedWidth) {
-          print('Ellipsizing text...');
           for (int i = 0; i < formatted.length; ++i) {
             formatted[i] = textMetrics.ellipsizeText(formatted[i], allowedWidth);
           }
-          print('Done ellipsizing...');
         }
       }
     }

@@ -14,6 +14,7 @@ import "dart:html";
 import "package:charted/core/utils.dart";
 import "package:charted/core/text_metrics/segmentation.dart";
 
+/// Utilities to measure text width.
 class TextMetrics {
   static CanvasElement canvas;
   static CanvasRenderingContext2D context;
@@ -35,6 +36,8 @@ class TextMetrics {
   }
   TextMetrics._internal(this.fontStyle);
 
+  /// Measure width of [text] in pixels.
+  /// Optionally, uses [fontStyle] instead of using the default style
   double getTextWidth(String text, {String fontStyle}) {
     assert(text.length <= MAX_STRING_LENGTH);
     if (isNullOrEmpty(fontStyle)) {
@@ -44,6 +47,8 @@ class TextMetrics {
     return context.measureText(text).width;
   }
 
+  /// Gets length of the longest string in the given [strings].
+  /// Optionally, uses [fontStyle] instead of using the default style.
   double getLongestTextWidth(Iterable<String> strings, {String fontStyle}) {
     if (isNullOrEmpty(fontStyle)) {
       fontStyle = this.fontStyle;
@@ -62,6 +67,9 @@ class TextMetrics {
     return maxWidth;
   }
 
+  /// Truncates given [text] to fit in [width]. Adds an ellipsis to the
+  /// returned string, if it needed to be truncated.
+  /// Optionally, uses [fontStyle] instead of using the default style.
   String ellipsizeText(String text, double width, {String fontStyle}) {
     assert(text.length <= MAX_STRING_LENGTH);
     if (isNullOrEmpty(fontStyle)) {
@@ -71,28 +79,30 @@ class TextMetrics {
 
     double computedWidth = context.measureText(text).width;
     if (computedWidth > width) {
-      var breakIndices = graphemeBreakIndices(text),
-          position = 0,
-          min = 0, max = breakIndices.length, mid,
+      var indices = graphemeBreakIndices(text);
+      var position = 0,
+          lo = 0, hi = indices.length, mid,
           ellipsis = context.measureText('…').width;
       width = width - ellipsis;
-      while (min < max) {
-        mid = (min + max) ~/ 2;
-        position = breakIndices[mid];
-        if (mid == min) break;
+      while (lo < hi) {
+        mid = (lo + hi) ~/ 2;
+        position = indices[mid];
         if (context.measureText(text.substring(0, position)).width > width) {
-          max = mid - 1;
+          hi = mid - 1;
         } else {
-          min = mid;
+          lo = mid + 1;
         }
       }
-      text = text.substring(0, breakIndices[mid - 1]) + '…';
+      text = text.substring(0, indices[mid]) + '…';
     }
     return text;
   }
 
-  /// Utility function to use an SVG text element API to ellipsize text.
+  /// Truncates text in the given [element], which is either a [SvgTextElement]
+  /// or a [SvgTspanElement] to fit in [width]. Appends an ellipsis to the text
+  /// if it had to be truncated.
+  /// Calling this method may force a layout on the document. For better
+  /// performance, use [TextMetrics.ellipsizeText].
   static ellipsizeTextElement() {
-    /// TODO(prsd): Implement this.
   }
 }
