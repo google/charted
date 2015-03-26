@@ -42,10 +42,6 @@ class _ChartAxis {
     _isDimension = isDimension;
     if (scale == null) {
       _scale = _columnSpec.createDefaultScale();
-      if (_isDimension) {
-        _scale.nice = false;
-        _scale.ticksCount = 10;
-      }
     }
   }
 
@@ -55,7 +51,7 @@ class _ChartAxis {
     // Sets the domain if not using a custom scale.
     if (config == null || (config != null && config.scale == null)) {
       scale.domain = _domain;
-      scale.nice = true;
+      scale.nice = !_isDimension;
     }
 
     // Sets the range if not using a custom scale, or the custom scale uses

@@ -77,14 +77,13 @@ class TimeScale extends LinearScale {
   }
 
   @override
-  Function createTickFormatter([String format]) => _scaleLocalFormat;
+  FormatFunction createTickFormatter([String format]) => _scaleLocalFormat;
 
   @override
   TimeScale clone() => new TimeScale._clone(this);
 
-  List _tickMethod(Extent extent, int count) {
-    var span  = extent.max - extent.min,
-        target = span / count,
+  List _getTickMethod(Extent extent, int count) {
+    var target  = (extent.max - extent.min) / count,
         i = ScaleUtils.bisect(_scaleSteps, target);
 
     return i == _scaleSteps.length
@@ -96,10 +95,10 @@ class TimeScale extends LinearScale {
                 target / _scaleSteps[i - 1] < _scaleSteps[i] / target ? i - 1 : i];
   }
 
-  List niceInterval(var interval, [int skip = 1]) {
-    var extent = ScaleUtils.extent(domain);
-    var method = interval == null ? _tickMethod(extent, 10) :
-                 interval is int ? _tickMethod(extent, interval) : null;
+  List niceInterval(int ticksCount, [int skip = 1]) {
+    var extent = ScaleUtils.extent(domain),
+        method = _getTickMethod(extent, ticksCount),
+        interval;
 
     if (method != null) {
       interval = method[0];
@@ -130,39 +129,36 @@ class TimeScale extends LinearScale {
         }
       ));
     } else {
-      domain = ScaleUtils.nice(domain, new RoundingFunctions(
-        (date) => interval.floor(date).millisecondsSinceEpoch,
-        (date) => interval.ceil(date).millisecondsSinceEpoch
-      ));
+      domain = ScaleUtils.nice(
+          domain, new RoundingFunctions(
+              (date) => interval.floor(date).millisecondsSinceEpoch,
+              (date) => interval.ceil(date).millisecondsSinceEpoch));
     }
     return domain;
   }
 
   @override
-  set nice(bool val) {
-    if (_nice != val) {
-      _nice = val;
+  set nice(bool value) {
+    assert(value != null);
+    if (value != null && _nice != value) {
+      _nice = value;
       domain = niceInterval(_ticksCount);
     }
   }
 
-  List ticksInterval(var interval, [int skip = 1]) {
-    var extent = ScaleUtils.extent(domain);
-    var method = interval == null ? _tickMethod(extent, 10) :
-        interval is int ? _tickMethod(extent, interval) :
-        [interval, skip];
-
+  List ticksInterval(int ticksCount, [int skip]) {
+    var extent = ScaleUtils.extent(domain),
+        method = _getTickMethod(extent, ticksCount),
+        interval;
     if (method != null) {
       interval = method[0];
       skip = method[1];
     }
-
     return interval.range(extent.min, extent.max + 1, skip < 1 ? 1 : skip);
   }
 
-  List get ticks {
-    return ticksInterval(_ticksCount);
-  }
+  @override
+  List get ticks => ticksInterval(ticksCount);
 }
 
 class ScaleMilliSeconds implements TimeInterval {

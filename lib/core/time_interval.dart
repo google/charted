@@ -30,21 +30,13 @@ class TimeInterval {
   DateTime round(dynamic date) {
     DateTime d0 = floor(date),
              d1 = offset(d0, 1);
-    return (date.millisecondsSinceEpoch - d0.millisecondsSinceEpoch <
-              d1.millisecondsSinceEpoch - date.millisecondsSinceEpoch)
-                  ? d0 : d1;
+    int ms = date is int ? date : date.millisecondsSinceEpoch;
+    return (ms - d0.millisecondsSinceEpoch < d1.millisecondsSinceEpoch - ms)
+        ? d0
+        : d1;
   }
 
-  DateTime ceil(dynamic date) {
-    DateTime d0 = floor(date),
-             d1 = offset(d0, 1);
-    return
-        ((date is int && date - d0.millisecondsSinceEpoch > 0) ||
-            (date is DateTime &&
-                date.millisecondsSinceEpoch - d0.millisecondsSinceEpoch > 0))
-                    ? d1
-                    : d0;
-  }
+  DateTime ceil(dynamic date) => offset(floor(date), 1);
 
   DateTime offset(DateTime date, int k) => _step(date, k);
 
@@ -116,7 +108,7 @@ class TimeInterval {
 
   static TimeInterval week = new TimeInterval(
       (DateTime date) =>
-          new DateTime(date.year, date.month, date.day - date.day % 7),
+          new DateTime(date.year, date.month, date.day - (date.weekday % 7)),
       (DateTime date, int offset) =>
           new DateTime(date.year, date.month, date.day + offset * 7,
               date.hour, date.minute, date.second, date.millisecond ),

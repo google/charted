@@ -72,7 +72,7 @@ class SvgAxis {
       var maxLabelWidth = textMetrics.getLongestTextWidth(formatted);
 
       // Check if we need rotation
-      if (0.8 * allowedWidth < maxLabelWidth) {
+      if (0.85 * allowedWidth < maxLabelWidth) {
         rotateTicks = true;
 
         // Check if we have enough space to render full chart

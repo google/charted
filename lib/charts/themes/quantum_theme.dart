@@ -47,7 +47,7 @@ class QuantumChartTheme extends ChartTheme {
   ChartAxisTheme get measureAxisTheme =>
       const _QuantumChartAxisTheme(ChartAxisTheme.FILL_RENDER_AREA, 5);
   ChartAxisTheme get dimensionAxisTheme =>
-      const _QuantumChartAxisTheme(0, 5);
+      const _QuantumChartAxisTheme(0, 10);
 
   /* Padding for charts */
   double outerPadding = 0.1;

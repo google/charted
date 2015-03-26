@@ -54,6 +54,7 @@ class LinearScale implements Scale {
 
   @override
   set range(Iterable value) {
+    assert(value != null);
     _range = value;
     _reset();
   }
@@ -72,7 +73,8 @@ class LinearScale implements Scale {
 
   @override
   set rounded(bool value) {
-    if (_rounded != value) {
+    assert(value != null);
+    if (value != null && _rounded != value) {
       _rounded = value;
       _reset();
     }
@@ -83,7 +85,8 @@ class LinearScale implements Scale {
 
   @override
   set ticksCount(int value) {
-    if (_ticksCount != value) {
+    assert(value != null);
+    if (value != null && _ticksCount != value) {
       _ticksCount = value;
       _reset();
     }
@@ -97,7 +100,8 @@ class LinearScale implements Scale {
 
   @override
   set clamp(bool value) {
-    if (_clamp != value) {
+    assert(value != null);
+    if (value != null && _clamp != value) {
       _clamp = value;
       _reset();
     }
@@ -108,7 +112,8 @@ class LinearScale implements Scale {
 
   @override
   set nice(bool value) {
-    if (_nice != value) {
+    assert(value != null);
+    if (value != null && _nice != value) {
       _nice = value;
       _reset();
     }
