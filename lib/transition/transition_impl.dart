@@ -16,7 +16,7 @@ class _TransitionImpl implements Transition {
   Map _styles = {};
   Map _attrTweens = {};
   Map _styleTweens = {};
-  Map<ChartTimer, Element> _timerMap = {};
+  Map<AnimationTimer, Element> _timerMap = {};
   Map<Element, List<Map>> _attrMap = {};
   Map<Element, int> _durationMap = {};
   bool _interrupted = false;
@@ -75,7 +75,7 @@ class _TransitionImpl implements Transition {
   // Starts a timer that registers all attributes, durations, and delays for the
   // transition of the current selection.
   _transitionNode(num delay) {
-    new ChartTimer((elapsed) {
+    new AnimationTimer((elapsed) {
       _selection.each((d, i, c) {
         var tweenList = [];
         _attrs.forEach((key, value) {
@@ -97,7 +97,7 @@ class _TransitionImpl implements Transition {
 
         _attrMap[c] = tweenList;
         _durationMap[c] = _duration(d, i, c);
-        _timerMap[new ChartTimer(_tick, _delay(d, i, c))] = c;
+        _timerMap[new AnimationTimer(_tick, _delay(d, i, c))] = c;
       });
       return true;
     }, delay);
@@ -127,7 +127,7 @@ class _TransitionImpl implements Transition {
     if (_interrupted) {
       return true;
     }
-    var activeNode = _timerMap[ChartTimer.activeTimer];
+    var activeNode = _timerMap[AnimationTimer.activeTimer];
     var t = elapsed / _durationMap[activeNode];
     for (Interpolator tween in _attrMap[activeNode]) {
       tween(ease(t));

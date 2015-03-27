@@ -8,7 +8,7 @@
 library charted.transition;
 
 import "dart:html" show Element,document;
-import "package:charted/event/event.dart";
+import "package:charted/core/timer.dart";
 import "package:charted/selection/selection.dart";
 import "package:charted/core/interpolators.dart";
 

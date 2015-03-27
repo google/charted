@@ -5,9 +5,15 @@
  * license that can be found in the LICENSE file or at
  * https://developers.google.com/open-source/licenses/bsd
  */
-part of charted.svg;
+library charted.svg.axis;
 
-typedef String Formatter(x);
+import 'dart:html' show Element;
+import 'dart:math' as math;
+
+import 'package:charted/core/scales.dart';
+import 'package:charted/core/utils.dart';
+import 'package:charted/core/text_metrics.dart';
+import 'package:charted/selection/selection.dart';
 
 /**
  * [SvgAxis] helps draw chart axes based on a given scale.
@@ -35,7 +41,7 @@ class SvgAxis {
   List tickValues;
 
   /** Formatter for the tick labels */
-  Formatter tickFormat;
+  FormatFunction tickFormat;
 
   /** Previous rotate angle */
   num _prevRotate = 0;

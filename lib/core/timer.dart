@@ -1,16 +1,22 @@
-/*
- * Copyright 2014 Google Inc. All rights reserved.
- *
- * Use of this source code is governed by a BSD-style
- * license that can be found in the LICENSE file or at
- * https://developers.google.com/open-source/licenses/bsd
- */
+//
+// Copyright 2014 Google Inc. All rights reserved.
+//
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file or at
+// https://developers.google.com/open-source/licenses/bsd
+//
 
-part of charted.event;
+/// A window.requestAnimationFrame based timer for use with transitions
+library charted.core.timer;
 
-class ChartTimer {
-  static DoubleLinkedQueue<DoubleLinkedQueueEntry<ChartTimer>> _timerQueue =
-      new DoubleLinkedQueue<DoubleLinkedQueueEntry<ChartTimer>>();
+import 'dart:async';
+import 'dart:html' show window;
+import 'dart:collection';
+
+class AnimationTimer {
+  static DoubleLinkedQueue<DoubleLinkedQueueEntry<AnimationTimer>>
+      _timerQueue =
+          new DoubleLinkedQueue<DoubleLinkedQueueEntry<AnimationTimer>>();
 
   static bool _interval = false;
   static Timer _timer;
@@ -30,7 +36,7 @@ class ChartTimer {
    * the specified time in milliseconds since UNIX epoch; if time is not
    * specified, it defaults to Date.now
    */
-  ChartTimer(this._callback, [int delay = 0, DateTime then = null]) {
+  AnimationTimer(this._callback, [int delay = 0, DateTime then = null]) {
     if (then == null) {
       then = new DateTime.now();
     }

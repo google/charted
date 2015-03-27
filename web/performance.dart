@@ -25,7 +25,7 @@ void main() {
 
     List getChartedColumns() {
       return [
-        new ChartColumnSpec(label:'domain', type: ChartColumnSpec.TYPE_TIMESTAMP),
+        new ChartColumnSpec(label:'domain', type: ChartColumnSpec.TYPE_NUMBER),
         new ChartColumnSpec(label:'m1'),
         new ChartColumnSpec(label:'m2'),
         new ChartColumnSpec(label:'m3'),
