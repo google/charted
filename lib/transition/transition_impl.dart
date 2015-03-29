@@ -97,10 +97,10 @@ class _TransitionImpl implements Transition {
 
         _attrMap[c] = tweenList;
         _durationMap[c] = _duration(d, i, c);
-        _timerMap[new AnimationTimer(_tick, _delay(d, i, c))] = c;
+        _timerMap[new AnimationTimer(_tick, delay: _delay(d, i, c))] = c;
       });
       return true;
-    }, delay);
+    }, delay: delay);
   }
 
   // Returns the correct interpolator function for the old and new attribute.
@@ -127,7 +127,7 @@ class _TransitionImpl implements Transition {
     if (_interrupted) {
       return true;
     }
-    var activeNode = _timerMap[AnimationTimer.activeTimer];
+    var activeNode = _timerMap[AnimationTimer.active];
     var t = elapsed / _durationMap[activeNode];
     for (Interpolator tween in _attrMap[activeNode]) {
       tween(ease(t));
