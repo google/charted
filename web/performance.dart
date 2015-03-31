@@ -60,7 +60,7 @@ void main() {
     ChartConfig config = new ChartConfig([series], [0])
         ..minimumSize = new Rect.size(CHART_WIDTH, CHART_HEIGHT);
     ChartArea base = new ChartArea(chartedElement, data, config,
-        autoUpdate: true, dimensionAxesCount: 1);
+        autoUpdate: true, useTwoDimensionAxes: false);
     window.console.timeStamp("mew-prep done");
     base.draw();
     window.console.timeStamp("mew-draw done");

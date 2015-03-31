@@ -30,11 +30,12 @@ class PieChartRenderer extends BaseRenderer {
   @override
   bool prepare(ChartArea area, ChartSeries series) {
     _ensureAreaAndSeries(area, series);
-    return area.dimensionAxesCount == 0;
+    return area is CartesianChartArea;
   }
 
   @override
-  void draw(GElement element) {
+  void draw(Element element,
+      {bool preRender: false, Future schedulePostRender}) {
     _ensureReadyToDraw(element);
 
     var rows = new List()..addAll(area.data.rows.map((e) {

@@ -1,104 +1,115 @@
-/*
- * Copyright 2014 Google Inc. All rights reserved.
- *
- * Use of this source code is governed by a BSD-style
- * license that can be found in the LICENSE file or at
- * https://developers.google.com/open-source/licenses/bsd
- */
+//
+// Copyright 2014 Google Inc. All rights reserved.
+//
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file or at
+// https://developers.google.com/open-source/licenses/bsd
+//
 
 part of charted.charts;
 
 class BarChartRenderer extends BaseRenderer {
   final Iterable<int> dimensionsUsingBand = const[0];
+  final alwaysAnimate;
 
-  /*
-   * Returns false if the number of dimension axes on the area is 0.
-   * Otherwise, the first dimension scale is used to render the chart.
-   */
+  BarChartRenderer({this.alwaysAnimate: false});
+
+  /// Returns false if the number of dimension axes on the area is 0.
+  /// Otherwise, the first dimension scale is used to render the chart.
   @override
   bool prepare(ChartArea area, ChartSeries series) {
     _ensureAreaAndSeries(area, series);
-    return area.dimensionAxesCount != 0;
+    return area is CartesianChartArea;
   }
 
   @override
-  void draw(Element element) {
+  void draw(Element element,
+      {bool preRender: false, Future schedulePostRender}) {
     _ensureReadyToDraw(element);
 
     var measuresCount = series.measures.length,
         measureScale = area.measureScales(series).first,
         dimensionScale = area.dimensionScales.first;
 
-    var rows = new List()..addAll(area.data.rows.map((e) {
-      var row = [];
-      for (var measure in series.measures) {
-        row.add(e[measure]);
-      }
-      return row;
-    }));
+    var rows = new List()
+      ..addAll(area.data.rows.map((e) =>
+          new List.generate(
+              measuresCount, (i) => e[series.measures.elementAt(i)])));
 
-    var x = area.data.rows.map(
+    var dimensionVals = area.data.rows.map(
         (row) => row.elementAt(area.config.dimensions.first)).toList();
 
     var bars = new OrdinalScale()
-        ..domain = new Range(series.measures.length).toList()
-        ..rangeRoundBands([0, dimensionScale.rangeBand]);
+      ..domain = new Range(series.measures.length).toList()
+      ..rangeRoundBands([0, dimensionScale.rangeBand]);
+
+    // Create and update the bar groups.
 
     var groups = root.selectAll('.row-group').data(rows);
+    var animateBarGroups = alwaysAnimate || !groups.isEmpty;
 
     groups.enter.append('g')
-        ..classed('row-group')
-        ..attrWithCallback('transform', (d, i, c) =>
-            'translate(${dimensionScale.scale(x[i])}, 0)');
+      ..classed('row-group')
+      ..attrWithCallback('transform', (d, i, c) =>
+          'translate(${dimensionScale.scale(dimensionVals[i])}, 0)');
+    groups.attrWithCallback('data-row', (d, i, e) => i);
     groups.exit.remove();
 
-    // TODO(psunkari): Try not to set an attribute with row index on the gorup.
-    groups.transition()
+    if (animateBarGroups) {
+      groups.transition()
         ..attrWithCallback('transform', (d, i, c) =>
-            'translate(${dimensionScale.scale(x[i])}, 0)')
-        ..attrWithCallback('data-row', (d, i, e) => i)
+            'translate(${dimensionScale.scale(dimensionVals[i])}, 0)')
         ..duration(theme.transitionDuration);
+    }
 
-    int barWidth = bars.rangeBand -
-        theme.defaultSeparatorWidth - theme.defaultStrokeWidth;
+    var barWidth = (bars.rangeBand -
+        theme.defaultSeparatorWidth - theme.defaultStrokeWidth).toString();
+
+    // Create and update the bars
+    // Avoids animation on first render unless alwaysAnimate is set to true.
 
     var bar = groups.selectAll('.bar').dataWithCallback((d, i, c) => rows[i]);
-    var enter = bar.enter.append('rect')
-        ..classed('bar')
-        ..attr('y', rect.height)
-        ..attr('height', 0)
-        ..styleWithCallback('fill', (d, i, c) => colorForKey(i))
-        ..attrWithCallback(
-            'x', (d, i, e) => bars.scale(i) + theme.defaultStrokeWidth)
-        ..attr('width', barWidth)
-        ..on('click', (d, i, e) => _event(mouseClickController, d, i, e))
-        ..on('mouseover', (d, i, e) => _event(mouseOverController, d, i, e))
-        ..on('mouseout', (d, i, e) => _event(mouseOutController, d, i, e));
+    var animateBars = alwaysAnimate || !bar.isEmpty;
+    var getBarHeight = (d) {
+      var ht = rect.height - measureScale.scale(d).round() - 1;
+      return (ht < 0) ? '0' : ht.toString();
+    };
+    var getBarY = (d) => measureScale.scale(d).round().toString();
 
-    bar.transition()
+    var enter = bar.enter.append('rect')
+      ..each((d, i, e) {
+        e.classes.add('bar');
+        e.attributes
+          ..['x'] = (bars.scale(i) + theme.defaultStrokeWidth).toString()
+          ..['y'] = animateBars ? rect.height.toString() : getBarY(d)
+          ..['height'] = animateBars ? '0' : getBarHeight(d)
+          ..['width'] = barWidth
+          ..['stroke-width'] = '${theme.defaultStrokeWidth}px';
+        if (!animateBars) {
+          e.style.setProperty('fill', colorForKey(i));
+          e.style.setProperty('stroke', colorForKey(i));
+        }
+      })
+      ..on('click', (d, i, e) => _event(mouseClickController, d, i, e))
+      ..on('mouseover', (d, i, e) => _event(mouseOverController, d, i, e))
+      ..on('mouseout', (d, i, e) => _event(mouseOutController, d, i, e));
+
+    if (animateBars) {
+      bar.transition()
         ..attrWithCallback(
             'x', (d, i, c) => bars.scale(i) + theme.defaultStrokeWidth)
         ..styleWithCallback('fill', (d, i, c) => colorForKey(i))
+        ..styleWithCallback('stroke', (d, i, c) => colorForKey(i))
         ..attr('width', barWidth)
         ..duration(theme.transitionDuration);
 
-    int delay = 0;
-    bar.transition()
-        ..attrWithCallback('y', (d, i, c) => measureScale.scale(d).round())
-        // height -1 so bar does not overlap x axis.
-        ..attrWithCallback('height', (d, i, c) {
-            var height = rect.height - measureScale.scale(d).round() - 1;
-            return (height < 0) ? 0 : height;
-        })
+      int delay = 0;
+      bar.transition()
+        ..attrWithCallback('y', (d, i, c) => getBarY(d))
+        ..attrWithCallback('height', (d, i, c) => getBarHeight(d))
         ..delayWithCallback((d, i, c) =>
             delay += theme.transitionDuration ~/
-              (series.measures.length * rows.length));
-
-    if (theme.defaultStrokeWidth > 0) {
-      enter.attr('stroke-width', '${theme.defaultStrokeWidth}px');
-      enter.styleWithCallback('stroke', (d, i, c) => colorForKey(i));
-      bar.transition()
-          ..styleWithCallback('stroke', (d, i, c) => colorForKey(i));
+                (series.measures.length * rows.length));
     }
 
     bar.exit.remove();

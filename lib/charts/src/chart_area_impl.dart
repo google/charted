@@ -1,80 +1,95 @@
-/*
- * Copyright 2014 Google Inc. All rights reserved.
- *
- * Use of this source code is governed by a BSD-style
- * license that can be found in the LICENSE file or at
- * https://developers.google.com/open-source/licenses/bsd
- */
+//
+// Copyright 2014 Google Inc. All rights reserved.
+//
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file or at
+// https://developers.google.com/open-source/licenses/bsd
+//
 
 part of charted.charts;
 
-/**
- * Generic implementation of ChartArea.
- *
- * Assumes that the chart displays either one or two dimension axes and zero
- * or more measure axis.  The number of measure axes displayed is zero in charts
- * similar to bubble chart - the number of dimension axes is two.
- *
- * The primary dimension axes is always at the bottom, the primary measure axis
- * is always on the right.
- */
-class _ChartArea implements ChartArea {
-  static const List MEASURE_AXIS_IDS = const['_default'];
-  static const List DIMENSION_AXIS_IDS = const['_primary', '_secondary'];
+/// Displays either one or two dimension axes and zero or more measure axis.
+/// The number of measure axes displayed is zero in charts like bubble chart
+/// which contain two dimension axes.
+class CartesianChartArea implements ChartArea {
+  /// Default identifiers used by the measure axes
+  static const MEASURE_AXIS_IDS = const['_default'];
 
-  static const List MEASURE_AXIS_ORIENTATIONS =
-      const[ORIENTATION_LEFT, ORIENTATION_RIGHT];
-  static const List MEASURE_AXIS_ORIENTATIONS_ALT =
-      const[ORIENTATION_BOTTOM, ORIENTATION_TOP];
+  /// Orientations used by measure axes. First, when "x" axis is the primary
+  /// and the only dimension. Second, when "y" axis is the primary and the only
+  /// dimension.
+  static const MEASURE_AXIS_ORIENTATIONS = const[
+    const[ORIENTATION_LEFT, ORIENTATION_RIGHT],
+    const[ORIENTATION_BOTTOM, ORIENTATION_TOP]
+  ];
 
-  static const List DIMENSION_AXIS_ORIENTATIONS =
-      const[ORIENTATION_BOTTOM, ORIENTATION_LEFT];
-  static const List DIMENSION_AXIS_ORIENTATIONS_ALT =
-      const[ORIENTATION_LEFT, ORIENTATION_BOTTOM];
+  /// Orientations used by the dimension axes. First, when "x" is the
+  /// primary dimension and the last one for cases where "y" axis is primary
+  /// dimension.
+  static const DIMENSION_AXIS_ORIENTATIONS = const[
+    const[ORIENTATION_BOTTOM, ORIENTATION_LEFT],
+    const[ORIENTATION_LEFT, ORIENTATION_BOTTOM]
+  ];
 
-  static const int MEASURE_AXES_COUNT = 2;
-  static const int MARGIN = 10;
+  /// Mapping of measure axis Id to it's axis.
+  final _measureAxes = new LinkedHashMap<String, _ChartAxis>();
 
-  final LinkedHashMap<String, _ChartAxis> _measureAxes = new LinkedHashMap();
-  final LinkedHashMap<int, _ChartAxis> _dimensionAxes = new LinkedHashMap();
-  final HashSet<int> dimensionsUsingBands = new HashSet();
-  final SubscriptionsDisposer _dataEventsDisposer = new SubscriptionsDisposer();
-  final SubscriptionsDisposer _configEventsDisposer =
-      new SubscriptionsDisposer();
+  /// Mapping of dimension column index to it's axis.
+  final _dimensionAxes = new LinkedHashMap<int, _ChartAxis>();
 
-  final Element _host;
+  /// Disposer for all change stream subscriptions related to data.
+  final _dataEventsDisposer = new SubscriptionsDisposer();
 
-  List<ChartBehavior> _behaviors = new List();
-  Map<ChartSeries, _ChartSeriesInfo> _seriesInfoCache = new Map();
+  /// Disposer for all change stream subscriptions related to config.
+  final _configEventsDisposer = new SubscriptionsDisposer();
 
+  @override
+  final Element host;
+
+  @override
+  final bool useTwoDimensionAxes;
+
+  /// Indicates whether any renderers need bands on primary dimension
+  final List<int> dimensionsUsingBands = [];
+
+  @override
+  _ChartAreaLayout layout = new _ChartAreaLayout();
+
+  @override
+  Selection upperBehaviorPane;
+
+  @override
+  Selection lowerBehaviorPane;
+
+  @override
   ChartTheme theme;
-  bool autoUpdate = false;
 
   ChartData _data;
   ChartConfig _config;
-  int _dimensionAxesCount;
+  bool _autoUpdate = false;
 
-  _ChartAreaLayout layout = new _ChartAreaLayout();
   SelectionScope _scope;
   Selection _svg;
-  Selection _group;
+  Selection visualization;
+
   Iterable<ChartSeries> _series;
+
   bool _pendingLegendUpdate = false;
+  List<ChartBehavior> _behaviors = new List<ChartBehavior>();
+  Map<ChartSeries, _ChartSeriesInfo> _seriesInfoCache = new Map();
 
   StreamController<ChartEvent> _valueMouseOverController;
   StreamController<ChartEvent> _valueMouseOutController;
   StreamController<ChartEvent> _valueMouseClickController;
 
-  @override
-  Element upperBehaviorPane;
-
-  @override
-  Element lowerBehaviorPane;
-
-  _ChartArea(Element this._host, ChartData data, ChartConfig config,
-      bool this.autoUpdate, this._dimensionAxesCount) {
-    assert(_host != null);
-    assert(isNotInline(_host));
+  CartesianChartArea(
+      this.host,
+      ChartData data,
+      ChartConfig config,
+      bool autoUpdate,
+      this.useTwoDimensionAxes) : _autoUpdate = autoUpdate {
+    assert(host != null);
+    assert(isNotInline(host));
 
     this.data = data;
     this.config = config;
@@ -93,12 +108,8 @@ class _ChartArea implements ChartArea {
   static bool isNotInline(Element e) =>
       e != null && e.getComputedStyle().display != 'inline';
 
-  Element get host => _host;
-
-  /*
-   * If [value] is [Observable], subscribes to changes and updates the
-   * chart when data changes.
-   */
+  /// Set new data for this chart. If [value] is [Observable], subscribes to
+  /// changes and updates the chart when data changes.
   @override
   set data(ChartData value) {
     _data = value;
@@ -106,7 +117,6 @@ class _ChartArea implements ChartArea {
 
     if (autoUpdate && _data != null && _data is Observable) {
       _dataEventsDisposer.add((_data as Observable).changes.listen((_) {
-        _pendingLegendUpdate = (_data is TransposeTransformer);
         draw();
       }));
     }
@@ -115,17 +125,15 @@ class _ChartArea implements ChartArea {
   @override
   ChartData get data => _data;
 
-  /*
-   * If [value] is [Observable], subscribes to changes and updates the
-   * chart when series or dimensions change in configuration.
-   */
+  /// Set new config for this chart. If [value] is [Observable], subscribes to
+  /// changes and updates the chart when series or dimensions change.
   @override
   set config(ChartConfig value) {
     _config = value;
     _configEventsDisposer.dispose();
     _pendingLegendUpdate = true;
 
-    if (_config != null) {
+    if (_config != null && _config is Observable) {
       _configEventsDisposer.add((_config as Observable).changes.listen((_) {
         _pendingLegendUpdate = true;
         draw();
@@ -136,37 +144,33 @@ class _ChartArea implements ChartArea {
   @override
   ChartConfig get config => _config;
 
-  /*
-   * Number of dimension axes displayed in this chart.
-   */
   @override
-  set dimensionAxesCount(int count) {
-    _dimensionAxesCount = count;
-    if (autoUpdate) draw();
+  set autoUpdate(bool value) {
+    if (_autoUpdate != value) {
+      _autoUpdate = value;
+      this.data = _data;
+      this.config = _config;
+    }
   }
 
   @override
-  int get dimensionAxesCount => _dimensionAxesCount;
+  bool get autoUpdate => _autoUpdate;
 
-  /*
-   * Gets measure axis from cache - creates a new instance of _ChartAxis
-   * if one was not already created for the given axis [id].
-   */
-  _ChartAxis _getMeasureAxis(String id) {
-    _measureAxes.putIfAbsent(id, () {
-      var axisConf = config.getMeasureAxis(id),
+  /// Gets measure axis from cache - creates a new instance of _ChartAxis
+  /// if one was not already created for the given [axisId].
+  _ChartAxis _getMeasureAxis(String axisId) {
+    _measureAxes.putIfAbsent(axisId, () {
+      var axisConf = config.getMeasureAxis(axisId),
           axis = axisConf != null ?
               new _ChartAxis.withAxisConfig(this, axisConf) :
                   new _ChartAxis(this);
       return axis;
     });
-    return _measureAxes[id];
+    return _measureAxes[axisId];
   }
 
-  /*
-   * Gets a dimension axis from cache - creates a new instance of _ChartAxis
-   * if one was not already created for the given dimension [column].
-   */
+  /// Gets a dimension axis from cache - creates a new instance of _ChartAxis
+  /// if one was not already created for the given dimension [column].
   _ChartAxis _getDimensionAxis(int column) {
     _dimensionAxes.putIfAbsent(column, () {
       var axisConf = config.getDimensionAxis(column),
@@ -178,46 +182,27 @@ class _ChartArea implements ChartArea {
     return _dimensionAxes[column];
   }
 
-  /*
-   * All columns rendered by a series must be of the same type and the
-   * series must use a renderer that supports current [ChartArea]
-   * configuration.
-   */
+  /// All columns rendered by a series must be of the same type.
   bool _isSeriesValid(ChartSeries s) {
     var first = data.columns.elementAt(s.measures.first).type;
     return s.measures.every((i) =>
         (i < data.columns.length) && data.columns.elementAt(i).type == first);
   }
 
-  /*
-   * Indicates if the given ChartSeries needs an ordinal scale
-   */
-  bool _isOrdinalColumn(column) =>
-      column.useOrdinalScale == true ||
-          (column.useOrdinalScale == null &&
-              ChartColumnSpec.ORDINAL_SCALES.contains(column.type));
-
-  /*
-   * Get a list of dimension scales for this chart.
-   */
   @override
   Iterable<Scale> get dimensionScales =>
       config.dimensions.map((int column) => _getDimensionAxis(column).scale);
 
-  /*
-   * Get a list of scales used by [series]
-   */
   @override
   Iterable<Scale> measureScales(ChartSeries series) {
-    var axisIds = isNullOrEmpty(series.measureAxisIds) ?
-        MEASURE_AXIS_IDS : series.measureAxisIds;
+    var axisIds = isNullOrEmpty(series.measureAxisIds)
+        ? MEASURE_AXIS_IDS
+        : series.measureAxisIds;
     return axisIds.map((String id) => _getMeasureAxis(id).scale);
   }
 
-  /*
-   * Computes the size of chart and if changed from the previous time
-   * size was computed, sets attributes on svg element
-   */
+  /// Computes the size of chart and if changed from the previous time
+  /// size was computed, sets attributes on svg element
   Rect _computeChartSize() {
     int width = host.clientWidth,
         height = host.clientHeight;
@@ -227,89 +212,76 @@ class _ChartArea implements ChartArea {
       height = max([height, config.minimumSize.height]);
     }
 
-    Rect current =
-        new Rect(MARGIN, MARGIN, width - 2 * MARGIN, height - 2 * MARGIN);
+    Rect current = new Rect(0, 0, width, height);
     if (layout.chartArea == null || layout.chartArea != current) {
       _svg.attr('width', width.toString());
       _svg.attr('height', height.toString());
-      _group.attr('transform', 'translate($MARGIN, $MARGIN)');
       layout.chartArea = current;
     }
     return layout.chartArea;
   }
 
   @override
-  draw() {
+  draw({bool preRender:false, Future schedulePostRender}) {
     assert(data != null && config != null);
     assert(config.series != null && config.series.isNotEmpty);
 
-    /* Create SVG element and other one-time initializations. */
+    // One time initialization.
+    // Each [ChartArea] has it's own [SelectionScope]
     if (_scope == null) {
       _scope = new SelectionScope.element(host);
       _svg = _scope.append('svg:svg')..classed('charted-chart');
-      _group = _svg.append('g')..classed('chart-wrapper');
 
-      /* Create groups for behaviors to add any SVG elements */
-      var lower = _group.append('g')..classed('lower-render-pane'),
-          upper = _group.append('g')..classed('upper-first-pane');
+      lowerBehaviorPane = _svg.append('g')..classed('lower-render-pane');
+      visualization = _svg.append('g')..classed('chart-wrapper');
+      upperBehaviorPane = _svg.append('g')..classed('upper-render-pane');
 
-      lowerBehaviorPane = lower.first;
-      upperBehaviorPane = upper.first;
       if (_behaviors.isNotEmpty) {
         _behaviors.forEach(
             (b) => b.init(this, upperBehaviorPane, lowerBehaviorPane));
       }
     }
 
-    /* Compute sizes and filter out unsupported series */
+    // Compute chart sizes and filter out unsupported series
     var size = _computeChartSize(),
         series = config.series.where((s) =>
             _isSeriesValid(s) && s.renderer.prepare(this, s)),
-        selection = _group.selectAll('.series-group').
+        selection = visualization.selectAll('.series-group').
             data(series, (x) => x.hashCode),
         axesDomainCompleter = new Completer();
 
-    /*
-     * Wait till the axes are rendered before rendering series.
-     * In an SVG, z-index is based on the order of nodes in the DOM.
-     */
+    // Wait till the axes are rendered before rendering series.
+    // In an SVG, z-index is based on the order of nodes in the DOM.
     axesDomainCompleter.future.then((_) {
-      /* If a series was not rendered before, add an SVG group for it */
-      selection.enter.append('svg:g')
-          ..classed('series-group');
-
-      /* For all series recompute axis ranges and update the rendering */
-      var transform =
+      selection.enter.append('svg:g')..classed('series-group');
+      String transform =
           'translate(${layout.renderArea.x},${layout.renderArea.y})';
+
       selection.each((ChartSeries s, _, Element group) {
-        var info = _seriesInfoCache[s];
+        _ChartSeriesInfo info = _seriesInfoCache[s];
         if (info == null) {
           info = _seriesInfoCache[s] = new _ChartSeriesInfo(this, s);
         }
         info.check();
         group.attributes['transform'] = transform;
-        s.renderer.draw(group);
+        s.renderer.draw(group,
+            preRender:preRender, schedulePostRender:schedulePostRender);
       });
 
-      /* A series that was rendered earlier isn't there anymore, remove it */
+      // A series that was rendered earlier isn't there anymore, remove it
       selection.exit
-          ..each((ChartSeries s, _, __) {
-            var info = _seriesInfoCache[s];
-            if (info != null) info.dispose();
-            _seriesInfoCache.remove(s);
-          })
-          ..remove();
+        ..each((ChartSeries s, _, __) {
+          var info = _seriesInfoCache.remove(s);
+          if (info != null) {
+            info.dispose();
+          }
+        })
+        ..remove();
     });
 
-    // Save the list of valid series for use with legend and axes.
+    // Save the list of valid series and initialize axes.
     _series = series;
-
-    // If we have atleast one dimension axis, render the axes.
-    if (dimensionAxesCount != 0) {
-      _initAxes();
-    } else {
-      _computeLayoutWithoutAxes();
-    }
+    _initAxes();
 
     // Render the chart, now that the axes layer is already in DOM.
     axesDomainCompleter.complete();
@@ -318,25 +290,29 @@ class _ChartArea implements ChartArea {
     _updateLegend();
   }
 
+  /// Initialize the axes - required even if the axes are not being displayed.
   _initAxes() {
-    var measureAxisUsers = {};
+    Map measureAxisUsers = <String,Iterable<ChartSeries>>{};
 
-    /* Create necessary measures axes */
+    // Create necessary measures axes.
+    // If measure axes were not configured on the series, default is used.
     _series.forEach((ChartSeries s) {
-      var ids = isNullOrEmpty(s.measureAxisIds) ?
-          MEASURE_AXIS_IDS : s.measureAxisIds;
-      ids.forEach((id) {
-        var axis = _getMeasureAxis(id),
-            users = measureAxisUsers[id];
+      var measureAxisIds = isNullOrEmpty(s.measureAxisIds)
+          ? MEASURE_AXIS_IDS
+          : s.measureAxisIds;
+      measureAxisIds.forEach((axisId) {
+        var axis = _getMeasureAxis(axisId),  // Creates axis if required
+            users = measureAxisUsers[axisId];
         if (users == null) {
-          measureAxisUsers[id] = [s];
+          measureAxisUsers[axisId] = [s];
         } else {
           users.add(s);
         }
       });
     });
 
-    /* Configure measure axes */
+    // Now that we know a list of series using each measure axis, configure
+    // the input domain of each axis.
     measureAxisUsers.forEach((id, listOfSeries) {
       var sampleCol = listOfSeries.first.measures.first,
           sampleColSpec = data.columns.elementAt(sampleCol),
@@ -344,19 +320,25 @@ class _ChartArea implements ChartArea {
           domain;
 
       if (sampleColSpec.useOrdinalScale) {
-        /* TODO(prsd): Ordinal measure scale */
+        throw new UnsupportedError(
+            'Ordinal measure axes are not currently supported.');
       } else {
-        var lowest = min(listOfSeries.map((s) => s.renderer.extent.min)),
-            highest = max(listOfSeries.map((s) => s.renderer.extent.max));
+        // Extent is available because [ChartRenderer.prepare] was already
+        // called (when checking for valid series in [draw].
+        Iterable extents = listOfSeries.map((s) => s.renderer.extent);
+        var lowest = min(extents.map((e) => e.min)),
+            highest = max(extents.map((e) => e.max));
 
         // Use default domain if lowest and highest are the same, right now
         // lowest is always 0, change to lowest when we make use of it.
+        // TODO(prsd): Allow negative values and non-zero lower values.
         domain = (highest != 0) ? [0, highest] : [0, 1];
       }
       axis.initAxisDomain(sampleCol, false, domain);
     });
 
-    /* Configure dimension axes */
+    // Configure dimension axes.
+    int dimensionAxesCount = useTwoDimensionAxes ? 2 : 1;
     config.dimensions.take(dimensionAxesCount).forEach((int column) {
        var axis = _getDimensionAxis(column),
            sampleColumnSpec = data.columns.elementAt(column),
@@ -372,14 +354,19 @@ class _ChartArea implements ChartArea {
        axis.initAxisDomain(column, true, domain);
     });
 
-    /* Build a list of dimension axes that use range bands */
+    // See if any dimensions need "band" on the axis.
     dimensionsUsingBands.clear();
+    List<bool> usingBands = [false, false];
     _series.forEach((ChartSeries s) =>
-        dimensionsUsingBands.addAll(s.renderer.dimensionsUsingBand.map((i) =>
-            config.dimensions.elementAt(i))));
+        s.renderer.dimensionsUsingBand.forEach((x) {
+      if (x <= 1 && !(usingBands[x])) {
+        usingBands[x] = true;
+        dimensionsUsingBands.add(config.dimensions.elementAt(x));
+      }
+    }));
 
-    /* List of measure and dimension axes that are displayed */
-    var measureAxesCount = dimensionAxesCount == 1 ? MEASURE_AXES_COUNT : 0,
+    // List of measure and dimension axes that are displayed
+    var measureAxesCount = dimensionAxesCount == 1 ? 2 : 0,
         displayedMeasureAxes = (config.displayedMeasureAxes == null ?
             _measureAxes.keys.take(measureAxesCount) :
                 config.displayedMeasureAxes.take(measureAxesCount)).
@@ -387,22 +374,24 @@ class _ChartArea implements ChartArea {
         displayedDimensionAxes =
             config.dimensions.take(dimensionAxesCount).toList(growable:false);
 
-    /* Compute size of the dimension axes */
+    // Compute size of the dimension axes
     if (config.renderDimensionAxes != false) {
-      var dimensionAxisOrientations = config.leftAxisIsPrimary ?
-          DIMENSION_AXIS_ORIENTATIONS_ALT : DIMENSION_AXIS_ORIENTATIONS;
-      displayedDimensionAxes.asMap().forEach((int index, int column) {
-        var axis = _dimensionAxes[column],
-            orientation = dimensionAxisOrientations[index];
+      var dimensionAxisOrientations = config.leftAxisIsPrimary
+          ? DIMENSION_AXIS_ORIENTATIONS.last
+          : DIMENSION_AXIS_ORIENTATIONS.first;
+      for (int i = 0, len = displayedDimensionAxes.length; i < len; ++i) {
+        var axis = _dimensionAxes[displayedDimensionAxes[i]],
+            orientation = dimensionAxisOrientations[i];
         axis.prepareToDraw(orientation, theme.dimensionAxisTheme);
         layout._axes[orientation] = axis.size;
-      });
+      }
     }
 
-    /* Compute size of the measure axes */
+    // Compute size of the measure axes
     if (displayedMeasureAxes.isNotEmpty) {
-      var measureAxisOrientations = config.leftAxisIsPrimary ?
-          MEASURE_AXIS_ORIENTATIONS_ALT : MEASURE_AXIS_ORIENTATIONS;
+      var measureAxisOrientations = config.leftAxisIsPrimary
+          ? MEASURE_AXIS_ORIENTATIONS.last
+          : MEASURE_AXIS_ORIENTATIONS.first;
       displayedMeasureAxes.asMap().forEach((int index, String key) {
         var axis = _measureAxes[key],
             orientation = measureAxisOrientations[index];
@@ -411,9 +400,13 @@ class _ChartArea implements ChartArea {
       });
     }
 
-    _computeLayoutWithAxes();
+    // Consolidate all the information that we collected into final layout
+    _computeLayout(
+        displayedMeasureAxes.isEmpty && config.renderDimensionAxes == false);
 
-    /* Initialize output range on the invisible measure axes */
+    // Domains for all axes have been taken care of and _ChartAxis ensures
+    // that the scale is initialized on visible axes. Initialize the scale on
+    // all invisible measure scales.
     if (_measureAxes.length != displayedMeasureAxes.length) {
       _measureAxes.keys.forEach((String axisId) {
         if (displayedMeasureAxes.contains(axisId)) return;
@@ -422,41 +415,37 @@ class _ChartArea implements ChartArea {
       });
     }
 
-    /* Display measure axes if we need to */
+    // Draw the visible measure axes, if any.
     if (displayedMeasureAxes.isNotEmpty) {
-      var axisGroups =
-          _group.selectAll('.measure-group').data(displayedMeasureAxes);
-
-      /* Update measure axis (add/remove/update) */
+      var axisGroups = visualization.
+          selectAll('.measure-group').data(displayedMeasureAxes);
+      // Update measure axis (add/remove/update)
       axisGroups.enter.append('svg:g');
-      axisGroups
-          ..each((axisId, index, group) {
-              _getMeasureAxis(axisId).draw(group);
-              group.classes.clear();
-              group.classes.addAll(['measure-group','measure-${index}']);
-            });
+      axisGroups.each((axisId, index, group) {
+        _getMeasureAxis(axisId).draw(group);
+        group.classes.clear();
+        group.classes.addAll(['measure-group','measure-${index}']);
+      });
       axisGroups.exit.remove();
     }
 
+    // Draw the dimension axes, unless asked not to.
     if (config.renderDimensionAxes != false) {
-      /* Display the dimension axes */
-      var dimAxisGroups =
-              _group.selectAll('.dim-group').data(displayedDimensionAxes);
-
-      /* Update dimension axes (add new / remove old / update remaining) */
+      var dimAxisGroups = visualization.
+          selectAll('.dimension-group').data(displayedDimensionAxes);
+      // Update dimension axes (add/remove/update)
       dimAxisGroups.enter.append('svg:g');
-      dimAxisGroups
-          ..each((column, index, group) {
-              _getDimensionAxis(column).draw(group);
-              group.classes.clear();
-              group.classes.addAll(['dim-group', 'dim-${index}']);
-            });
+      dimAxisGroups.each((column, index, group) {
+        _getDimensionAxis(column).draw(group);
+        group.classes.clear();
+        group.classes.addAll(['dimension-group', 'dim-${index}']);
+      });
       dimAxisGroups.exit.remove();
     } else {
-      /* Initialize output range on the invisible axis */
+      // Initialize scale on invisible axis
       var dimensionAxisOrientations = config.leftAxisIsPrimary ?
-          DIMENSION_AXIS_ORIENTATIONS_ALT : DIMENSION_AXIS_ORIENTATIONS;
-      for (int i = 0; i < dimensionAxesCount; i++) {
+          DIMENSION_AXIS_ORIENTATIONS.last : DIMENSION_AXIS_ORIENTATIONS.first;
+      for (int i = 0; i < dimensionAxesCount; ++i) {
         var column = config.dimensions.elementAt(i),
             axis = _dimensionAxes[column],
             orientation = dimensionAxisOrientations[i];
@@ -467,50 +456,50 @@ class _ChartArea implements ChartArea {
     }
   }
 
-  _computeLayoutWithoutAxes() {
-    layout.renderArea =
-        new Rect(0, 0, layout.chartArea.width, layout.chartArea.height);
-  }
+  // Compute chart render area size and positions of all elements
+  _computeLayout(bool notRenderingAxes) {
+    if (notRenderingAxes) {
+      layout.renderArea =
+          new Rect(0, 0, layout.chartArea.height, layout.chartArea.width);
+      return;
+    }
 
-  /* Compute chart render area size and positions of all elements */
-  _computeLayoutWithAxes() {
-    var topAxis = layout.axes[ORIENTATION_TOP],
-        leftAxis = layout.axes[ORIENTATION_LEFT],
-        bottomAxis = layout.axes[ORIENTATION_BOTTOM],
-        rightAxis = layout.axes[ORIENTATION_RIGHT],
-        renderAreaHeight = layout.chartArea.height -
-            (topAxis.height + layout.axes[ORIENTATION_BOTTOM].height),
+    var top = layout.axes[ORIENTATION_TOP],
+        left = layout.axes[ORIENTATION_LEFT],
+        bottom = layout.axes[ORIENTATION_BOTTOM],
+        right = layout.axes[ORIENTATION_RIGHT];
+
+    var renderAreaHeight = layout.chartArea.height -
+            (top.height + layout.axes[ORIENTATION_BOTTOM].height),
         renderAreaWidth = layout.chartArea.width -
-            (leftAxis.width + layout.axes[ORIENTATION_RIGHT].width);
+            (left.width + layout.axes[ORIENTATION_RIGHT].width);
 
     layout.renderArea = new Rect(
-        leftAxis.width, topAxis.height, renderAreaWidth, renderAreaHeight);
+        left.width, top.height, renderAreaWidth, renderAreaHeight);
 
     layout._axes
       ..[ORIENTATION_TOP] =
-        new Rect(leftAxis.width, 0, renderAreaWidth, topAxis.height)
+          new Rect(left.width, 0, renderAreaWidth, top.height)
       ..[ORIENTATION_RIGHT] =
-        new Rect(leftAxis.width + renderAreaWidth, topAxis.y,
-            rightAxis.width, renderAreaHeight)
+          new Rect(left.width + renderAreaWidth, top.y,
+              right.width, renderAreaHeight)
       ..[ORIENTATION_BOTTOM] =
-        new Rect(leftAxis.width, topAxis.height + renderAreaHeight,
-            renderAreaWidth, bottomAxis.height)
+          new Rect(left.width, top.height + renderAreaHeight,
+              renderAreaWidth, bottom.height)
       ..[ORIENTATION_LEFT] =
-        new Rect(leftAxis.width, topAxis.height,
-            leftAxis.width, renderAreaHeight);
+          new Rect(
+              left.width, top.height, left.width, renderAreaHeight);
   }
 
-  /*
-   * Updates the legend, if configuration changed since the last
-   * time the legend was updated.
-   */
+  // Updates the legend, if configuration changed since the last
+  // time the legend was updated.
   _updateLegend() {
     if (!_pendingLegendUpdate) return;
     if (_config == null || _config.legend == null || _series.isEmpty) return;
 
     var legend = <ChartLegendItem>[];
     List seriesByColumn =
-        new List.generate(data.columns.length, (i) => new List());
+        new List.generate(data.columns.length, (_) => new List());
 
     _series.forEach((s) =>
         s.measures.forEach((m) => seriesByColumn[m].add(s)));
@@ -595,16 +584,16 @@ class _ChartArea implements ChartArea {
 }
 
 class _ChartAreaLayout implements ChartAreaLayout {
-  @override
   final _axes = <String, Rect>{
-        ORIENTATION_LEFT: const Rect(),
-        ORIENTATION_RIGHT: const Rect(),
-        ORIENTATION_TOP: const Rect(),
-        ORIENTATION_BOTTOM: const Rect()
-      };
+      ORIENTATION_LEFT: const Rect(),
+      ORIENTATION_RIGHT: const Rect(),
+      ORIENTATION_TOP: const Rect(),
+      ORIENTATION_BOTTOM: const Rect()
+    };
 
   UnmodifiableMapView<String, Rect> _axesView;
 
+  @override
   get axes => _axesView;
 
   @override
@@ -623,7 +612,7 @@ class _ChartSeriesInfo {
   SubscriptionsDisposer _disposer = new SubscriptionsDisposer();
 
   _ChartSeries _series;
-  _ChartArea _area;
+  CartesianChartArea _area;
   _ChartSeriesInfo(this._area, this._series);
 
   _event(StreamController controller, ChartEvent evt) {

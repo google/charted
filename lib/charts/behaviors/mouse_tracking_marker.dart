@@ -1,14 +1,16 @@
-/*
- * Copyright 2014 Google Inc. All rights reserved.
- *
- * Use of this source code is governed by a BSD-style
- * license that can be found in the LICENSE file or at
- * https://developers.google.com/open-source/licenses/bsd
- */
+//
+// Copyright 2014 Google Inc. All rights reserved.
+//
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file or at
+// https://developers.google.com/open-source/licenses/bsd
+//
 
 part of charted.charts;
 
-class AxisMarker implements ChartBehavior {
+/// A behavior that tracks mouse pointer and paints a dashed line to
+/// the axes from the current pointer location.
+class MouseTrackingMarker implements ChartBehavior {
   ChartArea _area;
   Rect _rect;
 
@@ -26,12 +28,12 @@ class AxisMarker implements ChartBehavior {
   StreamSubscription _mouseInSubscription;
   StreamSubscription _mouseOutSubscription;
 
-  void init(ChartArea area, Element upper, Element lower) {
+  void init(ChartArea area, Selection upper, Selection lower) {
     _area = area;
-    _lower = lower;
-    _upper = upper;
+    _lower = lower.first;
+    _upper = upper.first;
 
-    if (_area.dimensionAxesCount != 0) {
+    if (ChartArea is CartesianChartArea) {
       _mouseInSubscription = _area.onMouseOver.listen(_show);
       _mouseOutSubscription = _area.onMouseOut.listen(_hide);
     }
@@ -82,21 +84,21 @@ class AxisMarker implements ChartBehavior {
     if (_showMarkerX && _markerX == null) {
       _markerX = new LineElement();
       _markerX.attributes
-          ..['x1'] = '0'
-          ..['y1'] = _rect.y.toString()
-          ..['x2'] = '0'
-          ..['y2'] = (_rect.y + _rect.height).toString()
-          ..['class'] = 'axis-marker axis-marker-x';
+        ..['x1'] = '0'
+        ..['y1'] = _rect.y.toString()
+        ..['x2'] = '0'
+        ..['y2'] = (_rect.y + _rect.height).toString()
+        ..['class'] = 'axis-marker axis-marker-x';
       _lower.append(_markerX);
     }
     if (_showMarkerY && _markerY == null) {
       _markerY = new LineElement();
       _markerY.attributes
-          ..['x1'] = _rect.x.toString()
-          ..['y1'] = '0'
-          ..['x2'] = (_rect.x + _rect.width).toString()
-          ..['y2'] = '0'
-          ..['class'] = 'axis-marker axis-marker-y';
+        ..['x1'] = _rect.x.toString()
+        ..['y1'] = '0'
+        ..['x2'] = (_rect.x + _rect.width).toString()
+        ..['y2'] = '0'
+        ..['class'] = 'axis-marker axis-marker-y';
       _lower.append(_markerY);
     }
     _visibility(false);

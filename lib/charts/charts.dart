@@ -1,10 +1,10 @@
-/*
- * Copyright 2014 Google Inc. All rights reserved.
- *
- * Use of this source code is governed by a BSD-style
- * license that can be found in the LICENSE file or at
- * https://developers.google.com/open-source/licenses/bsd
- */
+//
+// Copyright 2014 Google Inc. All rights reserved.
+//
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file or at
+// https://developers.google.com/open-source/licenses/bsd
+//
 
 library charted.charts;
 
@@ -19,7 +19,7 @@ import 'package:charted/core/utils.dart';
 import 'package:charted/layout/layout.dart';
 import 'package:charted/core/scales.dart';
 import 'package:charted/selection/selection.dart';
-import 'package:charted/svg/svg_axis.dart';
+import 'package:charted/svg/axis.dart';
 import 'package:charted/svg/shapes.dart';
 import 'package:charted/transition/transition.dart';
 import 'package:collection/equality.dart';
@@ -30,14 +30,13 @@ import 'package:charted/core/interpolators.dart';
 part 'chart_area.dart';
 part 'chart_config.dart';
 part 'chart_data.dart';
-part 'chart_data_waterfall.dart';
 part 'chart_events.dart';
 part 'chart_legend.dart';
 part 'chart_renderer.dart';
 part 'chart_series.dart';
 part 'chart_theme.dart';
 
-part 'behaviors/axis_marker.dart';
+part 'behaviors/mouse_tracking_marker.dart';
 part 'behaviors/chart_tooltip.dart';
 
 part 'renderers/bar_chart_renderer.dart';
@@ -46,13 +45,11 @@ part 'renderers/bubble_chart_renderer.dart';
 part 'renderers/line_chart_renderer.dart';
 part 'renderers/pie_chart_renderer.dart';
 part 'renderers/stackedbar_chart_renderer.dart';
-part 'renderers/waterfall_chart_renderer.dart';
 
 part 'src/chart_area_impl.dart';
 part 'src/chart_axis_impl.dart';
 part 'src/chart_config_impl.dart';
 part 'src/chart_data_impl.dart';
-part 'src/chart_data_waterfall_impl.dart';
 part 'src/chart_events_impl.dart';
 part 'src/chart_legend_impl.dart';
 part 'src/chart_series_impl.dart';
