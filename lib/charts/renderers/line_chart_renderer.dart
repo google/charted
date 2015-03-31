@@ -18,11 +18,12 @@ class LineChartRenderer extends BaseRenderer {
   @override
   bool prepare(ChartArea area, ChartSeries series) {
     _ensureAreaAndSeries(area, series);
-    return area.dimensionAxesCount != 0;
+    return area is CartesianChartArea;
   }
 
   @override
-  void draw(Element element) {
+  void draw(Element element,
+      {bool preRender: false, Future schedulePostRender}) {
     _ensureReadyToDraw(element);
 
     var measureScale = area.measureScales(series).first,
@@ -40,12 +41,10 @@ class LineChartRenderer extends BaseRenderer {
 
     var rangeBandOffset =
         dimensionScale is OrdinalScale ? dimensionScale.rangeBand / 2 : 0;
-    var _xAccessor = (d, i) => dimensionScale.scale(x[i]) + rangeBandOffset;
-    var _yAccessor = (d, i) => measureScale.scale(d);
 
-    var line = new SvgLine();
-    line.xAccessor = _xAccessor;
-    line.yAccessor = _yAccessor;
+    var line = new SvgLine(
+        xValueAccessor: (d, i) => dimensionScale.scale(x[i]) + rangeBandOffset,
+        yValueAccessor: (d, i) => measureScale.scale(d));
 
     var svgLines = root.selectAll('.line').data(lines);
     svgLines.enter.append('path')

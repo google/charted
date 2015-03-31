@@ -8,7 +8,7 @@
 
 part of charted.charts;
 
-class BubbleChartRenderer implements ChartRenderer {
+class BubbleChartRenderer extends BaseRenderer {
   final Iterable<int> dimensionsUsingBand = const[];
 
   ChartArea area;
@@ -31,15 +31,13 @@ class BubbleChartRenderer implements ChartRenderer {
    */
   @override
   bool prepare(ChartArea area, ChartSeries series) {
-    assert(area != null && series != null);
-    if (area.dimensionAxesCount != 2) return false;
-    this.area = area;
-    this.series = series;
-    return true;
+    _ensureAreaAndSeries(area, series);
+    return area is CartesianChartArea && area.useTwoDimensionAxes == true;
   }
 
   @override
-  void draw(Element element) {
+  void draw(Element element,
+      {bool preRender: false, Future schedulePostRender}) {
     assert(series != null && area != null);
     assert(element != null && element is GElement);
 

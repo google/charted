@@ -1,10 +1,16 @@
+//
+// Copyright 2014 Google Inc. All rights reserved.
+//
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file or at
+// https://developers.google.com/open-source/licenses/bsd
+//
+
 part of charted.charts;
 
-/**
- * The ChartTooltip displays tooltip for the values being interacted with in the
- * chart.  It displays all the active values in the data row and use the value
- * in the dimension as the title.
- */
+/// Displays tooltip for the values as user moves the mouse pointer over
+/// values in the chart. It displays all the active values in the data row
+/// and use the value in the dimension as the title.
 class ChartTooltip implements ChartBehavior {
   static const _TOOLTIP_OFFSET = 26;
   final String orientation;
@@ -15,15 +21,16 @@ class ChartTooltip implements ChartBehavior {
   Selection _tooltipSelection;
   SubscriptionsDisposer _disposer = new SubscriptionsDisposer();
 
-  /**
-   * Constructs the tooltip, display extra fields base on [config] and position
-   * the tooltip base on [orientation] specified in the constructor.
-   */
-  ChartTooltip({this.showDimensionValue: false,
-      this.showMeasureTotal: false, this.orientation: ORIENTATION_RIGHT});
+  /// Constructs the tooltip.
+  /// If [showDimensionValue] is set, displays the dimension value as title.
+  /// If [showMeasureTotal] is set, displays the total value.
+  ChartTooltip({
+      this.showDimensionValue: false,
+      this.showMeasureTotal: false,
+      this.orientation: ORIENTATION_RIGHT});
 
-  /** Sets up listeners for triggering tooltip. */
-  void init(ChartArea area, Element upperRenderPane, Element lowerRenderPane) {
+  /// Sets up listeners for triggering tooltip.
+  void init(ChartArea area, Selection _, Selection __) {
     _area = area;
     _disposer.addAll([
         area.onValueMouseOver.listen(show),
@@ -43,10 +50,7 @@ class ChartTooltip implements ChartBehavior {
     if (_tooltipSelection != null) _tooltipSelection.remove();
   }
 
-  /**
-   * Displays the tooltip upon receiving a hover event on an element in the
-   * chart.
-   */
+  /// Displays tooltip upon receiving a hover event on an element in chart.
   show(ChartEvent e) {
     // Clear
     _tooltipSelection.first.children.clear();
@@ -73,48 +77,47 @@ class ChartTooltip implements ChartBehavior {
             elementAt(e.series.measures.elementAt(i));
       }
       _tooltipSelection.append('div')
-          ..classed('tooltip-total')
-          ..text((formatter != null) ? formatter(total) : total.toString());
+        ..classed('tooltip-total')
+        ..text((formatter != null) ? formatter(total) : total.toString());
     }
 
     // Create the tooltip items base on the number of measures in the series.
     var items = _tooltipSelection.selectAll('.tooltip-item').
         data(e.series.measures);
     items.enter.append('div')
-        ..classed('tooltip-item')
-        ..classedWithCallback('active', (d, i, c) => (i == e.column));
+      ..classed('tooltip-item')
+      ..classedWithCallback('active', (d, i, c) => (i == e.column));
 
     // Display the label for the currently active series.
     var tooltipItems = _tooltipSelection.selectAll('.tooltip-item');
     tooltipItems.append('div')
-        ..classed('tooltip-item-label')
-        ..textWithCallback((d, i, c) => _area.data.columns.
-            elementAt(e.series.measures.elementAt(i)).label);
+      ..classed('tooltip-item-label')
+      ..textWithCallback((d, i, c) => _area.data.columns.
+          elementAt(e.series.measures.elementAt(i)).label);
 
     // Display the value of the currently active series
     tooltipItems.append('div')
-        ..classed('tooltip-item-value')
-        ..styleWithCallback('color', (d, i, c) =>
-            _area.theme.getColorForKey(d))
-        ..textWithCallback((d, i, c) {
+      ..classed('tooltip-item-value')
+      ..styleWithCallback('color', (d, i, c) =>
+          _area.theme.getColorForKey(d))
+      ..textWithCallback((d, i, c) {
       var formatter = _getFormatterForColumn(d),
           value = _area.data.rows.elementAt(e.row).elementAt(d);
       return (formatter != null) ? formatter(value) : value.toString();
     });
 
     math.Point position = computeTooltipPosition(
-        new math.Point(e.chartX + _ChartArea.MARGIN,
-            e.chartY + _ChartArea.MARGIN),
+        new math.Point(e.chartX, e.chartY),
             _tooltipSelection.first.getBoundingClientRect());
 
     // Set position of the tooltip and display it.
     _tooltipSelection
-        ..style('left', '${position.x}px')
-        ..style('top', '${position.y}px')
-        ..style('opacity', '1');
+      ..style('left', '${position.x}px')
+      ..style('top', '${position.y}px')
+      ..style('opacity', '1');
   }
 
-  /** Computes the ideal tooltip position based on orientation. */
+  /// Computes the ideal tooltip position based on orientation.
   math.Point computeTooltipPosition(math.Point coord,
       math.Rectangle rect) {
     var x, y;
@@ -136,7 +139,7 @@ class ChartTooltip implements ChartBehavior {
         new math.Rectangle(x, y, rect.width, rect.height));
   }
 
-  /** Positions the tooltip to be inside of the window boundary. */
+  /// Positions the tooltip to be inside of the window boundary.
   math.Point boundTooltipPosition(math.Rectangle rect) {
     var hostRect = _area.host.getBoundingClientRect();
     var windowWidth = window.innerWidth;

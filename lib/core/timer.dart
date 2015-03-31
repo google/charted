@@ -76,22 +76,23 @@ class AnimationTimer extends LinkedListEntry {
       timer = timer.next;
       if (finished) ref.unlink();
     }
-
+    active = null;
     return earliest == null ? earliest : earliest - now;
   }
 
   /// Internal timer and animation frame handler.
   _step([_]) {
     int delay = flush();
-    if (delay == null) return;
 
-    if (delay > 24) {
+    if (delay == null) {
+      _animationFrameRequested = false;
+    }
+    else if (delay > 24) {
       if (_timerScheduled != null) {
         _timerScheduled.cancel();
       }
       _timerScheduled = new Timer(new Duration(milliseconds: delay), _step);
       _animationFrameRequested = false;
-      active = null;
     }
     else {
       _animationFrameRequested = true;

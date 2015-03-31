@@ -15,8 +15,6 @@ import 'charts_demo.dart';
 
 main() {
   var data = new ChartData(SMALL_DATA_COLUMNS, SMALL_DATA);
-  var dataWaterfallWithSum = new WaterfallChartData(
-      SMALL_WATERFALL_DATA_COLUMNS, SMALL_WATERFALL_DATA_WITH_SUM, [0, 2, 5]);
 
   // Bar Chart
   var bar_series = new ChartSeries("one", [2, 3], new BarChartRenderer()),
@@ -40,15 +38,6 @@ main() {
           querySelector('.stacked-bar-chart'), stacked_config, data);
   stacked_demo.draw();
 
-  // Waterfall Chart
-  var waterfall_series = new ChartSeries("one", [1, 2],
-                                         new WaterfallChartRenderer()),
-      waterfall_config = new ChartConfig([waterfall_series], [0]),
-      waterfall_demo = new ChartDemo(
-          'Waterfall chart', querySelector('.waterfall-chart'),
-          waterfall_config, dataWaterfallWithSum);
-  waterfall_demo.draw();
-
   // Combo chart
   var combo_bar_series = new ChartSeries("one", [2, 3], new BarChartRenderer()),
       combo_line_series = new ChartSeries("two", [1], new LineChartRenderer()),
@@ -57,24 +46,4 @@ main() {
       combo_demo = new ChartDemo(
           'Combo chart', querySelector('.combo-chart'), combo_config, data);
   combo_demo.draw();
-
-  // Pie chart
-  var pie_data = new ChartData(SMALL_DATA_COLUMNS, SMALL_DATA.sublist(0, 1)),
-      pie_series = new ChartSeries("one", [1, 2, 3], new PieChartRenderer()),
-      pie_config = new ChartConfig([pie_series], [0]),
-      pie_demo = new ChartDemo('Pie chart with single row',
-          querySelector('.pie-chart'), pie_config, pie_data,
-          dimensionAxesCount: 0);
-  pie_demo.draw();
-
-  // Pie chart with multiple rows
-  var multi_pie_data =
-          new ChartData(SMALL_DATA_COLUMNS, SMALL_DATA.sublist(0, 3)),
-      multi_pie_series =
-          new ChartSeries("one", [1, 2, 3], new PieChartRenderer()),
-      multi_pie_config = new ChartConfig([multi_pie_series], [0]),
-      multi_pie_demo = new ChartDemo('Pie chart with multiple row',
-          querySelector('.multi-pie-chart'), multi_pie_config, multi_pie_data,
-          dimensionAxesCount: 0);
-  multi_pie_demo.draw();
 }

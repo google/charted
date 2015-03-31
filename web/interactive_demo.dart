@@ -18,21 +18,6 @@ const List DIMENSION_COLUMNS =  const[0, 4];
 
 int customSeriesCounter = 0;
 
-List DEMOS = [
-  {
-    'name': 'One',
-    'title': 'One &mdash; A chart with one dimension axis',
-    'sub-title': 'Compatible with bar, line and stacked-bar renderers',
-    'series': [
-      {
-        'name': 'Series-01',
-        'renderer': 'bar-chart',
-        'columns': [ 1, 2, 3 ]
-      }
-    ]
-  }
-];
-
 Map RENDERERS = {
   'bar-chart': 'Bar chart',
   'line-chart': 'Line chart',
@@ -44,7 +29,6 @@ ChartRenderer getRendererForType(String name) {
   if (name == 'bar-chart') return new BarChartRenderer();
   if (name == 'line-chart') return new LineChartRenderer();
   if (name == 'stacked-bar-chart') return new StackedBarChartRenderer();
-  if (name == 'waterfall-chart') return new WaterfallChartRenderer();
   return new BarChartRenderer();
 }
 
@@ -52,7 +36,6 @@ String getTypeForRenderer(ChartRenderer renderer) {
   if (renderer is BarChartRenderer) return 'bar-chart';
   if (renderer is LineChartRenderer) return 'line-chart';
   if (renderer is StackedBarChartRenderer) return 'stacked-bar-chart';
-  if (renderer is WaterfallChartRenderer) return 'waterfall-chart';
   return 'bar-chart';
 }
 
@@ -69,7 +52,7 @@ main() {
   ChartConfig config = new ChartConfig(seriesList, DIMENSION_COLUMNS);
 
   ChartArea area = new ChartArea(querySelector('.chart-host'), data, config,
-      autoUpdate: true, dimensionAxesCount: 1);
+      autoUpdate: true, useTwoDimensionAxes: false);
 
   area.addChartBehavior(new ChartTooltip());
   config.legend = new ChartLegend(querySelector('.legend-host'));
@@ -165,13 +148,6 @@ main() {
   }
 
   rendererSelect.onChange.listen((_) {
-      if (rendererSelect.value == "waterfall-chart" &&
-          area.data is! WaterfallChartData) {
-        area.data = new WaterfallChartData(columns, rows);
-      } else if (rendererSelect.value != "waterfall-chart" &&
-          area.data is WaterfallChartData) {
-        area.data = new ChartData(columns, rows);
-      }
       activeSeries.renderer = getRendererForType(rendererSelect.value);
     });
 

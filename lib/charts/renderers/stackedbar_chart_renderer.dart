@@ -18,11 +18,12 @@ class StackedBarChartRenderer extends BaseRenderer {
   @override
   bool prepare(ChartArea area, ChartSeries series) {
     _ensureAreaAndSeries(area, series);
-    return area.dimensionAxesCount != 0;
+    return area is CartesianChartArea;
   }
 
   @override
-  void draw(Element element) {
+  void draw(Element element,
+      {bool preRender: false, Future schedulePostRender}) {
     _ensureReadyToDraw(element);
 
     var measuresCount = series.measures.length,

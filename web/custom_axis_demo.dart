@@ -37,7 +37,7 @@ main() {
       data = new ChartData(COLUMNS, DATA),
       config = new ChartConfig([series1], [0]),
       area = new ChartArea(querySelector('.default'),
-          data, config, autoUpdate:false, dimensionAxesCount:1);
+          data, config, autoUpdate:false, useTwoDimensionAxes:false);
   area.draw();
 
 
@@ -59,7 +59,7 @@ main() {
 
   config2.registerMeasureAxis('fixed_domain', axisConfig);
   var customAxisChart = new ChartArea(querySelector('.custom-domain'),
-          data2, config2, autoUpdate:false, dimensionAxesCount:1);
+          data2, config2, autoUpdate:false, useTwoDimensionAxes:false);
   customAxisChart.draw();
 
 
@@ -82,6 +82,6 @@ main() {
 
   config3.registerMeasureAxis('fixed_ticks', axisConfig2);
   var fixedTickValueChart = new ChartArea(querySelector('.custom-ticks'),
-          data3, config3, autoUpdate:false, dimensionAxesCount:1);
+          data3, config3, autoUpdate:false, useTwoDimensionAxes:false);
   fixedTickValueChart.draw();
 }
