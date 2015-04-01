@@ -69,7 +69,6 @@ class BarChartRenderer extends BaseRenderer {
     // Avoids animation on first render unless alwaysAnimate is set to true.
 
     var bar = groups.selectAll('.bar').dataWithCallback((d, i, c) => rows[i]);
-    var animateBars = alwaysAnimate || !bar.isEmpty;
     var getBarHeight = (d) {
       var ht = rect.height - measureScale.scale(d).round() - 1;
       return (ht < 0) ? '0' : ht.toString();
@@ -81,11 +80,11 @@ class BarChartRenderer extends BaseRenderer {
         e.classes.add('bar');
         e.attributes
           ..['x'] = (bars.scale(i) + theme.defaultStrokeWidth).toString()
-          ..['y'] = animateBars ? rect.height.toString() : getBarY(d)
-          ..['height'] = animateBars ? '0' : getBarHeight(d)
+          ..['y'] = animateBarGroups ? rect.height.toString() : getBarY(d)
+          ..['height'] = animateBarGroups ? '0' : getBarHeight(d)
           ..['width'] = barWidth
           ..['stroke-width'] = '${theme.defaultStrokeWidth}px';
-        if (!animateBars) {
+        if (!animateBarGroups) {
           e.style.setProperty('fill', colorForKey(i));
           e.style.setProperty('stroke', colorForKey(i));
         }
@@ -94,7 +93,7 @@ class BarChartRenderer extends BaseRenderer {
       ..on('mouseover', (d, i, e) => _event(mouseOverController, d, i, e))
       ..on('mouseout', (d, i, e) => _event(mouseOutController, d, i, e));
 
-    if (animateBars) {
+    if (animateBarGroups) {
       bar.transition()
         ..attrWithCallback(
             'x', (d, i, c) => bars.scale(i) + theme.defaultStrokeWidth)

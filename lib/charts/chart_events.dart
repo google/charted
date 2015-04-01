@@ -41,6 +41,9 @@ abstract class ChartAreaBehaviorSource extends ChartRendererBehaviorSource {
   /// Stream of events that notify when mouse is moved on [ChartArea].
   Stream<ChartEvent> get onMouseMove;
 
+  /// Stream to notify when chart axes get updated.
+  Stream<ChartArea> get onChartAxesUpdated;
+
   /// A pane that is rendered below all the chart elements - for use with
   /// behaviors that add elements to chart.
   Selection get lowerBehaviorPane;

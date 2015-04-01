@@ -36,8 +36,9 @@ part 'chart_renderer.dart';
 part 'chart_series.dart';
 part 'chart_theme.dart';
 
-part 'behaviors/mouse_tracking_marker.dart';
 part 'behaviors/chart_tooltip.dart';
+part 'behaviors/line_marker.dart';
+part 'behaviors/mouse_tracker.dart';
 
 part 'renderers/bar_chart_renderer.dart';
 part 'renderers/base_renderer.dart';
@@ -46,7 +47,7 @@ part 'renderers/line_chart_renderer.dart';
 part 'renderers/pie_chart_renderer.dart';
 part 'renderers/stackedbar_chart_renderer.dart';
 
-part 'src/chart_area_impl.dart';
+part 'src/chart_area_cartesian.dart';
 part 'src/chart_axis_impl.dart';
 part 'src/chart_config_impl.dart';
 part 'src/chart_data_impl.dart';
