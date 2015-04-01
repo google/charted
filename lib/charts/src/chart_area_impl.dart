@@ -52,6 +52,8 @@ class _ChartArea implements ChartArea {
 
   ChartData _data;
   ChartConfig _config;
+  ObservableList<int> selectedMeasures = new ObservableList();
+  ObservableList<int> hoveredMeasures = new ObservableList();
   int _dimensionAxesCount;
 
   _ChartAreaLayout layout = new _ChartAreaLayout();
@@ -88,6 +90,7 @@ class _ChartArea implements ChartArea {
   void dispose() {
     _configEventsDisposer.dispose();
     _dataEventsDisposer.dispose();
+    _config.legend.dispose();
   }
 
   static bool isNotInline(Element e) =>

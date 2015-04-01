@@ -74,6 +74,12 @@ abstract class ChartArea implements ChartBehaviorSource {
    */
   Element get host;
 
+  /// The list of currently selected measures in chart.
+  ObservableList<int> selectedMeasures;
+
+  /// The list of currently hovered measures in chart.
+  ObservableList<int> hoveredMeasures;
+
   /**
    * Draw the chart with current data and configuration.
    */

@@ -11,12 +11,18 @@ part of charted.charts;
 class _ChartLegend implements ChartLegend {
   final Element host;
   final int _maxItems;
+  final SubscriptionsDisposer _disposer = new SubscriptionsDisposer();
   String _title;
   SelectionScope _scope;
   Selection _selected;
+  ChartArea _area;
 
   _ChartLegend(Element this.host, int this._maxItems, String this._title) {
     assert(host != null);
+  }
+
+  void dispose() {
+    _disposer.dispose();
   }
 
   /**
@@ -46,8 +52,16 @@ class _ChartLegend implements ChartLegend {
   }
 
   /** Updates the legend base on a new list of ChartLegendItems. */
-  update(Iterable<ChartLegendItem> items, ChartArea chart) {
+  update(Iterable<ChartLegendItem> items, ChartArea area) {
     assert(items != null);
+
+    _area = area;
+    _disposer.dispose();
+    _disposer.add(area.selectedMeasures.listChanges.listen(
+        _handleSelectedMeasureChange));
+    _disposer.add(area.hoveredMeasures.listChanges.listen(
+        _handleHoveredMeasureChange));
+
 
     if (_scope == null) {
       _scope = new SelectionScope.element(host);
@@ -103,6 +117,17 @@ class _ChartLegend implements ChartLegend {
           ..append(new Element.tag('div')
               ..className = '${classPrefix}-column');
       return row;
+    })
+    ..on('mouseover', (d, i, e) {
+      _area.hoveredMeasures.add(d.column);
+    })
+    ..on('mouseout', (d, i, e) {
+      _area.hoveredMeasures.remove(d.column);
+    })
+    ..on('click', (d, i, e) {
+      _area.selectedMeasures.contains(d.column) ?
+          _area.selectedMeasures.remove(d.column) :
+          _area.selectedMeasures.add(d.column);
     });
 
     rows.classed('${classPrefix}-row');
@@ -115,5 +140,29 @@ class _ChartLegend implements ChartLegend {
 
     _selected.selectAll('.${classPrefix}-column').data(items)
         ..textWithCallback((d, i, e) => d.label);
+  }
+
+  void _handleSelectedMeasureChange(List<ListChangeRecord> changes) {
+    _selected.selectAll('.legend-row').each((d, i, e) {
+      var measure = d.column;
+      if (_area.selectedMeasures.contains(measure)) {
+        e.classes.add('active');
+      } else {
+        e.classes.remove('active');
+      }
+    });
+  }
+
+  void _handleHoveredMeasureChange(List<ListChangeRecord> changes) {
+    _selected.selectAll('.legend-row').each((d, i, e) {
+      var measure = d.column;
+      if (_area.hoveredMeasures.contains(measure)) {
+        e.classes.add('active');
+      } else {
+        if (!_area.selectedMeasures.contains(measure)) {
+          e.classes.remove('active');
+        }
+      }
+    });
   }
 }

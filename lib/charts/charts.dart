@@ -19,7 +19,7 @@ import 'package:charted/core/utils.dart';
 import 'package:charted/layout/layout.dart';
 import 'package:charted/core/scales.dart';
 import 'package:charted/selection/selection.dart';
-import 'package:charted/svg/svg_axis.dart';
+import 'package:charted/svg/axis.dart';
 import 'package:charted/svg/shapes.dart';
 import 'package:charted/transition/transition.dart';
 import 'package:collection/equality.dart';

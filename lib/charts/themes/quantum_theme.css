@@ -30,7 +30,12 @@
   display: flex;
   font-size: 14px;
   margin-top: 10px;
+  color: #757575;
   position: relative;
+}
+
+.legend-row.active {
+  color: #434343;
 }
 
 .legend-more-row {

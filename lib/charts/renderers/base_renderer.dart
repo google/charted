@@ -92,8 +92,8 @@ abstract class BaseRenderer implements ChartRenderer {
   double get bandOuterPadding => area.theme.dimensionAxisTheme.axisOuterPadding;
 
   /** Get a color using the theme's ordinal scale of colors */
-  String colorForKey(i) =>
-      area.theme.getColorForKey(series.measures.elementAt(i));
+  String colorForKey(i, [int state = ChartTheme.STATE_NORMAL]) =>
+      area.theme.getColorForKey(series.measures.elementAt(i), state);
 
   /** List of measure values as rows containing only measure columns */
   Iterable<Iterable> get asRowValues => [];

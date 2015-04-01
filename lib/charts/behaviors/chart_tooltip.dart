@@ -10,6 +10,7 @@ class ChartTooltip implements ChartBehavior {
   final String orientation;
   final bool showDimensionValue;
   final bool showMeasureTotal;
+  final bool showSelectedMeasure;
 
   ChartArea _area;
   Selection _tooltipSelection;
@@ -19,7 +20,7 @@ class ChartTooltip implements ChartBehavior {
    * Constructs the tooltip, display extra fields base on [config] and position
    * the tooltip base on [orientation] specified in the constructor.
    */
-  ChartTooltip({this.showDimensionValue: false,
+  ChartTooltip({this.showSelectedMeasure: false, this.showDimensionValue: false,
       this.showMeasureTotal: false, this.orientation: ORIENTATION_RIGHT});
 
   /** Sets up listeners for triggering tooltip. */
@@ -77,19 +78,37 @@ class ChartTooltip implements ChartBehavior {
           ..text((formatter != null) ? formatter(total) : total.toString());
     }
 
+    // Find the currently selectedMeasures and hoveredMeasures and show
+    // tooltip for them, if none is selected/hovered, show all.
+    var activeMeasures = [];
+    if (showSelectedMeasure) {
+      activeMeasures.addAll(_area.selectedMeasures);
+      activeMeasures.addAll(_area.hoveredMeasures);
+      if (activeMeasures.isEmpty) {
+        for (var series in _area.config.series) {
+          activeMeasures.addAll(series.measures);
+        }
+      }
+      activeMeasures.sort();
+    }
+
+    var data = (showSelectedMeasure) ? activeMeasures : e.series.measures;
+
     // Create the tooltip items base on the number of measures in the series.
     var items = _tooltipSelection.selectAll('.tooltip-item').
-        data(e.series.measures);
+        data(data);
     items.enter.append('div')
         ..classed('tooltip-item')
-        ..classedWithCallback('active', (d, i, c) => (i == e.column));
+        ..classedWithCallback('active', (d, i, c) =>
+            !showSelectedMeasure && (i == e.column));
 
     // Display the label for the currently active series.
     var tooltipItems = _tooltipSelection.selectAll('.tooltip-item');
     tooltipItems.append('div')
         ..classed('tooltip-item-label')
         ..textWithCallback((d, i, c) => _area.data.columns.
-            elementAt(e.series.measures.elementAt(i)).label);
+            elementAt((showSelectedMeasure) ? d :
+            e.series.measures.elementAt(i)).label);
 
     // Display the value of the currently active series
     tooltipItems.append('div')
