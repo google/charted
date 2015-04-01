@@ -12,7 +12,7 @@ class _ChartAxis {
   static const List _VERTICAL_ORIENTATIONS =
       const [ ORIENTATION_LEFT, ORIENTATION_RIGHT ];
 
-  _ChartArea area;
+  CartesianChartArea area;
   ChartAxisConfig config;
   ChartAxisTheme _theme;
 
@@ -102,11 +102,11 @@ class _ChartAxis {
     if (_axis == null || _element != element) {
       _element = element;
       _axis = new SvgAxis()
-          ..orientation = _orientation
-          ..suggestedTickCount = _theme.axisTickCount
-          ..tickPadding = _theme.axisTickPadding
-          ..outerTickSize = 0
-          ..tickFormat = _columnSpec.formatter;
+        ..orientation = _orientation
+        ..suggestedTickCount = _theme.axisTickCount
+        ..tickPadding = _theme.axisTickPadding
+        ..outerTickSize = 0
+        ..tickFormat = _columnSpec.formatter;
 
       if (config != null && config.tickValues != null) {
         _axis.tickValues = config.tickValues;

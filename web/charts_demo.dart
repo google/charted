@@ -30,7 +30,7 @@ class ChartDemo {
 
     config.legend = new ChartLegend(chartLegendHost);
     area = new ChartArea(chartAreaHost, data, config,
-        autoUpdate: false, dimensionAxesCount: dimensionAxesCount);
+        autoUpdate: false, useTwoDimensionAxes: dimensionAxesCount == 2);
     for (var behavior in chartBehaviors) {
       area.addChartBehavior(behavior);
     }

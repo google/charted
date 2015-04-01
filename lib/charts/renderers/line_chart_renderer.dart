@@ -29,11 +29,12 @@ class LineChartRenderer extends BaseRenderer {
         _handleHoveredMeasureChange));
     _disposer.add(area.onMouseMove.listen(_showDataPoint));
     _disposer.add(area.onMouseOut.listen(_hideDataPoint));
-    return area.dimensionAxesCount != 0;
+    return area is CartesianChartArea;
   }
 
   @override
-  void draw(Element element) {
+  void draw(Element element,
+      {bool preRender: false, Future schedulePostRender}) {
     _ensureReadyToDraw(element);
 
     var measureScale = area.measureScales(series).first,
@@ -51,8 +52,6 @@ class LineChartRenderer extends BaseRenderer {
 
     var rangeBandOffset =
         dimensionScale is OrdinalScale ? dimensionScale.rangeBand / 2 : 0;
-    var _xAccessor = (d, i) => dimensionScale.scale(x[i]) + rangeBandOffset;
-    var _yAccessor = (d, i) => measureScale.scale(d);
 
     // Add the circle elements and compute the x positions for approximating
     // the user's cursor to the nearest data point.  One circle is constructed
@@ -76,9 +75,9 @@ class LineChartRenderer extends BaseRenderer {
     for (var value in xValues) {
       _xPositions.add(dimensionScale.scale(value) + rangeBandOffset);
     }
-
-    var line = new SvgLine(xValueAccessor: _xAccessor,
-        yValueAccessor: _yAccessor);
+    var line = new SvgLine(
+        xValueAccessor: (d, i) => dimensionScale.scale(x[i]) + rangeBandOffset,
+        yValueAccessor: (d, i) => measureScale.scale(d));
 
     // Add lines and hook up hover and selection events.
     var svgLines = root.selectAll('.line').data(lines);
