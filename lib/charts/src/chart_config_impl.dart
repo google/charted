@@ -13,6 +13,7 @@ class _ChartConfig extends ChangeNotifier implements ChartConfig {
   final Map<int,ChartAxisConfig> _dimensionAxisRegistry = {};
   final SubscriptionsDisposer _disposer = new SubscriptionsDisposer();
 
+  bool _isRTL = false;
   Iterable<ChartSeries> _series;
   Iterable<int> _dimensions;
   StreamSubscription _dimensionsSubscription;
@@ -34,6 +35,9 @@ class _ChartConfig extends ChangeNotifier implements ChartConfig {
 
   @override
   bool renderDimensionAxes = true;
+
+  @override
+  bool switchAxesForRTL = true;
 
   _ChartConfig(Iterable<ChartSeries> series, Iterable<int> dimensions) {
     this.series = series;
@@ -113,4 +117,15 @@ class _ChartConfig extends ChangeNotifier implements ChartConfig {
   @override
   ChartAxisConfig getDimensionAxis(int column) =>
       _dimensionAxisRegistry[column];
+
+  @override
+  set isRTL(bool value) {
+    if (_isRTL != value && value != null) {
+      _isRTL = value;
+      notifyChange(const ChartConfigChangeRecord());
+    }
+  }
+
+  @override
+  bool get isRTL => _isRTL;
 }

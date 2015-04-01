@@ -19,7 +19,7 @@ class ChartDemo {
   ChartDemo(this.title, this.host, this.config, this.data,
        { this.dimensionAxesCount: 1 }) {
     var chartAreaHost = new DivElement()..classes.add('chart-host'),
-        chartLegendHost = new DivElement()..classes.add('legend-host'),
+        chartLegendHost = new DivElement()..classes.add('chart-legend'),
         wrapper = new DivElement()
             ..children.addAll([chartAreaHost, chartLegendHost])
             ..classes.add('chart-wrapper');

@@ -15,7 +15,7 @@
  * Styles for the legend
  */
 .chart-legend {
-  margin-left: 40px;
+  margin: 0 30px;
   align-self: flex-start;
 }
 
@@ -48,7 +48,7 @@
   align-self: center;
   width: 12px;
   height: 12px;
-  margin-right: 8px;
+  margin: 0 8px;
 }
 
 .legend-more-tooltip {
@@ -127,7 +127,7 @@ path.line.active {
   background-color: white;
   font-size: 14px;
   pointer-events: none;
-  transition: opacity .4s;
+  transition: opacity .25s;
 }
 
 .tooltip-title {
@@ -146,8 +146,8 @@ path.line.active {
   white-space: nowrap;
   display: flex;
   flex-direction: row;
-  color: #838383;
   justify-content: space-between;
+  color: #838383;
   margin-bottom: 16px;
 }
 
@@ -155,6 +155,11 @@ path.line.active {
   margin-bottom: 0px;
 }
 
-.tooltip-item-value {
-  margin-left: 24px;
+.tooltip .tooltip-item-value {
+  margin-left: 20px;
+  margin-right: 0;
+}
+.tooltip.rtl .tooltip-item-value {
+  margin-left: 0;
+  margin-right: 20px;
 }

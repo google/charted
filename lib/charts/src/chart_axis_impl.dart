@@ -54,9 +54,7 @@ class _ChartAxis {
       scale.nice = !_isDimension;
     }
 
-    // Sets the range if not using a custom scale, or the custom scale uses
-    // default range.
-    /* TODO(prsd): Scale needs some cleanup */
+    // Sets the range if not using a custom scale.
     if (scale is OrdinalScale) {
       var usingBands = area.dimensionsUsingBands.contains(_column),
           innerPadding = usingBands ? theme.axisBandInnerPadding : 1.0,
@@ -78,7 +76,7 @@ class _ChartAxis {
         _orientation == ORIENTATION_RIGHT;
 
     if (false && _theme.axisAutoResize) {
-      /* TODO(prsd): Implement axis size computations */
+      // TODO(prsd): Implement axis size computations
     } else {
       var width = _isVertical ?
           _theme.verticalAxisWidth : area.layout.chartArea.width;
