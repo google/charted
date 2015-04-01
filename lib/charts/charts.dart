@@ -46,7 +46,7 @@ part 'renderers/line_chart_renderer.dart';
 part 'renderers/pie_chart_renderer.dart';
 part 'renderers/stackedbar_chart_renderer.dart';
 
-part 'src/chart_area_impl.dart';
+part 'src/chart_area_cartesian.dart';
 part 'src/chart_axis_impl.dart';
 part 'src/chart_config_impl.dart';
 part 'src/chart_data_impl.dart';

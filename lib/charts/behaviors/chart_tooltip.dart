@@ -56,7 +56,7 @@ class ChartTooltip implements ChartBehavior {
   show(ChartEvent e) {
     _tooltipSelection.first
       ..children.clear()
-      ..attributes['dir'] = 'rtl';
+      ..attributes['dir'] = _area.config.isRTL ? 'rtl' : '';
     _tooltipSelection.classed('rtl', _area.config.isRTL);
 
     // Display dimension value if set in config.
