@@ -13,10 +13,10 @@ library charted.selection;
 import "dart:html" show Element, Event, document;
 import "dart:math" as math;
 import "package:charted/core/utils.dart";
-import "package:charted/transition/transition.dart";
+import "package:charted/selection/transition.dart";
 
-part "selection_scope.dart";
-part "selection_impl.dart";
+part "src/selection_scope.dart";
+part "src/selection_impl.dart";
 
 /**
  * Callback to access key value from a given data object. During the process

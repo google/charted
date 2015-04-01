@@ -131,9 +131,9 @@ class _SelectionImpl implements Selection {
   /** Calls a function on each non-null element in the selection */
   void each(SelectionCallback fn) {
     if (fn == null) return;
-    for (int gi = 0; gi < groups.length; ++gi) {
+    for (int gi = 0, gLen = groups.length; gi < gLen; ++gi) {
       final g = groups.elementAt(gi);
-      for (int ei = 0; ei < g.elements.length; ++ei) {
+      for (int ei = 0, eLen = g.elements.length; ei < eLen; ++ei) {
         final e = g.elements.elementAt(ei);
         if (e != null) fn(scope.datum(e), ei, e);
       }

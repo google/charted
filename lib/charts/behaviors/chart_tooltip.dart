@@ -12,7 +12,7 @@ part of charted.charts;
 /// values in the chart. It displays all the active values in the data row
 /// and use the value in the dimension as the title.
 class ChartTooltip implements ChartBehavior {
-  static const _TOOLTIP_OFFSET = 26;
+  static const _TOOLTIP_OFFSET = 10;
   final String orientation;
   final bool showDimensionValue;
   final bool showMeasureTotal;
@@ -54,14 +54,15 @@ class ChartTooltip implements ChartBehavior {
 
   /// Displays tooltip upon receiving a hover event on an element in chart.
   show(ChartEvent e) {
-    // Clear
-    _tooltipSelection.first.children.clear();
+    _tooltipSelection.first
+      ..children.clear()
+      ..attributes['dir'] = 'rtl';
+    _tooltipSelection.classed('rtl', _area.config.isRTL);
 
     // Display dimension value if set in config.
     if (showDimensionValue) {
       var column = _area.config.dimensions.elementAt(0),
-          value =
-              _area.data.rows.elementAt(e.row).elementAt(column),
+          value = _area.data.rows.elementAt(e.row).elementAt(column),
           formatter = _getFormatterForColumn(column);
 
       _tooltipSelection.append('div')
@@ -71,12 +72,12 @@ class ChartTooltip implements ChartBehavior {
 
     // Display sum of the values in active row if set in config.
     if (showMeasureTotal) {
-      var formatter =
-          _getFormatterForColumn(e.series.measures.elementAt(0));
-      var total = 0;
-      for (var i = 0; i < e.series.measures.length; i++) {
-        total += _area.data.rows.elementAt(e.row).
-            elementAt(e.series.measures.elementAt(i));
+      var measures = e.series.measures,
+          formatter = _getFormatterForColumn(measures.elementAt(0)),
+          row = _area.data.rows.elementAt(e.row),
+          total = 0;
+      for (int i = 0, len = measures.length; i < len; i++) {
+        total += row.elementAt(measures.elementAt(i));
       }
       _tooltipSelection.append('div')
         ..classed('tooltip-total')
@@ -137,49 +138,49 @@ class ChartTooltip implements ChartBehavior {
       ..style('opacity', '1');
   }
 
-  /// Computes the ideal tooltip position based on orientation.
-  math.Point computeTooltipPosition(math.Point coord,
-      math.Rectangle rect) {
-    var x, y;
-    if (orientation == ORIENTATION_TOP) {
-      x = coord.x - rect.width / 2;
-      y = coord.y - rect.height - _TOOLTIP_OFFSET;
-    } else if (orientation == ORIENTATION_RIGHT) {
-      x = coord.x + _TOOLTIP_OFFSET;
-      y = coord.y - rect.height / 2;
-    } else if (orientation == ORIENTATION_BOTTOM) {
-      x = coord.x - rect.width / 2;
-      y = coord.y + _TOOLTIP_OFFSET;
-    } else { // left
-      x = coord.x - rect.width - _TOOLTIP_OFFSET;
-      y = coord.y - rect.height / 2;
-    }
+  static String switchPositionDirection(String direction) =>
+      direction == ORIENTATION_LEFT
+          ? ORIENTATION_RIGHT
+          : ORIENTATION_LEFT;
 
+  /// Computes the ideal tooltip position based on orientation.
+  math.Point computeTooltipPosition(
+      math.Point coord, math.Rectangle rect) {
+    var x, y, direction;
+    direction = _area.config.isRTL && _area.config.switchAxesForRTL
+        ? switchPositionDirection(orientation)
+        : orientation;
+
+    if (direction == ORIENTATION_LEFT) {
+      x = coord.x - rect.width - _TOOLTIP_OFFSET;
+      y = coord.y + _TOOLTIP_OFFSET;
+    } else {
+      x = coord.x + _TOOLTIP_OFFSET;
+      y = coord.y + _TOOLTIP_OFFSET;
+    }
     return boundTooltipPosition(
         new math.Rectangle(x, y, rect.width, rect.height));
   }
 
-  /// Positions the tooltip to be inside of the window boundary.
+  /// Positions the tooltip to be inside of the chart boundary.
   math.Point boundTooltipPosition(math.Rectangle rect) {
     var hostRect = _area.host.getBoundingClientRect();
-    var windowWidth = window.innerWidth;
-    var windowHeight = window.innerHeight;
 
     var top = rect.top;
     var left = rect.left;
 
     // Checks top and bottom.
-    if (rect.top + hostRect.top < 0) {
-      top = -hostRect.top;
-    } else if (rect.top + rect.height + hostRect.top > windowHeight) {
-      top = windowHeight - rect.height - hostRect.top;
+    if (rect.top < 0) {
+      top += (2 * _TOOLTIP_OFFSET);
+    } else if (rect.top + rect.height > hostRect.height) {
+      top -= (rect.height + 2 * _TOOLTIP_OFFSET);
     }
 
     // Checks left and right.
     if (rect.left < 0) {
-      left = -hostRect.left;
-    } else if (rect.left + rect.width + hostRect.left > windowWidth) {
-      left = windowWidth - rect.width - hostRect.left;
+      left += (rect.width + 2 * _TOOLTIP_OFFSET);
+    } else if (rect.left + rect.width > hostRect.width) {
+      left -= (rect.width + 2 * _TOOLTIP_OFFSET);
     }
 
     return new math.Point(left, top);

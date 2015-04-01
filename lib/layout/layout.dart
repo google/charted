@@ -15,4 +15,4 @@ import 'package:charted/core/utils.dart';
 import 'package:charted/selection/selection.dart';
 import 'package:charted/svg/shapes.dart' show SvgArcData;
 
-part 'pie_layout.dart';
+part 'src/pie_layout.dart';
