@@ -33,7 +33,7 @@ abstract class ChartConfig {
   Rect minimumSize;
 
   /// Indicates if the chart has primary dimension on the left axis
-  bool leftAxisIsPrimary = false;
+  bool isLeftAxisPrimary = false;
 
   /// Registers axis configuration for the axis represented by [id].
   void registerMeasureAxis(String id, ChartAxisConfig axis);

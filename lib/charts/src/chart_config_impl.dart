@@ -22,7 +22,7 @@ class _ChartConfig extends ChangeNotifier implements ChartConfig {
   Rect minimumSize = const Rect.size(400, 300);
 
   @override
-  bool leftAxisIsPrimary = false;
+  bool isLeftAxisPrimary = false;
 
   @override
   bool autoResizeAxis = true;
