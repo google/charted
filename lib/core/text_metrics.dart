@@ -21,8 +21,10 @@ class TextMetrics {
   static TextMetrics instance;
 
   static const MAX_STRING_LENGTH = 250;
+  static final FONT_SIZE_REGEX = new RegExp("\s?([0-9]+)px\s?");
 
   final String fontStyle;
+  int fontSize = 16;
 
   factory TextMetrics({String fontStyle}) {
     if (canvas == null || context == null) {
@@ -34,7 +36,10 @@ class TextMetrics {
     }
     return instance;
   }
-  TextMetrics._internal(this.fontStyle);
+  TextMetrics._internal(this.fontStyle) {
+    Match match = FONT_SIZE_REGEX.firstMatch(fontStyle);
+    fontSize = int.parse(match.group(1));
+  }
 
   /// Measure width of [text] in pixels.
   /// Optionally, uses [fontStyle] instead of using the default style
