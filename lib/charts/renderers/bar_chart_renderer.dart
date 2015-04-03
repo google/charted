@@ -113,7 +113,7 @@ class BarChartRenderer extends BaseRenderer {
       int delay = 0;
       bar.transition()
         ..attrWithCallback(verticalBars ? 'y' : 'x', (d, i, c) => getBarY(d))
-        ..attrWithCallback(verticalBars ? 'width' : 'height',
+        ..attrWithCallback(verticalBars ? 'height': 'width',
             (d, i, c) => getBarHeight(d))
         ..delayWithCallback((d, i, c) =>
             delay += theme.transitionDuration ~/
