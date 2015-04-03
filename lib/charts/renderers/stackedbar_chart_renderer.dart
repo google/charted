@@ -25,6 +25,7 @@ class StackedBarChartRenderer extends BaseRenderer {
   void draw(Element element,
       {bool preRender: false, Future schedulePostRender}) {
     _ensureReadyToDraw(element);
+    var verticalBars = !area.config.leftAxisIsPrimary;
 
     var measuresCount = series.measures.length,
     measureScale = area.measureScales(series).first,
@@ -47,12 +48,14 @@ class StackedBarChartRenderer extends BaseRenderer {
     group.enter.append('g')
       ..classed('row-group')
       ..attrWithCallback('transform', (d, i, c) =>
-    'translate(${dimensionScale.scale(x[i])}, 0)');
+          verticalBars ? 'translate(${dimensionScale.scale(x[i])}, 0)' :
+          'translate(0, ${dimensionScale.scale(x[i])})');
     group.exit.remove();
 
     group.transition()
       ..attrWithCallback('transform', (d, i, c) =>
-    'translate(${dimensionScale.scale(x[i])}, 0)')
+          verticalBars ? 'translate(${dimensionScale.scale(x[i])}, 0)' :
+          'translate(0, ${dimensionScale.scale(x[i])})')
       ..duration(theme.transitionDuration)
       ..attrWithCallback('data-row', (d, i, e) => i);
 
@@ -77,26 +80,28 @@ class StackedBarChartRenderer extends BaseRenderer {
     var enter = bar.enter.append('rect')
       ..classed('bar')
       ..styleWithCallback('fill', (d, i, c) => colorForKey(_reverseIdx(i)))
-      ..attr('width', dimensionScale.rangeBand - theme.defaultStrokeWidth)
-      ..attrWithCallback('y', (d, i, c) {
+      ..attr(verticalBars ? 'width' : 'height', dimensionScale.rangeBand -
+          theme.defaultStrokeWidth)
+      ..attrWithCallback(verticalBars ? 'y' : 'x', (d, i, c) {
       var tempY;
       if (i <= ic && i > 0) {
         tempY = prevY[order];
         order++;
       } else {
-        tempY = rect.height;
+        tempY = verticalBars ? rect.height : 0;
       }
       ic = i;
       return tempY;
     })
-      ..attr('height', 0)
+      ..attr(verticalBars ? 'height' : 'width', 0)
       ..on('click', (d, i, e) => _event(mouseClickController, d, i, e))
       ..on('mouseover', (d, i, e) => _event(mouseOverController, d, i, e))
       ..on('mouseout', (d, i, e) => _event(mouseOutController, d, i, e));
 
     bar.transition()
       ..styleWithCallback('fill', (d, i, c) => colorForKey(_reverseIdx(i)))
-      ..attr('width', dimensionScale.rangeBand - theme.defaultStrokeWidth)
+      ..attr(verticalBars ? 'width' : 'height', dimensionScale.rangeBand -
+          theme.defaultStrokeWidth)
       ..duration(theme.transitionDuration);
 
     var y = 0,
@@ -111,32 +116,48 @@ class StackedBarChartRenderer extends BaseRenderer {
     prevOffset = 0;
 
     bar.transition()
-      ..attrWithCallback('y', (d, i, c) {
-      if (i == 0) y = measureScale.scale(0).round();
-      return (y -= (rect.height - measureScale.scale(d).round()));
+      ..attrWithCallback(verticalBars ? 'y' : 'x', (d, i, c) {
+        if (verticalBars) {
+          if (i == 0) y = measureScale.scale(0).round();
+          return (y -= (rect.height - measureScale.scale(d).round()));
+        } else {
+          if (i == 0) {
+            // 1 to not overlap the axis line.
+            y = 1;
+          }
+          var pos = y;
+          y += measureScale.scale(d).round();
+          // Check if after adding the height of the bar, if y has changed, if
+          // changed, we offset for space between the bars.
+          if (y != pos) {
+            y += (theme.defaultSeparatorWidth + theme.defaultStrokeWidth);
+          }
+          return pos;
+        }
     })
-      ..attrWithCallback('height', (d, i, c) {
-      var ht = rect.height - measureScale.scale(d).round();
-      if (i != 0) {
-        // If previous bars has 0 height, don't offset for spacing
-        // If any of the previous bar has non 0 height, do the offset.
-        ht -= prevAllZeroHeight ? 1 :
-        (theme.defaultSeparatorWidth + theme.defaultStrokeWidth);
-        ht += prevOffset;
-      } else {
-        // When rendering next group of bars, reset prevZeroHeight.
-        prevOffset = 0;
-        prevAllZeroHeight = true;
-        ht -= 1;
-        // -1 so bar does not overlap x axis.
-      }
-      if (ht <= 0) {
-        prevOffset = prevAllZeroHeight ? 0 :
-        (theme.defaultSeparatorWidth + theme.defaultStrokeWidth) + ht;
-        ht = 0;
-      }
-      prevAllZeroHeight = (ht == 0) && prevAllZeroHeight;
-      return ht;
+      ..attrWithCallback(verticalBars ? 'height' : 'width', (d, i, c) {
+        if (!verticalBars) return measureScale.scale(d).round();
+        var ht = rect.height - measureScale.scale(d).round();
+        if (i != 0) {
+          // If previous bars has 0 height, don't offset for spacing
+          // If any of the previous bar has non 0 height, do the offset.
+          ht -= prevAllZeroHeight ? 1 :
+          (theme.defaultSeparatorWidth + theme.defaultStrokeWidth);
+          ht += prevOffset;
+        } else {
+          // When rendering next group of bars, reset prevZeroHeight.
+          prevOffset = 0;
+          prevAllZeroHeight = true;
+          ht -= 1;
+          // -1 so bar does not overlap x axis.
+        }
+        if (ht <= 0) {
+          prevOffset = prevAllZeroHeight ? 0 :
+          (theme.defaultSeparatorWidth + theme.defaultStrokeWidth) + ht;
+          ht = 0;
+        }
+        prevAllZeroHeight = (ht == 0) && prevAllZeroHeight;
+        return ht;
     })
       ..duration(theme.transitionDuration)
       ..delay(50);
