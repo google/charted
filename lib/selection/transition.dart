@@ -5,14 +5,14 @@
  * license that can be found in the LICENSE file or at
  * https://developers.google.com/open-source/licenses/bsd
  */
-library charted.transition;
+library charted.selection.transition;
 
 import "dart:html" show Element,document;
 import "package:charted/core/timer.dart";
 import "package:charted/selection/selection.dart";
 import "package:charted/core/interpolators.dart";
 
-part "transition_impl.dart";
+part 'src/transition_impl.dart';
 
 typedef Interpolator AttrTweenCallback(datum, int ei, String attr);
 typedef Interpolator StyleTweenCallback(datum, int ei, String style);

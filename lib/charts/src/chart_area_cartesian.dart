@@ -62,6 +62,9 @@ class CartesianChartArea implements ChartArea {
   Selection lowerBehaviorPane;
 
   @override
+  bool isReady = false;
+
+  @override
   ChartTheme theme;
 
   ChartData _data;
@@ -84,6 +87,7 @@ class CartesianChartArea implements ChartArea {
   StreamController<ChartEvent> _valueMouseOverController;
   StreamController<ChartEvent> _valueMouseOutController;
   StreamController<ChartEvent> _valueMouseClickController;
+  StreamController<ChartArea> _chartAxesUpdatedController;
 
   CartesianChartArea(
       this.host,
@@ -281,6 +285,12 @@ class CartesianChartArea implements ChartArea {
           }
         })
         ..remove();
+
+      // Notify on the stream that the chart has been updated.
+      isReady = true;
+      if (_chartAxesUpdatedController != null) {
+        _chartAxesUpdatedController.add(this);
+      }
     });
 
     // Save the list of valid series and initialize axes.
@@ -380,7 +390,7 @@ class CartesianChartArea implements ChartArea {
 
     // Compute size of the dimension axes
     if (config.renderDimensionAxes != false) {
-      var dimensionAxisOrientations = config.leftAxisIsPrimary
+      var dimensionAxisOrientations = config.isLeftAxisPrimary
           ? DIMENSION_AXIS_ORIENTATIONS.last
           : DIMENSION_AXIS_ORIENTATIONS.first;
       for (int i = 0, len = displayedDimensionAxes.length; i < len; ++i) {
@@ -393,7 +403,7 @@ class CartesianChartArea implements ChartArea {
 
     // Compute size of the measure axes
     if (displayedMeasureAxes.isNotEmpty) {
-      var measureAxisOrientations = config.leftAxisIsPrimary
+      var measureAxisOrientations = config.isLeftAxisPrimary
           ? MEASURE_AXIS_ORIENTATIONS.last
           : MEASURE_AXIS_ORIENTATIONS.first;
       displayedMeasureAxes.asMap().forEach((int index, String key) {
@@ -447,7 +457,7 @@ class CartesianChartArea implements ChartArea {
       dimAxisGroups.exit.remove();
     } else {
       // Initialize scale on invisible axis
-      var dimensionAxisOrientations = config.leftAxisIsPrimary ?
+      var dimensionAxisOrientations = config.isLeftAxisPrimary ?
           DIMENSION_AXIS_ORIENTATIONS.last : DIMENSION_AXIS_ORIENTATIONS.first;
       for (int i = 0; i < dimensionAxesCount; ++i) {
         var column = config.dimensions.elementAt(i),
@@ -566,6 +576,14 @@ class CartesianChartArea implements ChartArea {
       _valueMouseOutController = new StreamController.broadcast(sync: true);
     }
     return _valueMouseOutController.stream;
+  }
+
+  @override
+  Stream<ChartArea> get onChartAxesUpdated {
+    if (_chartAxesUpdatedController == null) {
+      _chartAxesUpdatedController = new StreamController.broadcast(sync: true);
+    }
+    return _chartAxesUpdatedController.stream;
   }
 
   @override

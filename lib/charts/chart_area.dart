@@ -57,6 +57,10 @@ abstract class ChartArea implements ChartAreaBehaviorSource {
   /// Host element of the ChartArea
   Element get host;
 
+  /// True when all components of the chart have been updated - either already
+  /// drawn or are in the process of transitioning in.
+  bool get isReady;
+
   /// The list of currently selected measures in chart.
   ObservableList<int> selectedMeasures;
 

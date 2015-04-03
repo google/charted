@@ -27,7 +27,7 @@ class BarChartRenderer extends BaseRenderer {
       {bool preRender: false, Future schedulePostRender}) {
     _ensureReadyToDraw(element);
 
-    var verticalBars = !area.config.leftAxisIsPrimary;
+    var verticalBars = !area.config.isLeftAxisPrimary;
 
     var measuresCount = series.measures.length,
         measureScale = area.measureScales(series).first,
@@ -73,7 +73,6 @@ class BarChartRenderer extends BaseRenderer {
     // Avoids animation on first render unless alwaysAnimate is set to true.
 
     var bar = groups.selectAll('.bar').dataWithCallback((d, i, c) => rows[i]);
-    var animateBars = alwaysAnimate || !bar.isEmpty;
     var getBarHeight = (d) {
       var ht = (verticalBars ? rect.height : rect.width) -
           measureScale.scale(d).round() - 1;
@@ -88,12 +87,12 @@ class BarChartRenderer extends BaseRenderer {
           ..[verticalBars ? 'x' : 'y'] =
               (bars.scale(i) + theme.defaultStrokeWidth).toString()
           ..[verticalBars ? 'y' : 'x'] = verticalBars ?
-              (animateBars ? rect.height.toString() : getBarY(d)) : '1'
-          ..[verticalBars ? 'height' : 'width'] = animateBars ? '0' :
+              (animateBarGroups ? rect.height.toString() : getBarY(d)) : '1'
+          ..[verticalBars ? 'height' : 'width'] = animateBarGroups ? '0' :
               getBarHeight(d)
           ..[verticalBars ? 'width' : 'height'] = barWidth
           ..['stroke-width'] = '${theme.defaultStrokeWidth}px';
-        if (!animateBars) {
+        if (!animateBarGroups) {
           e.style.setProperty('fill', colorForKey(i));
           e.style.setProperty('stroke', colorForKey(i));
         }
@@ -102,7 +101,7 @@ class BarChartRenderer extends BaseRenderer {
       ..on('mouseover', (d, i, e) => _event(mouseOverController, d, i, e))
       ..on('mouseout', (d, i, e) => _event(mouseOutController, d, i, e));
 
-    if (animateBars) {
+    if (animateBarGroups) {
       bar.transition()
         ..attrWithCallback(verticalBars ? 'x' : 'y', (d, i, c) =>
             bars.scale(i) + theme.defaultStrokeWidth)

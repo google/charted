@@ -33,7 +33,7 @@ abstract class ChartConfig {
   Rect minimumSize;
 
   /// Indicates if the chart has primary dimension on the left axis
-  bool leftAxisIsPrimary = false;
+  bool isLeftAxisPrimary = false;
 
   /// Registers axis configuration for the axis represented by [id].
   void registerMeasureAxis(String id, ChartAxisConfig axis);
@@ -55,6 +55,15 @@ abstract class ChartConfig {
   /// Indicates if the dimension axes should be drawn on this chart. Unless set
   /// to "false", the axes are rendered.
   bool renderDimensionAxes;
+
+  /// When set to true, the chart rendering changes to be more suitable for
+  /// scripts that are written from right-to-left.
+  bool isRTL;
+
+  /// Indicate if the horizontal axes and the corresponding scales should
+  /// switch direction too.
+  /// Example: Time scale on the X axis would progress from right to left.
+  bool switchAxesForRTL;
 
   /// Factory method to create an instance of the default implementation
   factory ChartConfig(
@@ -84,4 +93,3 @@ class ChartAxisConfig {
   /// When not specified, the ticks are based on the type of [scale] used.
   Iterable tickValues;
 }
-

@@ -6,7 +6,7 @@
  * https://developers.google.com/open-source/licenses/bsd
  */
 
-library charted.demo.renderers;
+library charted.demo.interactive_renderers;
 
 import 'dart:html';
 import 'package:charted/charts/charts.dart';

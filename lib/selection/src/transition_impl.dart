@@ -5,10 +5,9 @@
  * license that can be found in the LICENSE file or at
  * https://developers.google.com/open-source/licenses/bsd
  */
-part of charted.transition;
+part of charted.selection.transition;
 
 class _TransitionImpl implements Transition {
-
   SelectionCallback _delay = (d, i, c) => 0;
   SelectionCallback _duration = (d, i, c) => Transition.defaultDuration;
   Selection _selection;
@@ -27,10 +26,10 @@ class _TransitionImpl implements Transition {
     _timerDelay = delay;
   }
 
-  Interpolator ease = clampEasingFn(Transition.defaultEasingMode(
-        Transition.defaultEasingType));
+  Interpolator ease = clampEasingFn(
+          Transition.defaultEasingMode(Transition.defaultEasingType));
 
-  void delay([int millisecond = 0]) {
+  void delay(int millisecond) {
     delayWithCallback(toCallback(millisecond));
   }
 

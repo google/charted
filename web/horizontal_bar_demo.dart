@@ -6,7 +6,7 @@
  * https://developers.google.com/open-source/licenses/bsd
  */
 
-library charted.demo.renderers;
+library charted.demo.horizontal_renderers;
 
 import 'dart:html';
 import 'package:charted/charts/charts.dart';
@@ -19,7 +19,7 @@ main() {
   // bar chart
   var barSeries = new ChartSeries("one", [2, 3, 1], new BarChartRenderer()),
       barConfig = new ChartConfig([barSeries], [0])
-          ..leftAxisIsPrimary = true,
+          ..isLeftAxisPrimary = true,
       behavior = [
         new ChartTooltip()
         ],
@@ -32,7 +32,7 @@ main() {
   var stacked_barSeries = new ChartSeries("one", [2, 3, 1],
       new StackedBarChartRenderer()),
       stackedBarConfig = new ChartConfig([stacked_barSeries], [0])
-          ..leftAxisIsPrimary = true,
+          ..isLeftAxisPrimary = true,
       stackedBarDemo = new ChartDemo('stacked bar chart', querySelector(
           '.stacked-bar-chart'), stackedBarConfig, data,
           chartBehaviors: behavior);

@@ -1,20 +1,21 @@
-/*
- * Copyright 2014 Google Inc. All rights reserved.
- *
- * Use of this source code is governed by a BSD-style
- * license that can be found in the LICENSE file or at
- * https://developers.google.com/open-source/licenses/bsd
- */
+//
+// Copyright 2014 Google Inc. All rights reserved.
+//
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file or at
+// https://developers.google.com/open-source/licenses/bsd
+//
 
 part of charted.charts;
 
 class StackedBarChartRenderer extends BaseRenderer {
   final Iterable<int> dimensionsUsingBand = const[0];
+  final alwaysAnimate;
 
-  /*
-   * Returns false if the number of dimension axes on the area is 0.
-   * Otherwise, the first dimension scale is used to render the chart.
-   */
+  StackedBarChartRenderer({this.alwaysAnimate: false});
+
+  /// Returns false if the number of dimension axes on the area is 0.
+  /// Otherwise, the first dimension scale is used to render the chart.
   @override
   bool prepare(ChartArea area, ChartSeries series) {
     _ensureAreaAndSeries(area, series);
@@ -25,64 +26,94 @@ class StackedBarChartRenderer extends BaseRenderer {
   void draw(Element element,
       {bool preRender: false, Future schedulePostRender}) {
     _ensureReadyToDraw(element);
-    var verticalBars = !area.config.leftAxisIsPrimary;
+    var verticalBars = !area.config.isLeftAxisPrimary;
 
     var measuresCount = series.measures.length,
-    measureScale = area.measureScales(series).first,
-    dimensionScale = area.dimensionScales.first;
+        measureScale = area.measureScales(series).first,
+        dimensionScale = area.dimensionScales.first;
 
     var rows = new List()
-      ..addAll(area.data.rows.map((e) {
-      var row = [];
-      for (var i = series.measures.length - 1; i >= 0; i--) {
-        row.add(e[series.measures.elementAt(i)]);
-      }
-      return row;
-    }));
+      ..addAll(area.data.rows.map((e) =>
+          new List.generate(
+              measuresCount, (i) => e[series.measures.elementAt(i)])));
 
-    // We support only one dimension, so always use the first one.
-    var x = area.data.rows.map(
-            (row) => row.elementAt(area.config.dimensions.first)).toList();
+    var dimensionVals = area.data.rows.map(
+        (row) => row.elementAt(area.config.dimensions.first)).toList();
 
-    var group = root.selectAll('.row-group').data(rows);
-    group.enter.append('g')
+    var groups = root.selectAll('.row-group').data(rows);
+    var animateBarGroups = alwaysAnimate || !groups.isEmpty;
+    groups.enter.append('g')
       ..classed('row-group')
-      ..attrWithCallback('transform', (d, i, c) =>
-          verticalBars ? 'translate(${dimensionScale.scale(x[i])}, 0)' :
-          'translate(0, ${dimensionScale.scale(x[i])})');
-    group.exit.remove();
+      ..attrWithCallback('transform', (d, i, c) => verticalBars ?
+          'translate(${dimensionScale.scale(dimensionVals[i])}, 0)' :
+          'translate(0, ${dimensionScale.scale(dimensionVals[i])})');
+    groups.attrWithCallback('data-row', (d, i, e) => i);
+    groups.exit.remove();
 
-    group.transition()
-      ..attrWithCallback('transform', (d, i, c) =>
-          verticalBars ? 'translate(${dimensionScale.scale(x[i])}, 0)' :
-          'translate(0, ${dimensionScale.scale(x[i])})')
-      ..duration(theme.transitionDuration)
-      ..attrWithCallback('data-row', (d, i, e) => i);
+    if (animateBarGroups) {
+      groups.transition()
+        ..attrWithCallback('transform', (d, i, c) => verticalBars ?
+            'translate(${dimensionScale.scale(dimensionVals[i])}, 0)' :
+            'translate(0, ${dimensionScale.scale(dimensionVals[i])})')
+        ..duration(theme.transitionDuration);
+    }
 
-    /* TODO(prsd): Handle cases where x and y axes are swapped */
-    var bar = group.selectAll('.bar').dataWithCallback((d, i, c) => rows[i]);
-
+    var bar = groups.selectAll('.bar').dataWithCallback((d, i, c) => rows[i]);
     var ic = -1,
-    order = 0,
-    prevY = new List();
+        order = 0,
+        prevY = new List();
 
-    prevY.add(0);
-    bar.each((d, i, e) {
-      if (i > ic) {
-        prevY[prevY.length - 1] = e.attributes['y'];
+    // Keep track of "y" values.
+    // These are used to insert values in the middle of stack when necessary
+    if (animateBarGroups) {
+      prevY.add(0);
+      bar.each((d, i, e) {
+        if (i > ic) {
+          prevY[prevY.length - 1] = e.attributes['y'];
+        } else {
+          prevY.add(e.attributes['y']);
+        }
+        ic = i;
+      });
+      ic = 1000000000;
+    }
+
+    var barWidth = '${dimensionScale.rangeBand - theme.defaultStrokeWidth}';
+
+    // Calculate height of each segment in the bar.
+    // Uses prevAllZeroHeight and prevOffset to track previous segments
+    var prevAllZeroHeight = true,
+        prevOffset = 0;
+    var getBarHeight = (d, i) {
+      if (!verticalBars) return '${measureScale.scale(d).round()}';
+      var retval = rect.height - measureScale.scale(d).round();
+      if (i != 0) {
+        // If previous bars has 0 height, don't offset for spacing
+        // If any of the previous bar has non 0 height, do the offset.
+        retval -= prevAllZeroHeight
+            ? 1
+            : (theme.defaultSeparatorWidth + theme.defaultStrokeWidth);
+        retval += prevOffset;
       } else {
-        prevY.add(e.attributes['y']);
+        // When rendering next group of bars, reset prevZeroHeight.
+        prevOffset = 0;
+        prevAllZeroHeight = true;
+        retval -= 1; // -1 so bar does not overlap x axis.
       }
-      ic = i;
-    });
 
-    ic = 1000000000;
-    var enter = bar.enter.append('rect')
-      ..classed('bar')
-      ..styleWithCallback('fill', (d, i, c) => colorForKey(_reverseIdx(i)))
-      ..attr(verticalBars ? 'width' : 'height', dimensionScale.rangeBand -
-          theme.defaultStrokeWidth)
-      ..attrWithCallback(verticalBars ? 'y' : 'x', (d, i, c) {
+      if (retval <= 0) {
+        prevOffset = prevAllZeroHeight
+            ? 0
+            : theme.defaultSeparatorWidth + theme.defaultStrokeWidth + retval;
+        retval = 0;
+      }
+      prevAllZeroHeight = (retval == 0) && prevAllZeroHeight;
+      return retval.toString();
+    };
+
+    // Initial "y" position of a bar that is being created.
+    // Only used when animateBarGroups is set to true.
+    var getInitialBarY = (i) {
       var tempY;
       if (i <= ic && i > 0) {
         tempY = prevY[order];
@@ -91,83 +122,61 @@ class StackedBarChartRenderer extends BaseRenderer {
         tempY = verticalBars ? rect.height : 0;
       }
       ic = i;
-      return tempY;
-    })
-      ..attr(verticalBars ? 'height' : 'width', 0)
+      return tempY.toString();
+    };
+
+    // Position of a bar in the stack. yPos is used to keep track of the
+    // offset based on previous calls to getBarY
+    var yPos = 0,
+        getBarY = (d, i) {
+      if (verticalBars) {
+        if (i == 0) {
+          yPos = measureScale.scale(0).round();
+        }
+        return '${yPos -= (rect.height - measureScale.scale(d).round())}';
+      } else {
+        if (i == 0) {
+          // 1 to not overlap the axis line.
+          yPos = 1;
+        }
+        var pos = yPos;
+        yPos += measureScale.scale(d).round();
+        // Check if after adding the height of the bar, if y has changed, if
+        // changed, we offset for space between the bars.
+        if (yPos != pos) {
+          yPos += (theme.defaultSeparatorWidth + theme.defaultStrokeWidth);
+        }
+        return'$pos';
+      }
+    };
+
+    var enter = bar.enter.append('rect')
+      ..each((d, i, e) {
+          e.classes.add('bar');
+          e.attributes
+            ..[verticalBars ? 'height' : 'width'] = animateBarGroups ? '0' : getBarHeight(d, i)
+            ..[verticalBars ? 'width' : 'height'] = barWidth
+            ..[verticalBars ? 'y' : 'x'] = animateBarGroups ? getInitialBarY(i) : getBarY(d, i)
+            ..['stroke-width'] = '${theme.defaultStrokeWidth}';
+          e.style.setProperty('fill', colorForKey(i));
+          e.style.setProperty('stroke', colorForKey(i));
+        })
       ..on('click', (d, i, e) => _event(mouseClickController, d, i, e))
       ..on('mouseover', (d, i, e) => _event(mouseOverController, d, i, e))
       ..on('mouseout', (d, i, e) => _event(mouseOutController, d, i, e));
 
-    bar.transition()
-      ..styleWithCallback('fill', (d, i, c) => colorForKey(_reverseIdx(i)))
-      ..attr(verticalBars ? 'width' : 'height', dimensionScale.rangeBand -
-          theme.defaultStrokeWidth)
-      ..duration(theme.transitionDuration);
-
-    var y = 0,
-    length = bar.length,
-    // Keeps track of heights of previously graphed bars. If all bars before
-    // current one have 0 height, the current bar doesn't need offset.
-    prevAllZeroHeight = true,
-    // Keeps track of the offset already exist in the previous bar, when the
-    // computed bar height is less than (theme.defaultSeparatorWidth +
-    // theme.defaultStrokeWidth), this height is already discounted, so the
-    // next bar's offset in height can be this much less than normal.
-    prevOffset = 0;
-
-    bar.transition()
-      ..attrWithCallback(verticalBars ? 'y' : 'x', (d, i, c) {
-        if (verticalBars) {
-          if (i == 0) y = measureScale.scale(0).round();
-          return (y -= (rect.height - measureScale.scale(d).round()));
-        } else {
-          if (i == 0) {
-            // 1 to not overlap the axis line.
-            y = 1;
-          }
-          var pos = y;
-          y += measureScale.scale(d).round();
-          // Check if after adding the height of the bar, if y has changed, if
-          // changed, we offset for space between the bars.
-          if (y != pos) {
-            y += (theme.defaultSeparatorWidth + theme.defaultStrokeWidth);
-          }
-          return pos;
-        }
-    })
-      ..attrWithCallback(verticalBars ? 'height' : 'width', (d, i, c) {
-        if (!verticalBars) return measureScale.scale(d).round();
-        var ht = rect.height - measureScale.scale(d).round();
-        if (i != 0) {
-          // If previous bars has 0 height, don't offset for spacing
-          // If any of the previous bar has non 0 height, do the offset.
-          ht -= prevAllZeroHeight ? 1 :
-          (theme.defaultSeparatorWidth + theme.defaultStrokeWidth);
-          ht += prevOffset;
-        } else {
-          // When rendering next group of bars, reset prevZeroHeight.
-          prevOffset = 0;
-          prevAllZeroHeight = true;
-          ht -= 1;
-          // -1 so bar does not overlap x axis.
-        }
-        if (ht <= 0) {
-          prevOffset = prevAllZeroHeight ? 0 :
-          (theme.defaultSeparatorWidth + theme.defaultStrokeWidth) + ht;
-          ht = 0;
-        }
-        prevAllZeroHeight = (ht == 0) && prevAllZeroHeight;
-        return ht;
-    })
-      ..duration(theme.transitionDuration)
-      ..delay(50);
-
-    if (theme.defaultStrokeWidth > 0) {
-      enter.attr('stroke-width', '${theme.defaultStrokeWidth}px');
-      enter.styleWithCallback('stroke', (d, i, c) =>
-          colorForKey(_reverseIdx(i)));
+    if (animateBarGroups) {
       bar.transition()
-        ..styleWithCallback('stroke', (d, i, c) => colorForKey(_reverseIdx(i)));
+        ..styleWithCallback('fill', (d, i, c) => colorForKey(i))
+        ..styleWithCallback('stroke', (d, i, c) => colorForKey(i))
+        ..attr(verticalBars? 'width' : 'height', barWidth)
+        ..duration(theme.transitionDuration);
+
+      bar.transition()
+        ..attrWithCallback(verticalBars ? 'y' : 'x', (d, i, c) => getBarY(d, i))
+        ..attrWithCallback(verticalBars ? 'height' : 'width', (d, i, c) => getBarHeight(d, i))
+        ..duration(theme.transitionDuration)
+        ..delay(50);
     }
 
     bar.exit.remove();

@@ -10,7 +10,7 @@ part of charted.charts;
 
 /// A behavior that tracks mouse pointer and paints a dashed line to
 /// the axes from the current pointer location.
-class MouseTrackingMarker implements ChartBehavior {
+class MouseTracker implements ChartBehavior {
   ChartArea _area;
   Rect _rect;
 
@@ -33,7 +33,7 @@ class MouseTrackingMarker implements ChartBehavior {
     _lower = lower.first;
     _upper = upper.first;
 
-    if (ChartArea is CartesianChartArea) {
+    if (area is CartesianChartArea) {
       _mouseInSubscription = _area.onMouseOver.listen(_show);
       _mouseOutSubscription = _area.onMouseOut.listen(_hide);
     }
