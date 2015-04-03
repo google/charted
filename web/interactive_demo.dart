@@ -69,7 +69,9 @@ main() {
       addSeriesButton = querySelector('#add-series'),
       removeSeriesButton = querySelector('#remove-series');
 
-  InputElement useRTLScriptCheckBox = querySelector('#use-rtl-script');
+  InputElement useRTLScriptCheckBox = querySelector('#rtl-use-script'),
+      switchAxesForRTLCheckBox = querySelector('#rtl-switch-axes'),
+      useRTLLayoutCheckBox = querySelector('#rtl-use-layout');
 
   SelectElement seriesSelect = querySelector('#select-series'),
       rendererSelect = querySelector('#select-renderer');
@@ -81,10 +83,14 @@ main() {
    * RTL handling
    */
 
-  useRTLScriptCheckBox.onChange.listen((_) {
-    bool isRTL = useRTLScriptCheckBox.checked;
+  useRTLLayoutCheckBox.onChange.listen((_) {
+    bool isRTL = useRTLLayoutCheckBox.checked;
     config.isRTL = isRTL;
     chartsContainer.attributes['dir'] = isRTL ? 'rtl' : 'ltr';
+  });
+
+  useRTLScriptCheckBox.onChange.listen((_) {
+    bool isRTL = useRTLScriptCheckBox.checked;
     rows.clear();
     DATA_SOURCE = isRTL ? SMALL_DATA_RTL : SMALL_DATA;
     rows.addAll(DATA_SOURCE.sublist(0, 10));

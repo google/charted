@@ -104,7 +104,8 @@ class CartesianChartArea implements ChartArea {
 
     Transition.defaultEasingType = theme.transitionEasingType;
     Transition.defaultEasingMode = theme.transitionEasingMode;
-    Transition.defaultDuration = theme.transitionDuration;
+    Transition.defaultDurationMilliseconds =
+        theme.transitionDurationMilliseconds;
   }
 
   void dispose() {
@@ -647,7 +648,7 @@ class _ChartSeriesInfo {
     _renderer = _series.renderer;
     try {
       _disposer.addAll([
-          _renderer.onValueMouseClick.listen(
+          _renderer.onValueClick.listen(
               (ChartEvent e) => _event(_area._valueMouseClickController, e)),
           _renderer.onValueMouseOver.listen(
               (ChartEvent e) => _event(_area._valueMouseOverController, e)),

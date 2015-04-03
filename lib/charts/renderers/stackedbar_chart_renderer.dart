@@ -53,7 +53,7 @@ class StackedBarChartRenderer extends BaseRenderer {
       groups.transition()
         ..attrWithCallback('transform', (d, i, c) =>
             'translate(${dimensionScale.scale(dimensionVals[i])}, 0)')
-        ..duration(theme.transitionDuration);
+        ..duration(theme.transitionDurationMilliseconds);
     }
 
     var bar = groups.selectAll('.bar').dataWithCallback((d, i, c) => rows[i]);
@@ -152,12 +152,12 @@ class StackedBarChartRenderer extends BaseRenderer {
         ..styleWithCallback('fill', (d, i, c) => colorForKey(i))
         ..styleWithCallback('stroke', (d, i, c) => colorForKey(i))
         ..attr('width', barWidth)
-        ..duration(theme.transitionDuration);
+        ..duration(theme.transitionDurationMilliseconds);
 
       bar.transition()
         ..attrWithCallback('y', (d, i, c) => getBarY(d, i))
         ..attrWithCallback('height', (d, i, c) => getBarHeight(d, i))
-        ..duration(theme.transitionDuration)
+        ..duration(theme.transitionDurationMilliseconds)
         ..delay(50);
     }
 

@@ -59,7 +59,7 @@ class BarChartRenderer extends BaseRenderer {
       groups.transition()
         ..attrWithCallback('transform', (d, i, c) =>
             'translate(${dimensionScale.scale(dimensionVals[i])}, 0)')
-        ..duration(theme.transitionDuration);
+        ..duration(theme.transitionDurationMilliseconds);
     }
 
     var barWidth = (bars.rangeBand -
@@ -100,14 +100,14 @@ class BarChartRenderer extends BaseRenderer {
         ..styleWithCallback('fill', (d, i, c) => colorForKey(i))
         ..styleWithCallback('stroke', (d, i, c) => colorForKey(i))
         ..attr('width', barWidth)
-        ..duration(theme.transitionDuration);
+        ..duration(theme.transitionDurationMilliseconds);
 
       int delay = 0;
       bar.transition()
         ..attrWithCallback('y', (d, i, c) => getBarY(d))
         ..attrWithCallback('height', (d, i, c) => getBarHeight(d))
         ..delayWithCallback((d, i, c) =>
-            delay += theme.transitionDuration ~/
+            delay += theme.transitionDurationMilliseconds ~/
                 (series.measures.length * rows.length));
     }
 

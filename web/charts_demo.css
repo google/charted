@@ -34,8 +34,8 @@ a:link, a:visited {
 }
 
 .chart-host {
-  min-width: 400px;
-  max-width: 400px;
+  min-width: 600px;
+  max-width: 600px;
 }
 
 .chart-controls {

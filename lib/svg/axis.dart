@@ -114,7 +114,7 @@ class SvgAxis {
         textEnter = tickEnter.append('text'),
         textUpdate = tickUpdate.select('text'),
         text = ticks.select('text')
-            ..textWithCallback((d,i,e) => formatted[i]);
+            ..textWithCallback((d,i,e) => fixTextDirection(formatted[i]));
 
     switch (orientation) {
       case ORIENTATION_BOTTOM:
@@ -185,10 +185,11 @@ class SvgAxis {
     }
 
     if (rotateTicks) {
-      var angle = isRTL ? -45 : 45;
+      var angle = isRTL ? -45 : 45,
+          textAnchor = isRTL ? 'end' : 'start';
       textUpdate
           ..attr('transform', 'rotate($angle)')
-          ..style('text-anchor', 'start');
+          ..style('text-anchor', textAnchor);
     } else {
       textUpdate
           ..attr('transform', '')

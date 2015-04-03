@@ -81,7 +81,7 @@ abstract class BaseRenderer implements ChartRenderer {
   }
 
   @override
-  Stream<ChartEvent> get onValueMouseClick {
+  Stream<ChartEvent> get onValueClick {
     if (mouseClickController == null) {
       mouseClickController = new StreamController.broadcast(sync: true);
     }

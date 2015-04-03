@@ -23,9 +23,7 @@ abstract class ChartLegend {
   factory ChartLegend(Element host, {maxItems: 0, title: ''}) =>
       new _ChartLegend(host, maxItems, title);
 
-  /**
-   * Called by [ChartArea] to dispose selection listeners.
-   */
+  /// Called by [ChartArea] to dispose selection listeners.
   dispose();
 }
 

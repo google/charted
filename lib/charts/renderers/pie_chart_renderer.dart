@@ -119,7 +119,7 @@ class PieChartRenderer extends BaseRenderer {
           return (t) => arc.path(interpolateSvgArcData(
             prevArcData[o][i], arcData[o][i])(t), i, host);
         })
-      ..duration(theme.transitionDuration);
+      ..duration(theme.transitionDurationMilliseconds);
     pie
       ..on('click', (d, i, e) => _event(mouseClickController, d, i, e))
       ..on('mouseover', (d, i, e) => _event(mouseOverController, d, i, e))
@@ -170,8 +170,8 @@ class PieChartRenderer extends BaseRenderer {
 
     statistic.transition()
         ..attr('opacity', '1')
-        ..delay(theme.transitionDuration)
-        ..duration(theme.transitionDuration);
+        ..delay(theme.transitionDurationMilliseconds)
+        ..duration(theme.transitionDurationMilliseconds);
 
     statistic.exit.remove();
   }
