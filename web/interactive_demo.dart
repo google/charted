@@ -40,11 +40,12 @@ String getTypeForRenderer(ChartRenderer renderer) {
 }
 
 main() {
+  List DATA_SOURCE = SMALL_DATA;
   ChartSeries activeSeries,
       defaultSeries = new ChartSeries("Default series",
           new ObservableList.from([ 2, 3 ]), new BarChartRenderer());
 
-  ObservableList rows = new ObservableList.from(SMALL_DATA.sublist(0, 3)),
+  ObservableList rows = new ObservableList.from(DATA_SOURCE.sublist(0, 10)),
       columns = new ObservableList.from(SMALL_DATA_COLUMNS),
       seriesList = new ObservableList.from([ defaultSeries ]);
 
@@ -68,24 +69,45 @@ main() {
       addSeriesButton = querySelector('#add-series'),
       removeSeriesButton = querySelector('#remove-series');
 
+  InputElement useRTLScriptCheckBox = querySelector('#rtl-use-script'),
+      switchAxesForRTLCheckBox = querySelector('#rtl-switch-axes'),
+      useRTLLayoutCheckBox = querySelector('#rtl-use-layout');
+
   SelectElement seriesSelect = querySelector('#select-series'),
       rendererSelect = querySelector('#select-renderer');
 
-  Element columnButtons = querySelector('#column-buttons');
+  Element columnButtons = querySelector('#column-buttons'),
+      chartsContainer = querySelector('.charts-container');
 
+  /*
+   * RTL handling
+   */
+
+  useRTLLayoutCheckBox.onChange.listen((_) {
+    bool isRTL = useRTLLayoutCheckBox.checked;
+    config.isRTL = isRTL;
+    chartsContainer.attributes['dir'] = isRTL ? 'rtl' : 'ltr';
+  });
+
+  useRTLScriptCheckBox.onChange.listen((_) {
+    bool isRTL = useRTLScriptCheckBox.checked;
+    rows.clear();
+    DATA_SOURCE = isRTL ? SMALL_DATA_RTL : SMALL_DATA;
+    rows.addAll(DATA_SOURCE.sublist(0, 10));
+  });
 
   /*
    * Updating rows
    */
 
   updateRowButtonStates() {
-    addRowButton.disabled = rows.length >= SMALL_DATA.length;
+    addRowButton.disabled = rows.length >= DATA_SOURCE.length;
     removeRowButton.disabled = rows.length <= 1;
   }
 
   addRowButton.onClick.listen((_) {
-    if (rows.length < SMALL_DATA.length) {
-      rows.add(SMALL_DATA.elementAt(rows.length));
+    if (rows.length < DATA_SOURCE.length) {
+      rows.add(DATA_SOURCE.elementAt(rows.length));
     }
     updateRowButtonStates();
   });

@@ -11,6 +11,8 @@ library charted.core.utils;
 
 import "dart:html" show Element;
 import "dart:math" as math;
+
+import "package:intl/intl.dart" show BidiFormatter;
 import "package:collection/collection.dart";
 import "package:quiver/core.dart";
 
@@ -20,6 +22,7 @@ part 'utils/math.dart';
 part 'utils/namespace.dart';
 part 'utils/object_factory.dart';
 part 'utils/rect.dart';
+part 'utils/bidi_formatter.dart';
 
 const String ORIENTATION_LEFT   = 'left';
 const String ORIENTATION_RIGHT  = 'right';

@@ -1,10 +1,11 @@
-/*
- * Copyright 2014 Google Inc. All rights reserved.
- *
- * Use of this source code is governed by a BSD-style
- * license that can be found in the LICENSE file or at
- * https://developers.google.com/open-source/licenses/bsd
- */
+//
+// Copyright 2014 Google Inc. All rights reserved.
+//
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file or at
+// https://developers.google.com/open-source/licenses/bsd
+//
+
 library charted.svg.axis;
 
 import 'dart:html' show Element;
@@ -15,44 +16,52 @@ import 'package:charted/core/utils.dart';
 import 'package:charted/core/text_metrics.dart';
 import 'package:charted/selection/selection.dart';
 
-/**
- * [SvgAxis] helps draw chart axes based on a given scale.
- */
+///
+/// [SvgAxis] helps draw chart axes based on a given scale.
+///
 class SvgAxis {
-  /** Scale used on this axis */
+  /// Scale used on this axis
   Scale scale = new LinearScale();
 
-  /** Orientation of the axis.  Defaults to [ORIENTATION_BOTTOM] */
+  /// Orientation of the axis.  Defaults to [ORIENTATION_BOTTOM].
   String orientation = ORIENTATION_BOTTOM;
 
-  /** Size of all inner ticks */
+  /// Size of all inner ticks
   num innerTickSize = 6;
 
-  /** Size of the outer two ticks */
+  /// Size of the outer two ticks
   num outerTickSize = 6;
 
-  /** Padding on the ticks */
+  /// Padding on the ticks
   num tickPadding = 3;
 
-  /** Suggested number of ticks to be displayed on the axis */
+  /// Suggested number of ticks to be displayed on the axis
   num suggestedTickCount = 5;
 
-  /** List of values to be used on the ticks */
+  /// List of values to be used on the ticks
   List tickValues;
 
-  /** Formatter for the tick labels */
+  /// Formatter for the tick labels
   FormatFunction tickFormat;
 
-  /** Previous rotate angle */
+  /// Previous rotate angle
   num _prevRotate = 0;
 
-  /* Store of axis roots mapped to currently used scales */
+  /// Store of axis roots mapped to currently used scales
   static Expando<Scale> _scales = new Expando<Scale>();
 
-  axis(Selection g, { Rect rect, String font }) =>
-      g.each((d, i, e) => _create(e, g.scope, rect, font));
+  draw(Selection g,
+      {Rect rect, String font, bool preRender: false, isRTL: false}) =>
+          g.each((d, i, e) =>
+              _create(e, g.scope, rect, font, preRender, isRTL));
 
-  _create(Element e, SelectionScope scope, Rect rect, String font) {
+  _create(
+      Element e,
+      SelectionScope scope,
+      Rect rect,
+      String font,
+      bool preRender,
+      bool isRTL) {
     var group = scope.selectElements([e]),
         older = _scales[e],
         current = _scales[e] = scale.clone();
@@ -71,18 +80,19 @@ class SvgAxis {
         path.attr('class', 'domain');
 
     bool rotateTicks = false;
-    if (orientation == ORIENTATION_BOTTOM &&
+    if ((orientation == ORIENTATION_BOTTOM ||
+            orientation == ORIENTATION_TOP) &&
         rect != null && font != null && font.isNotEmpty) {
       var textMetrics = new TextMetrics(fontStyle: font);
       var allowedWidth = (range.max - range.min) ~/ formatted.length;
       var maxLabelWidth = textMetrics.getLongestTextWidth(formatted);
 
       // Check if we need rotation
-      if (0.85 * allowedWidth < maxLabelWidth) {
+      if (0.90 * allowedWidth < maxLabelWidth) {
         rotateTicks = true;
 
         // Check if we have enough space to render full chart
-        allowedWidth = 1.4142 * rect.height;
+        allowedWidth = 1.4142 * (rect.height - textMetrics.fontSize);
         if (maxLabelWidth > allowedWidth) {
           for (int i = 0; i < formatted.length; ++i) {
             formatted[i] = textMetrics.ellipsizeText(formatted[i], allowedWidth);
@@ -99,18 +109,15 @@ class SvgAxis {
         tickUpdate = ticks..style('opacity', '1'),
         tickTransform;
 
-    tickEnter.append('line');
-    tickEnter.append('text');
-
-    var lineEnter = tickEnter.select('line'),
+    var lineEnter = tickEnter.append('line'),
         lineUpdate = tickUpdate.select('line'),
-        textEnter = tickEnter.select('text'),
+        textEnter = tickEnter.append('text'),
         textUpdate = tickUpdate.select('text'),
         text = ticks.select('text')
-            ..textWithCallback((d,i,e) => formatted[i]);
+            ..textWithCallback((d,i,e) => fixTextDirection(formatted[i]));
 
     switch (orientation) {
-      case ORIENTATION_BOTTOM: {
+      case ORIENTATION_BOTTOM:
         tickTransform = _xAxisTransform;
         ticks.attr('y2', innerTickSize);
         lineEnter.attr('y2', innerTickSize);
@@ -126,9 +133,8 @@ class SvgAxis {
             ..style('text-anchor', 'middle');
         path.attr('d',
             'M${range.min},${outerTickSize}V0H${range.max}V${outerTickSize}');
-      }
         break;
-      case ORIENTATION_TOP: {
+      case ORIENTATION_TOP:
         tickTransform = _xAxisTransform;
         lineEnter.attr('y2', -innerTickSize);
         textEnter.attr('y', -(math.max(innerTickSize, 0) + tickPadding));
@@ -143,9 +149,8 @@ class SvgAxis {
             ..style('text-anchor', 'middle');
         path.attr('d',
             'M${range.min},${-outerTickSize}V0H${range.max}V${-outerTickSize}');
-      }
         break;
-      case ORIENTATION_LEFT: {
+      case ORIENTATION_LEFT:
         tickTransform = _yAxisTransform;
         lineEnter.attr('x2', -innerTickSize);
         textEnter.attr('x', -(math.max(innerTickSize, 0) + tickPadding));
@@ -160,9 +165,8 @@ class SvgAxis {
             ..style('text-anchor', 'end');
         path.attr('d',
             'M${-outerTickSize},${range.min}H0V${range.max}H${-outerTickSize}');
-      }
-      break;
-      case ORIENTATION_RIGHT: {
+        break;
+      case ORIENTATION_RIGHT:
         tickTransform = _yAxisTransform;
         lineEnter.attr('x2', innerTickSize);
         textEnter.attr('x', math.max(innerTickSize, 0) + tickPadding);
@@ -177,14 +181,19 @@ class SvgAxis {
             ..style('text-anchor', 'start');
         path.attr('d',
             'M${outerTickSize},${range.min}H0V${range.max}H${outerTickSize}');
-      }
-      break;
+        break;
     }
 
     if (rotateTicks) {
+      var angle = isRTL ? -45 : 45,
+          textAnchor = isRTL ? 'end' : 'start';
       textUpdate
-          ..attr('transform', 'rotate(45)')
-          ..style('text-anchor', 'start');
+          ..attr('transform', 'rotate($angle)')
+          ..style('text-anchor', textAnchor);
+    } else {
+      textUpdate
+          ..attr('transform', '')
+          ..style('text-anchor', 'middle');
     }
 
     // If either the new or old scale is ordinal,

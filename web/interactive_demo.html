@@ -65,11 +65,26 @@
           <button id="add-row">Add row</button>
           <button id="remove-row">Remove last row</button>
         </div>
+        <div class="control-category">
+          <h2>Internationalization</h2>
+          <div>
+            <input type="checkbox" id="rtl-use-script"></input>
+            <label for="rtl-use-script">Use RTL script</label>
+          </div>
+          <div>
+            <input type="checkbox" id="rtl-use-layout"></input>
+            <label for="rtl-use-layout">Use RTL Layout</label>
+          </div>
+          <div>
+            <input type="checkbox" id="rtl-switch-axes"></input>
+            <label for="rtl-switch-axes">Switch axis direction for RTL</label>
+          </div>
+        </div>
       </div>
     </div>
     <div class="charts-container">
       <div class="chart-wrapper">
-        <div class="chart-host"></div>
+        <div class="chart-host" dir="ltr"></div>
         <div class="legend-host"></div>
       </div>
     </div>

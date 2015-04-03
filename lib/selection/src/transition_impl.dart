@@ -9,7 +9,8 @@ part of charted.selection.transition;
 
 class _TransitionImpl implements Transition {
   SelectionCallback _delay = (d, i, c) => 0;
-  SelectionCallback _duration = (d, i, c) => Transition.defaultDuration;
+  SelectionCallback _duration =
+      (d, i, c) => Transition.defaultDurationMilliseconds;
   Selection _selection;
   Map _attrs = {};
   Map _styles = {};

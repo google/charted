@@ -104,7 +104,8 @@ class CartesianChartArea implements ChartArea {
 
     Transition.defaultEasingType = theme.transitionEasingType;
     Transition.defaultEasingMode = theme.transitionEasingMode;
-    Transition.defaultDuration = theme.transitionDuration;
+    Transition.defaultDurationMilliseconds =
+        theme.transitionDurationMilliseconds;
   }
 
   void dispose() {
@@ -304,6 +305,9 @@ class CartesianChartArea implements ChartArea {
     _updateLegend();
   }
 
+  String _orientRTL(String orientation) => orientation;
+  Scale _scaleRTL(Scale scale) => scale;
+
   /// Initialize the axes - required even if the axes are not being displayed.
   _initAxes() {
     Map measureAxisUsers = <String,Iterable<ChartSeries>>{};
@@ -395,7 +399,7 @@ class CartesianChartArea implements ChartArea {
           : DIMENSION_AXIS_ORIENTATIONS.first;
       for (int i = 0, len = displayedDimensionAxes.length; i < len; ++i) {
         var axis = _dimensionAxes[displayedDimensionAxes[i]],
-            orientation = dimensionAxisOrientations[i];
+            orientation = _orientRTL(dimensionAxisOrientations[i]);
         axis.prepareToDraw(orientation, theme.dimensionAxisTheme);
         layout._axes[orientation] = axis.size;
       }
@@ -408,7 +412,7 @@ class CartesianChartArea implements ChartArea {
           : MEASURE_AXIS_ORIENTATIONS.first;
       displayedMeasureAxes.asMap().forEach((int index, String key) {
         var axis = _measureAxes[key],
-            orientation = measureAxisOrientations[index];
+            orientation = _orientRTL(measureAxisOrientations[index]);
         axis.prepareToDraw(orientation, theme.measureAxisTheme);
         layout._axes[orientation] = axis.size;
       });
@@ -647,7 +651,7 @@ class _ChartSeriesInfo {
     _renderer = _series.renderer;
     try {
       _disposer.addAll([
-          _renderer.onValueMouseClick.listen(
+          _renderer.onValueClick.listen(
               (ChartEvent e) => _event(_area._valueMouseClickController, e)),
           _renderer.onValueMouseOver.listen(
               (ChartEvent e) => _event(_area._valueMouseOverController, e)),

@@ -42,7 +42,7 @@ abstract class ChartTheme {
   EasingModeFunction get transitionEasingMode => Transition.defaultEasingMode;
 
   /// Total duration of the transition in milli-seconds
-  int get transitionDuration => 250;
+  int get transitionDurationMilliseconds => 250;
 
   /// Theme passed to the measure axes
   ChartAxisTheme get measureAxisTheme;
@@ -110,8 +110,15 @@ abstract class ChartAxisTheme {
   /// visualization.
   int get horizontalAxisHeight => 200;
 
-  /// Font used by axis ticks. When specified, Charted falls back to efficient
-  /// off-screen computation of text metrics.
-  /// When not specified, SVGTextElement's metrics API is used.
+  /// Font used by axis ticks. When specified, axis uses efficient off-screen
+  /// computation of text metrics.
+  ///
+  /// Font string must be of the following form:
+  ///   "bold italic 16px Roboto"
+  ///   "bold 16px Roboto"
+  ///   "italic 16px Roboto"
+  ///   "16px Roboto"
+  ///
+  /// When not specified, SVGTextElement's metrics API will be used.
   String get ticksFont;
 }

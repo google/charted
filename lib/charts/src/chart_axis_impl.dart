@@ -127,7 +127,8 @@ class _ChartAxis {
     }
     initAxisScale(range, _theme);
     if (_axis.scale != scale) _axis.scale = scale;
-    _axis.axis(_group, rect: rect, font: _theme.ticksFont);
+    _axis.draw(_group, rect: rect,
+        font: _theme.ticksFont, isRTL: area.config.isRTL);
   }
 
   void clear() {
