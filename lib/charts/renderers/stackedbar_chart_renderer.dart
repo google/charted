@@ -26,6 +26,7 @@ class StackedBarChartRenderer extends BaseRenderer {
   void draw(Element element,
       {bool preRender: false, Future schedulePostRender}) {
     _ensureReadyToDraw(element);
+    var verticalBars = !area.config.isLeftAxisPrimary;
 
     var measuresCount = series.measures.length,
         measureScale = area.measureScales(series).first,
@@ -41,18 +42,19 @@ class StackedBarChartRenderer extends BaseRenderer {
 
     var groups = root.selectAll('.row-group').data(rows);
     var animateBarGroups = alwaysAnimate || !groups.isEmpty;
-
     groups.enter.append('g')
       ..classed('row-group')
-      ..attrWithCallback('transform', (d, i, c) =>
-          'translate(${dimensionScale.scale(dimensionVals[i])}, 0)');
+      ..attrWithCallback('transform', (d, i, c) => verticalBars ?
+          'translate(${dimensionScale.scale(dimensionVals[i])}, 0)' :
+          'translate(0, ${dimensionScale.scale(dimensionVals[i])})');
     groups.attrWithCallback('data-row', (d, i, e) => i);
     groups.exit.remove();
 
     if (animateBarGroups) {
       groups.transition()
-        ..attrWithCallback('transform', (d, i, c) =>
-            'translate(${dimensionScale.scale(dimensionVals[i])}, 0)')
+        ..attrWithCallback('transform', (d, i, c) => verticalBars ?
+            'translate(${dimensionScale.scale(dimensionVals[i])}, 0)' :
+            'translate(0, ${dimensionScale.scale(dimensionVals[i])})')
         ..duration(theme.transitionDurationMilliseconds);
     }
 
@@ -83,6 +85,7 @@ class StackedBarChartRenderer extends BaseRenderer {
     var prevAllZeroHeight = true,
         prevOffset = 0;
     var getBarHeight = (d, i) {
+      if (!verticalBars) return '${measureScale.scale(d).round()}';
       var retval = rect.height - measureScale.scale(d).round();
       if (i != 0) {
         // If previous bars has 0 height, don't offset for spacing
@@ -116,7 +119,7 @@ class StackedBarChartRenderer extends BaseRenderer {
         tempY = prevY[order];
         order++;
       } else {
-        tempY = rect.height;
+        tempY = verticalBars ? rect.height : 0;
       }
       ic = i;
       return tempY.toString();
@@ -126,19 +129,34 @@ class StackedBarChartRenderer extends BaseRenderer {
     // offset based on previous calls to getBarY
     var yPos = 0,
         getBarY = (d, i) {
-      if (i == 0) {
-        yPos = measureScale.scale(0).round();
+      if (verticalBars) {
+        if (i == 0) {
+          yPos = measureScale.scale(0).round();
+        }
+        return '${yPos -= (rect.height - measureScale.scale(d).round())}';
+      } else {
+        if (i == 0) {
+          // 1 to not overlap the axis line.
+          yPos = 1;
+        }
+        var pos = yPos;
+        yPos += measureScale.scale(d).round();
+        // Check if after adding the height of the bar, if y has changed, if
+        // changed, we offset for space between the bars.
+        if (yPos != pos) {
+          yPos += (theme.defaultSeparatorWidth + theme.defaultStrokeWidth);
+        }
+        return'$pos';
       }
-      return '${yPos -= (rect.height - measureScale.scale(d).round())}';
     };
 
     var enter = bar.enter.append('rect')
       ..each((d, i, e) {
           e.classes.add('bar');
           e.attributes
-            ..['height'] = animateBarGroups ? '0' : getBarHeight(d, i)
-            ..['width'] = barWidth
-            ..['y'] = animateBarGroups ? getInitialBarY(i) : getBarY(d, i)
+            ..[verticalBars ? 'height' : 'width'] = animateBarGroups ? '0' : getBarHeight(d, i)
+            ..[verticalBars ? 'width' : 'height'] = barWidth
+            ..[verticalBars ? 'y' : 'x'] = animateBarGroups ? getInitialBarY(i) : getBarY(d, i)
             ..['stroke-width'] = '${theme.defaultStrokeWidth}';
           e.style.setProperty('fill', colorForKey(i));
           e.style.setProperty('stroke', colorForKey(i));
@@ -151,12 +169,12 @@ class StackedBarChartRenderer extends BaseRenderer {
       bar.transition()
         ..styleWithCallback('fill', (d, i, c) => colorForKey(i))
         ..styleWithCallback('stroke', (d, i, c) => colorForKey(i))
-        ..attr('width', barWidth)
+        ..attr(verticalBars? 'width' : 'height', barWidth)
         ..duration(theme.transitionDurationMilliseconds);
 
       bar.transition()
-        ..attrWithCallback('y', (d, i, c) => getBarY(d, i))
-        ..attrWithCallback('height', (d, i, c) => getBarHeight(d, i))
+        ..attrWithCallback(verticalBars ? 'y' : 'x', (d, i, c) => getBarY(d, i))
+        ..attrWithCallback(verticalBars ? 'height' : 'width', (d, i, c) => getBarHeight(d, i))
         ..duration(theme.transitionDurationMilliseconds)
         ..delay(50);
     }

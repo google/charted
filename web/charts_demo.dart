@@ -36,5 +36,9 @@ class ChartDemo {
     }
   }
 
+  void setTheme(ChartTheme theme) {
+    area.theme = theme;
+  }
+
   void draw() => area.draw();
 }

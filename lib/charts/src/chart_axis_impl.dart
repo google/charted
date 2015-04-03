@@ -60,6 +60,12 @@ class _ChartAxis {
           innerPadding = usingBands ? theme.axisBandInnerPadding : 1.0,
           outerPadding = usingBands ?
               theme.axisBandOuterPadding : theme.axisOuterPadding;
+
+      // This is because when left axis is primary the first data row should
+      // appear on top of the y-axis instead of on bottom.
+      if (area.config.isLeftAxisPrimary) {
+        range = range.toList().reversed;
+      }
       (scale as OrdinalScale).
           rangeRoundBands(range, innerPadding, outerPadding);
     } else {
