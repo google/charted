@@ -11,7 +11,6 @@
 library charted.core.text_metrics;
 
 import "dart:html";
-import "package:charted/core/utils.dart";
 import "package:charted/core/text_metrics/segmentation.dart";
 
 /// Utilities to measure text width.
@@ -25,6 +24,8 @@ class TextMetrics {
 
   final String fontStyle;
   int fontSize = 16;
+
+  String currentFontStyle;
 
   factory TextMetrics({String fontStyle}) {
     if (canvas == null || context == null) {
@@ -41,25 +42,28 @@ class TextMetrics {
     fontSize = int.parse(match.group(1));
   }
 
+  void setFontStyle(String fontStyle) {
+    if (fontStyle == null) {
+      fontStyle = this.fontStyle;
+    }
+    if (currentFontStyle != fontStyle) {
+      context.font = fontStyle;
+      currentFontStyle = fontStyle;
+    }
+  }
+
   /// Measure width of [text] in pixels.
   /// Optionally, uses [fontStyle] instead of using the default style
   double getTextWidth(String text, {String fontStyle}) {
     assert(text.length <= MAX_STRING_LENGTH);
-    if (isNullOrEmpty(fontStyle)) {
-      fontStyle = this.fontStyle;
-    }
-    context.font = fontStyle;
+    setFontStyle(fontStyle);
     return context.measureText(text).width;
   }
 
   /// Gets length of the longest string in the given [strings].
   /// Optionally, uses [fontStyle] instead of using the default style.
   double getLongestTextWidth(Iterable<String> strings, {String fontStyle}) {
-    if (isNullOrEmpty(fontStyle)) {
-      fontStyle = this.fontStyle;
-    }
-    context.font = fontStyle;
-
+    setFontStyle(fontStyle);
     double maxWidth = 0.0;
     for (int i = 0; i < strings.length; ++i) {
       assert(strings.elementAt(i).length <= MAX_STRING_LENGTH);
@@ -77,11 +81,7 @@ class TextMetrics {
   /// Optionally, uses [fontStyle] instead of using the default style.
   String ellipsizeText(String text, double width, {String fontStyle}) {
     assert(text.length <= MAX_STRING_LENGTH);
-    if (isNullOrEmpty(fontStyle)) {
-      fontStyle = this.fontStyle;
-    }
-    context.font = fontStyle;
-
+    setFontStyle(fontStyle);
     double computedWidth = context.measureText(text).width;
     if (computedWidth > width) {
       var indices = graphemeBreakIndices(text);

@@ -296,7 +296,7 @@ class CartesianChartArea implements ChartArea {
 
     // Save the list of valid series and initialize axes.
     _series = series;
-    _initAxes();
+    _initAxes(preRender: preRender);
 
     // Render the chart, now that the axes layer is already in DOM.
     axesDomainCompleter.complete();
@@ -309,7 +309,7 @@ class CartesianChartArea implements ChartArea {
   Scale _scaleRTL(Scale scale) => scale;
 
   /// Initialize the axes - required even if the axes are not being displayed.
-  _initAxes() {
+  _initAxes({bool preRender: false}) {
     Map measureAxisUsers = <String,Iterable<ChartSeries>>{};
 
     // Create necessary measures axes.
@@ -440,7 +440,7 @@ class CartesianChartArea implements ChartArea {
       // Update measure axis (add/remove/update)
       axisGroups.enter.append('svg:g');
       axisGroups.each((axisId, index, group) {
-        _getMeasureAxis(axisId).draw(group);
+        _getMeasureAxis(axisId).draw(group, preRender: preRender);
         group.classes.clear();
         group.classes.addAll(['measure-group','measure-${index}']);
       });
@@ -454,7 +454,7 @@ class CartesianChartArea implements ChartArea {
       // Update dimension axes (add/remove/update)
       dimAxisGroups.enter.append('svg:g');
       dimAxisGroups.each((column, index, group) {
-        _getDimensionAxis(column).draw(group);
+        _getDimensionAxis(column).draw(group, preRender: preRender);
         group.classes.clear();
         group.classes.addAll(['dimension-group', 'dim-${index}']);
       });

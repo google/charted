@@ -40,5 +40,5 @@ class ChartDemo {
     area.theme = theme;
   }
 
-  void draw() => area.draw();
+  void draw() => area.draw(preRender: data.rows.isEmpty);
 }

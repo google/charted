@@ -190,7 +190,7 @@ class StackedBarChartRenderer extends BaseRenderer {
   Extent get extent {
     assert(area != null && series != null);
     var rows = area.data.rows,
-    max = rows[0][series.measures.first],
+    max = rows.isEmpty ? 0 : rows[0][series.measures.first],
     min = max;
 
     rows.forEach((row) {
