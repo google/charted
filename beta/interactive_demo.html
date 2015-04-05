@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Charted &mdash; Interactive demo</title>
+    <link rel="stylesheet" href="charts_demo.css">
+    <link rel="stylesheet" href="packages/charted/charts/themes/quantum_theme.css">
+    <style>
+      body {
+        padding: 0;
+        margin: 0;
+        display: flex;
+        position: absolute;
+        top: 0; bottom: 0; right: 0; left: 0;
+      }
+      .controls {
+        padding: 30px;
+        border-right: 1px solid #d3d3d3;
+        background-color: #eee;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        overflow: auto;
+        flex: 0;
+        min-width: 250px;
+        max-width: 250px;
+      }
+
+      .charts-container {
+        padding: 30px;
+      }
+
+      .control-category {
+        padding: 10px 0;
+        border-bottom: 1px solid #ccc;
+      }
+      .control-category:last-child {
+        border-bottom: 0px;
+      }
+
+      button, select {
+        margin-bottom: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="controls">
+      <div class="controls-inner">
+        <h1 class="title">Charted Demo</h1>
+        <div class="control-category">
+          <h2>Series</h2>
+          <select id="select-series"></select>
+          <button id="add-series">+</button>
+          <button id="remove-series">-</button>
+
+          <h2>Series renderer</h2>
+          <select id="select-renderer"></select>
+
+          <h2>Columns in series</h2>
+          <div id="column-buttons"></div>
+        </div>
+        <div class="control-category">
+          <h2>Data rows</h2>
+          <button id="add-row">Add row</button>
+          <button id="remove-row">Remove last row</button>
+        </div>
+        <div class="control-category">
+          <h2>Internationalization</h2>
+          <div>
+            <input type="checkbox" id="rtl-use-script"></input>
+            <label for="rtl-use-script">Use RTL script</label>
+          </div>
+          <div>
+            <input type="checkbox" id="rtl-use-layout"></input>
+            <label for="rtl-use-layout">Use RTL Layout</label>
+          </div>
+          <div>
+            <input type="checkbox" id="rtl-switch-axes"></input>
+            <label for="rtl-switch-axes">Switch axis direction for RTL</label>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="charts-container">
+      <div class="chart-wrapper">
+        <div class="chart-host" dir="ltr"></div>
+        <div class="legend-host"></div>
+      </div>
+    </div>
+    <script type="application/dart" src="interactive_demo.dart"></script>
+    <script src="packages/browser/dart.js"></script>
+  </body>
+</html>
