@@ -91,8 +91,8 @@ abstract class ChartAxisTheme {
   /// space between two consecutive ticks is also known as the segment size.
   double get axisBandOuterPadding;
 
-  /// When set to true, the axes resize to fit the labels.
-  bool get axisAutoResize => true;
+  /// When set to true, the vertical axes resize to fit the labels.
+  bool get verticalAxisAutoResize => true;
 
   /// Width of vertical axis when it is not resizing automatically. If
   /// [autoResizeAxis] is set to true, [verticalAxisWidth] will be used as the
@@ -101,6 +101,9 @@ abstract class ChartAxisTheme {
   /// Height of vertical axis is automatically computed based on height of the
   /// visualization.
   int get verticalAxisWidth => 200;
+
+  /// When set to true, the horizontal axes resize to fit the labels.
+  bool get horizontalAxisAutoResize => true;
 
   /// Height of horizontal axis when it is not resizing automatically. If
   /// [autoResizeAxis] is set to true [horizontalAxisHeight] is used as the

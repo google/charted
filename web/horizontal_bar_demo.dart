@@ -56,7 +56,8 @@ class _HorizontalPrimaryAxisTheme implements ChartAxisTheme {
   final axisTickPadding = 6;
   final axisTickSize;
   final axisTickCount;
-  final axisAutoResize = true;
+  final horizontalAxisAutoResize = false;
+  final verticalAxisAutoResize = true;
   final verticalAxisWidth = 100;
   final horizontalAxisHeight = 50;
   final ticksFont = '14px Roboto';

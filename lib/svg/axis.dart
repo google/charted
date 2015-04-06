@@ -74,7 +74,9 @@ class SvgAxis {
         tickValues = this.tickValues == null ? current.ticks : this.tickValues,
         formatted = tickValues.map((x) => tickFormat(x)).toList();
 
-    var range = current.rangeExtent,
+    var range = current.rangeExtent == null && preRender == true
+            ? new Extent(0, 1)
+            : current.rangeExtent,
         path = group.selectAll('.domain').data([0]);
         path.enter.append('path');
         path.attr('class', 'domain');
@@ -82,7 +84,7 @@ class SvgAxis {
     bool rotateTicks = false;
     if ((orientation == ORIENTATION_BOTTOM ||
             orientation == ORIENTATION_TOP) &&
-        rect != null && font != null && font.isNotEmpty) {
+        preRender != true && rect != null && !isNullOrEmpty(font)) {
       var textMetrics = new TextMetrics(fontStyle: font);
       var allowedWidth = (range.max - range.min) ~/ formatted.length;
       var maxLabelWidth = textMetrics.getLongestTextWidth(formatted);

@@ -33,7 +33,9 @@ class _OrdinalScale implements OrdinalScale {
       _index[value] = domain.length;
       _domain.add(value);
     }
-    return _range.elementAt(_index[value] % _range.length);
+    return _range.isNotEmpty
+        ? _range.elementAt(_index[value] % _range.length)
+        : 0;
   }
 
   @override

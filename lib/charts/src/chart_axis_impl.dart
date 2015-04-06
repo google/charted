@@ -81,7 +81,7 @@ class _ChartAxis {
     _isVertical = _orientation == ORIENTATION_LEFT ||
         _orientation == ORIENTATION_RIGHT;
 
-    if (false && _theme.axisAutoResize) {
+    if (false && _theme.verticalAxisAutoResize) {
       // TODO(prsd): Implement axis size computations
     } else {
       var width = _isVertical ?
@@ -92,7 +92,7 @@ class _ChartAxis {
     }
   }
 
-  void draw(GElement element) {
+  void draw(GElement element, {bool preRender: false}) {
     assert(element != null && element is GElement);
     assert(scale != null);
 
@@ -127,7 +127,7 @@ class _ChartAxis {
     }
     initAxisScale(range, _theme);
     if (_axis.scale != scale) _axis.scale = scale;
-    _axis.draw(_group, rect: rect,
+    _axis.draw(_group, rect: rect, preRender: preRender,
         font: _theme.ticksFont, isRTL: area.config.isRTL);
   }
 
