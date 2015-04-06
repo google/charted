@@ -239,10 +239,10 @@ class CartesianChartArea implements ChartArea {
     // Each [ChartArea] has it's own [SelectionScope]
     if (_scope == null) {
       _scope = new SelectionScope.element(host);
-      _svg = _scope.append('svg:svg')..classed('charted-chart');
+      _svg = _scope.append('svg:svg')..classed('chart-canvas');
 
       lowerBehaviorPane = _svg.append('g')..classed('lower-render-pane');
-      visualization = _svg.append('g')..classed('chart-wrapper');
+      visualization = _svg.append('g')..classed('chart-render-pane');
       upperBehaviorPane = _svg.append('g')..classed('upper-render-pane');
 
       if (_behaviors.isNotEmpty) {
@@ -436,13 +436,13 @@ class CartesianChartArea implements ChartArea {
     // Draw the visible measure axes, if any.
     if (displayedMeasureAxes.isNotEmpty) {
       var axisGroups = visualization.
-          selectAll('.measure-group').data(displayedMeasureAxes);
+          selectAll('.measure-axis-group').data(displayedMeasureAxes);
       // Update measure axis (add/remove/update)
       axisGroups.enter.append('svg:g');
       axisGroups.each((axisId, index, group) {
         _getMeasureAxis(axisId).draw(group, preRender: preRender);
         group.classes.clear();
-        group.classes.addAll(['measure-group','measure-${index}']);
+        group.classes.addAll(['measure-axis-group','measure-${index}']);
       });
       axisGroups.exit.remove();
     }
@@ -450,13 +450,13 @@ class CartesianChartArea implements ChartArea {
     // Draw the dimension axes, unless asked not to.
     if (config.renderDimensionAxes != false) {
       var dimAxisGroups = visualization.
-          selectAll('.dimension-group').data(displayedDimensionAxes);
+          selectAll('.dimension-axis-group').data(displayedDimensionAxes);
       // Update dimension axes (add/remove/update)
       dimAxisGroups.enter.append('svg:g');
       dimAxisGroups.each((column, index, group) {
         _getDimensionAxis(column).draw(group, preRender: preRender);
         group.classes.clear();
-        group.classes.addAll(['dimension-group', 'dim-${index}']);
+        group.classes.addAll(['dimension-axis-group', 'dim-${index}']);
       });
       dimAxisGroups.exit.remove();
     } else {

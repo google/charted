@@ -40,13 +40,13 @@ class _ChartLegend implements ChartLegend {
   /** Updates the title of the legend. */
   void _updateTitle() {
     if (_title.isNotEmpty) {
-      if (_selected.select('.legend-title').length == 0) {
-        _selected.select('.legend-title');
+      if (_selected.select('.chart-legend-heading').length == 0) {
+        _selected.select('.chart-legend-heading');
         _selected.append('div')
-          ..classed('legend-title')
+          ..classed('chart-legend-heading')
           ..text(_title);
       } else {
-        _selected.select('.legend-title').text(_title);
+        _selected.select('.chart-legend-heading').text(_title);
       }
     }
   }
@@ -70,36 +70,36 @@ class _ChartLegend implements ChartLegend {
 
     _updateTitle();
 
-    _createLegendItems(_selected, 'legend',
+    _createLegendItems(_selected, 'chart-legend',
         (_maxItems > 0) ? items.take(_maxItems) : items);
 
     // Add more item label if there's more items than the max display items.
     if ((_maxItems > 0) && (_maxItems < items.length)) {
-      _selected.select('.legend-more').remove();
+      _selected.select('.chart-legend-more').remove();
       _selected.append('div')
         ..on('mouseover', (d, i, e) => _displayMoreItem(items.skip(_maxItems)))
         ..on('mouseleave', (d, i, e) => _hideMoreItem())
         ..text('${items.length - _maxItems} more...')
-        ..classed('legend-more');
+        ..classed('chart-legend-more');
     }
   }
 
   /** Hides extra legend items. */
   void _hideMoreItem() {
-    var tooltip = _selected.select('.legend-more-tooltip');
+    var tooltip = _selected.select('.chart-legend-more-tooltip');
     tooltip.style('opacity', '0');
   }
 
   /** Display more legend items. */
   void _displayMoreItem(Iterable<ChartLegendItem> items) {
-    var tooltip = _selected.select('.legend-more-tooltip');
+    var tooltip = _selected.select('.chart-legend-more-tooltip');
     if (tooltip.isEmpty) {
-      tooltip = _selected.select('.legend-more').append('div')
-          ..classed('legend-more-tooltip');
+      tooltip = _selected.select('.chart-legend-more').append('div')
+          ..classed('chart-legend-more-tooltip');
     }
     tooltip.style('opacity', '1');
 
-    _createLegendItems(tooltip, 'legend-more', items);
+    _createLegendItems(tooltip, 'chart-legend-more', items);
   }
 
   /**
@@ -143,7 +143,7 @@ class _ChartLegend implements ChartLegend {
   }
 
   void _handleSelectedMeasureChange(List<ListChangeRecord> changes) {
-    _selected.selectAll('.legend-row').each((d, i, e) {
+    _selected.selectAll('.chart-legend-row').each((d, i, e) {
       var measure = d.column;
       if (_area.selectedMeasures.contains(measure)) {
         e.classes.add('active');
@@ -154,7 +154,7 @@ class _ChartLegend implements ChartLegend {
   }
 
   void _handleHoveredMeasureChange(List<ListChangeRecord> changes) {
-    _selected.selectAll('.legend-row').each((d, i, e) {
+    _selected.selectAll('.chart-legend-row').each((d, i, e) {
       var measure = d.column;
       if (_area.hoveredMeasures.contains(measure)) {
         e.classes.add('active');

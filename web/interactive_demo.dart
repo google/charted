@@ -56,7 +56,7 @@ main() {
       autoUpdate: true, useTwoDimensionAxes: false);
 
   area.addChartBehavior(new ChartTooltip());
-  config.legend = new ChartLegend(querySelector('.legend-host'));
+  config.legend = new ChartLegend(querySelector('.chart-legend-host'));
 
   area.draw();
 
@@ -77,7 +77,7 @@ main() {
       rendererSelect = querySelector('#select-renderer');
 
   Element columnButtons = querySelector('#column-buttons'),
-      chartsContainer = querySelector('.charts-container');
+      chartsContainer = querySelector('.chart-wrapper');
 
   /*
    * RTL handling

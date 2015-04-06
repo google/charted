@@ -81,7 +81,7 @@ class _ChartAxis {
     _isVertical = _orientation == ORIENTATION_LEFT ||
         _orientation == ORIENTATION_RIGHT;
 
-    if (false && _theme.axisAutoResize) {
+    if (false && _theme.verticalAxisAutoResize) {
       // TODO(prsd): Implement axis size computations
     } else {
       var width = _isVertical ?
