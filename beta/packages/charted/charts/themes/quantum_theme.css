@@ -1,62 +1,116 @@
 
 @import '//fonts.googleapis.com/css?family=Roboto:400,700';
 
-.charted-chart {
+/*
+ * Chart components layout
+ */
+
+.chart-wrapper {
   font-family: 'Roboto';
   display: block;
 }
 
-.charted-chart text {
-  fill: #666666;
-  shape-rendering: crispEdges;
+.chart-host-wrapper {
+  display: flex;
+  width: 100%;
+}
+
+.chart-host {
+  display: block;
+  width: 70%;
+}
+
+.chart-legend-host {
+  display: block;
+  width: 30%;
 }
 
 /*
- * Styles for the legend
+ * Chart title
  */
-.chart-legend {
-  margin: 0 30px;
-  align-self: flex-start;
+
+.chart-title-wrapper {
+  margin-bottom: 26px;  /* charts adds an extra 10px */
 }
 
-.legend-title {
-  font-weight: bold;
+.chart-title {
+  font-size: 16px;
+  color: #757575;
+  margin-bottom: 8px;
+}
+
+.chart-subtitle {
   font-size: 14px;
-  color: #434343;
+  color: #BDBDBD;
 }
 
-.legend-row, .legend-more {
-  width: 200px;
+/*
+ * Styles for the SVG chart rendering
+ */
+
+.chart-canvas {
+  font-family: 'Roboto';
+  display: block;
+}
+
+.chart-axis-label {
+  font-size: 12px;
+  color: #424242;
+}
+
+.chart-axis-text,
+.dimension-axis-group text, .measure-axis-group text {
+  font-size: 12px;
+  fill: #757575;
+  stroke: none;
+}
+
+/*
+ * Styles for the legend.
+ */
+
+.chart-legend-row,
+.chart-legend-more {
+  width: 100%;
   display: flex;
   font-size: 14px;
-  margin-top: 10px;
-  color: #757575;
+  margin-bottom: 16px;
   position: relative;
+  padding-left: 20px;
 }
 
-.legend-row.active {
+.chart-legend-title {
+  color: #757575;
+}
+
+.chart-legend-subtitle {
+  color: #BDBDBD;
+}
+
+.chart-legend-row.selected,
+.chart-legend-row.hover {
   color: #434343;
 }
 
-.legend-more-row {
+.chart-legend-more-row {
   white-space: nowrap;
   display: flex;
   font-size: 14px;
   margin-top: 10px;
 }
 
-.legend-more-row:first-child {
+.chart-legend-more-row:first-child {
   margin-top: 0px;
 }
 
-.legend-color, .legend-more-color {
-  align-self: center;
+.chart-legend-color,
+.chart-legend-more-color {
   width: 12px;
   height: 12px;
-  margin: 0 8px;
+  margin: auto 8px;
 }
 
-.legend-more-tooltip {
+.chart-legend-more-tooltip {
   position: absolute;
   left: 70px;
   padding: 10px;
@@ -73,8 +127,38 @@
 }
 
 /*
+ * Axes styles
+ */
+
+.tick line, .domain {
+  fill: none;
+  stroke: #E0E0E0;
+  stroke-width: 1px;
+  shape-rendering: crispEdges;
+}
+
+.measure-axis-group .domain {
+  stroke-width: 0;
+}
+
+.dimension-axis-group .domain {
+  stroke: #9E9E9E;
+}
+
+/*
+ * Axis markers
+ */
+
+.axis-marker {
+  stroke: #E0E0E0;
+  stroke-dasharray: 3 3;
+}
+
+
+/*
  * Lines in line chart
  */
+
 path.line {
   stroke-width: 2px;
   transition: stroke-width .4s;
@@ -87,33 +171,10 @@ path.line.active {
 /*
  * Circle for data point in line chart
  */
+
 .line-point {
   opacity: 0;
   transition: opacity .2s;
-}
-
-/*
- * Axes styles
- */
-.tick line, .domain {
-  fill: none;
-  stroke: #E0E0E0;
-  stroke-width: 1px;
-  shape-rendering: crispEdges;
-}
-.measure-group .domain {
-  stroke-width: 0;
-}
-.dim-group .domain {
-  stroke: #A2A2A2;
-}
-
-/*
- * Axis markers
- */
-.axis-marker {
-  stroke: #E0E0E0;
-  stroke-dasharray: 3 3;
 }
 
 /*
