@@ -23,8 +23,7 @@ class StackedBarChartRenderer extends BaseRenderer {
   }
 
   @override
-  void draw(Element element,
-      {bool preRender: false, Future schedulePostRender}) {
+  void draw(Element element, {Future schedulePostRender}) {
     _ensureReadyToDraw(element);
     var verticalBars = !area.config.isLeftAxisPrimary;
 

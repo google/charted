@@ -282,8 +282,7 @@ class CartesianChartArea implements ChartArea {
         }
         info.check();
         group.attributes['transform'] = transform;
-        s.renderer.draw(group,
-            preRender:preRender, schedulePostRender:schedulePostRender);
+        s.renderer.draw(group, schedulePostRender:schedulePostRender);
       });
 
       // A series that was rendered earlier isn't there anymore, remove it

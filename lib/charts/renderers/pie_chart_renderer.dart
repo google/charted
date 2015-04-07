@@ -34,8 +34,7 @@ class PieChartRenderer extends BaseRenderer {
   }
 
   @override
-  void draw(Element element,
-      {bool preRender: false, Future schedulePostRender}) {
+  void draw(Element element, {Future schedulePostRender}) {
     _ensureReadyToDraw(element);
 
     var rows = new List()..addAll(area.data.rows.map((e) {

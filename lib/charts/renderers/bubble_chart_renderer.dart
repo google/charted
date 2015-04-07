@@ -36,8 +36,7 @@ class BubbleChartRenderer extends BaseRenderer {
   }
 
   @override
-  void draw(Element element,
-      {bool preRender: false, Future schedulePostRender}) {
+  void draw(Element element, {Future schedulePostRender}) {
     assert(series != null && area != null);
     assert(element != null && element is GElement);
 

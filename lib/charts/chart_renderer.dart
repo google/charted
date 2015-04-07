@@ -43,7 +43,7 @@ abstract class ChartRenderer extends ChartRendererBehaviorSource {
 
   /// Render series data on the passed [host].
   /// Draw will not be successful if [prepare] was not already called.
-  void draw(Element host, {bool preRender: false, Future schedulePostRender});
+  void draw(Element host, {Future schedulePostRender});
 
   /// Clears DOM created by this renderer and releases
   /// references to passed objects.
