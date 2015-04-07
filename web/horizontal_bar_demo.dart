@@ -24,7 +24,7 @@ main() {
         new ChartTooltip()
         ],
       barDemo = new ChartDemo('bar chart', querySelector('.bar-chart'),
-          barConfig, data, chartBehaviors: behavior);
+          barConfig, data, behaviors: behavior);
   barDemo.setTheme(new HorizontalPrimaryAxisTheme());
   barDemo.draw();
 
@@ -35,7 +35,7 @@ main() {
           ..isLeftAxisPrimary = true,
       stackedBarDemo = new ChartDemo('stacked bar chart', querySelector(
           '.stacked-bar-chart'), stackedBarConfig, data,
-          chartBehaviors: behavior);
+          behaviors: behavior);
   stackedBarDemo.setTheme(new HorizontalPrimaryAxisTheme());
   stackedBarDemo.draw();
 

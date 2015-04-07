@@ -47,16 +47,16 @@ class MutableRect extends Rect {
   MutableRect.position(this.x, this.y);
 }
 
-class RectMargins {
+class AbsoluteRect {
   final num start;
   final num end;
   final num top;
   final num bottom;
 
-  const RectMargins(this.top, this.end, this.bottom, this.start);
+  const AbsoluteRect(this.top, this.end, this.bottom, this.start);
 
   bool operator==(other) =>
-      other is RectMargins &&
+      other is AbsoluteRect &&
       start == other.start && end == other.end &&
       top == other.top && bottom == other.bottom;
 }

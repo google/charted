@@ -41,8 +41,11 @@ class _ChartEvent implements ChartEvent {
 
   _ChartEvent(this.source, this.area,
       [this.series, this.row, this.column, this.value]) {
-    var hostRect = area.host.getBoundingClientRect();
-    chartX = source.client.x - hostRect.left;
-    chartY = source.client.y - hostRect.top;
+    var hostRect = area.host.getBoundingClientRect(),
+        left = area.config.isRTL
+            ? area.theme.padding.end
+            : area.theme.padding.start;
+    chartX = source.client.x - hostRect.left - left;
+    chartY = source.client.y - hostRect.top - area.theme.padding.top;
   }
 }

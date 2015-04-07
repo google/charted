@@ -8,7 +8,7 @@
 
 library charted.svg.axis;
 
-import 'dart:html' show Element;
+import 'dart:html' show Element, window;
 import 'dart:math' as math;
 
 import 'package:charted/core/scales.dart';
@@ -17,14 +17,19 @@ import 'package:charted/core/text_metrics.dart';
 import 'package:charted/selection/selection.dart';
 
 ///
-/// [SvgAxis] helps draw chart axes based on a given scale.
+/// [SvgAxs] helps draw chart axes based on a given scale.
 ///
 class SvgAxis {
+  /// Orientation of the axis. Defaults to [ORIENTATION_BOTTOM].
+  final String orientation;
+
+  final bool isLeft;
+  final bool isRight;
+  final bool isTop;
+  final bool isBottom;
+
   /// Scale used on this axis
   Scale scale = new LinearScale();
-
-  /// Orientation of the axis.  Defaults to [ORIENTATION_BOTTOM].
-  String orientation = ORIENTATION_BOTTOM;
 
   /// Size of all inner ticks
   num innerTickSize = 6;
@@ -35,56 +40,56 @@ class SvgAxis {
   /// Padding on the ticks
   num tickPadding = 3;
 
-  /// Suggested number of ticks to be displayed on the axis
-  num suggestedTickCount = 5;
-
   /// List of values to be used on the ticks
   List tickValues;
 
   /// Formatter for the tick labels
   FormatFunction tickFormat;
 
-  /// Previous rotate angle
-  num _prevRotate = 0;
-
   /// Store of axis roots mapped to currently used scales
   static Expando<Scale> _scales = new Expando<Scale>();
 
-  draw(Selection g,
-      {Rect rect, String font, bool preRender: false, isRTL: false}) =>
+  SvgAxis(String orientation)
+      : orientation = orientation == null ? ORIENTATION_BOTTOM : orientation,
+        isLeft = orientation == ORIENTATION_LEFT,
+        isRight = orientation == ORIENTATION_RIGHT,
+        isTop = orientation == ORIENTATION_TOP,
+        isBottom = orientation == ORIENTATION_BOTTOM;
+
+  /// Draw an axis on each non-null element in selection
+  draw(Selection g, { Rect rect, String font, isRTL: false }) =>
           g.each((d, i, e) =>
-              _create(e, g.scope, rect, font, preRender, isRTL));
+              create(e, g.scope, rect:rect, font:font, isRTL:isRTL));
 
-  _create(
-      Element e,
-      SelectionScope scope,
-      Rect rect,
-      String font,
-      bool preRender,
-      bool isRTL) {
-    var group = scope.selectElements([e]),
-        older = _scales[e],
-        current = _scales[e] = scale.clone();
+  /// Create an axis on [element]. Uses [scope] to save the data associations.
+  create(Element element, SelectionScope scope,
+      { Rect rect, String font, bool isRTL }) {
 
-    if (older == null) older = scale;
-    current.ticksCount = suggestedTickCount;
+    var group = scope.selectElements([element]),
+        older = _scales[element],
+        current = _scales[element] = scale.clone(),
+        isInitialRender = older == null;    // Drawing axis first time.
+
+    older = older == null ? current : older;
 
     var tickFormat = this.tickFormat == null
-            ? current.createTickFormatter() : this.tickFormat,
+            ? current.createTickFormatter()
+            : this.tickFormat,
         tickValues = this.tickValues == null ? current.ticks : this.tickValues,
-        formatted = tickValues.map((x) => tickFormat(x)).toList();
+        formatted = tickValues.map((x) => tickFormat(x)).toList(),
+        range = current.rangeExtent;
 
-    var range = current.rangeExtent == null && preRender == true
-            ? new Extent(0, 1)
-            : current.rangeExtent,
-        path = group.selectAll('.domain').data([0]);
-        path.enter.append('path');
-        path.attr('class', 'domain');
+    // Create domain path, if we did not already create it.
+    var path = element.querySelector('.domain');
+    if (path == null) {
+      path = Namespace.createChildElement('path', element);
+      path.classes.add('domain');
+    }
 
+    // When ticks don't have enough space on the horizontal axes, they are first
+    // rotated by 45deg. Then, if required, they are clipped.
     bool rotateTicks = false;
-    if ((orientation == ORIENTATION_BOTTOM ||
-            orientation == ORIENTATION_TOP) &&
-        preRender != true && rect != null && !isNullOrEmpty(font)) {
+    if ((isBottom || isTop) && rect != null && !isNullOrEmpty(font)) {
       var textMetrics = new TextMetrics(fontStyle: font);
       var allowedWidth = (range.max - range.min) ~/ formatted.length;
       var maxLabelWidth = textMetrics.getLongestTextWidth(formatted);
@@ -104,99 +109,67 @@ class SvgAxis {
     }
 
     var ticks = group.selectAll('.tick').data(tickValues, current.scale),
-        tickEnter = ticks.enter.insert('g', before:'.domain')
-            ..classed('tick')
-            ..style('opacity', EPSILON.toString()),
-        tickExit = ticks.exit..remove(),
-        tickUpdate = ticks..style('opacity', '1'),
-        tickTransform;
+        enter = ticks.enter.append('g'),
+        exit = ticks.exit,
+        transform = isLeft || isRight ? _yAxisTransform : _xAxisTransform,
+        convert = isTop || isLeft ? -1 : 1;
 
-    var lineEnter = tickEnter.append('line'),
-        lineUpdate = tickUpdate.select('line'),
-        textEnter = tickEnter.append('text'),
-        textUpdate = tickUpdate.select('text'),
-        text = ticks.select('text')
-            ..textWithCallback((d,i,e) => fixTextDirection(formatted[i]));
+    // For entering ticks, add the line and text element for label.
+    // Only attributes that are constant and solely depend on orientation
+    // are set here.
+    enter.each((d, i, e) {
+      Element line = Namespace.createChildElement('line', e);
+      Element text = Namespace.createChildElement('text', e)
+          ..attributes['dy'] = isLeft || isRight
+              ? '0.32em'
+              : isBottom ? '0.71em' : '0';
+      e.classes.add('tick');
+      e.append(line);
+      e.append(text);
+    });
 
-    switch (orientation) {
-      case ORIENTATION_BOTTOM:
-        tickTransform = _xAxisTransform;
-        ticks.attr('y2', innerTickSize);
-        lineEnter.attr('y2', innerTickSize);
-        textEnter.attr('y', math.max(innerTickSize, 0) + tickPadding);
-        lineUpdate
-            ..attr('x2', 0)
-            ..attr('y2', innerTickSize);
-        textUpdate
-            ..attr('x', 0)
-            ..attr('y', math.max(innerTickSize, 0) + tickPadding);
-        textEnter
-            ..attr('dy', '.71em')
-            ..style('text-anchor', 'middle');
-        path.attr('d',
-            'M${range.min},${outerTickSize}V0H${range.max}V${outerTickSize}');
-        break;
-      case ORIENTATION_TOP:
-        tickTransform = _xAxisTransform;
-        lineEnter.attr('y2', -innerTickSize);
-        textEnter.attr('y', -(math.max(innerTickSize, 0) + tickPadding));
-        lineUpdate
-            ..attr('x2', 0)
-            ..attr('y2', -innerTickSize);
-        textUpdate
-            ..attr('x', 0)
-            ..attr('y', -(math.max(innerTickSize, 0) + tickPadding));
-        textEnter
-            ..attr('dy', '0em')
-            ..style('text-anchor', 'middle');
-        path.attr('d',
-            'M${range.min},${-outerTickSize}V0H${range.max}V${-outerTickSize}');
-        break;
-      case ORIENTATION_LEFT:
-        tickTransform = _yAxisTransform;
-        lineEnter.attr('x2', -innerTickSize);
-        textEnter.attr('x', -(math.max(innerTickSize, 0) + tickPadding));
-        lineUpdate
-            ..attr('x2', -innerTickSize)
-            ..attr('y2', 0);
-        textUpdate
-            ..attr('x', -(math.max(innerTickSize, 0) + tickPadding))
-            ..attr('y', 0);
-        textEnter
-            ..attr('dy', '.32em')
-            ..style('text-anchor', 'end');
-        path.attr('d',
-            'M${-outerTickSize},${range.min}H0V${range.max}H${-outerTickSize}');
-        break;
-      case ORIENTATION_RIGHT:
-        tickTransform = _yAxisTransform;
-        lineEnter.attr('x2', innerTickSize);
-        textEnter.attr('x', math.max(innerTickSize, 0) + tickPadding);
-        lineUpdate
-            ..attr('x2', innerTickSize)
-            ..attr('y2', 0);
-        textUpdate
-            ..attr('x', math.max(innerTickSize, 0) + tickPadding)
-            ..attr('y', 0);
-        textEnter
-            ..attr('dy', '.32em')
-            ..style('text-anchor', 'start');
-        path.attr('d',
-            'M${outerTickSize},${range.min}H0V${range.max}H${outerTickSize}');
-        break;
-    }
+    // All attributes/styles/classes that may change due to theme and scale.
+    ticks.each((d, i, e) {
+      Element line = e.firstChild;
+      Element text = e.lastChild;
+      bool isRTLText = false; // FIXME(prsd)
 
-    if (rotateTicks) {
-      var angle = isRTL ? -45 : 45,
-          textAnchor = isRTL ? 'end' : 'start';
-      textUpdate
-          ..attr('transform', 'rotate($angle)')
-          ..style('text-anchor', textAnchor);
+      if (isBottom || isTop) {
+        line.attributes['y2'] = (convert * innerTickSize).toString();
+        text.attributes['y'] =
+            (convert * (math.max(innerTickSize, 0) + tickPadding)).toString();
+
+        if (rotateTicks) {
+          text.attributes['transform'] = 'rotate(${isRTL ? -45 : 45})';
+          text.style.setProperty('text-anchor', isRTL ? 'end' : 'start');
+        } else {
+          text.attributes['transform'] = '';
+          text.style.setProperty('text-anchor', 'middle');
+        }
+      } else {
+        line.attributes['x2'] = (convert * innerTickSize).toString();
+        text.attributes['x'] =
+            (convert * (math.max(innerTickSize, 0) + tickPadding)).toString();
+        text.style.setProperty('text-anchor', isLeft
+            ? (isRTLText ? 'start' : 'end')
+            : (isRTLText ? 'end' : 'start'));
+      }
+
+      text.text = fixTextDirection(formatted[i]);
+    });
+
+    // No transitions on initial render.
+    if (isInitialRender) {
     } else {
-      textUpdate
-          ..attr('transform', '')
-          ..style('text-anchor', 'middle');
+      exit.remove();  // Currently we don't support animations on exit.
     }
+
+    // Append path to the element.
+    var tickSize = convert * outerTickSize;
+    path.attributes['d'] = isLeft || isRight
+        ? 'M${tickSize},${range.min}H0V${range.max}H${tickSize}'
+        : 'M${range.min},${tickSize}V0H${range.max}V${tickSize}';
+    element.append(path);
 
     // If either the new or old scale is ordinal,
     // entering ticks are undefined in the old scale,
@@ -210,12 +183,11 @@ class SvgAxis {
     } else if (older is OrdinalScale && older.rangeBand != 0) {
       older = current;
     } else {
-      tickTransform(tickExit, current.scale);
+      transform(ticks, current.scale);
     }
 
-    tickTransform(tickEnter, transformFn != null ? transformFn : older.scale);
-    tickTransform(
-        tickUpdate, transformFn != null ? transformFn : current.scale);
+    transform(enter, transformFn != null ? transformFn : older.scale);
+    transform(ticks, transformFn != null ? transformFn : current.scale);
   }
 
   _xAxisTransform(selection, transformFn) {
