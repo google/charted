@@ -24,7 +24,7 @@ main() {
         new ChartTooltip(showSelectedMeasure: true)
         ],
       line_demo = new ChartDemo('Line chart', querySelector('.line-chart'),
-          line_config, data, chartBehaviors: behavior);
+          line_config, data, behaviors: behavior);
   line_demo.draw();
 
 }

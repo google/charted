@@ -221,11 +221,20 @@ class CartesianChartArea implements ChartArea {
       height = max([height, config.minimumSize.height]);
     }
 
-    Rect current = new Rect(0, 0, width, height);
+    AbsoluteRect padding = theme.padding;
+    num paddingLeft = config.isRTL ? padding.end : padding.start;
+    Rect current = new Rect(paddingLeft, padding.top,
+        width - (padding.start + padding.end),
+        height - (padding.top + padding.bottom));
     if (layout.chartArea == null || layout.chartArea != current) {
       _svg.attr('width', width.toString());
       _svg.attr('height', height.toString());
       layout.chartArea = current;
+
+      var transform = 'translate(${paddingLeft},${padding.top})';
+      visualization.first.attributes['transform'] = transform;
+      lowerBehaviorPane.first.attributes['transform'] = transform;
+      upperBehaviorPane.first.attributes['transform'] = transform;
     }
     return layout.chartArea;
   }

@@ -30,7 +30,7 @@
  */
 
 .chart-title-wrapper {
-  margin-bottom: 16px;  /* charts adds an extra 20px */
+  margin-bottom: 26px;  /* charts adds an extra 10px */
 }
 
 .chart-title {

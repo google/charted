@@ -50,7 +50,7 @@ class QuantumChartTheme extends ChartTheme {
   ChartAxisTheme get dimensionAxisTheme =>
       const _QuantumChartAxisTheme(0, 10);
 
-  RectMargins get margins => const RectMargins(20, 20, 0, 0);
+  AbsoluteRect get padding => const AbsoluteRect(10, 10, 0, 0);
 }
 
 class _QuantumChartAxisTheme implements ChartAxisTheme {

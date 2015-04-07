@@ -70,7 +70,8 @@ class SvgAxis {
     current.ticksCount = suggestedTickCount;
 
     var tickFormat = this.tickFormat == null
-            ? current.createTickFormatter() : this.tickFormat,
+            ? current.createTickFormatter()
+            : this.tickFormat,
         tickValues = this.tickValues == null ? current.ticks : this.tickValues,
         formatted = tickValues.map((x) => tickFormat(x)).toList();
 

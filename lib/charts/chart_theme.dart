@@ -49,6 +49,9 @@ abstract class ChartTheme {
 
   /// Theme passed to the dimension axes
   ChartAxisTheme get dimensionAxisTheme;
+
+  /// Padding around the rendered chart. Defaults to 10px in all directions
+  AbsoluteRect get padding => const AbsoluteRect(10, 10, 10, 10);
 }
 
 abstract class ChartAxisTheme {

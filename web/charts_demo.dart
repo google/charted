@@ -8,7 +8,7 @@ part 'src/dataset_small.dart';
 part 'src/dataset_large.dart';
 
 class ChartDemo {
-  final List<ChartBehavior> chartBehaviors;
+  final List<ChartBehavior> behaviors;
   final ChartConfig config;
   final ChartData data;
   final int dimensionAxesCount;
@@ -18,7 +18,7 @@ class ChartDemo {
   ChartArea area;
 
   ChartDemo(this.title, this.host, this.config, this.data,
-       { this.dimensionAxesCount: 1, this.chartBehaviors: const []}) {
+       { this.dimensionAxesCount: 1, this.behaviors: const []}) {
     host.innerHtml =
         '<div class="chart-wrapper">'
         '  <div class="chart-title-wrapper">'
@@ -36,7 +36,7 @@ class ChartDemo {
     config.legend = new ChartLegend(chartLegendHost);
     area = new ChartArea(chartAreaHost, data, config,
         autoUpdate: false, useTwoDimensionAxes: dimensionAxesCount == 2);
-    for (var behavior in chartBehaviors) {
+    for (var behavior in behaviors) {
       area.addChartBehavior(behavior);
     }
   }
