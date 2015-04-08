@@ -228,8 +228,6 @@ class _LayoutArea implements LayoutArea {
       ]);
     } on UnimplementedError {};
 
-    group.attributes['transform'] =
-        'translate(${layout.renderArea.x},${layout.renderArea.y})';
     _renderer.draw(group, schedulePostRender:schedulePostRender);
 
     // Notify on the stream that the chart has been updated.

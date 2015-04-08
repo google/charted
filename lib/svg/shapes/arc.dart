@@ -99,12 +99,12 @@ class SvgArc implements SvgShape {
 
 /// Value type for SvgArc as used by default property accessors in SvgArc
 class SvgArcData {
-  final dynamic data;
-  final num value;
-  final num innerRadius;
-  final num outerRadius;
-  final num startAngle;
-  final num endAngle;
+  dynamic data;
+  num value;
+  num innerRadius;
+  num outerRadius;
+  num startAngle;
+  num endAngle;
 
   SvgArcData(this.data, this.value,
       this.startAngle, this.endAngle, [

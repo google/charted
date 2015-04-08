@@ -12,7 +12,7 @@ import 'dart:html';
 import 'package:charted/core/text_metrics.dart' as tm;
 import 'package:charted/charts/charts.dart';
 
-import 'charts_demo.dart';
+import 'src/charts_demo.dart';
 
 List<ChartDemo> charts = [];
 

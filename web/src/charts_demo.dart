@@ -4,8 +4,8 @@ library charted.demo;
 import 'dart:html';
 import 'package:charted/charted.dart';
 
-part 'src/dataset_small.dart';
-part 'src/dataset_large.dart';
+part 'dataset_small.dart';
+part 'dataset_large.dart';
 
 class ChartDemo {
   final List<ChartBehavior> behaviors;
@@ -14,11 +14,13 @@ class ChartDemo {
   final bool useTwoDimensions;
   final Element host;
   final String title;
+  final bool isLayout;
 
   ChartArea area;
 
   ChartDemo(this.title, this.host, this.config, this.data,
-       { this.useTwoDimensions: false, this.behaviors: const []}) {
+       { this.useTwoDimensions: false, this.behaviors: const [],
+         this.isLayout }) {
     host.innerHtml =
         '<div class="chart-wrapper">'
         '  <div class="chart-title-wrapper">'
@@ -34,8 +36,10 @@ class ChartDemo {
         chartLegendHost = host.querySelector('.chart-legend-host');
 
     config.legend = new ChartLegend(chartLegendHost);
-    area = new CartesianArea(chartAreaHost, data, config,
-        autoUpdate: false, useTwoDimensionAxes: useTwoDimensions);
+    area = isLayout
+        ? new LayoutArea(chartAreaHost, data, config, false)
+        : new CartesianArea(chartAreaHost, data, config,
+            autoUpdate: false, useTwoDimensionAxes: useTwoDimensions);
     for (var behavior in behaviors) {
       area.addChartBehavior(behavior);
     }

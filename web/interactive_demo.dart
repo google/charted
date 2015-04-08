@@ -12,7 +12,7 @@ import 'dart:html';
 import 'package:observe/observe.dart';
 import 'package:charted/charts/charts.dart';
 
-import 'charts_demo.dart';
+import 'src/charts_demo.dart';
 
 const List DIMENSION_COLUMNS =  const[0, 4];
 

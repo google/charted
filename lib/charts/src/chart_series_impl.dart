@@ -13,7 +13,7 @@ class _ChartSeries extends ChangeNotifier implements ChartSeries {
 
   Iterable<String> _measureAxisIds;
   Iterable<int> _measures;
-  CartesianRenderer _renderer;
+  ChartRenderer _renderer;
 
   SubscriptionsDisposer _disposer = new SubscriptionsDisposer();
 
@@ -23,14 +23,14 @@ class _ChartSeries extends ChangeNotifier implements ChartSeries {
     this.measureAxisIds = measureAxisIds;
   }
 
-  set renderer(CartesianRenderer value) {
+  set renderer(ChartRenderer value) {
     if (value != null && value == _renderer) return;
     _renderer.dispose();
     _renderer = value;
     notifyChange(new ChartSeriesChangeRecord(this));
   }
 
-  CartesianRenderer get renderer => _renderer;
+  ChartRenderer get renderer => _renderer;
 
   set measures(Iterable<int> value) {
     _measures = value;

@@ -55,7 +55,7 @@ class ChartSeries {
   /// Factory function to create an instance of internal implementation of
   /// [ChartSeries].
   factory ChartSeries(String name, Iterable<int> measures,
-      CartesianRenderer renderer, { Iterable<String> measureAxisIds : null }) =>
+      ChartRenderer renderer, { Iterable<String> measureAxisIds : null }) =>
           new _ChartSeries(name, measures, renderer, measureAxisIds);
 }
 
