@@ -12,6 +12,7 @@ import 'dart:html';
 import 'package:charted/charts/charts.dart';
 
 import 'charts_demo.dart';
+import 'package:charted/layout/layout.dart';
 
 main() {
   var data = new ChartData(SMALL_DATA_COLUMNS, SMALL_DATA);
@@ -33,9 +34,12 @@ main() {
       new StackedBarChartRenderer()),
       stackedBarConfig = new ChartConfig([stacked_barSeries], [0])
           ..isLeftAxisPrimary = true,
+      stackedBehavior = [
+        new ChartTooltip()
+      ],
       stackedBarDemo = new ChartDemo('stacked bar chart', querySelector(
           '.stacked-bar-chart'), stackedBarConfig, data,
-          chartBehaviors: behavior);
+          chartBehaviors: stackedBehavior);
   stackedBarDemo.setTheme(new HorizontalPrimaryAxisTheme());
   stackedBarDemo.draw();
 
