@@ -12,7 +12,6 @@ import 'dart:html';
 import 'package:charted/charts/charts.dart';
 
 import 'charts_demo.dart';
-import 'package:charted/layout/layout.dart';
 
 main() {
   var data = new ChartData(SMALL_DATA_COLUMNS, SMALL_DATA);
