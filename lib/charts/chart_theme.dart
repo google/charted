@@ -28,6 +28,10 @@ abstract class ChartTheme {
   /// For a given input key, the output is always the same.
   String getColorForKey(key, [int state]);
 
+  /// Color for overflow and other items.
+  /// For example, the collect all bucket used by pie-chart.
+  String getOtherColor([int state]);
+
   /// Width of the separator between two chart elements.
   /// Used to separate pies in pie-chart, bars in grouped and stacked charts.
   int get defaultSeparatorWidth => 1;

@@ -9,6 +9,9 @@
 part of charted.charts;
 
 class QuantumChartTheme extends ChartTheme {
+  static const List OTHER_COLORS =
+      const['#EEEEEE', '#BDBDBD', '#9E9E9E'];
+
   static const List<List<String>> COLORS = const[
     const [ '#C5D9FB', '#4184F3', '#2955C5' ],
     const [ '#F3C6C2', '#DB4437', '#DB4437' ],
@@ -44,6 +47,11 @@ class QuantumChartTheme extends ChartTheme {
         ? result.elementAt(state)
         : result;
   }
+
+  String getOtherColor([int state = ChartTheme.STATE_NORMAL]) =>
+      OTHER_COLORS is List && OTHER_COLORS.length > state
+          ? OTHER_COLORS.elementAt(state)
+          : OTHER_COLORS;
 
   ChartAxisTheme get measureAxisTheme =>
       const _QuantumChartAxisTheme(ChartAxisTheme.FILL_RENDER_AREA, 5);

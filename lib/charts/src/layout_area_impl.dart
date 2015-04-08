@@ -66,7 +66,7 @@ class _LayoutArea implements LayoutArea {
 
     this.data = data;
     this.config = config;
-    theme = ChartTheme.current;
+    theme = new QuantumChartTheme();
 
     Transition.defaultEasingType = theme.transitionEasingType;
     Transition.defaultEasingMode = theme.transitionEasingMode;
@@ -196,7 +196,8 @@ class _LayoutArea implements LayoutArea {
 
     // Create a group for rendering, if it was not already done.
     if (group == null) {
-      group = Namespace.createChildElement('g', visualization.first);
+      group = Namespace.createChildElement('g', visualization.first)
+          ..classes.add('series-group');
       visualization.first.append(group);
     }
 
@@ -228,7 +229,8 @@ class _LayoutArea implements LayoutArea {
       ]);
     } on UnimplementedError {};
 
-    _renderer.draw(group, schedulePostRender:schedulePostRender);
+    Iterable<ChartLegendItem> legend =
+        _renderer.layout(group, schedulePostRender:schedulePostRender);
 
     // Notify on the stream that the chart has been updated.
     isReady = true;
@@ -237,20 +239,7 @@ class _LayoutArea implements LayoutArea {
     _series = series;
 
     // Updates the legend if required.
-    _updateLegend();
-  }
-
-  // Updates the legend, if configuration changed since the last
-  // time the legend was updated.
-  _updateLegend() {
-    if (!_pendingLegendUpdate) return;
-    if (_config == null || _config.legend == null || _series == null) return;
-
-    var legend = <ChartLegendItem>[];
-    // TODO(prsd): Implement this.
-
     _config.legend.update(legend, this);
-    _pendingLegendUpdate = false;
   }
 
   @override
