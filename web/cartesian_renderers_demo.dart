@@ -97,18 +97,19 @@ draw_charts() {
       combo2_data = new ChartData(SMALL_DATA_COLUMNS, SMALL_DATA);
   new ChartDemo('Combo chart (stacked and line)',
       querySelector('.combo2-chart'), combo2_config, combo2_data).draw();
-
+/*
   // Bubble chart
   var bubble_series =
-          new ChartSeries("one", [2, 3], new BubbleChartRenderer()),
+          new ChartSeries("one", [2], new BubbleChartRenderer()),
       bubble_config = new ChartConfig([bubble_series], [0, 4]),
       bubble_data = new ChartData(SMALL_DATA_COLUMNS, SMALL_DATA);
   new ChartDemo('Bubble chart',
       querySelector('.bubble-chart'), bubble_config, bubble_data,
       useTwoDimensions: true).draw();
+ */
 }
 
 main() {
   var textMetrics = new tm.TextMetrics(fontStyle: '14px Roboto');
-  document.querySelector('#trigger').onClick.listen((_) => draw_charts());
+  draw_charts();
 }

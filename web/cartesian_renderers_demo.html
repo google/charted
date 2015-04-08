@@ -5,22 +5,47 @@
     <title>Charted &mdash; Renderers Demo</title>
     <link rel="stylesheet" href="charts_demo.css">
     <style>
-      .chart {
-        max-width: 900px;
+      body {
+        padding: 0;
+        margin: 0;
       }
-      .title {
-        padding: 20px 0;
+      .controls {
+        padding: 30px;
+        border-right: 1px solid #d3d3d3;
+        background-color: #eee;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        overflow: auto;
+        min-width: 250px;
+        max-width: 250px;
+        position: fixed;
+        height: 100%;
       }
-      .chart-wrapper h2 {
-        border-bottom: 1px solid #333;
+      .control-category {
+        padding: 10px 0;
+        border-bottom: 1px solid #ccc;
+      }
+      .control-category:last-child {
+        border-bottom: 0px;
+      }
+      button, select {
+        margin-bottom: 10px;
       }
       .demos-container {
-        clear: both;
+        min-width: 600px;
+        max-width: 1000px;
+        margin-left: 325px;
       }
     </style>
   </head>
   <body>
-    <button id="trigger">Draw charts!</button>
+    <div class="controls">
+      <div class="controls-inner">
+        <h1 class="title">Charted &mdash; Cartesian chart renderers</h1>
+        Source code for this demo is available in <a href="https://github.com/google/charted/tree/master/web">the Charted GitHub repository</a>
+      </div>
+    </div>
     <div class="demos-container">
       <div class="chart line-chart"></div>
       <div class="chart bar-chart"></div>

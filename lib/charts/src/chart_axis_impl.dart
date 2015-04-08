@@ -39,21 +39,21 @@ class _ChartAxis {
     _column = column;
     _domain = domain;
     _isDimension = isDimension;
+
+    // If we don't have a scale yet, create one.
     if (scale == null) {
       _scale = _columnSpec.createDefaultScale();
     }
-  }
-
-  void initAxisScale(Iterable range, ChartAxisTheme theme) {
-    assert(scale != null);
 
     // Sets the domain if not using a custom scale.
     if (config == null || (config != null && config.scale == null)) {
       scale.domain = _domain;
       scale.nice = !_isDimension;
     }
+  }
 
-    // Sets the range if not using a custom scale.
+  void initAxisScale(Iterable range, ChartAxisTheme theme) {
+    assert(scale != null);
     if (scale is OrdinalScale) {
       var usingBands = area.dimensionsUsingBands.contains(_column),
           innerPadding = usingBands ? theme.axisBandInnerPadding : 1.0,
@@ -81,12 +81,51 @@ class _ChartAxis {
 
     var layout = area.layout.chartArea;
     if (_isVertical && _theme.verticalAxisAutoResize) {
-      // TODO(prsd): Implement axis size computations
       size = new MutableRect.size(_theme.verticalAxisWidth, layout.width);
     } else {
       size = _isVertical
           ? new MutableRect.size(_theme.verticalAxisWidth, layout.width)
           : new MutableRect.size(layout.height, _theme.horizontalAxisHeight);
+    }
+
+    if (_axis == null) {
+      _axis = new SvgAxis(_orientation)
+        ..tickPadding = _theme.axisTickPadding
+        ..outerTickSize = 0
+        ..tickFormat = _columnSpec.formatter;
+
+      if (config != null && config.tickValues != null) {
+        _axis.tickValues = config.tickValues;
+      }
+    }
+
+    // Handle auto re-sizing of horizontal axis.
+    if (_isVertical && theme.verticalAxisAutoResize &&
+        !isNullOrEmpty(theme.ticksFont)) {
+      var tickValues = (config != null && !isNullOrEmpty(config.tickValues))
+              ? config.tickValues
+              : scale.ticks,
+          formatter = _columnSpec.formatter == null
+              ? scale.createTickFormatter()
+              : _columnSpec.formatter,
+          textMetrics = new TextMetrics(fontStyle:theme.ticksFont),
+          formatted = tickValues.map((x) => formatter(x)).toList();
+
+      var width = textMetrics.getLongestTextWidth(tickValues);
+      if (width > theme.verticalAxisWidth) {
+        width = theme.verticalAxisWidth;
+        for (int i = 0, len = formatted.length; i < len; ++i) {
+          formatted[i] =
+              textMetrics.ellipsizeText(formatted[i], width.toDouble());
+        }
+        _axis.tickValues = formatted;
+        _axis.tickFormat = (x) => x;
+      } else {
+        _axis.tickFormat = _columnSpec.formatter;
+        _axis.tickValues = tickValues;
+      }
+      size.width =
+          width + _theme.axisTickPadding + math.max(_theme.axisTickSize, 0);
     }
   }
 
@@ -100,18 +139,8 @@ class _ChartAxis {
         className = (_isVertical ? 'vertical-axis': 'horizontal-axis');
 
     element.attributes['transform'] = 'translate(${rect.x}, ${rect.y})';
-
-    if (_axis == null || _element != element) {
+    if (_element != element) {
       _element = element;
-      _axis = new SvgAxis(_orientation)
-        ..tickPadding = _theme.axisTickPadding
-        ..outerTickSize = 0
-        ..tickFormat = _columnSpec.formatter;
-
-      if (config != null && config.tickValues != null) {
-        _axis.tickValues = config.tickValues;
-      }
-
       _scope = new SelectionScope.element(_element);
     }
 

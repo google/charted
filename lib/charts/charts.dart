@@ -15,6 +15,7 @@ import 'dart:math' as math;
 import 'dart:svg' hide Rect;
 import 'dart:typed_data';
 
+import 'package:charted/core/text_metrics.dart';
 import 'package:charted/core/utils.dart';
 import 'package:charted/core/scales.dart';
 import 'package:charted/layout/layout.dart';

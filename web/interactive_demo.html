@@ -10,9 +10,6 @@
       body {
         padding: 0;
         margin: 0;
-        display: flex;
-        position: absolute;
-        top: 0; bottom: 0; right: 0; left: 0;
       }
       .controls {
         padding: 30px;
@@ -22,9 +19,10 @@
         flex-direction: column;
         justify-content: space-between;
         overflow: auto;
-        flex: 0;
         min-width: 250px;
         max-width: 250px;
+        position: fixed;
+        height: 100%;
       }
       .control-category {
         padding: 10px 0;
@@ -37,14 +35,16 @@
         margin-bottom: 10px;
       }
       .chart-wrapper {
-        min-width: 750px;
+        min-width: 600px;
+        max-width: 1000px;
+        margin-left: 325px;
       }
     </style>
   </head>
   <body>
     <div class="controls">
       <div class="controls-inner">
-        <h1 class="title">Charted Demo</h1>
+        <h1 class="title">Charted &mdash; Interactive demo</h1>
         <div class="control-category">
           <h2>Series</h2>
           <select id="select-series"></select>
