@@ -100,7 +100,7 @@ class _CartesianArea implements CartesianArea {
 
     this.data = data;
     this.config = config;
-    theme = ChartTheme.current;
+    theme = new QuantumChartTheme();
 
     Transition.defaultEasingType = theme.transitionEasingType;
     Transition.defaultEasingMode = theme.transitionEasingMode;
@@ -282,7 +282,8 @@ class _CartesianArea implements CartesianArea {
         }
         info.check();
         group.attributes['transform'] = transform;
-        s.renderer.draw(group, schedulePostRender:schedulePostRender);
+        (s.renderer as CartesianRenderer)
+            .draw(group, schedulePostRender:schedulePostRender);
       });
 
       // A series that was rendered earlier isn't there anymore, remove it

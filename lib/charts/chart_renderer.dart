@@ -35,12 +35,19 @@ abstract class CartesianRenderer extends ChartRenderer {
   /// This getter is called only for renderers that have [dimensionsUsingBand]
   /// set to non-empty list.
   double get bandOuterPadding;
+
+  /// Render series data on the passed [host].
+  /// Draw will not be successful if [prepare] was not already called.
+  void draw(Element host, {Future schedulePostRender});
 }
 
 ///
 /// Renders layout visualization on a LayoutArea
 ///
 abstract class LayoutRenderer extends ChartRenderer {
+  /// Create a layout/visualization from the data. Layout will not be successful
+  /// if [prepare] was not already called.
+  Iterable<ChartLegendItem> layout(Element host, {Future schedulePostRender});
 }
 
 ///
@@ -51,10 +58,6 @@ abstract class ChartRenderer extends ChartRendererBehaviorSource {
   /// - [area] represents the [ChartArea] on which the chart is rendered.
   /// - [series] represents the [ChartSeries] that is rendered
   bool prepare(ChartArea area, ChartSeries series);
-
-  /// Render series data on the passed [host].
-  /// Draw will not be successful if [prepare] was not already called.
-  void draw(Element host, {Future schedulePostRender});
 
   /// Clears DOM created by this renderer and releases
   /// references to passed objects.
