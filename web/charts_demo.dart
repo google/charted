@@ -25,7 +25,7 @@ class ChartDemo {
         '     <div class="chart-title">$title</div>'
         '  </div>'
         '  <div class="chart-host-wrapper">'
-        '    <div class="chart-host"></div>'
+        '    <div class="chart-host" dir="ltr"></div>'
         '    <div class="chart-legend-host"></div>'
         '  </div>'
         '</div>';

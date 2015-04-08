@@ -111,7 +111,8 @@ class BarChartRenderer extends CartesianRendererBase {
 
       int delay = 0;
       bar.transition()
-        ..attrWithCallback(verticalBars ? 'y' : 'x', (d, i, c) => getBarY(d))
+        ..attrWithCallback(verticalBars ? 'y' : 'x',
+            (d, i, e) => verticalBars ? getBarY(d) : '1')
         ..attrWithCallback(verticalBars ? 'height': 'width',
             (d, i, c) => getBarHeight(d))
         ..delayWithCallback((d, i, c) =>
