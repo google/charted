@@ -24,7 +24,7 @@ main() {
         new ChartTooltip()
         ],
       barDemo = new ChartDemo('bar chart', querySelector('.bar-chart'),
-          barConfig, data, chartBehaviors: behavior);
+          barConfig, data, behaviors: behavior);
   barDemo.setTheme(new HorizontalPrimaryAxisTheme());
   barDemo.draw();
 
@@ -38,7 +38,7 @@ main() {
       ],
       stackedBarDemo = new ChartDemo('stacked bar chart', querySelector(
           '.stacked-bar-chart'), stackedBarConfig, data,
-          chartBehaviors: stackedBehavior);
+          behaviors: stackedBehavior);
   stackedBarDemo.setTheme(new HorizontalPrimaryAxisTheme());
   stackedBarDemo.draw();
 
@@ -59,7 +59,8 @@ class _HorizontalPrimaryAxisTheme implements ChartAxisTheme {
   final axisTickPadding = 6;
   final axisTickSize;
   final axisTickCount;
-  final axisAutoResize = true;
+  final horizontalAxisAutoResize = false;
+  final verticalAxisAutoResize = true;
   final verticalAxisWidth = 100;
   final horizontalAxisHeight = 50;
   final ticksFont = '14px Roboto';

@@ -26,11 +26,6 @@
         min-width: 250px;
         max-width: 250px;
       }
-
-      .charts-container {
-        padding: 30px;
-      }
-
       .control-category {
         padding: 10px 0;
         border-bottom: 1px solid #ccc;
@@ -38,9 +33,11 @@
       .control-category:last-child {
         border-bottom: 0px;
       }
-
       button, select {
         margin-bottom: 10px;
+      }
+      .chart-wrapper {
+        min-width: 750px;
       }
     </style>
   </head>
@@ -65,12 +62,31 @@
           <button id="add-row">Add row</button>
           <button id="remove-row">Remove last row</button>
         </div>
+        <div class="control-category">
+          <h2>Internationalization</h2>
+          <div>
+            <input type="checkbox" id="rtl-use-script"></input>
+            <label for="rtl-use-script">Use RTL script</label>
+          </div>
+          <div>
+            <input type="checkbox" id="rtl-use-layout"></input>
+            <label for="rtl-use-layout">Use RTL Layout</label>
+          </div>
+          <div>
+            <input type="checkbox" id="rtl-switch-axes"></input>
+            <label for="rtl-switch-axes">Switch axis direction for RTL</label>
+          </div>
+        </div>
       </div>
     </div>
-    <div class="charts-container">
-      <div class="chart-wrapper">
-        <div class="chart-host"></div>
-        <div class="legend-host"></div>
+    <div class="chart-wrapper">
+      <div class="chart-title-wrapper">
+        <div class="chart-title">Interactive chart demo</div>
+        <div class="chart-subtitle">Use the left panel to customize chart</div>
+      </div>
+      <div class="chart-host-wrapper">
+        <div class="chart-host" dir="ltr"></div>
+        <div class="chart-legend-host"></div>
       </div>
     </div>
     <script type="application/dart" src="interactive_demo.dart"></script>

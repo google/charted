@@ -58,9 +58,12 @@ class LineMarker implements ChartBehavior {
 
     assert(index == 0 || index == 1 && _area.useTwoDimensionAxes);
 
-    var isHorizontal = index == 1 && _isLeftAxisPrimary || index == 0,
+    var dimensionAtBottom =
+            index == 1 && _isLeftAxisPrimary ||
+            index == 0 && !_isLeftAxisPrimary,
         scale = _area.dimensionScales.elementAt(index),
         scaled = scale.scale(positions[column]),
+        theme = _area.theme.dimensionAxisTheme,
         renderAreaRect = _area.layout.renderArea,
         left = renderAreaRect.x,
         right = initial ? left : (left + renderAreaRect.width),
@@ -68,13 +71,16 @@ class LineMarker implements ChartBehavior {
         top = initial ? bottom : renderAreaRect.y;
 
     if (scale is OrdinalScale) {
-      var band = scale.rangeBand;
-      return isHorizontal
+      var band = scale.rangeBand,
+          bandPadding = theme.axisBandInnerPadding;
+      scaled = scaled - band * bandPadding + _area.theme.defaultStrokeWidth;
+      band = band + 2 * (band * bandPadding - _area.theme.defaultStrokeWidth);
+      return dimensionAtBottom
           ? 'M ${left + scaled} ${bottom} V ${top} H ${left + scaled + band} V ${bottom} Z'
           : 'M ${left} ${scaled + band} H ${right} V ${scaled - band} H ${left} Z';
     } else {
-      return isHorizontal
-          ? 'M ${scaled} ${bottom} V ${top}'
+      return dimensionAtBottom
+          ? 'M ${left + scaled} ${bottom} V ${top}'
           : 'M ${left} ${scaled} H ${right}';
     }
   }

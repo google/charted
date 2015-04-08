@@ -33,7 +33,7 @@ abstract class Transition {
   static EasingModeFunction defaultEasingMode = reflectEasingFn;
 
   /** A settable default transition duration */
-  static int defaultDuration = 250;
+  static int defaultDurationMilliseconds = 250;
 
   /** Sets the ease function of the transition, default is cubic-in-out. */
   Interpolator ease;

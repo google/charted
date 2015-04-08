@@ -328,6 +328,8 @@ class _SelectionImpl implements Selection {
         exitGroups = [];
 
     // Create a dummy node to be used with enter() selection.
+    // TODO(prsd): Use virtual DOM. It could be upto 50 times faster than
+    //             using a html element for dummy.
     Element dummy(val) {
       var element = new Element.tag('charted-dummy');
       scope.associate(element, val);
@@ -336,15 +338,17 @@ class _SelectionImpl implements Selection {
 
     // Joins data to all elements in the group.
     void join(SelectionGroup g, Iterable vals) {
+      final int valuesLength = vals.length;
+      final int elementsLength = g.elements.length;
+
       // Nodes exiting, entering and updating in this group.
       // We maintain the nodes at the same index as they currently
       // are (for exiting) or where they should be (for entering and updating)
-      var update = new List(vals.length),
-          enter = new List(vals.length),
-          exit = new List(g.elements.length);
+      var update = new List(valuesLength),
+          enter = new List(valuesLength),
+          exit = new List(elementsLength);
 
-      // Use the key function to determine the DOM element to data
-      // associations.
+      // Use key function to determine DOMElement to data associations.
       if (keyFn != null) {
         var keysOnDOM = [],
             elementsByKey = {},
@@ -352,7 +356,7 @@ class _SelectionImpl implements Selection {
 
         // Create a key to DOM element map.
         // Used later to see if an element already exists for a key.
-        for (int ei = 0; ei < g.elements.length; ++ei) {
+        for (int ei = 0, len = elementsLength; ei < len; ++ei) {
           final e = g.elements.elementAt(ei);
           var keyValue = keyFn(scope.datum(e));
           if (elementsByKey.containsKey(keyValue)) {
@@ -365,7 +369,7 @@ class _SelectionImpl implements Selection {
 
         // Iterate through the values and find values that don't have
         // corresponding elements in the DOM, collect the entering elements.
-        for (int vi = 0; vi < vals.length; ++vi) {
+        for (int vi = 0, len = valuesLength; vi < len; ++vi) {
           final v = vals.elementAt(vi);
           var keyValue = keyFn(v);
           Element e = elementsByKey[keyValue];
@@ -383,18 +387,18 @@ class _SelectionImpl implements Selection {
         // find a list of elements that don't have data anymore.
         // We don't use elementsByKey.keys() becuase that does not
         // guarantee the order of returned keys.
-        for (int i = 0; i < g.elements.length; ++i) {
+        for (int i = 0, len = elementsLength; i < len; ++i) {
           if (elementsByKey.containsKey(keysOnDOM[i])) {
             exit[i] = g.elements.elementAt(i);
           }
         }
       } else {
         // When we don't have the key function, just use list index as the key
-        int updateElementsCount = math.min(g.elements.length, vals.length);
+        int updateElementsCount = math.min(elementsLength, valuesLength);
         int i = 0;
 
         // Collect a list of elements getting updated in this group
-        for (; i < updateElementsCount; ++i) {
+        for (int len = updateElementsCount; i < len; ++i) {
           var e = g.elements.elementAt(i);
           if (e != null) {
             scope.associate(e, vals.elementAt(i));
@@ -405,12 +409,12 @@ class _SelectionImpl implements Selection {
         }
 
         // List of elements newly getting added
-        for (; i < vals.length; ++i) {
+        for (int len = valuesLength; i < len; ++i) {
           enter[i] = dummy(vals.elementAt(i));
         }
 
         // List of elements exiting this group
-        for (; i < g.elements.length; ++i) {
+        for (int len = elementsLength; i < len; ++i) {
           exit[i] = g.elements.elementAt(i);
         }
       }
@@ -509,11 +513,11 @@ class _EnterSelectionImpl implements EnterSelection {
   Selection selectWithCallback(SelectionCallback<Element> fn) {
     var subgroups = [],
         gi = 0;
-    for (int gi = 0; gi < groups.length; ++gi) {
+    for (int gi = 0, len = groups.length; gi < len; ++gi) {
       final g = groups.elementAt(gi);
       final u = update.groups.elementAt(gi);
       final subgroup = [];
-      for (int ei = 0; ei < g.elements.length; ++ei) {
+      for (int ei = 0, eLen = g.elements.length; ei < eLen; ++ei) {
         final e = g.elements.elementAt(ei);
         if (e != null) {
           var datum = scope.datum(e),

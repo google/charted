@@ -21,7 +21,7 @@ class _ChartData extends ChangeNotifier implements ChartData {
   }
 
   set columns(Iterable<ChartColumnSpec> value) {
-    assert(value != null && value.isNotEmpty);
+    assert(value != null);
 
     // Create a copy of columns.  We do not currently support
     // changes to the list of columns.  Any changes to the spec

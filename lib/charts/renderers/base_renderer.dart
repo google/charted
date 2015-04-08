@@ -52,7 +52,7 @@ abstract class BaseRenderer implements ChartRenderer {
   Extent get extent {
     assert(series != null && area != null);
     var rows = area.data.rows,
-    max = rows[0][series.measures.first],
+    max = rows.isEmpty ? 0 : rows[0][series.measures.first],
     min = max;
 
     rows.forEach((row) {
@@ -81,7 +81,7 @@ abstract class BaseRenderer implements ChartRenderer {
   }
 
   @override
-  Stream<ChartEvent> get onValueMouseClick {
+  Stream<ChartEvent> get onValueClick {
     if (mouseClickController == null) {
       mouseClickController = new StreamController.broadcast(sync: true);
     }

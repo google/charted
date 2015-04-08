@@ -29,13 +29,7 @@ a:link, a:visited {
 }
 
 .chart-wrapper {
-  display: flex;
-  padding: 20px;
-}
-
-.chart-host {
-  min-width: 600px;
-  max-width: 600px;
+  padding: 40px;
 }
 
 .chart-controls {

@@ -42,13 +42,16 @@ abstract class ChartTheme {
   EasingModeFunction get transitionEasingMode => Transition.defaultEasingMode;
 
   /// Total duration of the transition in milli-seconds
-  int get transitionDuration => 250;
+  int get transitionDurationMilliseconds => 250;
 
   /// Theme passed to the measure axes
   ChartAxisTheme get measureAxisTheme;
 
   /// Theme passed to the dimension axes
   ChartAxisTheme get dimensionAxisTheme;
+
+  /// Padding around the rendered chart. Defaults to 10px in all directions
+  AbsoluteRect get padding => const AbsoluteRect(10, 10, 10, 10);
 }
 
 abstract class ChartAxisTheme {
@@ -91,8 +94,8 @@ abstract class ChartAxisTheme {
   /// space between two consecutive ticks is also known as the segment size.
   double get axisBandOuterPadding;
 
-  /// When set to true, the axes resize to fit the labels.
-  bool get axisAutoResize => true;
+  /// When set to true, the vertical axes resize to fit the labels.
+  bool get verticalAxisAutoResize => true;
 
   /// Width of vertical axis when it is not resizing automatically. If
   /// [autoResizeAxis] is set to true, [verticalAxisWidth] will be used as the
@@ -102,6 +105,9 @@ abstract class ChartAxisTheme {
   /// visualization.
   int get verticalAxisWidth => 200;
 
+  /// When set to true, the horizontal axes resize to fit the labels.
+  bool get horizontalAxisAutoResize => true;
+
   /// Height of horizontal axis when it is not resizing automatically. If
   /// [autoResizeAxis] is set to true [horizontalAxisHeight] is used as the
   /// maximum height of the horizontal axis.
@@ -110,8 +116,15 @@ abstract class ChartAxisTheme {
   /// visualization.
   int get horizontalAxisHeight => 200;
 
-  /// Font used by axis ticks. When specified, Charted falls back to efficient
-  /// off-screen computation of text metrics.
-  /// When not specified, SVGTextElement's metrics API is used.
+  /// Font used by axis ticks. When specified, axis uses efficient off-screen
+  /// computation of text metrics.
+  ///
+  /// Font string must be of the following form:
+  ///   "bold italic 16px Roboto"
+  ///   "bold 16px Roboto"
+  ///   "italic 16px Roboto"
+  ///   "16px Roboto"
+  ///
+  /// When not specified, SVGTextElement's metrics API will be used.
   String get ticksFont;
 }

@@ -28,7 +28,6 @@ class _ChartAxis {
   String _orientation;
   Scale _scale;
   SelectionScope _scope;
-  Selection _group;
 
   MutableRect size;
 
@@ -75,24 +74,23 @@ class _ChartAxis {
 
   void prepareToDraw(String orientation, ChartAxisTheme theme) {
     if (orientation == null) orientation = ORIENTATION_BOTTOM;
-
     _theme = theme;
     _orientation = orientation;
     _isVertical = _orientation == ORIENTATION_LEFT ||
         _orientation == ORIENTATION_RIGHT;
 
-    if (false && _theme.axisAutoResize) {
+    var layout = area.layout.chartArea;
+    if (_isVertical && _theme.verticalAxisAutoResize) {
       // TODO(prsd): Implement axis size computations
+      size = new MutableRect.size(_theme.verticalAxisWidth, layout.width);
     } else {
-      var width = _isVertical ?
-          _theme.verticalAxisWidth : area.layout.chartArea.width;
-      var height = _isVertical ?
-          area.layout.chartArea.height : _theme.horizontalAxisHeight;
-      size = new MutableRect.size(width, height);
+      size = _isVertical
+          ? new MutableRect.size(_theme.verticalAxisWidth, layout.width)
+          : new MutableRect.size(layout.height, _theme.horizontalAxisHeight);
     }
   }
 
-  void draw(GElement element) {
+  void draw(GElement element, {bool preRender: false}) {
     assert(element != null && element is GElement);
     assert(scale != null);
 
@@ -105,9 +103,7 @@ class _ChartAxis {
 
     if (_axis == null || _element != element) {
       _element = element;
-      _axis = new SvgAxis()
-        ..orientation = _orientation
-        ..suggestedTickCount = _theme.axisTickCount
+      _axis = new SvgAxis(_orientation)
         ..tickPadding = _theme.axisTickPadding
         ..outerTickSize = 0
         ..tickFormat = _columnSpec.formatter;
@@ -117,7 +113,6 @@ class _ChartAxis {
       }
 
       _scope = new SelectionScope.element(_element);
-      _group = _scope.selectElements([_element]);
     }
 
     _axis.innerTickSize = _theme.axisTickSize;
@@ -127,7 +122,8 @@ class _ChartAxis {
     }
     initAxisScale(range, _theme);
     if (_axis.scale != scale) _axis.scale = scale;
-    _axis.axis(_group, rect: rect, font: _theme.ticksFont);
+    _axis.create(_element, _scope,
+        rect: rect, font: _theme.ticksFont, isRTL: area.config.isRTL);
   }
 
   void clear() {

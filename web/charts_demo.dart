@@ -8,7 +8,7 @@ part 'src/dataset_small.dart';
 part 'src/dataset_large.dart';
 
 class ChartDemo {
-  final List<ChartBehavior> chartBehaviors;
+  final List<ChartBehavior> behaviors;
   final ChartConfig config;
   final ChartData data;
   final int dimensionAxesCount;
@@ -18,20 +18,25 @@ class ChartDemo {
   ChartArea area;
 
   ChartDemo(this.title, this.host, this.config, this.data,
-       { this.dimensionAxesCount: 1, this.chartBehaviors: const []}) {
-    var chartAreaHost = new DivElement()..classes.add('chart-host'),
-        chartLegendHost = new DivElement()..classes.add('chart-legend'),
-        wrapper = new DivElement()
-            ..children.addAll([chartAreaHost, chartLegendHost])
-            ..classes.add('chart-wrapper');
+       { this.dimensionAxesCount: 1, this.behaviors: const []}) {
+    host.innerHtml =
+        '<div class="chart-wrapper">'
+        '  <div class="chart-title-wrapper">'
+        '     <div class="chart-title">$title</div>'
+        '  </div>'
+        '  <div class="chart-host-wrapper">'
+        '    <div class="chart-host"></div>'
+        '    <div class="chart-legend-host"></div>'
+        '  </div>'
+        '</div>';
 
-    host.children.addAll(
-        [ new Element.html('<div><h2>$title</h2></div>'), wrapper ]);
+    var chartAreaHost = host.querySelector('.chart-host'),
+        chartLegendHost = host.querySelector('.chart-legend-host');
 
     config.legend = new ChartLegend(chartLegendHost);
     area = new ChartArea(chartAreaHost, data, config,
         autoUpdate: false, useTwoDimensionAxes: dimensionAxesCount == 2);
-    for (var behavior in chartBehaviors) {
+    for (var behavior in behaviors) {
       area.addChartBehavior(behavior);
     }
   }
@@ -40,5 +45,5 @@ class ChartDemo {
     area.theme = theme;
   }
 
-  void draw() => area.draw();
+  void draw() => area.draw(preRender: data.rows.isEmpty);
 }

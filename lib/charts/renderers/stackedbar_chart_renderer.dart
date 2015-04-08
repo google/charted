@@ -23,8 +23,7 @@ class StackedBarChartRenderer extends BaseRenderer {
   }
 
   @override
-  void draw(Element element,
-      {bool preRender: false, Future schedulePostRender}) {
+  void draw(Element element, {Future schedulePostRender}) {
     _ensureReadyToDraw(element);
     var verticalBars = !area.config.isLeftAxisPrimary;
 
@@ -55,7 +54,7 @@ class StackedBarChartRenderer extends BaseRenderer {
         ..attrWithCallback('transform', (d, i, c) => verticalBars ?
             'translate(${dimensionScale.scale(dimensionVals[i])}, 0)' :
             'translate(0, ${dimensionScale.scale(dimensionVals[i])})')
-        ..duration(theme.transitionDuration);
+        ..duration(theme.transitionDurationMilliseconds);
     }
 
     var bar = groups.selectAll('.bar').dataWithCallback((d, i, c) => rows[i]);
@@ -170,12 +169,12 @@ class StackedBarChartRenderer extends BaseRenderer {
         ..styleWithCallback('fill', (d, i, c) => colorForKey(i))
         ..styleWithCallback('stroke', (d, i, c) => colorForKey(i))
         ..attr(verticalBars? 'width' : 'height', barWidth)
-        ..duration(theme.transitionDuration);
+        ..duration(theme.transitionDurationMilliseconds);
 
       bar.transition()
         ..attrWithCallback(verticalBars ? 'y' : 'x', (d, i, c) => getBarY(d, i))
         ..attrWithCallback(verticalBars ? 'height' : 'width', (d, i, c) => getBarHeight(d, i))
-        ..duration(theme.transitionDuration)
+        ..duration(theme.transitionDurationMilliseconds)
         ..delay(50);
     }
 
@@ -190,7 +189,7 @@ class StackedBarChartRenderer extends BaseRenderer {
   Extent get extent {
     assert(area != null && series != null);
     var rows = area.data.rows,
-    max = rows[0][series.measures.first],
+    max = rows.isEmpty ? 0 : rows[0][series.measures.first],
     min = max;
 
     rows.forEach((row) {

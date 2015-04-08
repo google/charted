@@ -46,3 +46,17 @@ class MutableRect extends Rect {
   MutableRect.size(this.width, this.height);
   MutableRect.position(this.x, this.y);
 }
+
+class AbsoluteRect {
+  final num start;
+  final num end;
+  final num top;
+  final num bottom;
+
+  const AbsoluteRect(this.top, this.end, this.bottom, this.start);
+
+  bool operator==(other) =>
+      other is AbsoluteRect &&
+      start == other.start && end == other.end &&
+      top == other.top && bottom == other.bottom;
+}

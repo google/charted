@@ -11,7 +11,7 @@ part of charted.charts;
 ///
 /// Renders the chart on a compatible [ChartArea].
 ///
-abstract class ChartRenderer {
+abstract class ChartRenderer extends ChartRendererBehaviorSource {
   /// Returns extent of the series. This extent is used by [ChartArea] to
   /// set the output range of the corresponding scale/axis of the series.
   ///
@@ -36,17 +36,6 @@ abstract class ChartRenderer {
   /// set to non-empty list.
   double get bandOuterPadding;
 
-  /// Stream of events that indicate that user clicked on a displayed value
-  Stream<ChartEvent> get onValueMouseClick;
-
-  /// Stream of events that indicate that user moved the mouse pointer out
-  /// over a displayed value
-  Stream<ChartEvent> get onValueMouseOver;
-
-  /// Stream of events that indicate that user moved the mouse pointer out
-  // of a displayed value
-  Stream<ChartEvent> get onValueMouseOut;
-
   /// Prepare the chart for rendering.
   /// - [area] represents the [ChartArea] on which the chart is rendered.
   /// - [series] represents the [ChartSeries] that is rendered
@@ -54,7 +43,7 @@ abstract class ChartRenderer {
 
   /// Render series data on the passed [host].
   /// Draw will not be successful if [prepare] was not already called.
-  void draw(Element host, {bool preRender: false, Future schedulePostRender});
+  void draw(Element host, {Future schedulePostRender});
 
   /// Clears DOM created by this renderer and releases
   /// references to passed objects.

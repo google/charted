@@ -104,7 +104,8 @@ class CartesianChartArea implements ChartArea {
 
     Transition.defaultEasingType = theme.transitionEasingType;
     Transition.defaultEasingMode = theme.transitionEasingMode;
-    Transition.defaultDuration = theme.transitionDuration;
+    Transition.defaultDurationMilliseconds =
+        theme.transitionDurationMilliseconds;
   }
 
   void dispose() {
@@ -220,11 +221,20 @@ class CartesianChartArea implements ChartArea {
       height = max([height, config.minimumSize.height]);
     }
 
-    Rect current = new Rect(0, 0, width, height);
+    AbsoluteRect padding = theme.padding;
+    num paddingLeft = config.isRTL ? padding.end : padding.start;
+    Rect current = new Rect(paddingLeft, padding.top,
+        width - (padding.start + padding.end),
+        height - (padding.top + padding.bottom));
     if (layout.chartArea == null || layout.chartArea != current) {
       _svg.attr('width', width.toString());
       _svg.attr('height', height.toString());
       layout.chartArea = current;
+
+      var transform = 'translate(${paddingLeft},${padding.top})';
+      visualization.first.attributes['transform'] = transform;
+      lowerBehaviorPane.first.attributes['transform'] = transform;
+      upperBehaviorPane.first.attributes['transform'] = transform;
     }
     return layout.chartArea;
   }
@@ -238,10 +248,10 @@ class CartesianChartArea implements ChartArea {
     // Each [ChartArea] has it's own [SelectionScope]
     if (_scope == null) {
       _scope = new SelectionScope.element(host);
-      _svg = _scope.append('svg:svg')..classed('charted-chart');
+      _svg = _scope.append('svg:svg')..classed('chart-canvas');
 
       lowerBehaviorPane = _svg.append('g')..classed('lower-render-pane');
-      visualization = _svg.append('g')..classed('chart-wrapper');
+      visualization = _svg.append('g')..classed('chart-render-pane');
       upperBehaviorPane = _svg.append('g')..classed('upper-render-pane');
 
       if (_behaviors.isNotEmpty) {
@@ -272,8 +282,7 @@ class CartesianChartArea implements ChartArea {
         }
         info.check();
         group.attributes['transform'] = transform;
-        s.renderer.draw(group,
-            preRender:preRender, schedulePostRender:schedulePostRender);
+        s.renderer.draw(group, schedulePostRender:schedulePostRender);
       });
 
       // A series that was rendered earlier isn't there anymore, remove it
@@ -295,7 +304,7 @@ class CartesianChartArea implements ChartArea {
 
     // Save the list of valid series and initialize axes.
     _series = series;
-    _initAxes();
+    _initAxes(preRender: preRender);
 
     // Render the chart, now that the axes layer is already in DOM.
     axesDomainCompleter.complete();
@@ -304,8 +313,11 @@ class CartesianChartArea implements ChartArea {
     _updateLegend();
   }
 
+  String _orientRTL(String orientation) => orientation;
+  Scale _scaleRTL(Scale scale) => scale;
+
   /// Initialize the axes - required even if the axes are not being displayed.
-  _initAxes() {
+  _initAxes({bool preRender: false}) {
     Map measureAxisUsers = <String,Iterable<ChartSeries>>{};
 
     // Create necessary measures axes.
@@ -395,7 +407,7 @@ class CartesianChartArea implements ChartArea {
           : DIMENSION_AXIS_ORIENTATIONS.first;
       for (int i = 0, len = displayedDimensionAxes.length; i < len; ++i) {
         var axis = _dimensionAxes[displayedDimensionAxes[i]],
-            orientation = dimensionAxisOrientations[i];
+            orientation = _orientRTL(dimensionAxisOrientations[i]);
         axis.prepareToDraw(orientation, theme.dimensionAxisTheme);
         layout._axes[orientation] = axis.size;
       }
@@ -408,7 +420,7 @@ class CartesianChartArea implements ChartArea {
           : MEASURE_AXIS_ORIENTATIONS.first;
       displayedMeasureAxes.asMap().forEach((int index, String key) {
         var axis = _measureAxes[key],
-            orientation = measureAxisOrientations[index];
+            orientation = _orientRTL(measureAxisOrientations[index]);
         axis.prepareToDraw(orientation, theme.measureAxisTheme);
         layout._axes[orientation] = axis.size;
       });
@@ -432,13 +444,13 @@ class CartesianChartArea implements ChartArea {
     // Draw the visible measure axes, if any.
     if (displayedMeasureAxes.isNotEmpty) {
       var axisGroups = visualization.
-          selectAll('.measure-group').data(displayedMeasureAxes);
+          selectAll('.measure-axis-group').data(displayedMeasureAxes);
       // Update measure axis (add/remove/update)
       axisGroups.enter.append('svg:g');
       axisGroups.each((axisId, index, group) {
-        _getMeasureAxis(axisId).draw(group);
+        _getMeasureAxis(axisId).draw(group, preRender: preRender);
         group.classes.clear();
-        group.classes.addAll(['measure-group','measure-${index}']);
+        group.classes.addAll(['measure-axis-group','measure-${index}']);
       });
       axisGroups.exit.remove();
     }
@@ -446,13 +458,13 @@ class CartesianChartArea implements ChartArea {
     // Draw the dimension axes, unless asked not to.
     if (config.renderDimensionAxes != false) {
       var dimAxisGroups = visualization.
-          selectAll('.dimension-group').data(displayedDimensionAxes);
+          selectAll('.dimension-axis-group').data(displayedDimensionAxes);
       // Update dimension axes (add/remove/update)
       dimAxisGroups.enter.append('svg:g');
       dimAxisGroups.each((column, index, group) {
-        _getDimensionAxis(column).draw(group);
+        _getDimensionAxis(column).draw(group, preRender: preRender);
         group.classes.clear();
-        group.classes.addAll(['dimension-group', 'dim-${index}']);
+        group.classes.addAll(['dimension-axis-group', 'dim-${index}']);
       });
       dimAxisGroups.exit.remove();
     } else {
@@ -647,7 +659,7 @@ class _ChartSeriesInfo {
     _renderer = _series.renderer;
     try {
       _disposer.addAll([
-          _renderer.onValueMouseClick.listen(
+          _renderer.onValueClick.listen(
               (ChartEvent e) => _event(_area._valueMouseClickController, e)),
           _renderer.onValueMouseOver.listen(
               (ChartEvent e) => _event(_area._valueMouseOverController, e)),

@@ -40,8 +40,9 @@ class QuantumChartTheme extends ChartTheme {
   /* Implementation of ChartTheme */
   String getColorForKey(key, [int state = ChartTheme.STATE_NORMAL]) {
     var result = _scale.scale(key);
-    return (result is List && result.length > state) ?
-        result.elementAt(state) : result;
+    return (result is List && result.length > state)
+        ? result.elementAt(state)
+        : result;
   }
 
   ChartAxisTheme get measureAxisTheme =>
@@ -49,16 +50,7 @@ class QuantumChartTheme extends ChartTheme {
   ChartAxisTheme get dimensionAxisTheme =>
       const _QuantumChartAxisTheme(0, 10);
 
-  /* Padding for charts */
-  double outerPadding = 0.1;
-  double bandInnerPadding = 0.35;
-  double bandOuterPadding = 0.175;
-
-  /* Tick sizes */
-  int dimensionTickSize = 0;
-  int measureTickSize = -1000;
-  int dimensionTickPadding = 6;
-  int measureTickPadding = 6;
+  AbsoluteRect get padding => const AbsoluteRect(10, 10, 0, 0);
 }
 
 class _QuantumChartAxisTheme implements ChartAxisTheme {
@@ -68,8 +60,9 @@ class _QuantumChartAxisTheme implements ChartAxisTheme {
   final axisTickPadding = 6;
   final axisTickSize;
   final axisTickCount;
-  final axisAutoResize = true;
+  final verticalAxisAutoResize = true;
   final verticalAxisWidth = 50;
+  final horizontalAxisAutoResize = false;
   final horizontalAxisHeight = 50;
   final ticksFont = '14px Roboto';
   const _QuantumChartAxisTheme(this.axisTickSize, this.axisTickCount);
