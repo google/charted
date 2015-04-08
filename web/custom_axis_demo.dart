@@ -36,7 +36,7 @@ main() {
           new StackedBarChartRenderer()),
       data = new ChartData(COLUMNS, DATA),
       config = new ChartConfig([series1], [0]),
-      area = new ChartArea(querySelector('.default'),
+      area = new CartesianArea(querySelector('.default'),
           data, config, autoUpdate:false, useTwoDimensionAxes:false);
   area.draw();
 
@@ -58,7 +58,7 @@ main() {
   axisConfig.scale = scale;
 
   config2.registerMeasureAxis('fixed_domain', axisConfig);
-  var customAxisChart = new ChartArea(querySelector('.custom-domain'),
+  var customAxisChart = new CartesianArea(querySelector('.custom-domain'),
           data2, config2, autoUpdate:false, useTwoDimensionAxes:false);
   customAxisChart.draw();
 
@@ -81,7 +81,7 @@ main() {
   axisConfig2.tickValues = [0, 25, 50, 230, 250];
 
   config3.registerMeasureAxis('fixed_ticks', axisConfig2);
-  var fixedTickValueChart = new ChartArea(querySelector('.custom-ticks'),
+  var fixedTickValueChart = new CartesianArea(querySelector('.custom-ticks'),
           data3, config3, autoUpdate:false, useTwoDimensionAxes:false);
   fixedTickValueChart.draw();
 }

@@ -34,7 +34,7 @@ class ChartDemo {
         chartLegendHost = host.querySelector('.chart-legend-host');
 
     config.legend = new ChartLegend(chartLegendHost);
-    area = new ChartArea(chartAreaHost, data, config,
+    area = new CartesianArea(chartAreaHost, data, config,
         autoUpdate: false, useTwoDimensionAxes: dimensionAxesCount == 2);
     for (var behavior in behaviors) {
       area.addChartBehavior(behavior);

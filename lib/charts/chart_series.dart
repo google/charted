@@ -27,7 +27,7 @@ class ChartSeries {
   /// [ChartArea] a new axis is created.
   ///
   /// When not specified, renderers may use [ChartArea.defaultMeasureAxis]
-  /// where ever necessary.  Refer to the implementation of [ChartRenderer] for
+  /// where ever necessary.  Refer to the implementation of [CartesianRenderer] for
   /// more information on defaults and how the measure axes are used.
   ///
   /// If the implementation is [Observable] and [measureAxisIds] is set to an
@@ -55,7 +55,7 @@ class ChartSeries {
   /// Factory function to create an instance of internal implementation of
   /// [ChartSeries].
   factory ChartSeries(String name, Iterable<int> measures,
-      ChartRenderer renderer, { Iterable<String> measureAxisIds : null }) =>
+      CartesianRenderer renderer, { Iterable<String> measureAxisIds : null }) =>
           new _ChartSeries(name, measures, renderer, measureAxisIds);
 }
 

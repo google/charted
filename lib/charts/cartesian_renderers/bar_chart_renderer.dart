@@ -19,7 +19,7 @@ class BarChartRenderer extends BaseRenderer {
   @override
   bool prepare(ChartArea area, ChartSeries series) {
     _ensureAreaAndSeries(area, series);
-    return area is CartesianChartArea;
+    return area is CartesianArea;
   }
 
   @override

@@ -9,9 +9,9 @@
 part of charted.charts;
 
 ///
-/// Renders the chart on a compatible [ChartArea].
+/// Renders the chart on a CartesianArea.
 ///
-abstract class ChartRenderer extends ChartRendererBehaviorSource {
+abstract class CartesianRenderer extends ChartRenderer {
   /// Returns extent of the series. This extent is used by [ChartArea] to
   /// set the output range of the corresponding scale/axis of the series.
   ///
@@ -35,7 +35,18 @@ abstract class ChartRenderer extends ChartRendererBehaviorSource {
   /// This getter is called only for renderers that have [dimensionsUsingBand]
   /// set to non-empty list.
   double get bandOuterPadding;
+}
 
+///
+/// Renders layout visualization on a LayoutArea
+///
+abstract class LayoutRenderer extends ChartRenderer {
+}
+
+///
+/// Common interface for all renderers in Charted
+///
+abstract class ChartRenderer extends ChartRendererBehaviorSource {
   /// Prepare the chart for rendering.
   /// - [area] represents the [ChartArea] on which the chart is rendered.
   /// - [series] represents the [ChartSeries] that is rendered

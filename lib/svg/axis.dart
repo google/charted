@@ -124,6 +124,7 @@ class SvgAxis {
               ? '0.32em'
               : isBottom ? '0.71em' : '0';
       e.classes.add('tick');
+      e.style.setProperty('opacity', EPSILON.toString());
       e.append(line);
       e.append(text);
     });
@@ -156,12 +157,37 @@ class SvgAxis {
       }
 
       text.text = fixTextDirection(formatted[i]);
+
+      if (isInitialRender) {
+        e.attributes['transform'] = isTop || isBottom
+            ? 'translate(${current.scale(d)},0)'
+            : 'translate(0,${current.scale(d)})';
+        e.style.setProperty('opacity', '1.0');
+      }
     });
 
-    // No transitions on initial render.
-    if (isInitialRender) {
-    } else {
-      exit.remove();  // Currently we don't support animations on exit.
+    // Transition existing ticks to right positions
+    if (!isInitialRender) {
+      // If either the new or old scale is ordinal,
+      // entering ticks are undefined in the old scale,
+      // and so can fade-in in the new scale’s position.
+      // Exiting ticks are likewise undefined in the new scale,
+      // and so can fade-out in the old scale’s position.
+      var transformFn;
+      if (current is OrdinalScale && current.rangeBand != 0) {
+        var dx = current.rangeBand / 2;
+        transformFn = (d) => current.scale(d) + dx;
+      } else if (older is OrdinalScale && older.rangeBand != 0) {
+        older = current;
+      } else {
+        transform(ticks, current.scale);
+      }
+
+      transform(enter, transformFn != null ? transformFn : older.scale);
+      transform(ticks, transformFn != null ? transformFn : current.scale);
+
+      // Currently we don't support animations on exit.
+      exit.remove();
     }
 
     // Append path to the element.
@@ -170,35 +196,21 @@ class SvgAxis {
         ? 'M${tickSize},${range.min}H0V${range.max}H${tickSize}'
         : 'M${range.min},${tickSize}V0H${range.max}V${tickSize}';
     element.append(path);
-
-    // If either the new or old scale is ordinal,
-    // entering ticks are undefined in the old scale,
-    // and so can fade-in in the new scale’s position.
-    // Exiting ticks are likewise undefined in the new scale,
-    // and so can fade-out in the old scale’s position.
-    var transformFn;
-    if (current is OrdinalScale && current.rangeBand != 0) {
-      var dx = current.rangeBand / 2;
-      transformFn = (d) => current.scale(d) + dx;
-    } else if (older is OrdinalScale && older.rangeBand != 0) {
-      older = current;
-    } else {
-      transform(ticks, current.scale);
-    }
-
-    transform(enter, transformFn != null ? transformFn : older.scale);
-    transform(ticks, transformFn != null ? transformFn : current.scale);
   }
 
-  _xAxisTransform(selection, transformFn) {
-    selection.attrWithCallback(
-        'transform', (d, i, e) => 'translate(${transformFn(d)},0)'
-    );
+  _xAxisTransform(Selection selection, transformFn) {
+    var transition = selection.transition()
+        ..attrWithCallback(
+            'transform', (d, i, e) => 'translate(${transformFn(d)},0)');
+    transition.transition()
+        ..style('opacity', '1.0');
   }
 
-  _yAxisTransform(selection, transformFn) {
-    selection.attrWithCallback(
-        'transform', (d, i, e) => 'translate(0,${transformFn(d)})'
-    );
+  _yAxisTransform(Selection selection, transformFn) {
+    var transition = selection.transition()
+        ..attrWithCallback(
+            'transform', (d, i, e) => 'translate(0,${transformFn(d)})');
+    transition.transition()
+      ..style('opacity', '1.0');
   }
 }

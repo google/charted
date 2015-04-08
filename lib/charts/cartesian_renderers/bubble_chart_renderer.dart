@@ -10,10 +10,6 @@ part of charted.charts;
 
 class BubbleChartRenderer extends BaseRenderer {
   final Iterable<int> dimensionsUsingBand = const[];
-
-  ChartArea area;
-  ChartSeries series;
-
   final double maxBubbleRadius;
 
   Element _host;
@@ -32,7 +28,7 @@ class BubbleChartRenderer extends BaseRenderer {
   @override
   bool prepare(ChartArea area, ChartSeries series) {
     _ensureAreaAndSeries(area, series);
-    return area is CartesianChartArea && area.useTwoDimensionAxes == true;
+    return area is CartesianArea && area.useTwoDimensionAxes == true;
   }
 
   @override

@@ -12,7 +12,7 @@ class _ChartAxis {
   static const List _VERTICAL_ORIENTATIONS =
       const [ ORIENTATION_LEFT, ORIENTATION_RIGHT ];
 
-  CartesianChartArea area;
+  _CartesianArea area;
   ChartAxisConfig config;
   ChartAxisTheme _theme;
 

@@ -33,7 +33,7 @@ class MouseTracker implements ChartBehavior {
     _lower = lower.first;
     _upper = upper.first;
 
-    if (area is CartesianChartArea) {
+    if (area is CartesianArea) {
       _mouseInSubscription = _area.onMouseOver.listen(_show);
       _mouseOutSubscription = _area.onMouseOut.listen(_hide);
     }

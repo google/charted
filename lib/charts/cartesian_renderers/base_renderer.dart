@@ -8,8 +8,8 @@
 
 part of charted.charts;
 
-abstract class BaseRenderer implements ChartRenderer {
-  ChartArea area;
+abstract class BaseRenderer implements CartesianRenderer {
+  CartesianArea area;
   ChartSeries series;
   ChartTheme theme;
   Rect rect;
@@ -22,7 +22,7 @@ abstract class BaseRenderer implements ChartRenderer {
   StreamController<ChartEvent> mouseOutController;
   StreamController<ChartEvent> mouseClickController;
 
-  void _ensureAreaAndSeries(ChartArea area, ChartSeries series) {
+  void _ensureAreaAndSeries(CartesianArea area, ChartSeries series) {
     assert(area != null && series != null);
     this.area = area;
     this.series = series;

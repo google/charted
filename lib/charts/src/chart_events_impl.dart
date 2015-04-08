@@ -10,7 +10,7 @@ part of charted.charts;
 
 class _ChartEvent implements ChartEvent {
   @override
-  final CartesianChartArea area;
+  final ChartArea area;
 
   @override
   final ChartSeries series;
