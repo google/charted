@@ -14,5 +14,8 @@ import 'dart:html' show Element;
 import 'package:charted/core/utils.dart';
 import 'package:charted/selection/selection.dart';
 import 'package:charted/svg/shapes.dart' show SvgArcData;
+import 'dart:math' as math;
 
 part 'src/pie_layout.dart';
+part 'src/hierarchy_layout.dart';
+part 'src/treemap_layout.dart';
