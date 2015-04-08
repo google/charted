@@ -19,7 +19,7 @@ class LineMarker implements ChartBehavior {
   /// If true, animates (grows from the axis into the chart)
   final bool animate;
 
-  ChartArea _area;
+  CartesianArea _area;
   bool _isLeftAxisPrimary = false;
   Rect _rect;
 
@@ -33,7 +33,7 @@ class LineMarker implements ChartBehavior {
       {this.drawAboveSeries: false, this.animate: false});
 
   void init(ChartArea area, Selection upper, Selection lower) {
-    if (area is! CartesianChartArea) return;
+    if (area is! CartesianArea) return;
     _area = area;
     _parent = drawAboveSeries ? upper : lower;
     _isLeftAxisPrimary = _area.config.isLeftAxisPrimary;

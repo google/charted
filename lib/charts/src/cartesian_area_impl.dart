@@ -11,7 +11,7 @@ part of charted.charts;
 /// Displays either one or two dimension axes and zero or more measure axis.
 /// The number of measure axes displayed is zero in charts like bubble chart
 /// which contain two dimension axes.
-class CartesianChartArea implements ChartArea {
+class _CartesianArea implements CartesianArea {
   /// Default identifiers used by the measure axes
   static const MEASURE_AXIS_IDS = const['_default'];
 
@@ -89,7 +89,7 @@ class CartesianChartArea implements ChartArea {
   StreamController<ChartEvent> _valueMouseClickController;
   StreamController<ChartArea> _chartAxesUpdatedController;
 
-  CartesianChartArea(
+  _CartesianArea(
       this.host,
       ChartData data,
       ChartConfig config,
@@ -384,7 +384,7 @@ class CartesianChartArea implements ChartArea {
     dimensionsUsingBands.clear();
     List<bool> usingBands = [false, false];
     _series.forEach((ChartSeries s) =>
-        s.renderer.dimensionsUsingBand.forEach((x) {
+        (s.renderer as CartesianRenderer).dimensionsUsingBand.forEach((x) {
       if (x <= 1 && !(usingBands[x])) {
         usingBands[x] = true;
         dimensionsUsingBands.add(config.dimensions.elementAt(x));
@@ -642,11 +642,11 @@ class _ChartAreaLayout implements ChartAreaLayout {
 }
 
 class _ChartSeriesInfo {
-  ChartRenderer _renderer;
+  CartesianRenderer _renderer;
   SubscriptionsDisposer _disposer = new SubscriptionsDisposer();
 
   _ChartSeries _series;
-  CartesianChartArea _area;
+  _CartesianArea _area;
   _ChartSeriesInfo(this._area, this._series);
 
   _event(StreamController controller, ChartEvent evt) {

@@ -12,7 +12,7 @@ import 'dart:html';
 import 'package:observe/observe.dart';
 import 'package:charted/charts/charts.dart';
 
-import 'charts_demo.dart';
+import 'src/charts_demo.dart';
 
 const List DIMENSION_COLUMNS =  const[0, 4];
 
@@ -25,14 +25,14 @@ Map RENDERERS = {
   'waterfall-chart': 'Waterfall chart',
 };
 
-ChartRenderer getRendererForType(String name) {
+CartesianRenderer getRendererForType(String name) {
   if (name == 'bar-chart') return new BarChartRenderer();
   if (name == 'line-chart') return new LineChartRenderer();
   if (name == 'stacked-bar-chart') return new StackedBarChartRenderer();
   return new BarChartRenderer();
 }
 
-String getTypeForRenderer(ChartRenderer renderer) {
+String getTypeForRenderer(CartesianRenderer renderer) {
   if (renderer is BarChartRenderer) return 'bar-chart';
   if (renderer is LineChartRenderer) return 'line-chart';
   if (renderer is StackedBarChartRenderer) return 'stacked-bar-chart';
@@ -52,8 +52,9 @@ main() {
   ChartData data = new ChartData(columns, rows);
   ChartConfig config = new ChartConfig(seriesList, DIMENSION_COLUMNS);
 
-  ChartArea area = new ChartArea(querySelector('.chart-host'), data, config,
-      autoUpdate: true, useTwoDimensionAxes: false);
+  CartesianArea area =
+      new CartesianArea(querySelector('.chart-host'),
+          data, config, autoUpdate: true, useTwoDimensionAxes: false);
 
   area.addChartBehavior(new ChartTooltip());
   config.legend = new ChartLegend(querySelector('.chart-legend-host'));

@@ -9,7 +9,7 @@
 part of charted.charts;
 
 ///
-/// Interface implemented by a [ChartRenderer] that supports behaviors.
+/// Interface implemented by a [CartesianRenderer] that supports behaviors.
 ///
 abstract class ChartRendererBehaviorSource {
   /// Stream to notify when a rendered value is clicked.
@@ -40,9 +40,6 @@ abstract class ChartAreaBehaviorSource extends ChartRendererBehaviorSource {
 
   /// Stream of events that notify when mouse is moved on [ChartArea].
   Stream<ChartEvent> get onMouseMove;
-
-  /// Stream to notify when chart axes get updated.
-  Stream<ChartArea> get onChartAxesUpdated;
 
   /// A pane that is rendered below all the chart elements - for use with
   /// behaviors that add elements to chart.

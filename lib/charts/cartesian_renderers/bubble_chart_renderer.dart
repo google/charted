@@ -8,12 +8,8 @@
 
 part of charted.charts;
 
-class BubbleChartRenderer extends BaseRenderer {
+class BubbleChartRenderer extends CartesianRendererBase {
   final Iterable<int> dimensionsUsingBand = const[];
-
-  ChartArea area;
-  ChartSeries series;
-
   final double maxBubbleRadius;
 
   Element _host;
@@ -32,7 +28,7 @@ class BubbleChartRenderer extends BaseRenderer {
   @override
   bool prepare(ChartArea area, ChartSeries series) {
     _ensureAreaAndSeries(area, series);
-    return area is CartesianChartArea && area.useTwoDimensionAxes == true;
+    return area is CartesianArea && area.useTwoDimensionAxes == true;
   }
 
   @override
@@ -75,9 +71,8 @@ class BubbleChartRenderer extends BaseRenderer {
     }
 
     var group = _group.selectAll('.measure-group').data(columns);
-    group.enter.append('g')
-        ..classed('measure-group')
-        ..styleWithCallback('fill', (d, i, e) => color(i));
+    group.enter.append('g')..classed('measure-group');
+    group.styleWithCallback('fill', (d, i, e) => color(i));
     group.exit.remove();
 
     var measures = group.selectAll('.bubble').dataWithCallback(

@@ -61,7 +61,7 @@ class _QuantumChartAxisTheme implements ChartAxisTheme {
   final axisTickSize;
   final axisTickCount;
   final verticalAxisAutoResize = true;
-  final verticalAxisWidth = 50;
+  final verticalAxisWidth = 75;
   final horizontalAxisAutoResize = false;
   final horizontalAxisHeight = 50;
   final ticksFont = '14px Roboto';

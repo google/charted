@@ -8,7 +8,7 @@
 
 part of charted.charts;
 
-class BarChartRenderer extends BaseRenderer {
+class BarChartRenderer extends CartesianRendererBase {
   final Iterable<int> dimensionsUsingBand = const[0];
   final alwaysAnimate;
 
@@ -19,7 +19,7 @@ class BarChartRenderer extends BaseRenderer {
   @override
   bool prepare(ChartArea area, ChartSeries series) {
     _ensureAreaAndSeries(area, series);
-    return area is CartesianChartArea;
+    return area is CartesianArea;
   }
 
   @override
@@ -73,8 +73,8 @@ class BarChartRenderer extends BaseRenderer {
 
     var bar = groups.selectAll('.bar').dataWithCallback((d, i, c) => rows[i]);
     var getBarHeight = (d) {
-      var ht = (verticalBars ? rect.height : rect.width) -
-          measureScale.scale(d).round() - 1;
+      var scaled = measureScale.scale(d).round() - 1,
+          ht = verticalBars ? rect.height - scaled : scaled;
       return (ht < 0) ? '0' : ht.toString();
     };
     var getBarY = (d) => measureScale.scale(d).round().toString();
@@ -111,7 +111,8 @@ class BarChartRenderer extends BaseRenderer {
 
       int delay = 0;
       bar.transition()
-        ..attrWithCallback(verticalBars ? 'y' : 'x', (d, i, c) => getBarY(d))
+        ..attrWithCallback(verticalBars ? 'y' : 'x',
+            (d, i, e) => verticalBars ? getBarY(d) : '1')
         ..attrWithCallback(verticalBars ? 'height': 'width',
             (d, i, c) => getBarHeight(d))
         ..delayWithCallback((d, i, c) =>

@@ -11,12 +11,14 @@ library charted.core.utils;
 
 import "dart:html" show Element;
 import "dart:math" as math;
+import "dart:async";
 
 import "package:intl/intl.dart" show BidiFormatter;
 import "package:collection/collection.dart";
 import "package:quiver/core.dart";
 
 part 'utils/color.dart';
+part 'utils/disposer.dart';
 part 'utils/lists.dart';
 part 'utils/math.dart';
 part 'utils/namespace.dart';

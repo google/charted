@@ -8,7 +8,7 @@
 
 part of charted.charts;
 
-class StackedBarChartRenderer extends BaseRenderer {
+class StackedBarChartRenderer extends CartesianRendererBase {
   final Iterable<int> dimensionsUsingBand = const[0];
   final alwaysAnimate;
 
@@ -17,9 +17,9 @@ class StackedBarChartRenderer extends BaseRenderer {
   /// Returns false if the number of dimension axes on the area is 0.
   /// Otherwise, the first dimension scale is used to render the chart.
   @override
-  bool prepare(ChartArea area, ChartSeries series) {
+  bool prepare(CartesianArea area, ChartSeries series) {
     _ensureAreaAndSeries(area, series);
-    return area is CartesianChartArea;
+    return true;
   }
 
   @override

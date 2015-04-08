@@ -44,11 +44,11 @@ abstract class ChartTheme {
   /// Total duration of the transition in milli-seconds
   int get transitionDurationMilliseconds => 250;
 
-  /// Theme passed to the measure axes
-  ChartAxisTheme get measureAxisTheme;
+  /// Theme passed to the measure axes - only used by cartesian charts
+  ChartAxisTheme get measureAxisTheme => null;
 
-  /// Theme passed to the dimension axes
-  ChartAxisTheme get dimensionAxisTheme;
+  /// Theme passed to the dimension axes - only used by catesian charts
+  ChartAxisTheme get dimensionAxisTheme => null;
 
   /// Padding around the rendered chart. Defaults to 10px in all directions
   AbsoluteRect get padding => const AbsoluteRect(10, 10, 10, 10);
@@ -126,5 +126,5 @@ abstract class ChartAxisTheme {
   ///   "16px Roboto"
   ///
   /// When not specified, SVGTextElement's metrics API will be used.
-  String get ticksFont;
+  String get ticksFont => null;
 }

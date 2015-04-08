@@ -9,8 +9,81 @@
 part of charted.charts;
 
 ///
-/// Given a DOM element, [ChartArea] takes care of rendering the axis and
-/// passing relevant parameters to renderers that draw the visualizations.
+/// Area for rendering cartesian charts. A cartesian chart creates
+/// visualization by carefully placing elements along the dimension
+/// and measure axes (in a 2 dimensional plane).
+///
+/// Some renderers may use additional dimensions that is made visible
+/// by size and color of the rendered elements.
+///
+/// For example:
+/// - A bar-chart draws bars indicating a value along measure axis.
+/// - A bubble-chart where a circle is positioned across two dimension
+///   axes. A bubble-chart may also use color and size of circles to
+///   indicate more dimensions.
+///
+/// In a [CartesianArea], more than one series can be rendered together.
+///
+abstract class CartesianArea implements ChartArea {
+  /// When set to true, [ChartArea] uses both 'x' and 'y' axes for dimensions.
+  /// Examples:
+  ///   - A bar-chart has one dimension axis (typically the 'x' axis)
+  ///   - A bubble-chart has two dimension axis (both 'x' and 'y')
+  bool get useTwoDimensionAxes;
+
+  /// Scales used to render the measure axis of the given [ChartSeries]. Each
+  /// series may use more than one measure scale.
+  ///
+  /// For example, a scatter plot may use different scales for color, shape
+  /// and size of the rendering.
+  Iterable<Scale> measureScales(ChartSeries s);
+
+  /// Scales used to render the dimension axes. The number of scales returned
+  /// is either one or two based on [useTwoDimensions]
+  Iterable<Scale> get dimensionScales;
+
+  /// Stream to notify when chart axes get updated.
+  Stream<ChartArea> get onChartAxesUpdated;
+
+  /// Factory method to create an instance of the default implementation
+  /// - [host] must be an Element that has clientHeight and clientWidth
+  ///   properties defined (i.e cannot be inline elements)
+  /// - [data] is an instance of [ChartData]
+  /// - [config] is an implementation of [ChartConfig]
+  /// - If [autoUpdate] is set, chart is updated when data or config
+  ///   change.  When not set, [draw] must be called to update the chart.
+  /// - When [useTwoDimensionAxes] is set, the chart uses both 'x' and 'y'
+  ///   axes as dimensions.
+  factory CartesianArea(host, ChartData data, ChartConfig config,
+      { bool autoUpdate: false, bool useTwoDimensionAxes: false }) =>
+          new _CartesianArea(
+              host, data, config, autoUpdate, useTwoDimensionAxes);
+}
+
+///
+/// Area for rendering layout charts. A layout chart creates visualization by
+/// distributing available space to each measure.
+///
+/// For example:
+/// - A pie-chart distributes a radial area to each measure.
+/// - In a tree-map a rectangular area is distributed to each measure.
+///
+/// In a [LayoutArea], only one series can be rendered and the area does
+/// not have any scales and axes.
+///
+abstract class LayoutArea implements ChartArea {
+  factory LayoutArea(
+      host, ChartData data, ChartConfig config, bool autoUpdate) =>
+          new _LayoutArea(host, data, config, autoUpdate);
+
+  factory LayoutArea.fromColumnIndices(
+      host, ChartData data, Iterable<int> dimensions, Iterable<int> measures,
+      LayoutRenderer renderer) {
+  }
+}
+
+///
+/// Base interface for all implementations of a chart drawing area.
 ///
 abstract class ChartArea implements ChartAreaBehaviorSource {
   /// Data used by the chart. Chart isn't updated till the next call to
@@ -34,25 +107,8 @@ abstract class ChartArea implements ChartAreaBehaviorSource {
   /// the chart when [data] or [config] changes. Defaults to false.
   bool autoUpdate;
 
-  /// When set to true, [ChartArea] uses both 'x' and 'y' axes for dimensions.
-  /// Examples:
-  ///   - A bar-chart has one dimension axis (typically the 'x' axis)
-  ///   - A bubble-chart has two dimension axis (both 'x' and 'y')
-  bool get useTwoDimensionAxes;
-
   /// Geometry of components in this [ChartArea]
   ChartAreaLayout get layout;
-
-  /// Scales used to render the measure axis of the given [ChartSeries]. Each
-  /// series may use more than one measure scale.
-  ///
-  /// For example, a scatter plot may use different scales for color, shape
-  /// and size of the rendering.
-  Iterable<Scale> measureScales(ChartSeries s);
-
-  /// Scales used to render the dimension axes. The number of scales returned
-  /// is either one or two based on [useTwoDimensions]
-  Iterable<Scale> get dimensionScales;
 
   /// Host element of the ChartArea
   Element get host;
@@ -78,26 +134,15 @@ abstract class ChartArea implements ChartAreaBehaviorSource {
   /// - Clear references to all passed objects and subscriptions.
   /// - Call dispose on all renderers and behaviors.
   void dispose();
-
-  /// Factory method to create an instance of the default implementation
-  /// - [host] must be an Element that has clientHeight and clientWidth
-  ///   properties defined (i.e cannot be inline elements)
-  /// - [data] is an instance of [ChartData]
-  /// - [config] is an implementation of [ChartConfig]
-  /// - If [autoUpdate] is set, chart is updated when data or config
-  ///   change.  When not set, [draw] must be called to update the chart.
-  /// - When [useTwoDimensionAxes] is set, the chart uses both 'x' and 'y'
-  ///   axes as dimensions.
-  factory ChartArea(host, ChartData data, ChartConfig config,
-      { bool autoUpdate: false, bool useTwoDimensionAxes: false }) =>
-          new CartesianChartArea(host, data, config, autoUpdate, useTwoDimensionAxes);
 }
 
+///
 /// Class representing geometry of the [ChartArea] and various components
 /// that are created by the ChartArea.
+///
 abstract class ChartAreaLayout {
-  /// Sizes of axes by orientation
-  /// For charts that don't have any axes, the value of [axes] is null.
+  /// Sizes of axes by orientation.
+  /// Only valid on [CartesianArea], null otherwise.
   Map<String, Rect> get axes;
 
   /// Size of render area.

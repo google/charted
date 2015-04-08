@@ -15,9 +15,10 @@ import 'dart:math' as math;
 import 'dart:svg' hide Rect;
 import 'dart:typed_data';
 
+import 'package:charted/core/text_metrics.dart';
 import 'package:charted/core/utils.dart';
-import 'package:charted/layout/layout.dart';
 import 'package:charted/core/scales.dart';
+import 'package:charted/layout/layout.dart';
 import 'package:charted/selection/selection.dart';
 import 'package:charted/svg/axis.dart';
 import 'package:charted/svg/shapes.dart';
@@ -40,14 +41,17 @@ part 'behaviors/chart_tooltip.dart';
 part 'behaviors/line_marker.dart';
 part 'behaviors/mouse_tracker.dart';
 
-part 'renderers/bar_chart_renderer.dart';
-part 'renderers/base_renderer.dart';
-part 'renderers/bubble_chart_renderer.dart';
-part 'renderers/line_chart_renderer.dart';
-part 'renderers/pie_chart_renderer.dart';
-part 'renderers/stackedbar_chart_renderer.dart';
+part 'cartesian_renderers/bar_chart_renderer.dart';
+part 'cartesian_renderers/cartesian_base_renderer.dart';
+part 'cartesian_renderers/bubble_chart_renderer.dart';
+part 'cartesian_renderers/line_chart_renderer.dart';
+part 'cartesian_renderers/stackedbar_chart_renderer.dart';
 
-part 'src/chart_area_cartesian.dart';
+part 'layout_renderers/layout_base_renderer.dart';
+part 'layout_renderers/pie_chart_renderer.dart';
+
+part 'src/cartesian_area_impl.dart';
+part 'src/layout_area_impl.dart';
 part 'src/chart_axis_impl.dart';
 part 'src/chart_config_impl.dart';
 part 'src/chart_data_impl.dart';
@@ -57,41 +61,10 @@ part 'src/chart_series_impl.dart';
 
 part 'themes/quantum_theme.dart';
 
-part 'transformers/aggregation.dart';
-part 'transformers/aggregation_item.dart';
-part 'transformers/aggregation_transformer.dart';
-part 'transformers/filter_transformer.dart';
-part 'transformers/transpose_transformer.dart';
+part 'data_transformers/aggregation.dart';
+part 'data_transformers/aggregation_item.dart';
+part 'data_transformers/aggregation_transformer.dart';
+part 'data_transformers/filter_transformer.dart';
+part 'data_transformers/transpose_transformer.dart';
 
 final Logger logger = new Logger('charted.charts');
-
-class SubscriptionsDisposer {
-  List<StreamSubscription> _subscriptions = [];
-  Expando<StreamSubscription> _byObject = new Expando();
-
-  void add(StreamSubscription value, [Object handle]) {
-    if (handle != null) _byObject[handle] = value;
-    _subscriptions.add(value);
-  }
-
-  void addAll(List<StreamSubscription> values, [Object handle]) {
-    for (var subscription in values) {
-      add(subscription, handle);
-    }
-  }
-
-  void unsubscribe(Object handle) {
-    StreamSubscription s = _byObject[handle];
-    if (s != null) {
-      _subscriptions.remove(s);
-      s.cancel();
-    }
-  }
-
-  void dispose() {
-    _subscriptions.forEach((StreamSubscription val) {
-      if (val != null) val.cancel();
-    });
-    _subscriptions.clear();
-  }
-}

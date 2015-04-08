@@ -8,7 +8,7 @@
 
 part of charted.charts;
 
-class LineChartRenderer extends BaseRenderer {
+class LineChartRenderer extends CartesianRendererBase {
   final Iterable<int> dimensionsUsingBand = const[];
   final SubscriptionsDisposer _disposer = new SubscriptionsDisposer();
 
@@ -29,7 +29,7 @@ class LineChartRenderer extends BaseRenderer {
         _handleHoveredMeasureChange));
     _disposer.add(area.onMouseMove.listen(_showDataPoint));
     _disposer.add(area.onMouseOut.listen(_hideDataPoint));
-    return area is CartesianChartArea;
+    return area is CartesianArea;
   }
 
   @override
