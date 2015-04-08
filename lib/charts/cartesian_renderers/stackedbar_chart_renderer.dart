@@ -8,7 +8,7 @@
 
 part of charted.charts;
 
-class StackedBarChartRenderer extends BaseRenderer {
+class StackedBarChartRenderer extends CartesianRendererBase {
   final Iterable<int> dimensionsUsingBand = const[0];
   final alwaysAnimate;
 

@@ -1,14 +1,14 @@
-/*
- * Copyright 2014 Google Inc. All rights reserved.
- *
- * Use of this source code is governed by a BSD-style
- * license that can be found in the LICENSE file or at
- * https://developers.google.com/open-source/licenses/bsd
- */
+//
+// Copyright 2014 Google Inc. All rights reserved.
+//
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file or at
+// https://developers.google.com/open-source/licenses/bsd
+//
 
 part of charted.charts;
 
-class PieChartRenderer extends BaseRenderer {
+class PieChartRenderer extends LayoutRendererBase {
   static const STATS_PERCENTAGE = 'percentage-only';
   static const STATS_VALUE = 'value-only';
   static const STATS_VALUE_PERCENTAGE = 'value-percentage';
@@ -23,14 +23,12 @@ class PieChartRenderer extends BaseRenderer {
 
   PieChartRenderer({this.innerRadius: 0, this.statsMode: STATS_PERCENTAGE});
 
-  /*
-   * Returns false if the number of dimension axes != 0. Pie chart can only
-   * be rendered on areas with no axes.
-   */
+  /// Returns false if the number of dimension axes != 0. Pie chart can only
+  /// be rendered on areas with no axes.
   @override
   bool prepare(ChartArea area, ChartSeries series) {
     _ensureAreaAndSeries(area, series);
-    return area is CartesianChartArea;
+    return area is LayoutArea;
   }
 
   @override
@@ -192,15 +190,6 @@ class PieChartRenderer extends BaseRenderer {
           '${value} (${(value * 100 / total).toStringAsFixed(0)}%)': '';
     }
   }
-
-  @override
-  double get bandInnerPadding => 0.0;
-
-  @override
-  double get bandOuterPadding => 0.0;
-
-  @override
-  Extent get extent => const Extent(0, 100);
 
   void _event(StreamController controller, data, int index, Element e) {
      if (controller == null) return;

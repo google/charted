@@ -8,7 +8,7 @@
 
 part of charted.charts;
 
-class BarChartRenderer extends BaseRenderer {
+class BarChartRenderer extends CartesianRendererBase {
   final Iterable<int> dimensionsUsingBand = const[0];
   final alwaysAnimate;
 
@@ -73,8 +73,8 @@ class BarChartRenderer extends BaseRenderer {
 
     var bar = groups.selectAll('.bar').dataWithCallback((d, i, c) => rows[i]);
     var getBarHeight = (d) {
-      var ht = (verticalBars ? rect.height : rect.width) -
-          measureScale.scale(d).round() - 1;
+      var scaled = measureScale.scale(d).round() - 1,
+          ht = verticalBars ? rect.height - scaled : scaled;
       return (ht < 0) ? '0' : ht.toString();
     };
     var getBarY = (d) => measureScale.scale(d).round().toString();

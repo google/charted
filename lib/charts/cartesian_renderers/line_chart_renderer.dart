@@ -8,7 +8,7 @@
 
 part of charted.charts;
 
-class LineChartRenderer extends BaseRenderer {
+class LineChartRenderer extends CartesianRendererBase {
   final Iterable<int> dimensionsUsingBand = const[];
   final SubscriptionsDisposer _disposer = new SubscriptionsDisposer();
 

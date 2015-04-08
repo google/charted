@@ -17,6 +17,7 @@ import 'dart:typed_data';
 
 import 'package:charted/core/utils.dart';
 import 'package:charted/core/scales.dart';
+import 'package:charted/layout/layout.dart';
 import 'package:charted/selection/selection.dart';
 import 'package:charted/svg/axis.dart';
 import 'package:charted/svg/shapes.dart';
@@ -40,10 +41,13 @@ part 'behaviors/line_marker.dart';
 part 'behaviors/mouse_tracker.dart';
 
 part 'cartesian_renderers/bar_chart_renderer.dart';
-part 'cartesian_renderers/base_renderer.dart';
+part 'cartesian_renderers/cartesian_base_renderer.dart';
 part 'cartesian_renderers/bubble_chart_renderer.dart';
 part 'cartesian_renderers/line_chart_renderer.dart';
 part 'cartesian_renderers/stackedbar_chart_renderer.dart';
+
+part 'layout_renderers/layout_base_renderer.dart';
+part 'layout_renderers/pie_chart_renderer.dart';
 
 part 'src/cartesian_area_impl.dart';
 part 'src/layout_area_impl.dart';

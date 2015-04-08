@@ -159,20 +159,16 @@ class SvgAxis {
       text.text = fixTextDirection(formatted[i]);
 
       if (isInitialRender) {
+        var dx = current is OrdinalScale ? current.rangeBand / 2 : 0;
         e.attributes['transform'] = isTop || isBottom
-            ? 'translate(${current.scale(d)},0)'
-            : 'translate(0,${current.scale(d)})';
+            ? 'translate(${current.scale(d) + dx},0)'
+            : 'translate(0,${current.scale(d) + dx})';
         e.style.setProperty('opacity', '1.0');
       }
     });
 
     // Transition existing ticks to right positions
     if (!isInitialRender) {
-      // If either the new or old scale is ordinal,
-      // entering ticks are undefined in the old scale,
-      // and so can fade-in in the new scale’s position.
-      // Exiting ticks are likewise undefined in the new scale,
-      // and so can fade-out in the old scale’s position.
       var transformFn;
       if (current is OrdinalScale && current.rangeBand != 0) {
         var dx = current.rangeBand / 2;
