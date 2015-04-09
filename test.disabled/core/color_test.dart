@@ -62,4 +62,14 @@ testColor() {
     expect(new Color.fromColorString('rgb(200,100,50)').toString(),
         'rgb(200,100,50)');
   });
+  
+  test('Color.equals()', () {
+    var colorA = new Color.fromColorString('rgb(200,100,50)');
+    var colorB = new Color.fromColorString('rgb(200,100,50)');
+    var colorC = new Color.fromColorString('rgb(10,10,100)');
+
+    expect(colorA, equals(colorB));
+    expect(colorA.hashCode, equals(colorB.hashCode));
+    expect(colorA != colorC, true);
+  });
 }

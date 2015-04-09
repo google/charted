@@ -9,6 +9,7 @@
 library charted.test;
 
 import 'charts/transformers/transformer_test.dart' as transformer;
+import 'charts/renderers/renderer_test.dart' as renderer;
 import 'core/core_test.dart' as core;
 import 'event/event_test.dart' as event;
 import 'format/format_test.dart' as format;
@@ -28,6 +29,7 @@ allChartedTests() {
   interpolators.interpolatorsTests();
   layout.layoutTests();
   locale.localeTests();
+  renderer.rendererTests();
   scale.scaleTests();
   selection.selectionTests();
   svg.svgTests();
