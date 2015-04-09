@@ -77,7 +77,7 @@ class BarChartRenderer extends CartesianRendererBase {
           ht = verticalBars ? rect.height - scaled : scaled;
       return (ht < 0) ? '0' : ht.toString();
     };
-    var getBarY = (d) => measureScale.scale(d).round().toString();
+    var getBarY = (d) => (measureScale.scale(d).round() - 1).toString();
 
     var enter = bar.enter.append('rect')
       ..each((d, i, e) {
