@@ -11,12 +11,12 @@
 library charted;
 
 export 'charts/charts.dart';
-export 'core/core.dart';
-export 'event/event.dart';
-export 'interpolators/interpolators.dart';
+export 'core/utils.dart';
+export 'core/timer.dart';
+export 'core/interpolators.dart';
 export 'layout/layout.dart';
-export 'locale/locale.dart';
-export 'scale/scale.dart';
+export 'core/scales.dart';
 export 'selection/selection.dart';
-export 'transition/transition.dart';
-export 'svg/svg.dart';
+export 'selection/transition.dart';
+export 'svg/axis.dart';
+export 'svg/shapes.dart';

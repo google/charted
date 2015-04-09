@@ -14,9 +14,8 @@ void main() {
 
 
   Selection svg = scope.append('svg:svg')
-      ..style('width', '4000')
-      ..style('height', '4000');
-
+      ..style('width', '4000px')
+      ..style('height', '4000px');
 
   Selection g1 = svg.append('g');
   g1.attr('transform', 'translate(30, 30)');
@@ -104,12 +103,12 @@ void main() {
       ..duration(4000);
 
 
-  Color dotColor1 = new Color.fromRgb(10, 255, 0);
-  Color dotColor2 = new Color.fromRgb(40, 0, 255);
+  Color dotColor1 = new Color.fromRgba(10, 255, 0, 1.0);
+  Color dotColor2 = new Color.fromRgba(40, 0, 255, 1.0);
   String shape1 = 'M50 100 L50 200 L100 200 Z';
   String shape2 = 'M900 0 L750 200 L900 200 Z';
 
-  var stringInterpolator = interpolateString(shape1, shape2);
+  var stringInterpolator = createStringInterpolator(shape1, shape2);
 
   Selection g2 = svg.append('g');
 
@@ -132,7 +131,6 @@ void main() {
   t5.attr('fill', dotColor2);
 
   Selection g3 = svg.append('g');
-
   var text6 = g3.append('text');
   text6..attr('x', 0)
        ..attr('y', 0)
@@ -184,17 +182,17 @@ void main() {
   var t = bars.transition();
   t.duration(1000);
   t.delayWithCallback((d, i, c) => i * 200);
-  t.attrTween('y', (d, i, attr) => interpolateString(
+  t.attrTween('y', (d, i, attr) => createStringInterpolator(
       attr, (350 - d).toString()));
-  t.attrTween('height', (d, i, attr) => interpolateString(attr, d.toString()));
+  t.attrTween('height', (d, i, attr) => createStringInterpolator(attr, d.toString()));
 
   var color = t.transition();
   color.delayWithCallback((d, i, c) => i * 200);
   color.styleTween('fill',
-      (d, i, style) => interpolateString(style, '#CC0088'));
+      (d, i, style) => createStringInterpolator(style, '#CC0088'));
 
-  Color hslColor1 = new Color.fromRgb(10, 255, 0);
-  Color hslColor2 = new Color.fromRgb(40, 0, 255);
+  Color hslColor1 = new Color.fromRgba(10, 255, 0, 1.0);
+  Color hslColor2 = new Color.fromRgba(40, 0, 255, 1.0);
   Selection g5 = svg.append('g');
   var text7 = g5.append('text');
   text7..attr('x', 0)
@@ -211,14 +209,13 @@ void main() {
       ..attr('height', 60);
   rect2.transition()
       ..attrTween('fill', (d, i, e) {
-        return interpolateHsl(hslColor1, hslColor2);})
+        return createHslColorInterpolator(hslColor1, hslColor2);})
       ..duration(2000);
 
   rect2.transition()
-      ..attrTween('transform', (d, i, e) => interpolateTransform(
+      ..attrTween('transform', (d, i, e) => createTransformInterpolator(
           "translate(10,10)rotate(30)skewX(0.5)scale(1,1)",
           "translate(100,100)rotate(360)skewX(45)scale(3,3)"))
       ..duration(5000);
-
 }
 

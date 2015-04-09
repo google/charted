@@ -9,6 +9,9 @@
 part of charted.charts;
 
 class QuantumChartTheme extends ChartTheme {
+  static const List OTHER_COLORS =
+      const['#EEEEEE', '#BDBDBD', '#9E9E9E'];
+
   static const List<List<String>> COLORS = const[
     const [ '#C5D9FB', '#4184F3', '#2955C5' ],
     const [ '#F3C6C2', '#DB4437', '#DB4437' ],
@@ -39,26 +42,23 @@ class QuantumChartTheme extends ChartTheme {
 
   /* Implementation of ChartTheme */
   String getColorForKey(key, [int state = ChartTheme.STATE_NORMAL]) {
-    var result = _scale.apply(key);
-    return (result is List && result.length > state) ?
-        result.elementAt(state) : result;
+    var result = _scale.scale(key);
+    return (result is List && result.length > state)
+        ? result.elementAt(state)
+        : result;
   }
+
+  String getOtherColor([int state = ChartTheme.STATE_NORMAL]) =>
+      OTHER_COLORS is List && OTHER_COLORS.length > state
+          ? OTHER_COLORS.elementAt(state)
+          : OTHER_COLORS;
 
   ChartAxisTheme get measureAxisTheme =>
       const _QuantumChartAxisTheme(ChartAxisTheme.FILL_RENDER_AREA, 5);
   ChartAxisTheme get dimensionAxisTheme =>
-      const _QuantumChartAxisTheme(0, 5);
+      const _QuantumChartAxisTheme(0, 10);
 
-  /* Padding for charts */
-  double outerPadding = 0.1;
-  double bandInnerPadding = 0.35;
-  double bandOuterPadding = 0.175;
-
-  /* Tick sizes */
-  int dimensionTickSize = 0;
-  int measureTickSize = -1000;
-  int dimensionTickPadding = 6;
-  int measureTickPadding = 6;
+  AbsoluteRect get padding => const AbsoluteRect(10, 10, 0, 0);
 }
 
 class _QuantumChartAxisTheme implements ChartAxisTheme {
@@ -68,8 +68,10 @@ class _QuantumChartAxisTheme implements ChartAxisTheme {
   final axisTickPadding = 6;
   final axisTickSize;
   final axisTickCount;
-  final axisAutoResize = true;
-  final verticalAxisWidth = 50;
+  final verticalAxisAutoResize = true;
+  final verticalAxisWidth = 75;
+  final horizontalAxisAutoResize = false;
   final horizontalAxisHeight = 50;
+  final ticksFont = '14px Roboto';
   const _QuantumChartAxisTheme(this.axisTickSize, this.axisTickCount);
 }

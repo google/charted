@@ -11,8 +11,11 @@
 library charted.layout;
 
 import 'dart:html' show Element;
-import 'package:charted/core/core.dart';
+import 'package:charted/core/utils.dart';
 import 'package:charted/selection/selection.dart';
-import 'package:charted/svg/svg.dart' show SvgArcData;
+import 'package:charted/svg/shapes.dart' show SvgArcData;
+import 'dart:math' as math;
 
-part 'pie_layout.dart';
+part 'src/pie_layout.dart';
+part 'src/hierarchy_layout.dart';
+part 'src/treemap_layout.dart';

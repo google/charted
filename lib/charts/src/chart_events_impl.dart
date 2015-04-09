@@ -10,7 +10,7 @@ part of charted.charts;
 
 class _ChartEvent implements ChartEvent {
   @override
-  final _ChartArea area;
+  final ChartArea area;
 
   @override
   final ChartSeries series;
@@ -41,9 +41,11 @@ class _ChartEvent implements ChartEvent {
 
   _ChartEvent(this.source, this.area,
       [this.series, this.row, this.column, this.value]) {
-    var host = area.host;
-    var hostRect = host.getBoundingClientRect();
-    chartX = source.client.x - hostRect.left - _ChartArea.MARGIN;
-    chartY = source.client.y - hostRect.top - _ChartArea.MARGIN;
+    var hostRect = area.host.getBoundingClientRect(),
+        left = area.config.isRTL
+            ? area.theme.padding.end
+            : area.theme.padding.start;
+    chartX = source.client.x - hostRect.left - left;
+    chartY = source.client.y - hostRect.top - area.theme.padding.top;
   }
 }

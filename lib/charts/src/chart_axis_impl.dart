@@ -12,7 +12,7 @@ class _ChartAxis {
   static const List _VERTICAL_ORIENTATIONS =
       const [ ORIENTATION_LEFT, ORIENTATION_RIGHT ];
 
-  _ChartArea area;
+  _CartesianArea area;
   ChartAxisConfig config;
   ChartAxisTheme _theme;
 
@@ -28,9 +28,8 @@ class _ChartAxis {
   String _orientation;
   Scale _scale;
   SelectionScope _scope;
-  Selection _group;
 
-  EditableRect size;
+  MutableRect size;
 
   _ChartAxis.withAxisConfig(this.area, this.config);
   _ChartAxis(this.area);
@@ -40,26 +39,32 @@ class _ChartAxis {
     _column = column;
     _domain = domain;
     _isDimension = isDimension;
-    if (scale == null) _scale = _columnSpec.createDefaultScale();
-  }
 
-  void initAxisScale(Iterable range, ChartAxisTheme theme) {
-    assert(scale != null);
+    // If we don't have a scale yet, create one.
+    if (scale == null) {
+      _scale = _columnSpec.createDefaultScale();
+    }
 
     // Sets the domain if not using a custom scale.
     if (config == null || (config != null && config.scale == null)) {
       scale.domain = _domain;
-      scale.nice(theme.axisTickCount);
+      scale.nice = !_isDimension;
     }
+  }
 
-    // Sets the range if not using a custom scale, or the custom scale uses
-    // default range.
-    /* TODO(prsd): Scale needs some cleanup */
+  void initAxisScale(Iterable range, ChartAxisTheme theme) {
+    assert(scale != null);
     if (scale is OrdinalScale) {
       var usingBands = area.dimensionsUsingBands.contains(_column),
           innerPadding = usingBands ? theme.axisBandInnerPadding : 1.0,
           outerPadding = usingBands ?
               theme.axisBandOuterPadding : theme.axisOuterPadding;
+
+      // This is because when left axis is primary the first data row should
+      // appear on top of the y-axis instead of on bottom.
+      if (area.config.isLeftAxisPrimary) {
+        range = range.toList().reversed;
+      }
       (scale as OrdinalScale).
           rangeRoundBands(range, innerPadding, outerPadding);
     } else {
@@ -69,24 +74,62 @@ class _ChartAxis {
 
   void prepareToDraw(String orientation, ChartAxisTheme theme) {
     if (orientation == null) orientation = ORIENTATION_BOTTOM;
-
     _theme = theme;
     _orientation = orientation;
     _isVertical = _orientation == ORIENTATION_LEFT ||
         _orientation == ORIENTATION_RIGHT;
 
-    if (false && _theme.axisAutoResize) {
-      /* TODO(prsd): Implement axis size computations */
+    var layout = area.layout.chartArea;
+    if (_isVertical && _theme.verticalAxisAutoResize) {
+      size = new MutableRect.size(_theme.verticalAxisWidth, layout.width);
     } else {
-      var width = _isVertical ?
-          _theme.verticalAxisWidth : area.layout.chartArea.width;
-      var height = _isVertical ?
-          area.layout.chartArea.height : _theme.horizontalAxisHeight;
-      size = new EditableRect.size(width, height);
+      size = _isVertical
+          ? new MutableRect.size(_theme.verticalAxisWidth, layout.width)
+          : new MutableRect.size(layout.height, _theme.horizontalAxisHeight);
+    }
+
+    if (_axis == null) {
+      _axis = new SvgAxis(_orientation)
+        ..tickPadding = _theme.axisTickPadding
+        ..outerTickSize = 0
+        ..tickFormat = _columnSpec.formatter;
+
+      if (config != null && config.tickValues != null) {
+        _axis.tickValues = config.tickValues;
+      }
+    }
+
+    // Handle auto re-sizing of horizontal axis.
+    if (_isVertical && theme.verticalAxisAutoResize &&
+        !isNullOrEmpty(theme.ticksFont)) {
+      var tickValues = (config != null && !isNullOrEmpty(config.tickValues))
+              ? config.tickValues
+              : scale.ticks,
+          formatter = _columnSpec.formatter == null
+              ? scale.createTickFormatter()
+              : _columnSpec.formatter,
+          textMetrics = new TextMetrics(fontStyle:theme.ticksFont),
+          formatted = tickValues.map((x) => formatter(x)).toList();
+
+      var width = textMetrics.getLongestTextWidth(formatted);
+      if (width > theme.verticalAxisWidth) {
+        width = theme.verticalAxisWidth;
+        for (int i = 0, len = formatted.length; i < len; ++i) {
+          formatted[i] =
+              textMetrics.ellipsizeText(formatted[i], width.toDouble());
+        }
+        _axis.tickValues = formatted;
+        _axis.tickFormat = (x) => x;
+      } else {
+        _axis.tickFormat = _columnSpec.formatter;
+        _axis.tickValues = tickValues;
+      }
+      size.width =
+          width + _theme.axisTickPadding + math.max(_theme.axisTickSize, 0);
     }
   }
 
-  void draw(GElement element) {
+  void draw(GElement element, {bool preRender: false}) {
     assert(element != null && element is GElement);
     assert(scale != null);
 
@@ -96,24 +139,11 @@ class _ChartAxis {
         className = (_isVertical ? 'vertical-axis': 'horizontal-axis');
 
     element.attributes['transform'] = 'translate(${rect.x}, ${rect.y})';
-
-    if (_axis == null || _element != element) {
+    if (_element != element) {
       _element = element;
-      _axis = new SvgAxis()
-          ..orientation = _orientation
-          ..suggestedTickCount = _theme.axisTickCount
-          ..tickPadding = _theme.axisTickPadding
-          ..outerTickSize = 0
-          ..tickFormat = _columnSpec.formatter;
-
-      if (config != null && config.tickValues != null) {
-        _axis.tickValues = config.tickValues;
-      }
-
       _scope = new SelectionScope.element(_element);
-      _group = _scope.selectElements([_element]);
     }
-    
+
     _axis.innerTickSize = _theme.axisTickSize;
     if (_axis.innerTickSize <= ChartAxisTheme.FILL_RENDER_AREA) {
       _axis.innerTickSize =
@@ -121,7 +151,8 @@ class _ChartAxis {
     }
     initAxisScale(range, _theme);
     if (_axis.scale != scale) _axis.scale = scale;
-    _axis.axis(_group);
+    _axis.create(_element, _scope,
+        rect: rect, font: _theme.ticksFont, isRTL: area.config.isRTL);
   }
 
   void clear() {

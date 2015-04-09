@@ -10,7 +10,7 @@ library charted.demo.custom_axis;
 
 import 'dart:html';
 import 'package:charted/charts/charts.dart';
-import 'package:charted/scale/scale.dart';
+import 'package:charted/core/scales.dart';
 
 List COLUMNS = [
     new ChartColumnSpec(label:'Month', type:ChartColumnSpec.TYPE_STRING),
@@ -36,8 +36,8 @@ main() {
           new StackedBarChartRenderer()),
       data = new ChartData(COLUMNS, DATA),
       config = new ChartConfig([series1], [0]),
-      area = new ChartArea(querySelector('.default'),
-          data, config, autoUpdate:false, dimensionAxesCount:1);
+      area = new CartesianArea(querySelector('.default'),
+          data, config, autoUpdate:false, useTwoDimensionAxes:false);
   area.draw();
 
 
@@ -58,8 +58,8 @@ main() {
   axisConfig.scale = scale;
 
   config2.registerMeasureAxis('fixed_domain', axisConfig);
-  var customAxisChart = new ChartArea(querySelector('.custom-domain'),
-          data2, config2, autoUpdate:false, dimensionAxesCount:1);
+  var customAxisChart = new CartesianArea(querySelector('.custom-domain'),
+          data2, config2, autoUpdate:false, useTwoDimensionAxes:false);
   customAxisChart.draw();
 
 
@@ -81,7 +81,7 @@ main() {
   axisConfig2.tickValues = [0, 25, 50, 230, 250];
 
   config3.registerMeasureAxis('fixed_ticks', axisConfig2);
-  var fixedTickValueChart = new ChartArea(querySelector('.custom-ticks'),
-          data3, config3, autoUpdate:false, dimensionAxesCount:1);
+  var fixedTickValueChart = new CartesianArea(querySelector('.custom-ticks'),
+          data3, config3, autoUpdate:false, useTwoDimensionAxes:false);
   fixedTickValueChart.draw();
 }

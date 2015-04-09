@@ -11,12 +11,18 @@ part of charted.charts;
 class _ChartLegend implements ChartLegend {
   final Element host;
   final int _maxItems;
+  final SubscriptionsDisposer _disposer = new SubscriptionsDisposer();
   String _title;
   SelectionScope _scope;
   Selection _selected;
+  ChartArea _area;
 
   _ChartLegend(Element this.host, int this._maxItems, String this._title) {
     assert(host != null);
+  }
+
+  void dispose() {
+    _disposer.dispose();
   }
 
   /**
@@ -34,20 +40,28 @@ class _ChartLegend implements ChartLegend {
   /** Updates the title of the legend. */
   void _updateTitle() {
     if (_title.isNotEmpty) {
-      if (_selected.select('.legend-title').length == 0) {
-        _selected.select('.legend-title');
+      if (_selected.select('.chart-legend-heading').length == 0) {
+        _selected.select('.chart-legend-heading');
         _selected.append('div')
-          ..classed('legend-title')
+          ..classed('chart-legend-heading')
           ..text(_title);
       } else {
-        _selected.select('.legend-title').text(_title);
+        _selected.select('.chart-legend-heading').text(_title);
       }
     }
   }
 
   /** Updates the legend base on a new list of ChartLegendItems. */
-  update(Iterable<ChartLegendItem> items, ChartArea chart) {
+  update(Iterable<ChartLegendItem> items, ChartArea area) {
     assert(items != null);
+
+    _area = area;
+    _disposer.dispose();
+    _disposer.add(area.selectedMeasures.listChanges.listen(
+        _handleSelectedMeasureChange));
+    _disposer.add(area.hoveredMeasures.listChanges.listen(
+        _handleHoveredMeasureChange));
+
 
     if (_scope == null) {
       _scope = new SelectionScope.element(host);
@@ -56,36 +70,36 @@ class _ChartLegend implements ChartLegend {
 
     _updateTitle();
 
-    _createLegendItems(_selected, 'legend',
+    _createLegendItems(_selected, 'chart-legend',
         (_maxItems > 0) ? items.take(_maxItems) : items);
 
     // Add more item label if there's more items than the max display items.
     if ((_maxItems > 0) && (_maxItems < items.length)) {
-      _selected.select('.legend-more').remove();
+      _selected.select('.chart-legend-more').remove();
       _selected.append('div')
         ..on('mouseover', (d, i, e) => _displayMoreItem(items.skip(_maxItems)))
         ..on('mouseleave', (d, i, e) => _hideMoreItem())
         ..text('${items.length - _maxItems} more...')
-        ..classed('legend-more');
+        ..classed('chart-legend-more');
     }
   }
 
   /** Hides extra legend items. */
   void _hideMoreItem() {
-    var tooltip = _selected.select('.legend-more-tooltip');
+    var tooltip = _selected.select('.chart-legend-more-tooltip');
     tooltip.style('opacity', '0');
   }
 
   /** Display more legend items. */
   void _displayMoreItem(Iterable<ChartLegendItem> items) {
-    var tooltip = _selected.select('.legend-more-tooltip');
+    var tooltip = _selected.select('.chart-legend-more-tooltip');
     if (tooltip.isEmpty) {
-      tooltip = _selected.select('.legend-more').append('div')
-          ..classed('legend-more-tooltip');
+      tooltip = _selected.select('.chart-legend-more').append('div')
+          ..classed('chart-legend-more-tooltip');
     }
     tooltip.style('opacity', '1');
 
-    _createLegendItems(tooltip, 'legend-more', items);
+    _createLegendItems(tooltip, 'chart-legend-more', items);
   }
 
   /**
@@ -103,6 +117,17 @@ class _ChartLegend implements ChartLegend {
           ..append(new Element.tag('div')
               ..className = '${classPrefix}-column');
       return row;
+    })
+    ..on('mouseover', (d, i, e) {
+      _area.hoveredMeasures.add(d.column);
+    })
+    ..on('mouseout', (d, i, e) {
+      _area.hoveredMeasures.remove(d.column);
+    })
+    ..on('click', (d, i, e) {
+      _area.selectedMeasures.contains(d.column) ?
+          _area.selectedMeasures.remove(d.column) :
+          _area.selectedMeasures.add(d.column);
     });
 
     rows.classed('${classPrefix}-row');
@@ -115,5 +140,29 @@ class _ChartLegend implements ChartLegend {
 
     _selected.selectAll('.${classPrefix}-column').data(items)
         ..textWithCallback((d, i, e) => d.label);
+  }
+
+  void _handleSelectedMeasureChange(List<ListChangeRecord> changes) {
+    _selected.selectAll('.chart-legend-row').each((d, i, e) {
+      var measure = d.column;
+      if (_area.selectedMeasures.contains(measure)) {
+        e.classes.add('active');
+      } else {
+        e.classes.remove('active');
+      }
+    });
+  }
+
+  void _handleHoveredMeasureChange(List<ListChangeRecord> changes) {
+    _selected.selectAll('.chart-legend-row').each((d, i, e) {
+      var measure = d.column;
+      if (_area.hoveredMeasures.contains(measure)) {
+        e.classes.add('active');
+      } else {
+        if (!_area.selectedMeasures.contains(measure)) {
+          e.classes.remove('active');
+        }
+      }
+    });
   }
 }

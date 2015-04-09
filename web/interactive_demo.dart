@@ -12,26 +12,11 @@ import 'dart:html';
 import 'package:observe/observe.dart';
 import 'package:charted/charts/charts.dart';
 
-import 'charts_demo.dart';
+import 'src/charts_demo.dart';
 
 const List DIMENSION_COLUMNS =  const[0, 4];
 
 int customSeriesCounter = 0;
-
-List DEMOS = [
-  {
-    'name': 'One',
-    'title': 'One &mdash; A chart with one dimension axis',
-    'sub-title': 'Compatible with bar, line and stacked-bar renderers',
-    'series': [
-      {
-        'name': 'Series-01',
-        'renderer': 'bar-chart',
-        'columns': [ 1, 2, 3 ]
-      }
-    ]
-  }
-];
 
 Map RENDERERS = {
   'bar-chart': 'Bar chart',
@@ -40,39 +25,39 @@ Map RENDERERS = {
   'waterfall-chart': 'Waterfall chart',
 };
 
-ChartRenderer getRendererForType(String name) {
+CartesianRenderer getRendererForType(String name) {
   if (name == 'bar-chart') return new BarChartRenderer();
   if (name == 'line-chart') return new LineChartRenderer();
   if (name == 'stacked-bar-chart') return new StackedBarChartRenderer();
-  if (name == 'waterfall-chart') return new WaterfallChartRenderer();
   return new BarChartRenderer();
 }
 
-String getTypeForRenderer(ChartRenderer renderer) {
+String getTypeForRenderer(CartesianRenderer renderer) {
   if (renderer is BarChartRenderer) return 'bar-chart';
   if (renderer is LineChartRenderer) return 'line-chart';
   if (renderer is StackedBarChartRenderer) return 'stacked-bar-chart';
-  if (renderer is WaterfallChartRenderer) return 'waterfall-chart';
   return 'bar-chart';
 }
 
 main() {
+  List DATA_SOURCE = SMALL_DATA;
   ChartSeries activeSeries,
       defaultSeries = new ChartSeries("Default series",
           new ObservableList.from([ 2, 3 ]), new BarChartRenderer());
 
-  ObservableList rows = new ObservableList.from(SMALL_DATA.sublist(0, 3)),
+  ObservableList rows = new ObservableList.from(DATA_SOURCE.sublist(0, 10)),
       columns = new ObservableList.from(SMALL_DATA_COLUMNS),
       seriesList = new ObservableList.from([ defaultSeries ]);
 
   ChartData data = new ChartData(columns, rows);
   ChartConfig config = new ChartConfig(seriesList, DIMENSION_COLUMNS);
 
-  ChartArea area = new ChartArea(querySelector('.chart-host'), data, config,
-      autoUpdate: true, dimensionAxesCount: 1);
+  CartesianArea area =
+      new CartesianArea(querySelector('.chart-host'),
+          data, config, autoUpdate: true, useTwoDimensionAxes: false);
 
   area.addChartBehavior(new ChartTooltip());
-  config.legend = new ChartLegend(querySelector('.legend-host'));
+  config.legend = new ChartLegend(querySelector('.chart-legend-host'));
 
   area.draw();
 
@@ -85,24 +70,45 @@ main() {
       addSeriesButton = querySelector('#add-series'),
       removeSeriesButton = querySelector('#remove-series');
 
+  InputElement useRTLScriptCheckBox = querySelector('#rtl-use-script'),
+      switchAxesForRTLCheckBox = querySelector('#rtl-switch-axes'),
+      useRTLLayoutCheckBox = querySelector('#rtl-use-layout');
+
   SelectElement seriesSelect = querySelector('#select-series'),
       rendererSelect = querySelector('#select-renderer');
 
-  Element columnButtons = querySelector('#column-buttons');
+  Element columnButtons = querySelector('#column-buttons'),
+      chartsContainer = querySelector('.chart-wrapper');
 
+  /*
+   * RTL handling
+   */
+
+  useRTLLayoutCheckBox.onChange.listen((_) {
+    bool isRTL = useRTLLayoutCheckBox.checked;
+    config.isRTL = isRTL;
+    chartsContainer.attributes['dir'] = isRTL ? 'rtl' : 'ltr';
+  });
+
+  useRTLScriptCheckBox.onChange.listen((_) {
+    bool isRTL = useRTLScriptCheckBox.checked;
+    rows.clear();
+    DATA_SOURCE = isRTL ? SMALL_DATA_RTL : SMALL_DATA;
+    rows.addAll(DATA_SOURCE.sublist(0, 10));
+  });
 
   /*
    * Updating rows
    */
 
   updateRowButtonStates() {
-    addRowButton.disabled = rows.length >= SMALL_DATA.length;
+    addRowButton.disabled = rows.length >= DATA_SOURCE.length;
     removeRowButton.disabled = rows.length <= 1;
   }
 
   addRowButton.onClick.listen((_) {
-    if (rows.length < SMALL_DATA.length) {
-      rows.add(SMALL_DATA.elementAt(rows.length));
+    if (rows.length < DATA_SOURCE.length) {
+      rows.add(DATA_SOURCE.elementAt(rows.length));
     }
     updateRowButtonStates();
   });
@@ -127,7 +133,7 @@ main() {
         rendererSelect.selectedIndex = i;
     }
 
-    List<InputElement> buttons = querySelectorAll('.column-button');
+    List buttons = querySelectorAll('.column-button');
     Iterable measures = series.measures;
     for (int i = 0; i < buttons.length; i++) {
       buttons[i].checked = measures.contains(i + 1);
@@ -165,13 +171,6 @@ main() {
   }
 
   rendererSelect.onChange.listen((_) {
-      if (rendererSelect.value == "waterfall-chart" &&
-          area.data is! WaterfallChartData) {
-        area.data = new WaterfallChartData(columns, rows);
-      } else if (rendererSelect.value != "waterfall-chart" &&
-          area.data is WaterfallChartData) {
-        area.data = new ChartData(columns, rows);
-      }
       activeSeries.renderer = getRendererForType(rendererSelect.value);
     });
 
