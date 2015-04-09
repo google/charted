@@ -6,7 +6,3 @@ Charted provides
 * A selection API similar to D3.js
 * Visualization utilities ported from D3.js
 * An easy-to-use API to create charts including an SVG implementation based on the Selection API.
-
-Charted.next is the experimental next version of Charted
-* Better organization of files
-* Optimized for quick first render
