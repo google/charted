@@ -1,11 +1,9 @@
 <!DOCTYPE html>
-
 <html>
   <head>
     <meta charset="utf-8">
-    <title>Charted &mdash; Interactive demo</title>
+    <title>Charted &mdash; Renderers Demo</title>
     <link rel="stylesheet" href="src/charts_demo.css">
-    <link rel="stylesheet" href="packages/charted/charts/themes/quantum_theme.css">
     <style>
       body {
         padding: 0;
@@ -34,7 +32,7 @@
       button, select {
         margin-bottom: 10px;
       }
-      .chart-wrapper {
+      .demos-container {
         min-width: 600px;
         max-width: 1000px;
         margin-left: 325px;
@@ -44,24 +42,8 @@
   <body>
     <div class="controls">
       <div class="controls-inner">
-        <h1 class="title">Charted &mdash; Interactive demo</h1>
-        <div class="control-category">
-          <h2>Series</h2>
-          <select id="select-series"></select>
-          <button id="add-series">+</button>
-          <button id="remove-series">-</button>
-
-          <h2>Series renderer</h2>
-          <select id="select-renderer"></select>
-
-          <h2>Columns in series</h2>
-          <div id="column-buttons"></div>
-        </div>
-        <div class="control-category">
-          <h2>Data rows</h2>
-          <button id="add-row">Add row</button>
-          <button id="remove-row">Remove last row</button>
-        </div>
+        <h1 class="title">Charted &mdash; Cartesian chart renderers</h1>
+        Source code for this demo is available in <a href="https://github.com/google/charted/tree/master/web">the Charted GitHub repository</a>
         <div class="control-category">
           <h2>Internationalization</h2>
           <div>
@@ -79,17 +61,19 @@
         </div>
       </div>
     </div>
-    <div class="chart-wrapper">
-      <div class="chart-title-wrapper">
-        <div class="chart-title">Interactive chart demo</div>
-        <div class="chart-subtitle">Use the left panel to customize chart</div>
-      </div>
-      <div class="chart-host-wrapper">
-        <div class="chart-host" dir="ltr"></div>
-        <div class="chart-legend-host"></div>
-      </div>
+    <div class="demos-container">
+      <div class="chart line-chart"></div>
+      <div class="chart bar-chart"></div>
+      <div class="chart grouped-bar-chart"></div>
+      <div class="chart stacked-bar-chart"></div>
+      <div class="chart horiz-bar-chart"></div>
+      <div class="chart horiz-grouped-bar-chart"></div>
+      <div class="chart horiz-stacked-bar-chart"></div>
+      <div class="chart combo-chart"></div>
+      <div class="chart combo2-chart"></div>
+      <div class="chart bubble-chart"></div>
     </div>
-    <script type="application/dart" src="interactive_demo.dart"></script>
+    <script type="application/dart" src="cartesian_renderers_demo.dart"></script>
     <script src="packages/browser/dart.js"></script>
   </body>
 </html>

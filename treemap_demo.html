@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Treemap Demo</title>
+    <link rel="stylesheet" href="src/charts_demo.css">
+    <style>
+      .chart {
+        max-width: 2000px;
+        float: left;
+      }
+      .title {
+        padding: 20px 0;
+      }
+      .chart-wrapper {
+        height: 500px;
+      }
+      .chart-wrapper h2 {
+        border-bottom: 1px solid #333;
+      }
+      .demos-container {
+        clear: both;
+      }
+      .node {
+        border: solid 1px white;
+        font: 12px sans-serif;
+        color: white;
+        line-height: 12px;
+        overflow: hidden;
+        position: absolute;
+        text-indent: 2px;
+      }
+      .treemap {
+        margin: 40px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="demos-container">
+
+      <div class="chart treemap squarify">
+        <div class="title"><h1>Squarify</h1></div>
+      </div>
+
+      <div class="chart treemap slice">
+        <div class="title"><h1>Slice</h1></div>
+      </div>
+
+      <div class="chart treemap dice">
+        <div class="title"><h1>Dice</h1></div>
+      </div>
+
+      <div class="chart treemap slicedice">
+        <div class="title"><h1>Slice &amp; Dice</h1></div>
+      </div>
+    </div>
+    <script type="application/dart" src="treemap_demo.dart"></script>
+    <script src="packages/browser/dart.js"></script>
+  </body>
+</html>
