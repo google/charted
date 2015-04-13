@@ -9,9 +9,12 @@
 part of charted.charts;
 
 abstract class CartesianRendererBase implements CartesianRenderer {
+  final SubscriptionsDisposer _disposer = new SubscriptionsDisposer();
+
   CartesianArea area;
   ChartSeries series;
   ChartTheme theme;
+  ChartState state;
   Rect rect;
 
   Element host;
@@ -24,6 +27,13 @@ abstract class CartesianRendererBase implements CartesianRenderer {
 
   void _ensureAreaAndSeries(CartesianArea area, ChartSeries series) {
     assert(area != null && series != null);
+    assert(this.area == null || this.area == area);
+    if (this.area == null) {
+      if (area.state != null) {
+        this.state = area.state;
+        _disposer.add(this.state.changes.listen(handleStateChanges));
+      }
+    }
     this.area = area;
     this.series = series;
   }
@@ -41,6 +51,9 @@ abstract class CartesianRendererBase implements CartesianRenderer {
     theme = area.theme;
     rect = area.layout.renderArea;
   }
+
+  /// Override this method to handle state changes.
+  void handleStateChanges(List<ChangeRecord> changes);
 
   @override
   void dispose() {

@@ -77,7 +77,10 @@ class BarChartRenderer extends CartesianRendererBase {
           ht = verticalBars ? rect.height - scaled : scaled;
       return (ht < 0) ? '0' : ht.toString();
     };
-    var getBarY = (d) => measureScale.scale(d).round().toString();
+    var getBarY = (d) {
+      num scaled = measureScale.scale(d) - theme.defaultStrokeWidth;
+      return scaled.toStringAsFixed(0);
+    };
 
     var enter = bar.enter.append('rect')
       ..each((d, i, e) {
@@ -91,9 +94,14 @@ class BarChartRenderer extends CartesianRendererBase {
               getBarHeight(d)
           ..[verticalBars ? 'width' : 'height'] = barWidth
           ..['stroke-width'] = '${theme.defaultStrokeWidth}px';
+
+        e.style
+          ..setProperty('fill', colorForKey(i))
+          ..setProperty('stroke', colorForKey(i));
+
         if (!animateBarGroups) {
-          e.style.setProperty('fill', colorForKey(i));
-          e.style.setProperty('stroke', colorForKey(i));
+          e.attributes['data-column'] =
+              series.measures.elementAt(i).toString();
         }
       })
       ..on('click', (d, i, e) => _event(mouseClickController, d, i, e))
@@ -101,6 +109,8 @@ class BarChartRenderer extends CartesianRendererBase {
       ..on('mouseout', (d, i, e) => _event(mouseOutController, d, i, e));
 
     if (animateBarGroups) {
+      bar.attrWithCallback(
+          'data-column', (d, i, e) => series.measures.elementAt(i));
       bar.transition()
         ..attrWithCallback(verticalBars ? 'x' : 'y', (d, i, c) =>
             bars.scale(i) + theme.defaultStrokeWidth)
@@ -135,6 +145,10 @@ class BarChartRenderer extends CartesianRendererBase {
   double get bandOuterPadding {
     assert(series != null && area != null);
     return area.theme.dimensionAxisTheme.axisBandOuterPadding;
+  }
+
+  @override
+  void handleStateChanges(List<ChangeRecord> changes) {
   }
 
   void _event(StreamController controller, data, int index, Element e) {

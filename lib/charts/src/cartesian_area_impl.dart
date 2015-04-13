@@ -49,6 +49,9 @@ class _CartesianArea implements CartesianArea {
   @override
   final bool useTwoDimensionAxes;
 
+  @override
+  final bool useRowColoring;
+
   /// Indicates whether any renderers need bands on primary dimension
   final List<int> dimensionsUsingBands = [];
 
@@ -66,6 +69,9 @@ class _CartesianArea implements CartesianArea {
 
   @override
   ChartTheme theme;
+
+  @override
+  final ChartState state = new _ChartState();
 
   ChartData _data;
   ChartConfig _config;
@@ -94,7 +100,8 @@ class _CartesianArea implements CartesianArea {
       ChartData data,
       ChartConfig config,
       bool autoUpdate,
-      this.useTwoDimensionAxes) : _autoUpdate = autoUpdate {
+      this.useTwoDimensionAxes,
+      this.useRowColoring) : _autoUpdate = autoUpdate {
     assert(host != null);
     assert(isNotInline(host));
 
@@ -112,6 +119,23 @@ class _CartesianArea implements CartesianArea {
     _configEventsDisposer.dispose();
     _dataEventsDisposer.dispose();
     _config.legend.dispose();
+
+    if (_valueMouseOverController != null) {
+      _valueMouseOverController.close();
+      _valueMouseOverController = null;
+    }
+    if (_valueMouseOutController != null) {
+      _valueMouseOutController.close();
+      _valueMouseOutController = null;
+    }
+    if (_valueMouseClickController != null) {
+      _valueMouseClickController.close();
+      _valueMouseClickController = null;
+    }
+    if (_chartAxesUpdatedController != null) {
+      _chartAxesUpdatedController.close();
+      _chartAxesUpdatedController = null;
+    }
   }
 
   static bool isNotInline(Element e) =>
@@ -534,7 +558,7 @@ class _CartesianArea implements CartesianArea {
     seriesByColumn.asMap().forEach((int i, List s) {
       if (s.length == 0) return;
       legend.add(new ChartLegendItem(
-          column:i, label:data.columns.elementAt(i).label, series:s,
+          index:i, label:data.columns.elementAt(i).label, series:s,
           color:theme.getColorForKey(i)));
     });
 

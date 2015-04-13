@@ -21,6 +21,9 @@ class _LayoutArea implements LayoutArea {
   final Element host;
 
   @override
+  final bool useRowColoring = true;
+
+  @override
   _ChartAreaLayout layout = new _ChartAreaLayout();
 
   @override
@@ -31,6 +34,9 @@ class _LayoutArea implements LayoutArea {
 
   @override
   bool isReady = false;
+
+  @override
+  ChartState state;
 
   @override
   ChartTheme theme;

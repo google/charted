@@ -72,19 +72,24 @@ class BubbleChartRenderer extends CartesianRendererBase {
 
     var group = _group.selectAll('.measure-group').data(columns);
     group.enter.append('g')..classed('measure-group');
-    group.styleWithCallback('fill', (d, i, e) => color(i));
+    group.each((d, i, e) {
+      e.style.setProperty('fill', color(i));
+      e.attributes['data-column'] = series.measures.elementAt(i);
+    });
     group.exit.remove();
 
     var measures = group.selectAll('.bubble').dataWithCallback(
         (d, i, e) => columns[i]);
-    var enter = measures.enter.append('circle')
-        ..classed('bubble')
-        ..attrWithCallback('transform',
-            (d, i, e) => 'translate('
-                '${xDimensionScale.scale(xDimensionVals[i])},'
-                '${yDimensionScale.scale(yDimensionVals[i])})')
-        ..attrWithCallback('r',
-            (d, i, e) => '${bubbleRadiusScale.scale(d) * bubbleRadiusFactor}');
+
+    measures.enter.append('circle')..classed('bubble');
+    measures.each((d, i, e) {
+      e.attributes
+        ..['transform'] = 'translate('
+            '${xDimensionScale.scale(xDimensionVals[i])},'
+            '${yDimensionScale.scale(yDimensionVals[i])})'
+        ..['r'] = '${bubbleRadiusScale.scale(d) * bubbleRadiusFactor}'
+        ..['data-row'] = i;
+    });
     measures.exit.remove();
   }
 
@@ -116,35 +121,15 @@ class BubbleChartRenderer extends CartesianRendererBase {
     return new Extent(min, max);
   }
 
+  @override
+  void handleStateChanges(List<ChangeRecord> changes) {
+  }
+
   void _event(StreamController controller, data, int index, Element e) {
     if (controller == null) return;
     var rowStr = e.parent.dataset['row'];
     var row = rowStr != null ? int.parse(rowStr) : null;
     controller.add(
         new _ChartEvent(_scope.event, area, series, row, index, data));
-  }
-
-  @override
-  Stream<ChartEvent> get onValueMouseOver {
-    if (_mouseOverController == null) {
-      _mouseOverController = new StreamController.broadcast(sync: true);
-    }
-    return _mouseOverController.stream;
-  }
-
-  @override
-  Stream<ChartEvent> get onValueMouseOut {
-    if (_mouseOutController == null) {
-      _mouseOutController = new StreamController.broadcast(sync: true);
-    }
-    return _mouseOutController.stream;
-  }
-
-  @override
-  Stream<ChartEvent> get onValueMouseClick {
-    if (_mouseClickController == null) {
-      _mouseClickController = new StreamController.broadcast(sync: true);
-    }
-    return _mouseClickController.stream;
   }
 }

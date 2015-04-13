@@ -19,29 +19,35 @@ abstract class ChartLegend {
   /// Called by [ChartArea] to notify changes to legend.
   update(Iterable<ChartLegendItem> legend, ChartArea chart);
 
+  /// Called by [ChartArea] to dispose selection listeners.
+  dispose();
+
   /// Factory to create an instance of the default implementation.
   factory ChartLegend(Element host, {maxItems: 0, title: ''}) =>
       new _ChartLegend(host, maxItems, title);
-
-  /// Called by [ChartArea] to dispose selection listeners.
-  dispose();
 }
 
 ///
 /// Class representing an item in the legend.
 ///
 class ChartLegendItem {
-  /// Index of the column in [ChartData]
-  int column;
+  /// Index of the row/column in [ChartData]. Legend uses column based coloring
+  /// in [CartesianArea] that has useRowColoring set to false and row based
+  /// coloring in all other cases.
+  int index;
 
-  /// HTML color used for this column in the chart
+  /// HTML color used for the row/column in chart
   String color;
 
-  /// The label of the Legend Item.
+  /// The label of the item.
   String label;
+
+  /// Description of the item.
+  String description;
 
   /// List of series that this column is part of
   Iterable<ChartSeries> series;
 
-  ChartLegendItem({this.column, this.color, this.label, this.series});
+  ChartLegendItem(
+      {this.index, this.color, this.label, this.description, this.series});
 }

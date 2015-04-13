@@ -35,6 +35,7 @@ part 'chart_events.dart';
 part 'chart_legend.dart';
 part 'chart_renderer.dart';
 part 'chart_series.dart';
+part 'chart_state.dart';
 part 'chart_theme.dart';
 
 part 'behaviors/chart_tooltip.dart';
@@ -58,6 +59,7 @@ part 'src/chart_data_impl.dart';
 part 'src/chart_events_impl.dart';
 part 'src/chart_legend_impl.dart';
 part 'src/chart_series_impl.dart';
+part 'src/chart_state_impl.dart';
 
 part 'themes/quantum_theme.dart';
 

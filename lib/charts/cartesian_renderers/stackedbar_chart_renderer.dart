@@ -33,8 +33,8 @@ class StackedBarChartRenderer extends CartesianRendererBase {
 
     var rows = new List()
       ..addAll(area.data.rows.map((e) =>
-          new List.generate(
-              measuresCount, (i) => e[series.measures.elementAt(i)])));
+          new List.generate(measuresCount,
+              (i) => e[series.measures.elementAt(_reverseIdx(i))])));
 
     var dimensionVals = area.data.rows.map(
         (row) => row.elementAt(area.config.dimensions.first)).toList();
@@ -153,27 +153,38 @@ class StackedBarChartRenderer extends CartesianRendererBase {
       ..each((d, i, e) {
           e.classes.add('bar');
           e.attributes
-            ..[verticalBars ? 'height' : 'width'] = animateBarGroups ? '0' : getBarHeight(d, i)
+            ..[verticalBars ? 'height' : 'width'] =
+                animateBarGroups ? '0' : getBarHeight(d, i)
             ..[verticalBars ? 'width' : 'height'] = barWidth
-            ..[verticalBars ? 'y' : 'x'] = animateBarGroups ? getInitialBarY(i) : getBarY(d, i)
+            ..[verticalBars ? 'y' : 'x'] =
+                animateBarGroups ? getInitialBarY(i) : getBarY(d, i)
             ..['stroke-width'] = '${theme.defaultStrokeWidth}';
-          e.style.setProperty('fill', colorForKey(i));
-          e.style.setProperty('stroke', colorForKey(i));
+          e.style.setProperty('fill', colorForKey(_reverseIdx(i)));
+          e.style.setProperty('stroke', colorForKey(_reverseIdx(i)));
+          if (!animateBarGroups) {
+            e.attributes['data-column'] =
+                series.measures.elementAt(i).toString();
+          }
         })
       ..on('click', (d, i, e) => _event(mouseClickController, d, i, e))
       ..on('mouseover', (d, i, e) => _event(mouseOverController, d, i, e))
       ..on('mouseout', (d, i, e) => _event(mouseOutController, d, i, e));
 
     if (animateBarGroups) {
+      bar.attrWithCallback(
+          'data-column', (d, i, e) => series.measures.elementAt(i));
+
       bar.transition()
-        ..styleWithCallback('fill', (d, i, c) => colorForKey(i))
-        ..styleWithCallback('stroke', (d, i, c) => colorForKey(i))
+        ..styleWithCallback('fill', (d, i, c) => colorForKey(_reverseIdx(i)))
+        ..styleWithCallback('stroke', (d, i, c) => colorForKey(_reverseIdx(i)))
         ..attr(verticalBars? 'width' : 'height', barWidth)
         ..duration(theme.transitionDurationMilliseconds);
 
       bar.transition()
-        ..attrWithCallback(verticalBars ? 'y' : 'x', (d, i, c) => getBarY(d, i))
-        ..attrWithCallback(verticalBars ? 'height' : 'width', (d, i, c) => getBarHeight(d, i))
+        ..attrWithCallback(
+            verticalBars ? 'y' : 'x', (d, i, c) => getBarY(d, i))
+        ..attrWithCallback(
+            verticalBars ? 'height' : 'width', (d, i, c) => getBarHeight(d, i))
         ..duration(theme.transitionDurationMilliseconds)
         ..delay(50);
     }
@@ -206,6 +217,10 @@ class StackedBarChartRenderer extends CartesianRendererBase {
     return new Extent(min, max);
   }
 
+  @override
+  void handleStateChanges(List<ChangeRecord> changes) {
+  }
+
   void _event(StreamController controller, data, int index, Element e) {
     if (controller == null) return;
     var rowStr = e.parent.dataset['row'];
@@ -214,7 +229,8 @@ class StackedBarChartRenderer extends CartesianRendererBase {
         scope.event, area, series, row, _reverseIdx(index), data));
   }
 
-  // Because waterfall bar chart render the measures in reverse order to match
-  // the legend, we need to reverse the index for color and event.
+  // Stacked bar chart renders items from bottom to top (first measure is at
+  // the bottom of the stack). We use [_reversedIdx] instead of index to
+  // match the color and order of what is displayed in the legend.
   int _reverseIdx(int index) => series.measures.length - 1 - index;
 }

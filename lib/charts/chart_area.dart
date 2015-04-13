@@ -54,10 +54,15 @@ abstract class CartesianArea implements ChartArea {
   ///   change.  When not set, [draw] must be called to update the chart.
   /// - When [useTwoDimensionAxes] is set, the chart uses both 'x' and 'y'
   ///   axes as dimensions.
-  factory CartesianArea(host, ChartData data, ChartConfig config,
-      { bool autoUpdate: false, bool useTwoDimensionAxes: false }) =>
-          new _CartesianArea(
-              host, data, config, autoUpdate, useTwoDimensionAxes);
+  factory CartesianArea(
+      dynamic host,
+      ChartData data,
+      ChartConfig config, {
+      bool autoUpdate: false,
+      bool useTwoDimensionAxes: false,
+      bool useRowColoring }) =>
+          new _CartesianArea(host, data, config,
+              autoUpdate, useTwoDimensionAxes, useRowColoring);
 }
 
 ///
@@ -72,14 +77,16 @@ abstract class CartesianArea implements ChartArea {
 /// not have any scales and axes.
 ///
 abstract class LayoutArea implements ChartArea {
-  factory LayoutArea(
-      host, ChartData data, ChartConfig config, bool autoUpdate) =>
-          new _LayoutArea(host, data, config, autoUpdate);
+  /// Layouts always use coloring by row index and value.
+  @override
+  bool get useRowColoring => true;
 
-  factory LayoutArea.fromColumnIndices(
-      host, ChartData data, Iterable<int> dimensions, Iterable<int> measures,
-      LayoutRenderer renderer) {
-  }
+  factory LayoutArea(
+      dynamic host,
+      ChartData data,
+      ChartConfig config,
+      bool autoUpdate) =>
+          new _LayoutArea(host, data, config, autoUpdate);
 }
 
 ///
@@ -107,6 +114,10 @@ abstract class ChartArea implements ChartAreaBehaviorSource {
   /// the chart when [data] or [config] changes. Defaults to false.
   bool autoUpdate;
 
+  /// When true, [ChartArea] and renderers that support coloring by row,
+  /// use row indices and values to color the chart.
+  bool get useRowColoring;
+
   /// Geometry of components in this [ChartArea]
   ChartAreaLayout get layout;
 
@@ -117,11 +128,8 @@ abstract class ChartArea implements ChartAreaBehaviorSource {
   /// drawn or are in the process of transitioning in.
   bool get isReady;
 
-  /// The list of currently selected measures in chart.
-  ObservableList<int> selectedMeasures;
-
-  /// The list of currently hovered measures in chart.
-  ObservableList<int> hoveredMeasures;
+  /// State of the chart - selection and highlights.
+  ChartState get state;
 
   /// Draw the chart with current data and configuration.
   /// - If [preRender] is set, [ChartArea] attempts to build all non data
