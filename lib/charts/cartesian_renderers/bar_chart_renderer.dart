@@ -10,9 +10,10 @@ part of charted.charts;
 
 class BarChartRenderer extends CartesianRendererBase {
   final Iterable<int> dimensionsUsingBand = const[0];
-  final alwaysAnimate;
+  final bool alwaysAnimate;
+  final bool ignoreState;
 
-  BarChartRenderer({this.alwaysAnimate: false});
+  BarChartRenderer({this.alwaysAnimate: false, this.ignoreState: false});
 
   /// Returns false if the number of dimension axes on the area is 0.
   /// Otherwise, the first dimension scale is used to render the chart.
@@ -156,6 +157,7 @@ class BarChartRenderer extends CartesianRendererBase {
     var rowStr = e.parent.dataset['row'];
     var row = rowStr != null ? int.parse(rowStr) : null;
     controller.add(
-        new _ChartEvent(scope.event, area, series, row, index, data));
+        new _ChartEvent(scope.event, area,
+            series, row, series.measures.elementAt(index), data));
   }
 }

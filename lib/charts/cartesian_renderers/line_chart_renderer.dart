@@ -11,10 +11,14 @@ part of charted.charts;
 class LineChartRenderer extends CartesianRendererBase {
   final Iterable<int> dimensionsUsingBand = const[];
   final SubscriptionsDisposer _disposer = new SubscriptionsDisposer();
+  final bool alwaysAnimate;
+  final bool ignoreState;
 
   List _xPositions = [];
   Map<int, CircleElement> _measureCircleMap = {};
   int currentDataIndex = -1;
+
+  LineChartRenderer({this.alwaysAnimate: false, this.ignoreState: false});
 
   /*
    * Returns false if the number of dimension axes on the area is 0.
@@ -23,6 +27,7 @@ class LineChartRenderer extends CartesianRendererBase {
   @override
   bool prepare(ChartArea area, ChartSeries series) {
     _ensureAreaAndSeries(area, series);
+    _trackPointerInArea();
     return area is CartesianArea;
   }
 
@@ -46,26 +51,26 @@ class LineChartRenderer extends CartesianRendererBase {
     var rangeBandOffset =
         dimensionScale is OrdinalScale ? dimensionScale.rangeBand / 2 : 0;
 
-    // Add the circle elements and compute the x positions for approximating
-    // the user's cursor to the nearest data point.  One circle is constructed
-    // for each measure in the series.
-    for (var measure in series.measures) {
-      var circle = new CircleElement();
-      circle.attributes
-        ..['r'] = '4'
-        ..['stroke'] = area.theme.getColorForKey(measure)
-        ..['fill'] = area.theme.getColorForKey(measure)
-        ..['class'] = 'line-point line-point-${measure}';
-      host.append(circle);
-      _measureCircleMap[measure] = circle;
-    }
+    _xPositions =
+        x.map((val) => dimensionScale.scale(val) + rangeBandOffset).toList();
 
-    // Record the x position of data for cursor approximation.
-    var xValues = area.data.rows.map(
-        (row) => row.elementAt(area.config.dimensions.first)).toList();
-    for (var value in xValues) {
-      _xPositions.add(dimensionScale.scale(value) + rangeBandOffset);
-    }
+    // Add circles that track user's pointer movements.
+    var linePoints = root.selectAll('.line-point').data(series.measures);
+    linePoints.enter.append('circle').each((d, i, e) {
+      e.classes.add('line-point');
+      e.attributes['r'] = '4';
+    });
+
+    linePoints.each((d, i, e) {
+      e.attributes
+        ..['r'] = '4'
+        ..['stroke'] = area.theme.getColorForKey(d)
+        ..['fill'] = area.theme.getColorForKey(d)
+        ..['data-column'] = '$d';
+    });
+
+    linePoints.exit.remove();
+
     var line = new SvgLine(
         xValueAccessor: (d, i) => dimensionScale.scale(x[i]) + rangeBandOffset,
         yValueAccessor: (d, i) => measureScale.scale(d));
@@ -97,5 +102,52 @@ class LineChartRenderer extends CartesianRendererBase {
 
   @override
   void handleStateChanges(List<ChangeRecord> changes) {
+  }
+
+  void _showTrackingCircles(int row) {
+    var yScale = area.measureScales(series).first;
+    root.selectAll('.line-point').each((d, i, e) {
+      var x = _xPositions[row];
+      var y = yScale.scale(area.data.rows.elementAt(row).elementAt(d));
+      e.attributes
+        ..['cx'] = '$x'
+        ..['cy'] = '$y';
+      e.style.setProperty('opacity', '1');
+    });
+  }
+
+  void _hideTrackingCircles() {
+    root.selectAll('.line-point').style('opacity', '0.0');
+  }
+
+  // TODO(prsd): Change to binary search.
+  int _getNearestRowIndex(double x) {
+    var lastSmallerValue = 0;
+    var chartX = x - area.layout.renderArea.x;
+    for (var i = 0; i < _xPositions.length; i++) {
+      var pos = _xPositions[i];
+      if (pos < chartX) {
+        lastSmallerValue = pos;
+      } else {
+        return i == 0 ? 0 :
+          (chartX - lastSmallerValue <= pos - chartX) ? i - 1 : i;
+      }
+    }
+    return _xPositions.length - 1;
+  }
+
+  void _trackPointerInArea() {
+    _disposer.add(area.onMouseMove.listen((ChartEvent event) {
+      if (area.layout.renderArea.contains(event.chartX, event.chartY)) {
+        var renderAreaX = event.chartX - area.layout.renderArea.x,
+            row = _getNearestRowIndex(event.chartX);
+        window.animationFrame.then((_) => _showTrackingCircles(row));
+      } else {
+        _hideTrackingCircles();
+      }
+    }));
+    _disposer.add(area.onMouseOut.listen((ChartEvent event) {
+      _hideTrackingCircles();
+    }));
   }
 }

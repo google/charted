@@ -25,7 +25,7 @@ abstract class ChartRendererBehaviorSource {
 ///
 /// Interface implemented by a [ChartArea] that supports behaviors.
 ///
-abstract class ChartAreaBehaviorSource extends ChartRendererBehaviorSource {
+abstract class ChartAreaBehaviorSource {
   /// Stream to notify when a mouse button is pressed on [ChartArea].
   Stream<ChartEvent> get onMouseDown;
 

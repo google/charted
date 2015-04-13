@@ -81,15 +81,15 @@
 }
 
 .chart-legend-title {
-  color: #757575;
+  color: #838383;
 }
 
 .chart-legend-subtitle {
-  color: #BDBDBD;
+  color: #C1C1C1;
 }
 
-.chart-legend-row.selected,
-.chart-legend-row.hover {
+.chart-legend-selected,
+.chart-legend-hover {
   color: #434343;
 }
 

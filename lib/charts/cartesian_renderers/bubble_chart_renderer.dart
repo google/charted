@@ -11,6 +11,8 @@ part of charted.charts;
 class BubbleChartRenderer extends CartesianRendererBase {
   final Iterable<int> dimensionsUsingBand = const[];
   final double maxBubbleRadius;
+  final bool ignoreState;
+  final bool alwaysAnimate;
 
   Element _host;
   Selection _group;
@@ -20,7 +22,10 @@ class BubbleChartRenderer extends CartesianRendererBase {
   StreamController<ChartEvent> _mouseOutController;
   StreamController<ChartEvent> _mouseClickController;
 
-  BubbleChartRenderer([this.maxBubbleRadius = 20.0]);
+  BubbleChartRenderer({
+      this.maxBubbleRadius: 20.0,
+      this.ignoreState: false,
+      this.alwaysAnimate: false});
 
   /*
    * BubbleChart needs two dimension axes.

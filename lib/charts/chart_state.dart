@@ -16,12 +16,12 @@ abstract class ChartState implements ChangeNotifier {
   /// List of selected items.
   /// - Contains a column on CartesianArea if useRowColoring is false.
   /// - Row index in all other cases.
-  Iterable<int> selection;
+  Iterable<int> get selection;
 
   /// List of visible items.
   /// - Contains a column on CartesianArea if useRowColoring is false.
   /// - Row index in all other cases.
-  Iterable<int> hidden;
+  Iterable<int> get hidden;
 
   /// Currently highlighted value, if any, represented as column and row.
   Pair<int,int> highlighted;
@@ -57,7 +57,8 @@ abstract class ChartState implements ChangeNotifier {
 class ChartSelectionChangeRecord implements ChangeRecord {
   final int add;
   final int remove;
-  const ChartSelectionChangeRecord({this.add, this.remove});
+  final ChartEvent event;
+  const ChartSelectionChangeRecord({this.add, this.remove, this.event});
 }
 
 ///
@@ -67,7 +68,8 @@ class ChartSelectionChangeRecord implements ChangeRecord {
 class ChartVisibilityChangeRecord implements ChangeRecord {
   final int add;
   final int remove;
-  const ChartVisibilityChangeRecord({this.add, this.remove});
+  final ChartEvent event;
+  const ChartVisibilityChangeRecord({this.add, this.remove, this.event});
 }
 
 ///
@@ -76,7 +78,8 @@ class ChartVisibilityChangeRecord implements ChangeRecord {
 ///
 class ChartHighlightChangeRecord implements ChangeRecord {
   final Pair<int,int> highlighted;
-  const ChartHighlightChangeRecord(this.highlighted);
+  final ChartEvent event;
+  const ChartHighlightChangeRecord(this.highlighted, {this.event});
 }
 
 ///
