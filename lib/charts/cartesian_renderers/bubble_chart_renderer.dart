@@ -96,6 +96,7 @@ class BubbleChartRenderer extends CartesianRendererBase {
         ..['data-row'] = i;
     });
     measures.exit.remove();
+    handleStateChanges([]);
   }
 
   @override
@@ -127,8 +128,8 @@ class BubbleChartRenderer extends CartesianRendererBase {
   }
 
   @override
-  void handleStateChanges(List<ChangeRecord> changes) {
-  }
+  Selection getSelectionForColumn(int column) =>
+      root.selectAll('.measure-group[data-column="$column"]');
 
   void _event(StreamController controller, data, int index, Element e) {
     if (controller == null) return;

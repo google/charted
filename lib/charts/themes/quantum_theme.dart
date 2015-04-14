@@ -14,7 +14,7 @@ class QuantumChartTheme extends ChartTheme {
 
   static const List<List<String>> COLORS = const[
     const [ '#C5D9FB', '#4184F3', '#2955C5' ],
-    const [ '#F3C6C2', '#DB4437', '#DB4437' ],
+    const [ '#F3C6C2', '#DB4437', '#A52714' ],
     const [ '#FBE7B1', '#F4B400', '#EF9200' ],
     const [ '#B6E0CC', '#0F9D58', '#0A7F42' ],
     const [ '#E0BDE6', '#AA46BB', '#691A99' ],
@@ -29,7 +29,7 @@ class QuantumChartTheme extends ChartTheme {
 
   static const List<List<String>> COLORS_ASSIST = const[
     const [ '#C5D9FB', '#4184F3', '#2955C5' ],
-    const [ '#F3C6C2', '#DB4437', '#DB4437' ],
+    const [ '#F3C6C2', '#DB4437', '#A52714' ],
     const [ '#FBE7B1', '#F4B400', '#EF9200' ],
     const [ '#B6E0CC', '#0F9D58', '#0A7F42' ],
     const [ '#E0BDE6', '#AA46BB', '#691A99' ],

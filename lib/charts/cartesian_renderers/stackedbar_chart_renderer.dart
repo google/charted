@@ -160,8 +160,8 @@ class StackedBarChartRenderer extends CartesianRendererBase {
             ..[verticalBars ? 'y' : 'x'] =
                 animateBarGroups ? getInitialBarY(i) : getBarY(d, i)
             ..['stroke-width'] = '${theme.defaultStrokeWidth}';
-          e.style.setProperty('fill', colorForKey(_reverseIdx(i)));
-          e.style.setProperty('stroke', colorForKey(_reverseIdx(i)));
+          e.style.setProperty('fill', colorForKey(index:_reverseIdx(i)));
+          e.style.setProperty('stroke', colorForKey(index:_reverseIdx(i)));
           if (!animateBarGroups) {
             e.attributes['data-column'] =
                 series.measures.elementAt(i).toString();
@@ -176,8 +176,8 @@ class StackedBarChartRenderer extends CartesianRendererBase {
           'data-column', (d, i, e) => series.measures.elementAt(i));
 
       bar.transition()
-        ..styleWithCallback('fill', (d, i, c) => colorForKey(_reverseIdx(i)))
-        ..styleWithCallback('stroke', (d, i, c) => colorForKey(_reverseIdx(i)))
+        ..styleWithCallback('fill', (d, i, c) => colorForKey(index:_reverseIdx(i)))
+        ..styleWithCallback('stroke', (d, i, c) => colorForKey(index:_reverseIdx(i)))
         ..attr(verticalBars? 'width' : 'height', barWidth)
         ..duration(theme.transitionDurationMilliseconds);
 
@@ -219,8 +219,9 @@ class StackedBarChartRenderer extends CartesianRendererBase {
   }
 
   @override
-  void handleStateChanges(List<ChangeRecord> changes) {
-  }
+  Selection getSelectionForColumn(int column) =>
+      root.selectAll('.bar[data-column="$column"]');
+
 
   void _event(StreamController controller, data, int index, Element e) {
     if (controller == null) return;

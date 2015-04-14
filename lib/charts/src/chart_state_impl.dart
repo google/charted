@@ -15,12 +15,14 @@ part of charted.charts;
 /// - In [LayoutArea] renders choose either columns or rows.
 ///
 class _ChartState extends ChangeNotifier implements ChartState {
+  final bool isMultiSelect;
+
   LinkedHashSet<int> selection = new LinkedHashSet<int>();
   LinkedHashSet<int> hidden = new LinkedHashSet<int>();
   Pair<int,int> _highlighted;
   int _hovered;
 
-  _ChartState() {}
+  _ChartState({this.isMultiSelect: false}) {}
 
   set highlighted(Pair<int,int> value) {
     if (value != _highlighted) {
@@ -31,14 +33,14 @@ class _ChartState extends ChangeNotifier implements ChartState {
   }
   Pair<int,int> get highlighted => _highlighted;
 
-  set hovered(int value) {
+  set preview(int value) {
     if (value != _hovered) {
       _hovered = value;
-      notifyChange(new ChartHoverChangeRecord(_hovered));
+      notifyChange(new ChartPreviewChangeRecord(_hovered));
     }
     return value;
   }
-  int get hovered => _hovered;
+  int get preview => _hovered;
 
   bool show(int id) {
     if (hidden.contains(id)) {
@@ -60,6 +62,9 @@ class _ChartState extends ChangeNotifier implements ChartState {
 
   bool select(int id) {
     if (!selection.contains(id)) {
+      if (!isMultiSelect) {
+        selection.clear();
+      }
       selection.add(id);
       notifyChange(new ChartSelectionChangeRecord(add:id));
     }

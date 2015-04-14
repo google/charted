@@ -62,10 +62,11 @@ class LineChartRenderer extends CartesianRendererBase {
     });
 
     linePoints.each((d, i, e) {
+      var color = colorForKey(measure:d);
       e.attributes
         ..['r'] = '4'
-        ..['stroke'] = area.theme.getColorForKey(d)
-        ..['fill'] = area.theme.getColorForKey(d)
+        ..['stroke'] = color
+        ..['fill'] = color
         ..['data-column'] = '$d';
     });
 
@@ -87,7 +88,7 @@ class LineChartRenderer extends CartesianRendererBase {
       e.attributes
         ..['d'] = line.path(d, i, e)
         ..['data-column'] = series.measures.elementAt(i).toString();
-      e.style.setProperty('stroke', colorForKey(i));
+      e.style.setProperty('stroke', colorForKey(index:i));
     });
 
     svgLines.exit.remove();
@@ -101,7 +102,25 @@ class LineChartRenderer extends CartesianRendererBase {
   }
 
   @override
+  Selection getSelectionForColumn(int column) =>
+      root.selectAll('.line[data-column="$column"]');
+
+  @override
   void handleStateChanges(List<ChangeRecord> changes) {
+    for (int i = 0; i < series.measures.length; ++i) {
+      var column = series.measures.elementAt(i),
+          selection = getSelectionForColumn(column),
+          color = colorForKey(measure:column);
+
+      var strokeWidth = state.selection.contains(column) ||
+          state.selection.isEmpty && state.preview == column ? 4 : 2;
+
+      // Apply colors with transition
+      selection.transition()
+        ..style('stroke-width', '$strokeWidth')
+        ..style('stroke', color)
+        ..duration(50);
+    }
   }
 
   void _showTrackingCircles(int row) {

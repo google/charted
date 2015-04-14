@@ -117,7 +117,7 @@ class _ChartLegend implements ChartLegend {
 
     rows.each((ChartLegendItem d, i, Element e) {
       if (state != null) {
-        if (d.index == state.hovered) {
+        if (d.index == state.preview) {
           e.classes.add('${CLASS_PREFIX}-hover');
         } else {
           e.classes.remove('${CLASS_PREFIX}-hover');
@@ -134,10 +134,10 @@ class _ChartLegend implements ChartLegend {
 
     if (state != null) {
       enter
-        ..on('mouseover', (d, i, e) => state.hovered = d.index)
+        ..on('mouseover', (d, i, e) => state.preview = d.index)
         ..on('mouseout', (d, i, e) {
-            if (state.hovered == d.index) {
-              state.hovered = null;
+            if (state.preview == d.index) {
+              state.preview = null;
             }
           })
         ..on('click', (d, i, e) {

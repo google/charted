@@ -13,6 +13,9 @@ class BarChartRenderer extends CartesianRendererBase {
   final bool alwaysAnimate;
   final bool ignoreState;
 
+  Pair<int,int> _highlight;
+  int _hover;
+
   BarChartRenderer({this.alwaysAnimate: false, this.ignoreState: false});
 
   /// Returns false if the number of dimension axes on the area is 0.
@@ -96,9 +99,10 @@ class BarChartRenderer extends CartesianRendererBase {
           ..[verticalBars ? 'width' : 'height'] = barWidth
           ..['stroke-width'] = '${theme.defaultStrokeWidth}px';
 
+        var color = colorForKey(index: i);
         e.style
-          ..setProperty('fill', colorForKey(i))
-          ..setProperty('stroke', colorForKey(i));
+          ..setProperty('fill', color)
+          ..setProperty('stroke', color);
 
         if (!animateBarGroups) {
           e.attributes['data-column'] =
@@ -115,8 +119,8 @@ class BarChartRenderer extends CartesianRendererBase {
       bar.transition()
         ..attrWithCallback(verticalBars ? 'x' : 'y', (d, i, c) =>
             bars.scale(i) + theme.defaultStrokeWidth)
-        ..styleWithCallback('fill', (d, i, c) => colorForKey(i))
-        ..styleWithCallback('stroke', (d, i, c) => colorForKey(i))
+        ..styleWithCallback('fill', (d, i, c) => colorForKey(index:i))
+        ..styleWithCallback('stroke', (d, i, c) => colorForKey(index:i))
         ..attr(verticalBars ? 'width' : 'height', barWidth)
         ..duration(theme.transitionDurationMilliseconds);
 
@@ -149,8 +153,8 @@ class BarChartRenderer extends CartesianRendererBase {
   }
 
   @override
-  void handleStateChanges(List<ChangeRecord> changes) {
-  }
+  Selection getSelectionForColumn(int column) =>
+      root.selectAll('.bar[data-column="$column"]');
 
   void _event(StreamController controller, data, int index, Element e) {
     if (controller == null) return;

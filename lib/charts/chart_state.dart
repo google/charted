@@ -29,7 +29,7 @@ abstract class ChartState implements ChangeNotifier {
   /// Currently hovered row or column.
   /// - Contains a column on CartesianArea if useRowColoring is false.
   /// - Row index in all other cases.
-  int hovered;
+  int preview;
 
   /// Ensure that a row or column is visible.
   bool show(int id);
@@ -83,7 +83,7 @@ class ChartHighlightChangeRecord implements ChangeRecord {
 /// Implementation of [ChangeRecord], that is used to notify changes to
 /// values in [ChartData].
 ///
-class ChartHoverChangeRecord implements ChangeRecord {
+class ChartPreviewChangeRecord implements ChangeRecord {
   final int hovered;
-  const ChartHoverChangeRecord(this.hovered);
+  const ChartPreviewChangeRecord(this.hovered);
 }

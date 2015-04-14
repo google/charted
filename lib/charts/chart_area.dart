@@ -60,9 +60,10 @@ abstract class CartesianArea implements ChartArea {
       ChartConfig config, {
       bool autoUpdate: false,
       bool useTwoDimensionAxes: false,
-      bool useRowColoring }) =>
-          new _CartesianArea(host, data, config,
-              autoUpdate, useTwoDimensionAxes, useRowColoring);
+      bool useRowColoring,
+      bool hasMultiSelect: false }) =>
+          new _CartesianArea(host, data, config, autoUpdate,
+              useTwoDimensionAxes, useRowColoring, hasMultiSelect);
 }
 
 ///

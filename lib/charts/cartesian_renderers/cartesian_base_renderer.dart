@@ -53,7 +53,19 @@ abstract class CartesianRendererBase implements CartesianRenderer {
   }
 
   /// Override this method to handle state changes.
-  void handleStateChanges(List<ChangeRecord> changes);
+  void handleStateChanges(List<ChangeRecord> changes) {
+    for (int i = 0; i < series.measures.length; ++i) {
+      var column = series.measures.elementAt(i),
+          selection = getSelectionForColumn(column),
+          color = colorForKey(measure:column);
+      selection.transition()
+        ..style('fill', color)
+        ..style('stroke', color)
+        ..duration(50);
+    }
+  }
+
+  Selection getSelectionForColumn(int column);
 
   @override
   void dispose() {
@@ -104,7 +116,21 @@ abstract class CartesianRendererBase implements CartesianRenderer {
   double get bandInnerPadding => 1.0;
   double get bandOuterPadding => area.theme.dimensionAxisTheme.axisOuterPadding;
 
-  /** Get a color using the theme's ordinal scale of colors */
-  String colorForKey(i, [int state = ChartTheme.STATE_NORMAL]) =>
-      area.theme.getColorForKey(series.measures.elementAt(i), state);
+  /// Get a color using the theme's ordinal scale of colors
+  String colorForKey({int index, int measure}) {
+    int column = measure == null ? series.measures.elementAt(index) : measure;
+
+    // Color state for legend hover and select.
+    var colState = state.selection.isEmpty
+        ? ChartTheme.STATE_NORMAL
+        : state.selection.contains(column)
+            ? ChartTheme.STATE_NORMAL
+            : ChartTheme.STATE_DISABLED;
+
+    // Preview color get's applied only when there is no selection
+    return theme.getColorForKey(column,
+        state.preview == column && state.selection.isEmpty
+            ? ChartTheme.STATE_ACTIVE
+            : colState);
+  }
 }

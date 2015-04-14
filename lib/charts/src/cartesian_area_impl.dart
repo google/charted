@@ -56,6 +56,9 @@ class _CartesianArea implements CartesianArea {
   final List<int> dimensionsUsingBands = [];
 
   @override
+  final ChartState state;
+
+  @override
   _ChartAreaLayout layout = new _ChartAreaLayout();
 
   @override
@@ -69,9 +72,6 @@ class _CartesianArea implements CartesianArea {
 
   @override
   ChartTheme theme;
-
-  @override
-  final ChartState state = new _ChartState();
 
   ChartData _data;
   ChartConfig _config;
@@ -101,7 +101,10 @@ class _CartesianArea implements CartesianArea {
       ChartConfig config,
       bool autoUpdate,
       this.useTwoDimensionAxes,
-      this.useRowColoring) : _autoUpdate = autoUpdate {
+      this.useRowColoring,
+      bool hasMultiSelect)
+        : _autoUpdate = autoUpdate,
+          state = new _ChartState(isMultiSelect: hasMultiSelect) {
     assert(host != null);
     assert(isNotInline(host));
 
@@ -714,14 +717,16 @@ class _ChartSeriesInfo {
 
   check() {
     if (_renderer != _series.renderer) dispose();
+    if (_renderer == null) {
+      try {
+        _disposer.addAll([
+          _series.renderer.onValueClick.listen(_click),
+          _series.renderer.onValueMouseOver.listen(_mouseOver),
+          _series.renderer.onValueMouseOut.listen(_mouseOut)
+        ]);
+      } on UnimplementedError {};
+    }
     _renderer = _series.renderer;
-    try {
-      _disposer.addAll([
-        _renderer.onValueClick.listen(_click),
-        _renderer.onValueMouseOver.listen(_mouseOver),
-        _renderer.onValueMouseOut.listen(_mouseOut)
-      ]);
-    } on UnimplementedError {};
   }
 
   dispose() => _disposer.dispose();

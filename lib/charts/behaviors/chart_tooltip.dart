@@ -91,7 +91,7 @@ class ChartTooltip implements ChartBehavior {
     var activeMeasures = [];
     if (showSelectedMeasure) {
       activeMeasures.addAll(_state.selection);
-      activeMeasures.add(_state.hovered);
+      activeMeasures.add(_state.preview);
       if (activeMeasures.isEmpty) {
         for (var series in _area.config.series) {
           activeMeasures.addAll(series.measures);
