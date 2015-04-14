@@ -57,7 +57,10 @@ abstract class CartesianRendererBase implements CartesianRenderer {
     for (int i = 0; i < series.measures.length; ++i) {
       var column = series.measures.elementAt(i),
           selection = getSelectionForColumn(column),
-          color = colorForKey(measure:column);
+          color = colorForKey(measure:column),
+          filter = filterForKey(measure:column);
+
+      selection.attr('filter', filter);
       selection.transition()
         ..style('fill', color)
         ..style('stroke', color)
@@ -132,5 +135,13 @@ abstract class CartesianRendererBase implements CartesianRenderer {
         state.preview == column && state.selection.isEmpty
             ? ChartTheme.STATE_ACTIVE
             : colState);
+  }
+
+  String filterForKey({int index, int measure}) {
+    int column = measure == null ? series.measures.elementAt(index) : measure;
+    return theme.getFilterForKey(column,
+        state.preview == column || state.selection.contains(column)
+            ? ChartTheme.STATE_ACTIVE
+            : ChartTheme.STATE_NORMAL);
   }
 }

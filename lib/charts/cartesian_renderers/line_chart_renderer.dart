@@ -110,12 +110,13 @@ class LineChartRenderer extends CartesianRendererBase {
     for (int i = 0; i < series.measures.length; ++i) {
       var column = series.measures.elementAt(i),
           selection = getSelectionForColumn(column),
-          color = colorForKey(measure:column);
+          color = colorForKey(measure:column),
+          filter = filterForKey(measure:column);
 
       var strokeWidth = state.selection.contains(column) ||
           state.selection.isEmpty && state.preview == column ? 4 : 2;
 
-      // Apply colors with transition
+      selection.attr('filter', filter);
       selection.transition()
         ..style('stroke-width', '$strokeWidth')
         ..style('stroke', color)

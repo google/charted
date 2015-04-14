@@ -59,6 +59,19 @@ class QuantumChartTheme extends ChartTheme {
       const _QuantumChartAxisTheme(0, 10);
 
   AbsoluteRect get padding => const AbsoluteRect(10, 10, 0, 0);
+
+  String get filters => '''
+    <filter id="active-shadow" x="-50%" y="-25%" width="200%" height="200%">
+      <feOffset result="offOut" in="SourceGraphic" dx="0" dy="0" />
+      <feColorMatrix result="matrixOut" in="offOut"
+          type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.5 0"/>
+      <feGaussianBlur result="blurOut" in="matrixOut" stdDeviation="3" />
+      <feBlend in="SourceGraphic" in2="blurOut" mode="normal" />
+    </filter>
+''';
+
+  String getFilterForKey(key, [int state = ChartTheme.STATE_NORMAL]) =>
+      state == ChartTheme.STATE_ACTIVE ? 'url(#active-shadow)' : null;
 }
 
 class _QuantumChartAxisTheme implements ChartAxisTheme {
