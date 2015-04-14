@@ -20,7 +20,8 @@ class _ChartState extends ChangeNotifier implements ChartState {
   LinkedHashSet<int> selection = new LinkedHashSet<int>();
   LinkedHashSet<int> hidden = new LinkedHashSet<int>();
   Pair<int,int> _highlighted;
-  int _hovered;
+  Pair<int,int> _hovered;
+  int _preview;
 
   _ChartState({this.isMultiSelect: false}) {}
 
@@ -33,14 +34,23 @@ class _ChartState extends ChangeNotifier implements ChartState {
   }
   Pair<int,int> get highlighted => _highlighted;
 
-  set preview(int value) {
+  set hovered(Pair<int,int> value) {
     if (value != _hovered) {
       _hovered = value;
-      notifyChange(new ChartPreviewChangeRecord(_hovered));
+      notifyChange(new ChartHoverChangeRecord(_hovered));
     }
     return value;
   }
-  int get preview => _hovered;
+  Pair<int,int> get hovered => _hovered;
+
+  set preview(int value) {
+    if (value != _preview) {
+      _preview = value;
+      notifyChange(new ChartPreviewChangeRecord(_preview));
+    }
+    return value;
+  }
+  int get preview => _preview;
 
   bool show(int id) {
     if (hidden.contains(id)) {

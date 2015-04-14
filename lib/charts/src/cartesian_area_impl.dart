@@ -680,11 +680,7 @@ class _ChartSeriesInfo {
   _click(ChartEvent e) {
     var state = _area.state;
     if (state != null) {
-      if (state.isSelected(e.column)) {
-        state.unselect(e.column);
-      } else {
-        state.select(e.column);
-      }
+      state.highlighted = new Pair(e.column, e.row);
     }
     if (_area._valueMouseClickController != null) {
       _area._valueMouseClickController.add(e);
@@ -694,7 +690,7 @@ class _ChartSeriesInfo {
   _mouseOver(ChartEvent e) {
     var state = _area.state;
     if (state != null) {
-      state.highlighted = new Pair(e.column, e.row);
+      state.hovered = new Pair(e.column, e.row);
     }
     if (_area._valueMouseOverController != null) {
       _area._valueMouseOverController.add(e);
@@ -704,10 +700,10 @@ class _ChartSeriesInfo {
   _mouseOut(ChartEvent e) {
     var state = _area.state;
     if (state != null) {
-      var current = state.highlighted;
+      var current = state.hovered;
       if (current != null &&
           current.first == e.column && current.last == e.row) {
-        state.highlighted = null;
+        state.hovered = null;
       }
     }
     if (_area._valueMouseOutController != null) {

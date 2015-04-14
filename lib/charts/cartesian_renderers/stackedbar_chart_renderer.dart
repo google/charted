@@ -222,7 +222,6 @@ class StackedBarChartRenderer extends CartesianRendererBase {
   Selection getSelectionForColumn(int column) =>
       root.selectAll('.bar[data-column="$column"]');
 
-
   void _event(StreamController controller, data, int index, Element e) {
     if (controller == null) return;
     var rowStr = e.parent.dataset['row'];

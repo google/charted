@@ -24,9 +24,15 @@ abstract class ChartState implements ChangeNotifier {
   Iterable<int> get hidden;
 
   /// Currently highlighted value, if any, represented as column and row.
+  /// Highlight is result of a click on certain value.
   Pair<int,int> highlighted;
 
-  /// Currently hovered row or column.
+  /// Currently hovered value, if any, represented as column and row.
+  /// Hover is result of mouse moving over a certian value in chart.
+  Pair<int,int> hovered;
+
+  /// Currently previewed row or column. Hidden items can be previewed
+  /// by hovering on the corresponding label in Legend
   /// - Contains a column on CartesianArea if useRowColoring is false.
   /// - Row index in all other cases.
   int preview;
@@ -77,6 +83,15 @@ class ChartVisibilityChangeRecord implements ChangeRecord {
 class ChartHighlightChangeRecord implements ChangeRecord {
   final Pair<int,int> highlighted;
   const ChartHighlightChangeRecord(this.highlighted);
+}
+
+///
+/// Implementation of [ChangeRecord], that is used to notify changes to
+/// values in [ChartData].
+///
+class ChartHoverChangeRecord implements ChangeRecord {
+  final Pair<int,int> hovered;
+  const ChartHoverChangeRecord(this.hovered);
 }
 
 ///
