@@ -58,6 +58,9 @@ class _LayoutArea implements LayoutArea {
   List<ChartBehavior> _behaviors = new List<ChartBehavior>();
 
   SubscriptionsDisposer _rendererDisposer = new SubscriptionsDisposer();
+  StreamController<ChartEvent> _valueMouseOverController;
+  StreamController<ChartEvent> _valueMouseOutController;
+  StreamController<ChartEvent> _valueMouseClickController;
 
   _LayoutArea(
       this.host,
@@ -214,12 +217,21 @@ class _LayoutArea implements LayoutArea {
     _renderer = series.renderer;
     try {
       _rendererDisposer.addAll([
-          _renderer.onValueClick.listen((ChartEvent e) {
-          }),
-          _renderer.onValueMouseOver.listen((ChartEvent e) {
-          }),
-          _renderer.onValueMouseOut.listen((ChartEvent e) {
-          })
+        _renderer.onValueClick.listen((ChartEvent e) {
+          if (_valueMouseClickController != null) {
+            _valueMouseClickController.add(e);
+          }
+        }),
+        _renderer.onValueMouseOver.listen((ChartEvent e) {
+          if (_valueMouseOverController != null) {
+            _valueMouseOverController.add(e);
+          }
+        }),
+        _renderer.onValueMouseOut.listen((ChartEvent e) {
+          if (_valueMouseOutController != null) {
+            _valueMouseOutController.add(e);
+          }
+        })
       ]);
     } on UnimplementedError {};
 
@@ -260,6 +272,30 @@ class _LayoutArea implements LayoutArea {
   Stream<ChartEvent> get onMouseMove =>
       host.onMouseMove
           .map((MouseEvent e) => new _ChartEvent(e, this));
+
+  @override
+  Stream<ChartEvent> get onValueClick {
+    if (_valueMouseClickController == null) {
+      _valueMouseClickController = new StreamController.broadcast(sync: true);
+    }
+    return _valueMouseClickController.stream;
+  }
+
+  @override
+  Stream<ChartEvent> get onValueMouseOver {
+    if (_valueMouseOverController == null) {
+      _valueMouseOverController = new StreamController.broadcast(sync: true);
+    }
+    return _valueMouseOverController.stream;
+  }
+
+  @override
+  Stream<ChartEvent> get onValueMouseOut {
+    if (_valueMouseOutController == null) {
+      _valueMouseOutController = new StreamController.broadcast(sync: true);
+    }
+    return _valueMouseOutController.stream;
+  }
 
   @override
   void addChartBehavior(ChartBehavior behavior) {

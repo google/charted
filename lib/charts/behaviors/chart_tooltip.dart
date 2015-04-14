@@ -18,7 +18,6 @@ class ChartTooltip implements ChartBehavior {
   final bool showMeasureTotal;
   final bool showSelectedMeasure;
 
-  Pair<int,int> _current;
   ChartArea _area;
   ChartState _state;
   Selection _tooltipRoot;
@@ -37,7 +36,10 @@ class ChartTooltip implements ChartBehavior {
   void init(ChartArea area, Selection _, Selection __) {
     _area = area;
     _state = area.state;
-    _disposer.add(_state.changes.listen(_update));
+    _disposer.addAll([
+        area.onValueMouseOver.listen(show),
+        area.onValueMouseOut.listen(hide)
+    ]);
 
     // Tooltip requires host to be position: relative.
     area.host.style.position = 'relative';
@@ -52,24 +54,8 @@ class ChartTooltip implements ChartBehavior {
     if (_tooltipRoot != null) _tooltipRoot.remove();
   }
 
-  _update(Iterable<ChangeRecord> records) {
-    if (_state.highlighted == _current) return;
-    if (_state.highlighted == null) {
-      _tooltipRoot.style('opacity', '0');
-    } else {
-      for (int i = 0; i < records.length; ++i) {
-        var record = records.elementAt(i);
-        if (record is! ChartHighlightChangeRecord) continue;
-        if (record.event != null) {
-          _show(record.event);
-        }
-      }
-    }
-    _current = _state.highlighted;
-  }
-
   /// Displays tooltip upon receiving a hover event on an element in chart.
-  _show(ChartEvent e) {
+  show(ChartEvent e) {
     _tooltipRoot.first
       ..children.clear()
       ..attributes['dir'] = _area.config.isRTL ? 'rtl' : '';

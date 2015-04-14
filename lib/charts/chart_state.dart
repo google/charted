@@ -57,8 +57,7 @@ abstract class ChartState implements ChangeNotifier {
 class ChartSelectionChangeRecord implements ChangeRecord {
   final int add;
   final int remove;
-  final ChartEvent event;
-  const ChartSelectionChangeRecord({this.add, this.remove, this.event});
+  const ChartSelectionChangeRecord({this.add, this.remove});
 }
 
 ///
@@ -68,8 +67,7 @@ class ChartSelectionChangeRecord implements ChangeRecord {
 class ChartVisibilityChangeRecord implements ChangeRecord {
   final int add;
   final int remove;
-  final ChartEvent event;
-  const ChartVisibilityChangeRecord({this.add, this.remove, this.event});
+  const ChartVisibilityChangeRecord({this.add, this.remove});
 }
 
 ///
@@ -78,8 +76,7 @@ class ChartVisibilityChangeRecord implements ChangeRecord {
 ///
 class ChartHighlightChangeRecord implements ChangeRecord {
   final Pair<int,int> highlighted;
-  final ChartEvent event;
-  const ChartHighlightChangeRecord(this.highlighted, {this.event});
+  const ChartHighlightChangeRecord(this.highlighted);
 }
 
 ///

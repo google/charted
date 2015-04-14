@@ -90,6 +90,9 @@ class _CartesianArea implements CartesianArea {
   List<ChartBehavior> _behaviors = new List<ChartBehavior>();
   Map<ChartSeries, _ChartSeriesInfo> _seriesInfoCache = new Map();
 
+  StreamController<ChartEvent> _valueMouseOverController;
+  StreamController<ChartEvent> _valueMouseOutController;
+  StreamController<ChartEvent> _valueMouseClickController;
   StreamController<ChartArea> _chartAxesUpdatedController;
 
   _CartesianArea(
@@ -117,6 +120,18 @@ class _CartesianArea implements CartesianArea {
     _dataEventsDisposer.dispose();
     _config.legend.dispose();
 
+    if (_valueMouseOverController != null) {
+      _valueMouseOverController.close();
+      _valueMouseOverController = null;
+    }
+    if (_valueMouseOutController != null) {
+      _valueMouseOutController.close();
+      _valueMouseOutController = null;
+    }
+    if (_valueMouseClickController != null) {
+      _valueMouseClickController.close();
+      _valueMouseClickController = null;
+    }
     if (_chartAxesUpdatedController != null) {
       _chartAxesUpdatedController.close();
       _chartAxesUpdatedController = null;
@@ -577,6 +592,30 @@ class _CartesianArea implements CartesianArea {
           .map((MouseEvent e) => new _ChartEvent(e, this));
 
   @override
+  Stream<ChartEvent> get onValueClick {
+    if (_valueMouseClickController == null) {
+      _valueMouseClickController = new StreamController.broadcast(sync: true);
+    }
+    return _valueMouseClickController.stream;
+  }
+
+  @override
+  Stream<ChartEvent> get onValueMouseOver {
+    if (_valueMouseOverController == null) {
+      _valueMouseOverController = new StreamController.broadcast(sync: true);
+    }
+    return _valueMouseOverController.stream;
+  }
+
+  @override
+  Stream<ChartEvent> get onValueMouseOut {
+    if (_valueMouseOutController == null) {
+      _valueMouseOutController = new StreamController.broadcast(sync: true);
+    }
+    return _valueMouseOutController.stream;
+  }
+
+  @override
   Stream<ChartArea> get onChartAxesUpdated {
     if (_chartAxesUpdatedController == null) {
       _chartAxesUpdatedController = new StreamController.broadcast(sync: true);
@@ -638,20 +677,24 @@ class _ChartSeriesInfo {
   _click(ChartEvent e) {
     var state = _area.state;
     if (state != null) {
-      print(e.column);
       if (state.isSelected(e.column)) {
         state.unselect(e.column);
       } else {
         state.select(e.column);
       }
     }
+    if (_area._valueMouseClickController != null) {
+      _area._valueMouseClickController.add(e);
+    }
   }
 
   _mouseOver(ChartEvent e) {
     var state = _area.state;
     if (state != null) {
-      state._event = e;
       state.highlighted = new Pair(e.column, e.row);
+    }
+    if (_area._valueMouseOverController != null) {
+      _area._valueMouseOverController.add(e);
     }
   }
 
@@ -663,6 +706,9 @@ class _ChartSeriesInfo {
           current.first == e.column && current.last == e.row) {
         state.highlighted = null;
       }
+    }
+    if (_area._valueMouseOutController != null) {
+      _area._valueMouseOutController.add(e);
     }
   }
 

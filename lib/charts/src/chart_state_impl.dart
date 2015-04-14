@@ -19,15 +19,13 @@ class _ChartState extends ChangeNotifier implements ChartState {
   LinkedHashSet<int> hidden = new LinkedHashSet<int>();
   Pair<int,int> _highlighted;
   int _hovered;
-  ChartEvent _event;
 
   _ChartState() {}
 
   set highlighted(Pair<int,int> value) {
     if (value != _highlighted) {
       _highlighted = value;
-      notifyChange(new ChartHighlightChangeRecord(_highlighted, event:_event));
-      _event = null;
+      notifyChange(new ChartHighlightChangeRecord(_highlighted));
     }
     return value;
   }
@@ -63,8 +61,7 @@ class _ChartState extends ChangeNotifier implements ChartState {
   bool select(int id) {
     if (!selection.contains(id)) {
       selection.add(id);
-      notifyChange(new ChartSelectionChangeRecord(add:id, event:_event));
-      _event = null;
+      notifyChange(new ChartSelectionChangeRecord(add:id));
     }
     return true;
   }
@@ -72,8 +69,7 @@ class _ChartState extends ChangeNotifier implements ChartState {
   bool unselect(int id) {
     if (selection.contains(id)) {
       selection.remove(id);
-      notifyChange(new ChartSelectionChangeRecord(remove:id, event:_event));
-      _event = null;
+      notifyChange(new ChartSelectionChangeRecord(remove:id));
     }
     return false;
   }
