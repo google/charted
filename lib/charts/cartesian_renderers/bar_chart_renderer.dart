@@ -10,9 +10,13 @@ part of charted.charts;
 
 class BarChartRenderer extends CartesianRendererBase {
   final Iterable<int> dimensionsUsingBand = const[0];
-  final alwaysAnimate;
+  final bool alwaysAnimate;
+  final bool ignoreState;
 
-  BarChartRenderer({this.alwaysAnimate: false});
+  Pair<int,int> _highlight;
+  int _hover;
+
+  BarChartRenderer({this.alwaysAnimate: false, this.ignoreState: false});
 
   /// Returns false if the number of dimension axes on the area is 0.
   /// Otherwise, the first dimension scale is used to render the chart.
@@ -77,7 +81,10 @@ class BarChartRenderer extends CartesianRendererBase {
           ht = verticalBars ? rect.height - scaled : scaled;
       return (ht < 0) ? '0' : ht.toString();
     };
-    var getBarY = (d) => (measureScale.scale(d).round() - 1).toString();
+    var getBarY = (d) {
+      num scaled = measureScale.scale(d) - theme.defaultStrokeWidth;
+      return scaled.toStringAsFixed(0);
+    };
 
     var enter = bar.enter.append('rect')
       ..each((d, i, e) {
@@ -91,9 +98,15 @@ class BarChartRenderer extends CartesianRendererBase {
               getBarHeight(d)
           ..[verticalBars ? 'width' : 'height'] = barWidth
           ..['stroke-width'] = '${theme.defaultStrokeWidth}px';
+
+        var color = colorForKey(index: i);
+        e.style
+          ..setProperty('fill', color)
+          ..setProperty('stroke', color);
+
         if (!animateBarGroups) {
-          e.style.setProperty('fill', colorForKey(i));
-          e.style.setProperty('stroke', colorForKey(i));
+          e.attributes['data-column'] =
+              series.measures.elementAt(i).toString();
         }
       })
       ..on('click', (d, i, e) => _event(mouseClickController, d, i, e))
@@ -101,11 +114,13 @@ class BarChartRenderer extends CartesianRendererBase {
       ..on('mouseout', (d, i, e) => _event(mouseOutController, d, i, e));
 
     if (animateBarGroups) {
+      bar.attrWithCallback(
+          'data-column', (d, i, e) => series.measures.elementAt(i));
       bar.transition()
         ..attrWithCallback(verticalBars ? 'x' : 'y', (d, i, c) =>
             bars.scale(i) + theme.defaultStrokeWidth)
-        ..styleWithCallback('fill', (d, i, c) => colorForKey(i))
-        ..styleWithCallback('stroke', (d, i, c) => colorForKey(i))
+        ..styleWithCallback('fill', (d, i, c) => colorForKey(index:i))
+        ..styleWithCallback('stroke', (d, i, c) => colorForKey(index:i))
         ..attr(verticalBars ? 'width' : 'height', barWidth)
         ..duration(theme.transitionDurationMilliseconds);
 
@@ -137,11 +152,16 @@ class BarChartRenderer extends CartesianRendererBase {
     return area.theme.dimensionAxisTheme.axisBandOuterPadding;
   }
 
+  @override
+  Selection getSelectionForColumn(int column) =>
+      root.selectAll('.bar[data-column="$column"]');
+
   void _event(StreamController controller, data, int index, Element e) {
     if (controller == null) return;
     var rowStr = e.parent.dataset['row'];
     var row = rowStr != null ? int.parse(rowStr) : null;
     controller.add(
-        new _ChartEvent(scope.event, area, series, row, index, data));
+        new _ChartEvent(scope.event, area,
+            series, row, series.measures.elementAt(index), data));
   }
 }

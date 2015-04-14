@@ -11,10 +11,14 @@ part of charted.charts;
 class LineChartRenderer extends CartesianRendererBase {
   final Iterable<int> dimensionsUsingBand = const[];
   final SubscriptionsDisposer _disposer = new SubscriptionsDisposer();
+  final bool alwaysAnimate;
+  final bool ignoreState;
 
   List _xPositions = [];
   Map<int, CircleElement> _measureCircleMap = {};
   int currentDataIndex = -1;
+
+  LineChartRenderer({this.alwaysAnimate: false, this.ignoreState: false});
 
   /*
    * Returns false if the number of dimension axes on the area is 0.
@@ -23,12 +27,7 @@ class LineChartRenderer extends CartesianRendererBase {
   @override
   bool prepare(ChartArea area, ChartSeries series) {
     _ensureAreaAndSeries(area, series);
-    _disposer.add(area.selectedMeasures.listChanges.listen(
-        _handleSelectedMeasureChange));
-    _disposer.add(area.hoveredMeasures.listChanges.listen(
-        _handleHoveredMeasureChange));
-    _disposer.add(area.onMouseMove.listen(_showDataPoint));
-    _disposer.add(area.onMouseOut.listen(_hideDataPoint));
+    _trackPointerInArea();
     return area is CartesianArea;
   }
 
@@ -52,28 +51,27 @@ class LineChartRenderer extends CartesianRendererBase {
     var rangeBandOffset =
         dimensionScale is OrdinalScale ? dimensionScale.rangeBand / 2 : 0;
 
-    // Add the circle elements and compute the x positions for approximating
-    // the user's cursor to the nearest data point.  One circle is constructed
-    // for each measure in the series.
-    for (var measure in series.measures) {
+    _xPositions =
+        x.map((val) => dimensionScale.scale(val) + rangeBandOffset).toList();
 
-      // Create the CircleElements, don't need to show them yet.
-      var circle = new CircleElement();
-      circle.attributes
-      ..['r'] = '4'
-      ..['stroke'] = area.theme.getColorForKey(measure)
-      ..['fill'] = area.theme.getColorForKey(measure)
-      ..['class'] = 'line-point line-point-${measure}';
-      host.append(circle);
-      _measureCircleMap[measure] = circle;
-    }
+    // Add circles that track user's pointer movements.
+    var linePoints = root.selectAll('.line-point').data(series.measures);
+    linePoints.enter.append('circle').each((d, i, e) {
+      e.classes.add('line-point');
+      e.attributes['r'] = '4';
+    });
 
-    // Record the x position of data for cursor approximation.
-    var xValues = area.data.rows.map(
-        (row) => row.elementAt(area.config.dimensions.first)).toList();
-    for (var value in xValues) {
-      _xPositions.add(dimensionScale.scale(value) + rangeBandOffset);
-    }
+    linePoints.each((d, i, e) {
+      var color = colorForKey(measure:d);
+      e.attributes
+        ..['r'] = '4'
+        ..['stroke'] = color
+        ..['fill'] = color
+        ..['data-column'] = '$d';
+    });
+
+    linePoints.exit.remove();
+
     var line = new SvgLine(
         xValueAccessor: (d, i) => dimensionScale.scale(x[i]) + rangeBandOffset,
         yValueAccessor: (d, i) => measureScale.scale(d));
@@ -84,84 +82,66 @@ class LineChartRenderer extends CartesianRendererBase {
         ..each((d, i, e) {
           e.classes.add('line');
           e.style.setProperty('fill', 'none');
-          _disposer.add(e.onMouseOver.listen((_) =>
-              area.hoveredMeasures.add(series.measures.elementAt(i))));
-          _disposer.add(e.onMouseOut.listen((_) =>
-              area.hoveredMeasures.remove(series.measures.elementAt(i))));
-          _disposer.add(e.onClick.listen((_) {
-            var measure = series.measures.elementAt(i);
-            area.selectedMeasures.contains(measure) ?
-                area.selectedMeasures.remove(measure) :
-                area.selectedMeasures.add(measure);
-          }));
         });
 
     svgLines.each((d, i, e) {
-      e.attributes['d'] = line.path(d, i, e);
-      e.style.setProperty('stroke', colorForKey(i));
+      e.attributes
+        ..['d'] = line.path(d, i, e)
+        ..['data-column'] = series.measures.elementAt(i).toString();
+      e.style.setProperty('stroke', colorForKey(index:i));
     });
 
     svgLines.exit.remove();
   }
 
-  /// Makes line thicker and darken color when user hovers a line.  This effect
-  /// is reverted on mouse out unless the line is selected.
-  void _handleHoveredMeasureChange(List<ListChangeRecord> changes) {
-    root.selectAll('.line').each((d, i, e) {
-      var measure = series.measures.elementAt(i);
-      // If the measure is hovered, set active and set color to darker color.
-      if (area.hoveredMeasures.contains(measure)) {
-        e.classes.add('active');
-        e.style.setProperty('stroke', colorForKey(i, ChartTheme.STATE_ACTIVE));
-      } else {
-        // If the measure is not hovered and no measure is selected, set all
-        // lines back to normal color
-        if (area.selectedMeasures.isEmpty) {
-          e.style.setProperty('stroke', colorForKey(i,
-              ChartTheme.STATE_NORMAL));
-        } else {
-          // Else set all non selected lines to disabled color
-          area.selectedMeasures.contains(measure) ?
-              e.style.setProperty('stroke', colorForKey(i,
-                  ChartTheme.STATE_NORMAL)) :
-              e.style.setProperty('stroke', colorForKey(i,
-                  ChartTheme.STATE_DISABLED));
-        }
+  @override
+  void dispose() {
+    if (root == null) return;
+    root.selectAll('.line').remove();
+    _disposer.dispose();
+  }
 
-        // If the measure is not selected and not hovered, remove active.
-        if (!area.selectedMeasures.contains(measure)) {
-          e.classes.remove('active');
-        }
-      }
+  @override
+  Selection getSelectionForColumn(int column) =>
+      root.selectAll('.line[data-column="$column"]');
+
+  @override
+  void handleStateChanges(List<ChangeRecord> changes) {
+    for (int i = 0; i < series.measures.length; ++i) {
+      var column = series.measures.elementAt(i),
+          selection = getSelectionForColumn(column),
+          color = colorForKey(measure:column),
+          filter = filterForKey(measure:column);
+
+      var strokeWidth = state.selection.contains(column) ||
+          state.selection.isEmpty && state.preview == column ? 4 : 2;
+
+      selection.attr('filter', filter);
+      selection.transition()
+        ..style('stroke-width', '$strokeWidth')
+        ..style('stroke', color)
+        ..duration(50);
+    }
+  }
+
+  void _showTrackingCircles(int row) {
+    var yScale = area.measureScales(series).first;
+    root.selectAll('.line-point').each((d, i, e) {
+      var x = _xPositions[row];
+      var y = yScale.scale(area.data.rows.elementAt(row).elementAt(d));
+      e.attributes
+        ..['cx'] = '$x'
+        ..['cy'] = '$y';
+      e.style.setProperty('opacity', '1');
     });
   }
 
-  /// Toggles the line selection, change the line back to normal color but the
-  /// thickness of the line stays (from hover) to indicate line selection.
-  /// When at least one line is selected, none selected lines are set to the
-  /// lighter color.
-  void _handleSelectedMeasureChange(List<ListChangeRecord> changes) {
-    root.selectAll('.line').each((d, i, e) {
-      var measure = series.measures.elementAt(i);
-
-      if (area.selectedMeasures.isEmpty) {
-        e.style.setProperty('stroke', colorForKey(i, ChartTheme.STATE_NORMAL));
-      } else {
-        if (area.selectedMeasures.contains(measure)) {
-          e.style.setProperty('stroke', colorForKey(i, ChartTheme.STATE_NORMAL));
-        } else {
-          e.style.setProperty('stroke', colorForKey(i,
-              ChartTheme.STATE_DISABLED));
-        }
-      }
-    });
+  void _hideTrackingCircles() {
+    root.selectAll('.line-point').style('opacity', '0.0');
   }
 
-  bool _isRenderArea(ChartEvent e) =>
-      area.layout.renderArea.contains(e.chartX, e.chartY);
-
-  /// Returns the point on the line that is closest to the cursor.
-  int _getActiveDataIndex(double x) {
+  // TODO(prsd): Change to binary search.
+  int _getNearestRowIndex(double x) {
     var lastSmallerValue = 0;
     var chartX = x - area.layout.renderArea.x;
     for (var i = 0; i < _xPositions.length; i++) {
@@ -176,67 +156,18 @@ class LineChartRenderer extends CartesianRendererBase {
     return _xPositions.length - 1;
   }
 
-  /// When user hovers within the render area, approximate the closest data
-  /// point on the line and display the circle on the data point for selected or
-  /// hovered lines.
-  void _showDataPoint(ChartEvent e) {
-    if (_isRenderArea(e)) {
-      // Find the nearest x position where there is a correcsponding value
-      // in the data.  If it's the same as previously active index, do nothing.
-      var activeDataIndex = _getActiveDataIndex(e.chartX);
-      if (currentDataIndex != activeDataIndex) {
-        currentDataIndex = activeDataIndex;
-        window.requestAnimationFrame((_) {
-
-          // Find the currently selectedMeasures and hoveredMeasures, if none is
-          // selected, show dot for all.
-          var activeMeasures = [];
-          activeMeasures.addAll(area.selectedMeasures);
-          activeMeasures.addAll(area.hoveredMeasures);
-
-          if (activeMeasures.isEmpty) {
-            activeMeasures.addAll(_measureCircleMap.keys);
-          }
-
-          _measureCircleMap.values.forEach((e) => e.style.opacity = '0');
-
-          for (var measure in activeMeasures) {
-            if (!_measureCircleMap.keys.contains(measure)) continue;
-            var row = area.data.rows.elementAt(activeDataIndex);
-            var yAccessor = (d, i) => area.measureScales(series).first.scale(d);
-            var circle = _measureCircleMap[measure];
-            circle.attributes
-                ..['stroke'] = area.theme.getColorForKey(measure,
-                    area.hoveredMeasures.contains(measure) ?
-                    ChartTheme.STATE_ACTIVE : ChartTheme.STATE_NORMAL)
-                ..['fill'] = area.theme.getColorForKey(measure,
-                    area.hoveredMeasures.contains(measure) ?
-                    ChartTheme.STATE_ACTIVE : ChartTheme.STATE_NORMAL)
-                ..['cx'] = '${_xPositions[activeDataIndex]}'
-                ..['cy'] = '${yAccessor(row.elementAt(measure),
-                    activeDataIndex)}';
-            circle.style.opacity = '1';
-            mouseOverController.add(new _ChartEvent(e.source, area, series,
-                currentDataIndex, measure, row.elementAt(measure)));
-          }
-        });
+  void _trackPointerInArea() {
+    _disposer.add(area.onMouseMove.listen((ChartEvent event) {
+      if (area.layout.renderArea.contains(event.chartX, event.chartY)) {
+        var renderAreaX = event.chartX - area.layout.renderArea.x,
+            row = _getNearestRowIndex(event.chartX);
+        window.animationFrame.then((_) => _showTrackingCircles(row));
+      } else {
+        _hideTrackingCircles();
       }
-    } else {
-      _hideDataPoint(e);
-    }
-  }
-
-  /// Hides circle on data point on mouse out.
-  void _hideDataPoint(ChartEvent e) {
-    _measureCircleMap.values.forEach((e) => e.style.opacity = '0');
-    currentDataIndex = -1;
-    mouseOutController.add(new _ChartEvent(e.source, area));
-  }
-
-  @override
-  void dispose() {
-    if (root == null) return;
-    root.selectAll('.line').remove();
-    _disposer.dispose();
+    }));
+    _disposer.add(area.onMouseOut.listen((ChartEvent event) {
+      _hideTrackingCircles();
+    }));
   }
 }

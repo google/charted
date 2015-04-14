@@ -20,7 +20,7 @@ class ChartDemo {
 
   ChartDemo(this.title, this.host, this.config, this.data,
        { this.useTwoDimensions: false, this.behaviors: const [],
-         this.isLayout }) {
+         this.isLayout: false }) {
     host.innerHtml =
         '<div class="chart-wrapper">'
         '  <div class="chart-title-wrapper">'

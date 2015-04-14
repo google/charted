@@ -21,6 +21,9 @@ class _LayoutArea implements LayoutArea {
   final Element host;
 
   @override
+  final bool useRowColoring = true;
+
+  @override
   _ChartAreaLayout layout = new _ChartAreaLayout();
 
   @override
@@ -31,6 +34,9 @@ class _LayoutArea implements LayoutArea {
 
   @override
   bool isReady = false;
+
+  @override
+  ChartState state;
 
   @override
   ChartTheme theme;
@@ -211,21 +217,21 @@ class _LayoutArea implements LayoutArea {
     _renderer = series.renderer;
     try {
       _rendererDisposer.addAll([
-          _renderer.onValueClick.listen((ChartEvent e) {
-            if (_valueMouseClickController != null) {
-              _valueMouseClickController.add(e);
-            }
-          }),
-          _renderer.onValueMouseOver.listen((ChartEvent e) {
-            if (_valueMouseOverController != null) {
-              _valueMouseOverController.add(e);
-            }
-          }),
-          _renderer.onValueMouseOut.listen((ChartEvent e) {
-            if (_valueMouseOutController != null) {
-              _valueMouseOutController.add(e);
-            }
-          })
+        _renderer.onValueClick.listen((ChartEvent e) {
+          if (_valueMouseClickController != null) {
+            _valueMouseClickController.add(e);
+          }
+        }),
+        _renderer.onValueMouseOver.listen((ChartEvent e) {
+          if (_valueMouseOverController != null) {
+            _valueMouseOverController.add(e);
+          }
+        }),
+        _renderer.onValueMouseOut.listen((ChartEvent e) {
+          if (_valueMouseOutController != null) {
+            _valueMouseOutController.add(e);
+          }
+        })
       ]);
     } on UnimplementedError {};
 

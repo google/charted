@@ -21,8 +21,7 @@ abstract class ChartData {
 
   /// Create a new instance of [ChartData]'s internal implementation
   factory ChartData(
-      Iterable<ChartColumnSpec> columns, Iterable<Iterable> rows) =>
-          new _ChartData(columns, rows);
+      Iterable<ChartColumnSpec> columns, Iterable<Iterable> rows) = _ChartData;
 }
 
 ///

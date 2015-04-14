@@ -9,9 +9,12 @@
 part of charted.charts;
 
 abstract class CartesianRendererBase implements CartesianRenderer {
+  final SubscriptionsDisposer _disposer = new SubscriptionsDisposer();
+
   CartesianArea area;
   ChartSeries series;
   ChartTheme theme;
+  ChartState state;
   Rect rect;
 
   Element host;
@@ -24,6 +27,13 @@ abstract class CartesianRendererBase implements CartesianRenderer {
 
   void _ensureAreaAndSeries(CartesianArea area, ChartSeries series) {
     assert(area != null && series != null);
+    assert(this.area == null || this.area == area);
+    if (this.area == null) {
+      if (area.state != null) {
+        this.state = area.state;
+        _disposer.add(this.state.changes.listen(handleStateChanges));
+      }
+    }
     this.area = area;
     this.series = series;
   }
@@ -41,6 +51,24 @@ abstract class CartesianRendererBase implements CartesianRenderer {
     theme = area.theme;
     rect = area.layout.renderArea;
   }
+
+  /// Override this method to handle state changes.
+  void handleStateChanges(List<ChangeRecord> changes) {
+    for (int i = 0; i < series.measures.length; ++i) {
+      var column = series.measures.elementAt(i),
+          selection = getSelectionForColumn(column),
+          color = colorForKey(measure:column),
+          filter = filterForKey(measure:column);
+
+      selection.attr('filter', filter);
+      selection.transition()
+        ..style('fill', color)
+        ..style('stroke', color)
+        ..duration(50);
+    }
+  }
+
+  Selection getSelectionForColumn(int column);
 
   @override
   void dispose() {
@@ -91,7 +119,29 @@ abstract class CartesianRendererBase implements CartesianRenderer {
   double get bandInnerPadding => 1.0;
   double get bandOuterPadding => area.theme.dimensionAxisTheme.axisOuterPadding;
 
-  /** Get a color using the theme's ordinal scale of colors */
-  String colorForKey(i, [int state = ChartTheme.STATE_NORMAL]) =>
-      area.theme.getColorForKey(series.measures.elementAt(i), state);
+  /// Get a color using the theme's ordinal scale of colors
+  String colorForKey({int index, int measure}) {
+    int column = measure == null ? series.measures.elementAt(index) : measure;
+
+    // Color state for legend hover and select.
+    var colState = state.selection.isEmpty
+        ? ChartTheme.STATE_NORMAL
+        : state.selection.contains(column)
+            ? ChartTheme.STATE_NORMAL
+            : ChartTheme.STATE_DISABLED;
+
+    // Preview color get's applied only when there is no selection
+    return theme.getColorForKey(column,
+        state.preview == column && state.selection.isEmpty
+            ? ChartTheme.STATE_ACTIVE
+            : colState);
+  }
+
+  String filterForKey({int index, int measure}) {
+    int column = measure == null ? series.measures.elementAt(index) : measure;
+    return theme.getFilterForKey(column,
+        state.preview == column || state.selection.contains(column)
+            ? ChartTheme.STATE_ACTIVE
+            : ChartTheme.STATE_NORMAL);
+  }
 }

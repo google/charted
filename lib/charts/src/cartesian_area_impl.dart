@@ -49,8 +49,14 @@ class _CartesianArea implements CartesianArea {
   @override
   final bool useTwoDimensionAxes;
 
+  @override
+  final bool useRowColoring;
+
   /// Indicates whether any renderers need bands on primary dimension
   final List<int> dimensionsUsingBands = [];
+
+  @override
+  final ChartState state;
 
   @override
   _ChartAreaLayout layout = new _ChartAreaLayout();
@@ -94,7 +100,11 @@ class _CartesianArea implements CartesianArea {
       ChartData data,
       ChartConfig config,
       bool autoUpdate,
-      this.useTwoDimensionAxes) : _autoUpdate = autoUpdate {
+      this.useTwoDimensionAxes,
+      this.useRowColoring,
+      bool hasMultiSelect)
+        : _autoUpdate = autoUpdate,
+          state = new _ChartState(isMultiSelect: hasMultiSelect) {
     assert(host != null);
     assert(isNotInline(host));
 
@@ -112,6 +122,23 @@ class _CartesianArea implements CartesianArea {
     _configEventsDisposer.dispose();
     _dataEventsDisposer.dispose();
     _config.legend.dispose();
+
+    if (_valueMouseOverController != null) {
+      _valueMouseOverController.close();
+      _valueMouseOverController = null;
+    }
+    if (_valueMouseOutController != null) {
+      _valueMouseOutController.close();
+      _valueMouseOutController = null;
+    }
+    if (_valueMouseClickController != null) {
+      _valueMouseClickController.close();
+      _valueMouseClickController = null;
+    }
+    if (_chartAxesUpdatedController != null) {
+      _chartAxesUpdatedController.close();
+      _chartAxesUpdatedController = null;
+    }
   }
 
   static bool isNotInline(Element e) =>
@@ -249,7 +276,9 @@ class _CartesianArea implements CartesianArea {
     if (_scope == null) {
       _scope = new SelectionScope.element(host);
       _svg = _scope.append('svg:svg')..classed('chart-canvas');
-
+      if (!isNullOrEmpty(theme.filters)) {
+        _svg.first.innerHtml = '<defs>${theme.filters}</defs>';
+      }
       lowerBehaviorPane = _svg.append('g')..classed('lower-render-pane');
       visualization = _svg.append('g')..classed('chart-render-pane');
       upperBehaviorPane = _svg.append('g')..classed('upper-render-pane');
@@ -534,7 +563,7 @@ class _CartesianArea implements CartesianArea {
     seriesByColumn.asMap().forEach((int i, List s) {
       if (s.length == 0) return;
       legend.add(new ChartLegendItem(
-          column:i, label:data.columns.elementAt(i).label, series:s,
+          index:i, label:data.columns.elementAt(i).label, series:s,
           color:theme.getColorForKey(i)));
     });
 
@@ -650,24 +679,52 @@ class _ChartSeriesInfo {
   _CartesianArea _area;
   _ChartSeriesInfo(this._area, this._series);
 
-  _event(StreamController controller, ChartEvent evt) {
-    if (controller == null) return;
-    controller.add(evt);
+  _click(ChartEvent e) {
+    var state = _area.state;
+    if (state != null) {
+      state.highlighted = new Pair(e.column, e.row);
+    }
+    if (_area._valueMouseClickController != null) {
+      _area._valueMouseClickController.add(e);
+    }
+  }
+
+  _mouseOver(ChartEvent e) {
+    var state = _area.state;
+    if (state != null) {
+      state.hovered = new Pair(e.column, e.row);
+    }
+    if (_area._valueMouseOverController != null) {
+      _area._valueMouseOverController.add(e);
+    }
+  }
+
+  _mouseOut(ChartEvent e) {
+    var state = _area.state;
+    if (state != null) {
+      var current = state.hovered;
+      if (current != null &&
+          current.first == e.column && current.last == e.row) {
+        state.hovered = null;
+      }
+    }
+    if (_area._valueMouseOutController != null) {
+      _area._valueMouseOutController.add(e);
+    }
   }
 
   check() {
     if (_renderer != _series.renderer) dispose();
+    if (_renderer == null) {
+      try {
+        _disposer.addAll([
+          _series.renderer.onValueClick.listen(_click),
+          _series.renderer.onValueMouseOver.listen(_mouseOver),
+          _series.renderer.onValueMouseOut.listen(_mouseOut)
+        ]);
+      } on UnimplementedError {};
+    }
     _renderer = _series.renderer;
-    try {
-      _disposer.addAll([
-          _renderer.onValueClick.listen(
-              (ChartEvent e) => _event(_area._valueMouseClickController, e)),
-          _renderer.onValueMouseOver.listen(
-              (ChartEvent e) => _event(_area._valueMouseOverController, e)),
-          _renderer.onValueMouseOut.listen(
-              (ChartEvent e) => _event(_area._valueMouseOutController, e))
-      ]);
-    } on UnimplementedError {};
   }
 
   dispose() => _disposer.dispose();

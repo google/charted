@@ -19,7 +19,8 @@ class ChartTooltip implements ChartBehavior {
   final bool showSelectedMeasure;
 
   ChartArea _area;
-  Selection _tooltipSelection;
+  ChartState _state;
+  Selection _tooltipRoot;
   SubscriptionsDisposer _disposer = new SubscriptionsDisposer();
 
   /// Constructs the tooltip.
@@ -34,6 +35,7 @@ class ChartTooltip implements ChartBehavior {
   /// Sets up listeners for triggering tooltip.
   void init(ChartArea area, Selection _, Selection __) {
     _area = area;
+    _state = area.state;
     _disposer.addAll([
         area.onValueMouseOver.listen(show),
         area.onValueMouseOut.listen(hide)
@@ -44,20 +46,20 @@ class ChartTooltip implements ChartBehavior {
 
     var _scope = new SelectionScope.element(_area.host);
     _scope.append('div')..classed('tooltip');
-    _tooltipSelection = _scope.select('.tooltip');
+    _tooltipRoot = _scope.select('.tooltip');
   }
 
   void dispose() {
     _disposer.dispose();
-    if (_tooltipSelection != null) _tooltipSelection.remove();
+    if (_tooltipRoot != null) _tooltipRoot.remove();
   }
 
   /// Displays tooltip upon receiving a hover event on an element in chart.
   show(ChartEvent e) {
-    _tooltipSelection.first
+    _tooltipRoot.first
       ..children.clear()
       ..attributes['dir'] = _area.config.isRTL ? 'rtl' : '';
-    _tooltipSelection.classed('rtl', _area.config.isRTL);
+    _tooltipRoot.classed('rtl', _area.config.isRTL);
 
     // Display dimension value if set in config.
     if (showDimensionValue) {
@@ -65,7 +67,7 @@ class ChartTooltip implements ChartBehavior {
           value = _area.data.rows.elementAt(e.row).elementAt(column),
           formatter = _getFormatterForColumn(column);
 
-      _tooltipSelection.append('div')
+      _tooltipRoot.append('div')
         ..classed('tooltip-title')
         ..text((formatter != null) ? formatter(value) : value.toString());
     }
@@ -79,7 +81,7 @@ class ChartTooltip implements ChartBehavior {
       for (int i = 0, len = measures.length; i < len; i++) {
         total += row.elementAt(measures.elementAt(i));
       }
-      _tooltipSelection.append('div')
+      _tooltipRoot.append('div')
         ..classed('tooltip-total')
         ..text((formatter != null) ? formatter(total) : total.toString());
     }
@@ -88,8 +90,8 @@ class ChartTooltip implements ChartBehavior {
     // tooltip for them, if none is selected/hovered, show all.
     var activeMeasures = [];
     if (showSelectedMeasure) {
-      activeMeasures.addAll(_area.selectedMeasures);
-      activeMeasures.addAll(_area.hoveredMeasures);
+      activeMeasures.addAll(_state.selection);
+      activeMeasures.add(_state.preview);
       if (activeMeasures.isEmpty) {
         for (var series in _area.config.series) {
           activeMeasures.addAll(series.measures);
@@ -101,7 +103,7 @@ class ChartTooltip implements ChartBehavior {
     var data = (showSelectedMeasure) ? activeMeasures : e.series.measures;
 
     // Create the tooltip items base on the number of measures in the series.
-    var items = _tooltipSelection.selectAll('.tooltip-item').
+    var items = _tooltipRoot.selectAll('.tooltip-item').
         data(data);
     items.enter.append('div')
         ..classed('tooltip-item')
@@ -109,7 +111,7 @@ class ChartTooltip implements ChartBehavior {
             !showSelectedMeasure && (i == e.column));
 
     // Display the label for the currently active series.
-    var tooltipItems = _tooltipSelection.selectAll('.tooltip-item');
+    var tooltipItems = _tooltipRoot.selectAll('.tooltip-item');
     tooltipItems.append('div')
         ..classed('tooltip-item-label')
         ..textWithCallback((d, i, c) => _area.data.columns.
@@ -129,10 +131,10 @@ class ChartTooltip implements ChartBehavior {
 
     math.Point position = computeTooltipPosition(
         new math.Point(e.chartX, e.chartY),
-            _tooltipSelection.first.getBoundingClientRect());
+            _tooltipRoot.first.getBoundingClientRect());
 
     // Set position of the tooltip and display it.
-    _tooltipSelection
+    _tooltipRoot
       ..style('left', '${position.x}px')
       ..style('top', '${position.y}px')
       ..style('opacity', '1');
@@ -190,8 +192,8 @@ class ChartTooltip implements ChartBehavior {
       _area.data.columns.elementAt(column).formatter;
 
   hide(ChartEvent e) {
-    if (_tooltipSelection == null) return;
-    _tooltipSelection.style('opacity', '0');
+    if (_tooltipRoot == null) return;
+    _tooltipRoot.style('opacity', '0');
   }
 }
 
