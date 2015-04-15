@@ -9,6 +9,16 @@
 part of charted.charts;
 
 class BarChartRenderer extends CartesianRendererBase {
+  static const RADIUS = 0;
+  static const ROUNDED_RECT_CLIPPATH = '''
+    <clipPath id="rounded-top">
+      <rect x="0" y="-${RADIUS}px" width="100%" height="100%" />
+    </clipPath>
+    <clipPath id="rounded-right" clipPathUnits="objectBoundingBox">
+      <rect x="-${RADIUS}px" y="0" width="100%" height="100%" />
+    </clipPath>
+  ''';
+
   final Iterable<int> dimensionsUsingBand = const[0];
   final bool alwaysAnimate;
   final bool ignoreState;
@@ -79,7 +89,7 @@ class BarChartRenderer extends CartesianRendererBase {
     var getBarHeight = (d) {
       var scaled = measureScale.scale(d).round() - 1,
           ht = verticalBars ? rect.height - scaled : scaled;
-      return (ht < 0) ? '0' : ht.toString();
+      return (ht < 0) ? '$RADIUS' : (ht + RADIUS).toString();
     };
     var getBarY = (d) {
       num scaled = measureScale.scale(d) - theme.defaultStrokeWidth;
@@ -98,10 +108,14 @@ class BarChartRenderer extends CartesianRendererBase {
               (bars.scale(i) + theme.defaultStrokeWidth).toString()
           ..[verticalBars ? 'y' : 'x'] = verticalBars ?
               (animateBarGroups ? rect.height.toString() : getBarY(d)) : '1'
-          ..[verticalBars ? 'height' : 'width'] = animateBarGroups ? '0' :
-              getBarHeight(d)
+          ..[verticalBars ? 'height' : 'width'] =
+              animateBarGroups ? '${RADIUS}' : getBarHeight(d)
           ..[verticalBars ? 'width' : 'height'] = barWidth
-          ..['stroke-width'] = '${theme.defaultStrokeWidth}px';
+          ..['stroke-width'] = '${theme.defaultStrokeWidth}px'
+          ..['rx'] = '${RADIUS}px'
+          ..['ry'] = '${RADIUS}px'
+          ..['clip-path'] =
+              verticalBars ? 'url("#rounded-top")' : 'url("#rounded-right")';
 
         e.style
           ..setProperty('fill', colorStylePair.first)

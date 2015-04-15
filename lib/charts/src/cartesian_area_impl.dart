@@ -277,7 +277,9 @@ class _CartesianArea implements CartesianArea {
       _scope = new SelectionScope.element(host);
       _svg = _scope.append('svg:svg')..classed('chart-canvas');
       if (!isNullOrEmpty(theme.filters)) {
-        _svg.first.innerHtml = '<defs>${theme.filters}</defs>';
+        _svg.first.innerHtml = '<defs>'
+              '${BarChartRenderer.ROUNDED_RECT_CLIPPATH}${theme.filters}'
+            '</defs>';
       }
       lowerBehaviorPane = _svg.append('g')..classed('lower-render-pane');
       visualization = _svg.append('g')..classed('chart-render-pane');

@@ -65,21 +65,29 @@ abstract class CartesianRendererBase implements CartesianRenderer {
   /// Override this method to handle state changes.
   void handleStateChanges(List<ChangeRecord> changes) {
     resetColorCache();
-    for (int i = 0; i < series.measures.length; ++i) {
-      var column = series.measures.elementAt(i),
-          selection = getSelectionForColumn(column),
-          colorStylePair = colorForKey(measure:column);
+    var itemStateChanged =
+        changes.any((x) =>
+            x is ChartSelectionChangeRecord ||
+            x is ChartVisibilityChangeRecord ||
+            x is ChartPreviewChangeRecord);
 
-      selection.each((d,i, Element e) {
-        e.classes
-          ..removeWhere((String x) => ChartState.CLASS_NAMES.contains(x))
-          ..add(colorStylePair.last);
-      });
+    if (itemStateChanged) {
+      for (int i = 0; i < series.measures.length; ++i) {
+        var column = series.measures.elementAt(i),
+            selection = getSelectionForColumn(column),
+            colorStylePair = colorForKey(measure:column);
 
-      selection.transition()
-        ..style('fill', colorStylePair.first)
-        ..style('stroke', colorStylePair.first)
-        ..duration(50);
+        selection.each((d,i, Element e) {
+          e.classes
+            ..removeWhere((String x) => ChartState.CLASS_NAMES.contains(x))
+            ..add(colorStylePair.last);
+        });
+
+        selection.transition()
+          ..style('fill', colorStylePair.first)
+          ..style('stroke', colorStylePair.first)
+          ..duration(50);
+      }
     }
   }
 
