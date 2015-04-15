@@ -52,10 +52,10 @@ class _ChartState extends ChangeNotifier implements ChartState {
   }
   int get preview => _preview;
 
-  bool show(int id) {
+  bool unhide(int id) {
     if (hidden.contains(id)) {
       hidden.remove(id);
-      notifyChange(new ChartVisibilityChangeRecord(add:id));
+      notifyChange(new ChartVisibilityChangeRecord(unhide:id));
     }
     return true;
   }
@@ -63,7 +63,7 @@ class _ChartState extends ChangeNotifier implements ChartState {
   bool hide(int id) {
     if (!hidden.contains(id)) {
       hidden.add(id);
-      notifyChange(new ChartVisibilityChangeRecord(remove:id));
+      notifyChange(new ChartVisibilityChangeRecord(hide:id));
     }
     return false;
   }

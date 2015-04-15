@@ -50,11 +50,11 @@ class BarChartRenderer extends CartesianRendererBase {
 
     // Create and update the bar groups.
 
-    var groups = root.selectAll('.row-group').data(rows);
+    var groups = root.selectAll('.bar-rdr-rowgroup').data(rows);
     var animateBarGroups = alwaysAnimate || !groups.isEmpty;
 
     groups.enter.append('g')
-      ..classed('row-group')
+      ..classed('bar-rdr-rowgroup')
       ..attrWithCallback('transform', (d, i, c) => verticalBars ?
           'translate(${dimensionScale.scale(dimensionVals[i])}, 0)' :
           'translate(0, ${dimensionScale.scale(dimensionVals[i])})');
@@ -75,7 +75,7 @@ class BarChartRenderer extends CartesianRendererBase {
     // Create and update the bars
     // Avoids animation on first render unless alwaysAnimate is set to true.
 
-    var bar = groups.selectAll('.bar').dataWithCallback((d, i, c) => rows[i]);
+    var bar = groups.selectAll('.bar-rdr-bar').dataWithCallback((d, i, c) => rows[i]);
     var getBarHeight = (d) {
       var scaled = measureScale.scale(d).round() - 1,
           ht = verticalBars ? rect.height - scaled : scaled;
@@ -88,7 +88,11 @@ class BarChartRenderer extends CartesianRendererBase {
 
     var enter = bar.enter.append('rect')
       ..each((d, i, e) {
-        e.classes.add('bar');
+        var measure = series.measures.elementAt(i),
+            colorStylePair = colorForKey(measure:measure);
+
+        e.classes.add('bar-rdr-bar ${colorStylePair.last}');
+
         e.attributes
           ..[verticalBars ? 'x' : 'y'] =
               (bars.scale(i) + theme.defaultStrokeWidth).toString()
@@ -99,14 +103,12 @@ class BarChartRenderer extends CartesianRendererBase {
           ..[verticalBars ? 'width' : 'height'] = barWidth
           ..['stroke-width'] = '${theme.defaultStrokeWidth}px';
 
-        var color = colorForKey(index: i);
         e.style
-          ..setProperty('fill', color)
-          ..setProperty('stroke', color);
+          ..setProperty('fill', colorStylePair.first)
+          ..setProperty('stroke', colorStylePair.first);
 
         if (!animateBarGroups) {
-          e.attributes['data-column'] =
-              series.measures.elementAt(i).toString();
+          e.attributes['data-column'] = '$measure';
         }
       })
       ..on('click', (d, i, e) => _event(mouseClickController, d, i, e))
@@ -114,13 +116,22 @@ class BarChartRenderer extends CartesianRendererBase {
       ..on('mouseout', (d, i, e) => _event(mouseOutController, d, i, e));
 
     if (animateBarGroups) {
-      bar.attrWithCallback(
-          'data-column', (d, i, e) => series.measures.elementAt(i));
+      bar.each((d, i, e) {
+        var measure = series.measures.elementAt(i),
+            colorStylePair = colorForKey(measure: measure);
+
+        e.attributes['data-column'] = '$measure';
+        e.classes
+          ..removeWhere((x) => ChartState.CLASS_NAMES.contains(x))
+          ..add(colorStylePair.last);
+        e.style
+          ..setProperty('fill', colorStylePair.first)
+          ..setProperty('stroke', colorStylePair.first);
+      });
+
       bar.transition()
         ..attrWithCallback(verticalBars ? 'x' : 'y', (d, i, c) =>
             bars.scale(i) + theme.defaultStrokeWidth)
-        ..styleWithCallback('fill', (d, i, c) => colorForKey(index:i))
-        ..styleWithCallback('stroke', (d, i, c) => colorForKey(index:i))
         ..attr(verticalBars ? 'width' : 'height', barWidth)
         ..duration(theme.transitionDurationMilliseconds);
 
@@ -154,7 +165,7 @@ class BarChartRenderer extends CartesianRendererBase {
 
   @override
   Selection getSelectionForColumn(int column) =>
-      root.selectAll('.bar[data-column="$column"]');
+      root.selectAll('.bar-rdr-bar[data-column="$column"]');
 
   void _event(StreamController controller, data, int index, Element e) {
     if (controller == null) return;

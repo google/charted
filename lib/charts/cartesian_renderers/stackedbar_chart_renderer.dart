@@ -40,10 +40,10 @@ class StackedBarChartRenderer extends CartesianRendererBase {
     var dimensionVals = area.data.rows.map(
         (row) => row.elementAt(area.config.dimensions.first)).toList();
 
-    var groups = root.selectAll('.row-group').data(rows);
+    var groups = root.selectAll('.bar-rdr-rowgroup').data(rows);
     var animateBarGroups = alwaysAnimate || !groups.isEmpty;
     groups.enter.append('g')
-      ..classed('row-group')
+      ..classed('bar-rdr-rowgroup')
       ..attrWithCallback('transform', (d, i, c) => verticalBars ?
           'translate(${dimensionScale.scale(dimensionVals[i])}, 0)' :
           'translate(0, ${dimensionScale.scale(dimensionVals[i])})');
@@ -58,7 +58,7 @@ class StackedBarChartRenderer extends CartesianRendererBase {
         ..duration(theme.transitionDurationMilliseconds);
     }
 
-    var bar = groups.selectAll('.bar').dataWithCallback((d, i, c) => rows[i]);
+    var bar = groups.selectAll('.bar-rdr-bar').dataWithCallback((d, i, c) => d);
     var ic = -1,
         order = 0,
         prevY = new List();
@@ -152,7 +152,11 @@ class StackedBarChartRenderer extends CartesianRendererBase {
 
     var enter = bar.enter.append('rect')
       ..each((d, i, e) {
-          e.classes.add('bar');
+          var measure = series.measures.elementAt(_reverseIdx(i)),
+              colorStylePair = colorForKey(measure: measure);
+
+          e.classes.add('bar-rdr-bar ${colorStylePair.last}');
+
           e.attributes
             ..[verticalBars ? 'height' : 'width'] =
                 animateBarGroups ? '0' : getBarHeight(d, i)
@@ -160,11 +164,13 @@ class StackedBarChartRenderer extends CartesianRendererBase {
             ..[verticalBars ? 'y' : 'x'] =
                 animateBarGroups ? getInitialBarY(i) : getBarY(d, i)
             ..['stroke-width'] = '${theme.defaultStrokeWidth}';
-          e.style.setProperty('fill', colorForKey(index:_reverseIdx(i)));
-          e.style.setProperty('stroke', colorForKey(index:_reverseIdx(i)));
+
+          e.style
+            ..setProperty('fill', colorStylePair.first)
+            ..setProperty('stroke', colorStylePair.first);
+
           if (!animateBarGroups) {
-            e.attributes['data-column'] =
-                series.measures.elementAt(i).toString();
+            e.attributes['data-column'] = '$measure';
           }
         })
       ..on('click', (d, i, e) => _event(mouseClickController, d, i, e))
@@ -172,12 +178,20 @@ class StackedBarChartRenderer extends CartesianRendererBase {
       ..on('mouseout', (d, i, e) => _event(mouseOutController, d, i, e));
 
     if (animateBarGroups) {
-      bar.attrWithCallback(
-          'data-column', (d, i, e) => series.measures.elementAt(i));
+      bar.each((d, i, e) {
+        var measure = series.measures.elementAt(_reverseIdx(i)),
+            colorStylePair = colorForKey(measure: measure);
+
+        e.attributes['data-column'] = '$measure';
+        e.classes
+          ..removeWhere((x) => ChartState.CLASS_NAMES.contains(x))
+          ..add(colorStylePair.last);
+        e.style
+          ..setProperty('fill', colorStylePair.first)
+          ..setProperty('stroke', colorStylePair.first);
+      });
 
       bar.transition()
-        ..styleWithCallback('fill', (d, i, c) => colorForKey(index:_reverseIdx(i)))
-        ..styleWithCallback('stroke', (d, i, c) => colorForKey(index:_reverseIdx(i)))
         ..attr(verticalBars? 'width' : 'height', barWidth)
         ..duration(theme.transitionDurationMilliseconds);
 
@@ -220,7 +234,7 @@ class StackedBarChartRenderer extends CartesianRendererBase {
 
   @override
   Selection getSelectionForColumn(int column) =>
-      root.selectAll('.bar[data-column="$column"]');
+      root.selectAll('.bar-rdr-bar[data-column="$column"]');
 
   void _event(StreamController controller, data, int index, Element e) {
     if (controller == null) return;
