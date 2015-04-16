@@ -145,22 +145,24 @@ abstract class CartesianRendererBase implements CartesianRenderer {
       int itemState = ChartTheme.STATE_NORMAL;
       List<String> classes = [];
 
-      if (!state.selection.isEmpty) {
-        if (state.selection.contains(column)) {
-          classes.add(ChartState.SELECTED_CLASS);
-        } else {
-          classes.add(ChartState.UNSELECTED_CLASS);
-          itemState = ChartTheme.STATE_DISABLED;
+      if (state != null) {
+        if (!state.selection.isEmpty) {
+          if (state.selection.contains(column)) {
+            classes.add(ChartState.SELECTED_CLASS);
+          } else {
+            classes.add(ChartState.UNSELECTED_CLASS);
+            itemState = ChartTheme.STATE_DISABLED;
+          }
         }
-      }
-      if (state.hidden.contains(column)) {
-        classes.add(ChartState.HIDDEN_CLASS);
-      }
-      if (state.preview == column) {
-        classes.add(ChartState.PREVIEW_CLASS);
-      }
-      if (state.preview == column && state.selection.isEmpty) {
-        itemState = ChartTheme.STATE_ACTIVE;
+        if (state.hidden.contains(column)) {
+          classes.add(ChartState.HIDDEN_CLASS);
+        }
+        if (state.preview == column) {
+          classes.add(ChartState.PREVIEW_CLASS);
+        }
+        if (state.preview == column && state.selection.isEmpty) {
+          itemState = ChartTheme.STATE_ACTIVE;
+        }
       }
 
       colorForKeyCache[column] =
