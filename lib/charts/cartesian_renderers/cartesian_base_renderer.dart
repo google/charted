@@ -16,6 +16,7 @@ abstract class CartesianRendererBase implements CartesianRenderer {
   ChartTheme theme;
   ChartState state;
   Rect rect;
+  List colorForKeyCache;
 
   Element host;
   Selection root;
@@ -50,31 +51,47 @@ abstract class CartesianRendererBase implements CartesianRenderer {
 
     theme = area.theme;
     rect = area.layout.renderArea;
+    resetColorCache();
+  }
+
+  void resetColorCache() {
+    var data = area.data,
+        length = area.useRowColoring == true
+            ? data.rows.length
+            : data.columns.length;
+    colorForKeyCache = new List(length);
   }
 
   /// Override this method to handle state changes.
   void handleStateChanges(List<ChangeRecord> changes) {
-    for (int i = 0; i < series.measures.length; ++i) {
-      var column = series.measures.elementAt(i),
-          selection = getSelectionForColumn(column),
-          color = colorForKey(measure:column),
-          filter = filterForKey(measure:column);
+    resetColorCache();
+    var itemStateChanged =
+        changes.any((x) =>
+            x is ChartSelectionChangeRecord ||
+            x is ChartVisibilityChangeRecord ||
+            x is ChartPreviewChangeRecord);
 
-      selection.attr('filter', filter);
-      selection.transition()
-        ..style('fill', color)
-        ..style('stroke', color)
-        ..duration(50);
+    if (itemStateChanged) {
+      for (int i = 0; i < series.measures.length; ++i) {
+        var column = series.measures.elementAt(i),
+            selection = getSelectionForColumn(column),
+            colorStylePair = colorForKey(measure:column);
+
+        selection.each((d,i, Element e) {
+          e.classes
+            ..removeWhere((String x) => ChartState.CLASS_NAMES.contains(x))
+            ..add(colorStylePair.last);
+        });
+
+        selection.transition()
+          ..style('fill', colorStylePair.first)
+          ..style('stroke', colorStylePair.first)
+          ..duration(50);
+      }
     }
   }
 
   Selection getSelectionForColumn(int column);
-
-  @override
-  void dispose() {
-    if (root == null) return;
-    root.selectAll('.row-group').remove();
-  }
 
   @override
   Extent get extent {
@@ -117,31 +134,41 @@ abstract class CartesianRendererBase implements CartesianRenderer {
   }
 
   double get bandInnerPadding => 1.0;
-  double get bandOuterPadding => area.theme.dimensionAxisTheme.axisOuterPadding;
+  double get bandOuterPadding =>
+      area.theme.dimensionAxisTheme.axisOuterPadding;
 
-  /// Get a color using the theme's ordinal scale of colors
-  String colorForKey({int index, int measure}) {
+  /// Get color and class names for use with each item in the chart. Both are
+  /// based on the current state of the item.
+  Pair<String,String> colorForKey({int index, int measure}) {
     int column = measure == null ? series.measures.elementAt(index) : measure;
+    if (colorForKeyCache[column] == null) {
+      int itemState = ChartTheme.STATE_NORMAL;
+      List<String> classes = [];
 
-    // Color state for legend hover and select.
-    var colState = state.selection.isEmpty
-        ? ChartTheme.STATE_NORMAL
-        : state.selection.contains(column)
-            ? ChartTheme.STATE_NORMAL
-            : ChartTheme.STATE_DISABLED;
+      if (state != null) {
+        if (!state.selection.isEmpty) {
+          if (state.selection.contains(column)) {
+            classes.add(ChartState.SELECTED_CLASS);
+          } else {
+            classes.add(ChartState.UNSELECTED_CLASS);
+            itemState = ChartTheme.STATE_DISABLED;
+          }
+        }
+        if (state.hidden.contains(column)) {
+          classes.add(ChartState.HIDDEN_CLASS);
+        }
+        if (state.preview == column) {
+          classes.add(ChartState.PREVIEW_CLASS);
+        }
+        if (state.preview == column && state.selection.isEmpty) {
+          itemState = ChartTheme.STATE_ACTIVE;
+        }
+      }
 
-    // Preview color get's applied only when there is no selection
-    return theme.getColorForKey(column,
-        state.preview == column && state.selection.isEmpty
-            ? ChartTheme.STATE_ACTIVE
-            : colState);
-  }
-
-  String filterForKey({int index, int measure}) {
-    int column = measure == null ? series.measures.elementAt(index) : measure;
-    return theme.getFilterForKey(column,
-        state.preview == column || state.selection.contains(column)
-            ? ChartTheme.STATE_ACTIVE
-            : ChartTheme.STATE_NORMAL);
+      colorForKeyCache[column] =
+          new Pair(theme.getColorForKey(column, itemState),
+              classes.join(' '));
+    }
+    return colorForKeyCache[column];
   }
 }

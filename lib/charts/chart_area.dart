@@ -61,9 +61,9 @@ abstract class CartesianArea implements ChartArea {
       bool autoUpdate: false,
       bool useTwoDimensionAxes: false,
       bool useRowColoring,
-      bool hasMultiSelect: false }) =>
+      ChartState state }) =>
           new _CartesianArea(host, data, config, autoUpdate,
-              useTwoDimensionAxes, useRowColoring, hasMultiSelect);
+              useTwoDimensionAxes, useRowColoring, state);
 }
 
 ///

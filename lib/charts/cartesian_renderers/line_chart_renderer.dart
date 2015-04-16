@@ -55,18 +55,19 @@ class LineChartRenderer extends CartesianRendererBase {
         x.map((val) => dimensionScale.scale(val) + rangeBandOffset).toList();
 
     // Add circles that track user's pointer movements.
-    var linePoints = root.selectAll('.line-point').data(series.measures);
+    // TODO(prsd): Move to behavior.
+    var linePoints = root.selectAll('.line-rdr-point').data(series.measures);
     linePoints.enter.append('circle').each((d, i, e) {
-      e.classes.add('line-point');
+      e.classes.add('line-rdr-point');
       e.attributes['r'] = '4';
     });
 
     linePoints.each((d, i, e) {
-      var color = colorForKey(measure:d);
+      var colorStylePair = colorForKey(measure:d);
       e.attributes
         ..['r'] = '4'
-        ..['stroke'] = color
-        ..['fill'] = color
+        ..['stroke'] = colorStylePair.first
+        ..['fill'] = colorStylePair.first
         ..['data-column'] = '$d';
     });
 
@@ -77,18 +78,21 @@ class LineChartRenderer extends CartesianRendererBase {
         yValueAccessor: (d, i) => measureScale.scale(d));
 
     // Add lines and hook up hover and selection events.
-    var svgLines = root.selectAll('.line').data(lines);
+    var svgLines = root.selectAll('.line-rdr-line').data(lines);
     svgLines.enter.append('path')
         ..each((d, i, e) {
-          e.classes.add('line');
+          e.classes.add('line-rdr-line');
           e.style.setProperty('fill', 'none');
         });
 
     svgLines.each((d, i, e) {
+      var colorStylePair = colorForKey(index:i);
+      e.classes.removeWhere((x) => ChartState.CLASS_NAMES.contains(x));
+      e.classes.add(colorStylePair.last);
       e.attributes
         ..['d'] = line.path(d, i, e)
+        ..['stroke'] = colorStylePair.first
         ..['data-column'] = series.measures.elementAt(i).toString();
-      e.style.setProperty('stroke', colorForKey(index:i));
     });
 
     svgLines.exit.remove();
@@ -97,36 +101,36 @@ class LineChartRenderer extends CartesianRendererBase {
   @override
   void dispose() {
     if (root == null) return;
-    root.selectAll('.line').remove();
+    root.selectAll('.line-rdr-line').remove();
+    root.selectAll('.line-rdr-point').remove();
     _disposer.dispose();
   }
 
   @override
   Selection getSelectionForColumn(int column) =>
-      root.selectAll('.line[data-column="$column"]');
+      root.selectAll('.line-rdr-line[data-column="$column"]');
 
   @override
   void handleStateChanges(List<ChangeRecord> changes) {
+    resetColorCache();
     for (int i = 0; i < series.measures.length; ++i) {
       var column = series.measures.elementAt(i),
           selection = getSelectionForColumn(column),
-          color = colorForKey(measure:column),
-          filter = filterForKey(measure:column);
-
-      var strokeWidth = state.selection.contains(column) ||
-          state.selection.isEmpty && state.preview == column ? 4 : 2;
-
-      selection.attr('filter', filter);
+          colorStylePair = colorForKey(measure:column);
+      selection.each((d,i,e) {
+        e.classes
+          ..removeWhere((x) => ChartState.CLASS_NAMES.contains(x))
+          ..add(colorStylePair.last);
+      });
       selection.transition()
-        ..style('stroke-width', '$strokeWidth')
-        ..style('stroke', color)
+        ..style('stroke', colorStylePair.first)
         ..duration(50);
     }
   }
 
   void _showTrackingCircles(int row) {
     var yScale = area.measureScales(series).first;
-    root.selectAll('.line-point').each((d, i, e) {
+    root.selectAll('.line-rdr-point').each((d, i, e) {
       var x = _xPositions[row];
       var y = yScale.scale(area.data.rows.elementAt(row).elementAt(d));
       e.attributes
@@ -137,10 +141,9 @@ class LineChartRenderer extends CartesianRendererBase {
   }
 
   void _hideTrackingCircles() {
-    root.selectAll('.line-point').style('opacity', '0.0');
+    root.selectAll('.line-rdr-point').style('opacity', '0.0');
   }
 
-  // TODO(prsd): Change to binary search.
   int _getNearestRowIndex(double x) {
     var lastSmallerValue = 0;
     var chartX = x - area.layout.renderArea.x;

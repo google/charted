@@ -102,9 +102,7 @@ class _CartesianArea implements CartesianArea {
       bool autoUpdate,
       this.useTwoDimensionAxes,
       this.useRowColoring,
-      bool hasMultiSelect)
-        : _autoUpdate = autoUpdate,
-          state = new _ChartState(isMultiSelect: hasMultiSelect) {
+      this.state) : _autoUpdate = autoUpdate {
     assert(host != null);
     assert(isNotInline(host));
 

@@ -18,6 +18,7 @@ import "package:charted/selection/selection.dart";
 part 'shapes/arc.dart';
 part 'shapes/line.dart';
 part 'shapes/area.dart';
+part 'shapes/rect.dart';
 
 /// Common interface provided by all shape implementations.
 abstract class SvgShape {

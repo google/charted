@@ -9,6 +9,8 @@
 part of charted.charts;
 
 class StackedBarChartRenderer extends CartesianRendererBase {
+  static const RADIUS = 2;
+
   final Iterable<int> dimensionsUsingBand = const[0];
   final bool alwaysAnimate;
   final bool ignoreState;
@@ -40,10 +42,10 @@ class StackedBarChartRenderer extends CartesianRendererBase {
     var dimensionVals = area.data.rows.map(
         (row) => row.elementAt(area.config.dimensions.first)).toList();
 
-    var groups = root.selectAll('.row-group').data(rows);
+    var groups = root.selectAll('.stack-rdr-rowgroup').data(rows);
     var animateBarGroups = alwaysAnimate || !groups.isEmpty;
     groups.enter.append('g')
-      ..classed('row-group')
+      ..classed('stack-rdr-rowgroup')
       ..attrWithCallback('transform', (d, i, c) => verticalBars ?
           'translate(${dimensionScale.scale(dimensionVals[i])}, 0)' :
           'translate(0, ${dimensionScale.scale(dimensionVals[i])})');
@@ -58,7 +60,7 @@ class StackedBarChartRenderer extends CartesianRendererBase {
         ..duration(theme.transitionDurationMilliseconds);
     }
 
-    var bar = groups.selectAll('.bar').dataWithCallback((d, i, c) => rows[i]);
+    var bar = groups.selectAll('.stack-rdr-bar').dataWithCallback((d, i, c) => d);
     var ic = -1,
         order = 0,
         prevY = new List();
@@ -78,14 +80,14 @@ class StackedBarChartRenderer extends CartesianRendererBase {
       ic = 1000000000;
     }
 
-    var barWidth = '${dimensionScale.rangeBand - theme.defaultStrokeWidth}';
+    var barWidth = dimensionScale.rangeBand - theme.defaultStrokeWidth;
 
     // Calculate height of each segment in the bar.
     // Uses prevAllZeroHeight and prevOffset to track previous segments
     var prevAllZeroHeight = true,
         prevOffset = 0;
-    var getBarHeight = (d, i) {
-      if (!verticalBars) return '${measureScale.scale(d).round()}';
+    var getBarLength = (d, i) {
+      if (!verticalBars) return measureScale.scale(d).round();
       var retval = rect.height - measureScale.scale(d).round();
       if (i != 0) {
         // If previous bars has 0 height, don't offset for spacing
@@ -108,12 +110,12 @@ class StackedBarChartRenderer extends CartesianRendererBase {
         retval = 0;
       }
       prevAllZeroHeight = (retval == 0) && prevAllZeroHeight;
-      return retval.toString();
+      return retval;
     };
 
     // Initial "y" position of a bar that is being created.
     // Only used when animateBarGroups is set to true.
-    var getInitialBarY = (i) {
+    var getInitialBarPos = (i) {
       var tempY;
       if (i <= ic && i > 0) {
         tempY = prevY[order];
@@ -122,18 +124,18 @@ class StackedBarChartRenderer extends CartesianRendererBase {
         tempY = verticalBars ? rect.height : 0;
       }
       ic = i;
-      return tempY.toString();
+      return tempY;
     };
 
     // Position of a bar in the stack. yPos is used to keep track of the
     // offset based on previous calls to getBarY
-    var yPos = 0,
-        getBarY = (d, i) {
+    var yPos = 0;
+    var getBarPos = (d, i) {
       if (verticalBars) {
         if (i == 0) {
           yPos = measureScale.scale(0).round();
         }
-        return '${yPos -= (rect.height - measureScale.scale(d).round())}';
+        return yPos -= (rect.height - measureScale.scale(d).round());
       } else {
         if (i == 0) {
           // 1 to not overlap the axis line.
@@ -146,25 +148,37 @@ class StackedBarChartRenderer extends CartesianRendererBase {
         if (yPos != pos) {
           yPos += (theme.defaultSeparatorWidth + theme.defaultStrokeWidth);
         }
-        return'$pos';
+        return pos;
       }
     };
 
-    var enter = bar.enter.append('rect')
+    var barsCount = rows.first.length;
+    var buildPath = (d, int i, bool animate) {
+      return verticalBars
+          ? topRoundedRect(
+              0, animate ? getInitialBarPos(i) : getBarPos(d, i),
+              barWidth, animate ? 0 : getBarLength(d, i),
+              i == barsCount - 1 ? RADIUS : 0)
+          : rightRoundedRect(
+              animate ? getInitialBarPos(i) : getBarPos(d, i), 0,
+              animate ? 0 : getBarLength(d, i), barWidth,
+              i == barsCount - 1 ? RADIUS : 0);
+    };
+
+    var enter = bar.enter.append('path')
       ..each((d, i, e) {
-          e.classes.add('bar');
+          var measure = series.measures.elementAt(_reverseIdx(i)),
+              colorStylePair = colorForKey(measure: measure);
+          e.classes.add('stack-rdr-bar ${colorStylePair.last}');
           e.attributes
-            ..[verticalBars ? 'height' : 'width'] =
-                animateBarGroups ? '0' : getBarHeight(d, i)
-            ..[verticalBars ? 'width' : 'height'] = barWidth
-            ..[verticalBars ? 'y' : 'x'] =
-                animateBarGroups ? getInitialBarY(i) : getBarY(d, i)
+            ..['d'] = buildPath(d, i, animateBarGroups)
             ..['stroke-width'] = '${theme.defaultStrokeWidth}';
-          e.style.setProperty('fill', colorForKey(index:_reverseIdx(i)));
-          e.style.setProperty('stroke', colorForKey(index:_reverseIdx(i)));
+          e.style
+            ..setProperty('fill', colorStylePair.first)
+            ..setProperty('stroke', colorStylePair.first);
+
           if (!animateBarGroups) {
-            e.attributes['data-column'] =
-                series.measures.elementAt(i).toString();
+            e.attributes['data-column'] = '$measure';
           }
         })
       ..on('click', (d, i, e) => _event(mouseClickController, d, i, e))
@@ -172,25 +186,39 @@ class StackedBarChartRenderer extends CartesianRendererBase {
       ..on('mouseout', (d, i, e) => _event(mouseOutController, d, i, e));
 
     if (animateBarGroups) {
-      bar.attrWithCallback(
-          'data-column', (d, i, e) => series.measures.elementAt(i));
+      bar.each((d, i, e) {
+        var measure = series.measures.elementAt(_reverseIdx(i)),
+            colorStylePair = colorForKey(measure: measure);
+
+        e.attributes['data-column'] = '$measure';
+        e.classes
+          ..removeWhere((x) => ChartState.CLASS_NAMES.contains(x))
+          ..add(colorStylePair.last);
+        e.style
+          ..setProperty('fill', colorStylePair.first)
+          ..setProperty('stroke', colorStylePair.first);
+      });
 
       bar.transition()
-        ..styleWithCallback('fill', (d, i, c) => colorForKey(index:_reverseIdx(i)))
-        ..styleWithCallback('stroke', (d, i, c) => colorForKey(index:_reverseIdx(i)))
         ..attr(verticalBars? 'width' : 'height', barWidth)
         ..duration(theme.transitionDurationMilliseconds);
 
       bar.transition()
         ..attrWithCallback(
-            verticalBars ? 'y' : 'x', (d, i, c) => getBarY(d, i))
+            verticalBars ? 'y' : 'x', (d, i, c) => getBarPos(d, i))
         ..attrWithCallback(
-            verticalBars ? 'height' : 'width', (d, i, c) => getBarHeight(d, i))
+            verticalBars ? 'height' : 'width', (d, i, c) => getBarLength(d, i))
         ..duration(theme.transitionDurationMilliseconds)
         ..delay(50);
     }
 
     bar.exit.remove();
+  }
+
+  @override
+  void dispose() {
+    if (root == null) return;
+    root.selectAll('.stack-rdr-rowgroup').remove();
   }
 
   @override
@@ -220,7 +248,7 @@ class StackedBarChartRenderer extends CartesianRendererBase {
 
   @override
   Selection getSelectionForColumn(int column) =>
-      root.selectAll('.bar[data-column="$column"]');
+      root.selectAll('.stack-rdr-bar[data-column="$column"]');
 
   void _event(StreamController controller, data, int index, Element e) {
     if (controller == null) return;

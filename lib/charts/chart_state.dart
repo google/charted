@@ -13,6 +13,22 @@ part of charted.charts;
 /// Selection and visibility
 ///
 abstract class ChartState implements ChangeNotifier {
+  static const SELECTED_CLASS = 'item-selected';
+  static const UNSELECTED_CLASS = 'item-unselected';
+  static const PREVIEW_CLASS = 'item-previewed';
+  static const HIDDEN_CLASS = 'item-hidden';
+
+  static const ROW_HIGHLIGHTED_CLASS = 'row-highlighted';
+  static const ROW_HOVERED_CLASS = 'row-hovered';
+
+  static const HIGHLIGHTED_CLASS = 'value-highlighted';
+  static const HOVERED_CLASS = 'value-hovered';
+
+  static const CLASS_NAMES = const[
+    SELECTED_CLASS, UNSELECTED_CLASS, PREVIEW_CLASS, HIDDEN_CLASS,
+    ROW_HIGHLIGHTED_CLASS, ROW_HOVERED_CLASS,
+    HIGHLIGHTED_CLASS, HOVERED_CLASS ];
+
   /// List of selected items.
   /// - Contains a column on CartesianArea if useRowColoring is false.
   /// - Row index in all other cases.
@@ -38,7 +54,7 @@ abstract class ChartState implements ChangeNotifier {
   int preview;
 
   /// Ensure that a row or column is visible.
-  bool show(int id);
+  bool unhide(int id);
 
   /// Ensure that a row or column is invisible.
   bool hide(int id);
@@ -71,9 +87,9 @@ class ChartSelectionChangeRecord implements ChangeRecord {
 /// values in [ChartData].
 ///
 class ChartVisibilityChangeRecord implements ChangeRecord {
-  final int add;
-  final int remove;
-  const ChartVisibilityChangeRecord({this.add, this.remove});
+  final int unhide;
+  final int hide;
+  const ChartVisibilityChangeRecord({this.unhide, this.hide});
 }
 
 ///
@@ -99,6 +115,6 @@ class ChartHoverChangeRecord implements ChangeRecord {
 /// values in [ChartData].
 ///
 class ChartPreviewChangeRecord implements ChangeRecord {
-  final int hovered;
-  const ChartPreviewChangeRecord(this.hovered);
+  final int previewed;
+  const ChartPreviewChangeRecord(this.previewed);
 }

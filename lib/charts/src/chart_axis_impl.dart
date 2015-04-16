@@ -111,7 +111,7 @@ class _ChartAxis {
           textMetrics = new TextMetrics(fontStyle:theme.ticksFont),
           formatted = tickValues.map((x) => formatter(x)).toList();
 
-      var width = textMetrics.getLongestTextWidth(formatted);
+      var width = textMetrics.getLongestTextWidth(formatted).ceil();
       if (width > theme.verticalAxisWidth) {
         width = theme.verticalAxisWidth;
         for (int i = 0, len = formatted.length; i < len; ++i) {

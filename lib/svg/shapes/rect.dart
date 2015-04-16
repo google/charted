@@ -1,0 +1,27 @@
+//
+// Copyright 2014 Google Inc. All rights reserved.
+//
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file or at
+// https://developers.google.com/open-source/licenses/bsd
+//
+
+part of charted.svg.shapes;
+
+String roundedRect(int x, int y, int width, int height,
+    int topLeft, int topRight, int bottomRight, int bottomLeft) =>
+        'M${x+topLeft},${y} '
+        'L${x+width-topRight},${y} '
+            'Q${x+width},${y} ${x+width},${y+topRight}'
+        'L${x+width},${y+height-bottomRight} '
+            'Q${x+width},${y+height} ${x+width-bottomRight},${y+height}'
+        'L${x+bottomLeft},${y+height} '
+            'Q${x},${y+height} ${x},${y+height-bottomLeft}'
+        'L${x},${y+topLeft} '
+            'Q${x},${y} ${x+topLeft},${y} Z';
+
+String rightRoundedRect(int x, int y, int width, int height, int radius) =>
+    roundedRect(x, y, width, height, 0, radius, radius, 0);
+
+String topRoundedRect(int x, int y, int width, int height, int radius) =>
+    roundedRect(x, y, width, height, radius, radius, 0, 0);
