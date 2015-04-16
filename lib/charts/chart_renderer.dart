@@ -54,6 +54,10 @@ abstract class LayoutRenderer extends ChartRenderer {
 /// Common interface for all renderers in Charted
 ///
 abstract class ChartRenderer extends ChartRendererBehaviorSource {
+  /// Name of the renderer.
+  /// The name can only include chars that are allowed in the CSS for selectors.
+  String get name;
+
   /// Prepare the chart for rendering.
   /// - [area] represents the [ChartArea] on which the chart is rendered.
   /// - [series] represents the [ChartSeries] that is rendered

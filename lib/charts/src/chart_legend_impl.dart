@@ -12,7 +12,8 @@ class _ChartLegend implements ChartLegend {
   static const CLASS_PREFIX = 'chart-legend';
 
   final Element host;
-  final int _maxItems;
+  final int visibleItemsCount;
+  final bool showValues;
   final SubscriptionsDisposer _disposer = new SubscriptionsDisposer();
 
   String _title;
@@ -22,7 +23,8 @@ class _ChartLegend implements ChartLegend {
 
   Iterable<ChartLegendItem> _items;
 
-  _ChartLegend(Element this.host, int this._maxItems, String this._title) {
+  _ChartLegend(this.host, this.visibleItemsCount, this.showValues, String title)
+      : _title = title {
     assert(host != null);
   }
 
@@ -75,12 +77,12 @@ class _ChartLegend implements ChartLegend {
     _createLegendItems();
 
     // Add more item label if there's more items than the max display items.
-    if ((_maxItems > 0) && (_maxItems < items.length)) {
+    if ((visibleItemsCount > 0) && (visibleItemsCount < items.length)) {
       _root.select('.chart-legend-more').remove();
       _root.append('div')
-        ..on('mouseover', (d, i, e) => _displayMoreItem(items.skip(_maxItems)))
+        ..on('mouseover', (d, i, e) => _displayMoreItem(items.skip(visibleItemsCount)))
         ..on('mouseleave', (d, i, e) => _hideMoreItem())
-        ..text('${items.length - _maxItems} more...')
+        ..text('${items.length - visibleItemsCount} more...')
         ..classed('chart-legend-more');
     }
   }
@@ -107,29 +109,37 @@ class _ChartLegend implements ChartLegend {
   void _createLegendItems() {
     var state = _area.state,
         rows = _root.selectAll(
-            '.${CLASS_PREFIX}-row').data(_items, (x) => x.hashCode),
-        enter = rows.enter.appendWithCallback((d, i, e) =>
-          new Element.html(
-              '<div class="${CLASS_PREFIX}-row">'
-                '<div class="${CLASS_PREFIX}-color"></div>'
-                '<div class="${CLASS_PREFIX}-label"></div>'
-              '</div>'));
+            '.chart-legend-row').data(_items, (x) => x.hashCode);
+
+    var enter = rows.enter.appendWithCallback((d, i, e) =>
+        new Element.html(
+            '<div class="chart-legend-row">'
+              '<div class="chart-legend-color"></div>'
+              '<div class="chart-legend-label"></div>'
+              '${showValues ? "<div class=\"chart-legend-value\"></div>" : ""}'
+            '</div>'));
 
     rows.each((ChartLegendItem d, i, Element e) {
       if (state != null) {
         if (d.index == state.preview) {
-          e.classes.add('${CLASS_PREFIX}-hover');
+          e.classes.add('chart-legend-hover');
         } else {
-          e.classes.remove('${CLASS_PREFIX}-hover');
+          e.classes.remove('chart-legend-hover');
         }
         if (state.isSelected(d.index)) {
-          e.classes.add('${CLASS_PREFIX}-selected');
+          e.classes.add('chart-legend-selected');
         } else {
-          e.classes.remove('${CLASS_PREFIX}-selected');
+          e.classes.remove('chart-legend-selected');
         }
       }
+      e.classes.addAll(d.series.map((ChartSeries x) => 'type-${x.renderer.name}'));
       (e.firstChild as Element).style.setProperty('background-color', d.color);
-      (e.lastChild as Element).innerHtml = d.label;
+      (e.children[1]).innerHtml = d.label;
+      if (showValues) {
+        (e.lastChild as Element)
+          ..innerHtml = d.value
+          ..style.setProperty('color', d.color);
+      }
     });
 
     if (state != null) {

@@ -19,15 +19,22 @@ class PieChartRenderer extends LayoutRendererBase {
   final int maxSliceCount;
   final String otherItemsLabel;
   final String otherItemsColor;
+  final showLabels;
+
+  @override
+  final String name = "pie-rdr";
 
   final List<ChartLegendItem> _legend = [];
 
   PieChartRenderer({
-      this.innerRadiusRatio: 0,
+      num innerRadiusRatio: 0,
+      bool showLabels,
       this.statsMode: STATS_PERCENTAGE,
       this.maxSliceCount: SMALL_INT_MAX,
       this.otherItemsLabel: 'Other',
-      this.otherItemsColor: '#EEEEEE'});
+      this.otherItemsColor: '#EEEEEE'})
+      : showLabels = showLabels == null ? innerRadiusRatio == 0 : showLabels,
+        innerRadiusRatio = innerRadiusRatio;
 
   /// Returns false if the number of dimension axes != 0. Pie chart can only
   /// be rendered on areas with no axes.
@@ -84,12 +91,17 @@ class PieChartRenderer extends LayoutRendererBase {
             ? theme.getOtherColor()
             : theme.getColorForKey(row.elementAt(dimension));
 
-    pie.enter.append('path')
-        ..classed('pie-path')
-        ..attrWithCallback('fill', (d, i, e) => colorForData(d.data))
-        ..attrWithCallback('d', (d, i, e) => arc.path(d, i, host))
-        ..attr('stroke-width', '1px')
-        ..style('stroke', "#ffffff");
+    pie.enter.append('path').each((d, i, e) {
+      e.classes.add('pie-path');
+      e.attributes
+        ..['fill'] = colorForData(d.data)
+        ..['d'] = arc.path(d, i, host)
+        ..['stroke-width'] = '1px'
+        ..['stroke'] = '#ffffff';
+      e.append(
+          Namespace.createChildElement('text', e)
+            ..classes.add('pie-label'));
+    });
 
     pie
       ..on('click', (d, i, e) => _event(mouseClickController, d, i, e))
@@ -99,10 +111,12 @@ class PieChartRenderer extends LayoutRendererBase {
     pie.exit.remove();
 
     _legend.clear();
-    var items = new List.generate(rows.length, (i) {
-      var row = rows.elementAt(i);
-      return new ChartLegendItem(
-          color: colorForData(row), label: row.elementAt(dimension));
+    var items = new List.generate(data.length, (i) {
+      SvgArcData d = data.elementAt(i);
+      Iterable row = d.data;
+      return new ChartLegendItem(color: colorForData(row),
+          label: row.elementAt(dimension), series: [series],
+          value: '${(((d.endAngle - d.startAngle) * 50) / math.PI).toStringAsFixed(2)}%');
     });
     return _legend..addAll(area.config.isRTL ? items.reversed : items);
   }
@@ -110,7 +124,7 @@ class PieChartRenderer extends LayoutRendererBase {
   @override
   void dispose() {
     if (root == null) return;
-    root.selectAll('.row-group').remove();
+    root.selectAll('.pie-path').remove();
   }
 
   void _event(StreamController controller, data, int index, Element e) {
