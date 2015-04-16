@@ -130,6 +130,10 @@ class LineChartRenderer extends CartesianRendererBase {
     }
   }
 
+  @override
+  void updateValueState(int column, int row) {
+  }
+
   void _showTrackingCircles(int row) {
     var yScale = area.measureScales(series).first;
     root.selectAll('.line-rdr-point').each((d, i, e) {
