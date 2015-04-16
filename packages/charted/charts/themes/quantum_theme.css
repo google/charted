@@ -77,18 +77,19 @@
   margin-bottom: 16px;
   position: relative;
   padding-left: 20px;
+  cursor: default;
 }
 
 .chart-legend-title {
-  color: #757575;
+  color: #838383;
 }
 
 .chart-legend-subtitle {
-  color: #BDBDBD;
+  color: #C1C1C1;
 }
 
-.chart-legend-row.selected,
-.chart-legend-row.hover {
+.chart-legend-selected,
+.chart-legend-hover {
   color: #434343;
 }
 
@@ -103,11 +104,23 @@
   margin-top: 0px;
 }
 
+.chart-legend-label {
+  flex-basis: 80px;
+  max-width: 120px;
+}
+
 .chart-legend-color,
 .chart-legend-more-color {
   width: 12px;
   height: 12px;
   margin: auto 8px;
+  border-radius: 2px;
+}
+.type-line-rdr > .chart-legend-color {
+  height: 4px;
+}
+.type-pie-rdr > .chart-legend-color {
+  border-radius: 6px;
 }
 
 .chart-legend-more-tooltip {
@@ -156,30 +169,44 @@
 
 
 /*
- * Lines in line chart
+ * Styles for LineChartRenderer
  */
 
-path.line {
+.line-rdr-line {
   stroke-width: 2px;
   transition: stroke-width .4s;
+  stroke-linecap: round;
 }
 
-path.line.active {
+.line-rdr-line.item-selected {
   stroke-width: 4px;
 }
 
-/*
- * Circle for data point in line chart
- */
+.line-rdr-line.item-selected,
+.line-rdr-line.item-previewed {
+  filter: url('#active-shadow');
+}
 
-.line-point {
+.line-rdr-point {
   opacity: 0;
   transition: opacity .2s;
 }
 
 /*
+ * Styles for BarChartRenderer and StackedBarChartRenderer
+ */
+
+.bar-rdr-bar.item-selected,
+.bar-rdr-bar.item-previewed,
+.stack-rdr-bar.item-selected,
+.stack-rdr-bar.item-previewed {
+  filter: url('#active-shadow');
+}
+
+/*
  * Styles for the tooltip.
  */
+
 .tooltip {
   opacity: 0;
   display: flex;

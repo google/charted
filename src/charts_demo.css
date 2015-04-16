@@ -1,5 +1,5 @@
 @import url(http://fonts.googleapis.com/css?family=Roboto);
-@import url(../packages/charted/charts/themes/quantum_theme.css);
+@import url(packages/charted/charts/themes/quantum_theme.css);
 
 body {
   font-family: Roboto, sans-serif;

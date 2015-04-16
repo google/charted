@@ -402,7 +402,7 @@ if(z==="Object"){y=String(a.constructor).match(/^\s*function\s*(\S*)\s*\(/)[1]
 if(typeof y==="string")z=/^\w+$/.test(y)?y:z}if(z.length>1&&C.xB.O2(z,0)===36)z=C.xB.yn(z,1)
 return(z+H.ia(H.oX(a),0,null)).replace(/[^<,> ]+/g,function(b){return init.mangledGlobalNames[b]||b})},
 a5:function(a){return"Instance of '"+H.lh(a)+"'"},
-VK:function(a,b){if(a==null||typeof a==="boolean"||typeof a==="number"||typeof a==="string")throw H.b(P.p(a))
+of:function(a,b){if(a==null||typeof a==="boolean"||typeof a==="number"||typeof a==="string")throw H.b(P.p(a))
 return a[b]},
 aw:function(a,b,c){if(a==null||typeof a==="boolean"||typeof a==="number"||typeof a==="string")throw H.b(P.p(a))
 a[b]=c},
@@ -921,9 +921,9 @@ wP:{
 "^":"",
 QL:function(){var z,y,x
 z=new D.U(P.L(null,null,null,null,P.P),[],[],0,null,null,null,null,null,null)
-D.V(z,C.N)
+D.V(z,C.VK)
 y=document.querySelector(".demos-container")
-x=new S.nB(new P.Q(null),new P.Q(null),null,null)
+x=new S.nB(new P.N(null),new P.N(null),null,null)
 x.M3(y)
 z=new K.Vi([["aaa",3,25],["bbb",2,10],["ccc",-1,145],["ddd",2,125],["eee",3,30],["fff",4,10],["ggg",3,30],["hhh",2,10],["iii",3,20],["jjj",3,13],["kkk",3,7],["lll",4,15],["mmm",4,5],["nnn",0,13],["ooo",0,12]],400,300,new X.O(z),S.T([y],x))
 z.$2(".squarify",0)
@@ -1133,13 +1133,13 @@ for(w=J.R(x),v=J.wS(w.gP9(x)),u=0;u<v;++u){t=J.i4(w.gP9(x),u)
 if(t!=null){s=this.a
 s.toString
 s=s.Q
-r=H.VK(t,"expando$values")
-s=r==null?null:H.VK(r,s.Ux())
+r=H.of(t,"expando$values")
+s=r==null?null:H.of(r,s.Ux())
 a.$3(s,u,t)}}}},
 gFV:function(a){var z,y,x,w
 for(z=0;y=this.Q,z<y.length;++z){x=y[z]
 for(w=0;w<J.wS(x.gP9(x));++w)if(J.i4(x.gP9(x),w)!=null)return J.i4(x.gP9(x),w)}return},
-DJ:function(a,b){this.d4(b,new S.L0(a))},
+DJ:function(a,b){this.d4(b,new S.Q(a))},
 vt:function(a,b,c,d){this.mF(b,S.T9(H.aH(c)),d)},
 bv:function(a,b,c){return this.vt(a,b,c,null)},
 mF:function(a,b,c){this.d4(b,new S.cA(a,c))},
@@ -1159,8 +1159,8 @@ r=s.geT(t)
 u.toString
 if(r==null)u=null
 else{u=u.Q
-q=H.VK(r,"expando$values")
-u=q==null?null:H.VK(q,u.Ux())}w.$2(t,a.$3(u,v,s.geT(t)))}w=this.a
+q=H.of(r,"expando$values")
+u=q==null?null:H.of(q,u.Ux())}w.$2(t,a.$3(u,v,s.geT(t)))}w=this.a
 u=new S.R5(null,null,y,w,null)
 u.Qp(y,z,x,w)
 return u},
@@ -1179,8 +1179,8 @@ for(x=J.R(w),v=0;v<J.wS(x.gP9(w));++v){u=J.i4(x.gP9(w),v)
 if(u!=null){t=this.a
 t.toString
 t=t.Q
-s=H.VK(u,"expando$values")
-t=s==null?null:H.VK(s,t.Ux())
+s=H.of(u,"expando$values")
+t=s==null?null:H.of(s,t.Ux())
 z.push(new S.zm(a.$3(t,y,u),u))}}}}else z.push(new S.zm(a.$3(null,0,null),this.a.b))
 this.Q=z},
 static:{E2:function(a,b,c,d){var z=new S.SM(null,b,null)
@@ -1232,7 +1232,7 @@ if(z==null)z=null
 else{y=this.Q.a
 y.toString
 z=z.$3(c==null?null:y.Q.p(0,c),b,c)}return this.b.$2(c,z)}},
-L0:{
+Q:{
 "^":"r;Q",
 $2:function(a,b){var z,y
 z=J.R(a)
@@ -1305,8 +1305,8 @@ for(s=v.Q,r=J.U6(s),q=r.gv(s),p=J.R(u),o=0;o<q;++o){n=r.Zv(s,o)
 if(n!=null){m=this.a
 m.toString
 m=m.Q
-l=H.VK(n,"expando$values")
-k=l==null?null:H.VK(l,m.Ux())
+l=H.of(n,"expando$values")
+k=l==null?null:H.of(l,m.Ux())
 j=a.$3(k,o,v.a)
 m=this.a
 m.toString
@@ -1373,7 +1373,7 @@ gu:function(a){var z=new H.SO(J.Nx(this.Q),this.a)
 z.$builtinTypeInfo=this.$builtinTypeInfo
 return z}},
 SO:{
-"^":"An;Q,a",
+"^":"Ov;Q,a",
 D:function(){for(var z=this.Q;z.D();)if(this.Mi(z.gk()))return!0
 return!1},
 gk:function(){return this.Q.gk()},
@@ -1715,16 +1715,16 @@ X:function(a){return"Reading static variable '"+this.Q+"' during its initializat
 HG:{
 "^":"a;Q",
 X:function(a){return"Exception: "+this.Q}},
-Q:{
+N:{
 "^":"a;Q",
 X:function(a){return"Expando:"+H.d(this.Q)},
-p:function(a,b){var z=H.VK(b,"expando$values")
-return z==null?null:H.VK(z,this.Ux())},
-q:function(a,b,c){var z=H.VK(b,"expando$values")
+p:function(a,b){var z=H.of(b,"expando$values")
+return z==null?null:H.of(z,this.Ux())},
+q:function(a,b,c){var z=H.of(b,"expando$values")
 if(z==null){z=new P.a()
 H.aw(b,"expando$values",z)}H.aw(z,this.Ux(),c)},
 Ux:function(){var z,y
-z=H.VK(this,"expando$key")
+z=H.of(this,"expando$key")
 if(z==null){y=$.Ss
 $.Ss=y+1
 z="expando$key$"+y
@@ -1734,7 +1734,7 @@ P:{
 "+int":0,
 cX:{
 "^":"a;"},
-An:{
+Ov:{
 "^":"a;"},
 zM:{
 "^":"a;",
@@ -2440,7 +2440,7 @@ C.hQ=function(hooks) {
 C.Vu=function(_, letter) { return letter.toUpperCase(); }
 C.nx=I.uL([0,0,0,0])
 C.uv=I.uL(["#C5D9FB","#4184F3","#2955C5"])
-C.d9=I.uL(["#F3C6C2","#DB4437","#DB4437"])
+C.An=I.uL(["#F3C6C2","#DB4437","#A52714"])
 C.Pa=I.uL(["#FBE7B1","#F4B400","#EF9200"])
 C.hp=I.uL(["#B6E0CC","#0F9D58","#0A7F42"])
 C.jG=I.uL(["#E0BDE6","#AA46BB","#691A99"])
@@ -2451,7 +2451,7 @@ C.CS=I.uL(["#C4C9E8","#5B6ABF","#3848AA"])
 C.nd=I.uL(["#F7BACF","#EF6191","#E81D62"])
 C.AC=I.uL(["#B1DEDA","#00786A","#004C3F"])
 C.dO=I.uL(["#F38EB0","#C1175A","#870D4E"])
-C.N=I.uL([C.uv,C.d9,C.Pa,C.hp,C.jG,C.ue,C.WJ,C.UY,C.CS,C.nd,C.AC,C.dO])
+C.VK=I.uL([C.uv,C.An,C.Pa,C.hp,C.jG,C.ue,C.WJ,C.UY,C.CS,C.nd,C.AC,C.dO])
 C.Sj=I.uL(["svg","xhtml","xlink","xml","xmlns"])
 C.tQ=new H.LP(5,{svg:"http://www.w3.org/2000/svg",xhtml:"http://www.w3.org/1999/xhtml",xlink:"http://www.w3.org/1999/xlink",xml:"http://www.w3.org/XML/1998/namespace",xmlns:"http://www.w3.org/2000/xmlns/"},C.Sj)
 {init.isHunkLoaded=function(a){return!!$dart_deferred_initializers[a]}
