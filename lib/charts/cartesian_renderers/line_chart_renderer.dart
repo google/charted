@@ -102,6 +102,7 @@ class LineChartRenderer extends CartesianRendererBase {
   void dispose() {
     if (root == null) return;
     root.selectAll('.line-rdr-line').remove();
+    root.selectAll('.line-rdr-point').remove();
     _disposer.dispose();
   }
 

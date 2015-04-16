@@ -9,15 +9,7 @@
 part of charted.charts;
 
 class BarChartRenderer extends CartesianRendererBase {
-  static const RADIUS = 0;
-  static const ROUNDED_RECT_CLIPPATH = '''
-    <clipPath id="rounded-top">
-      <rect x="0" y="-${RADIUS}px" width="100%" height="100%" />
-    </clipPath>
-    <clipPath id="rounded-right" clipPathUnits="objectBoundingBox">
-      <rect x="-${RADIUS}px" y="0" width="100%" height="100%" />
-    </clipPath>
-  ''';
+  static const RADIUS = 2;
 
   final Iterable<int> dimensionsUsingBand = const[0];
   final bool alwaysAnimate;
@@ -65,6 +57,7 @@ class BarChartRenderer extends CartesianRendererBase {
 
     groups.enter.append('g')
       ..classed('bar-rdr-rowgroup')
+      ..attr('clip-path', 'url(#render-area-clippath)')
       ..attrWithCallback('transform', (d, i, c) => verticalBars ?
           'translate(${dimensionScale.scale(dimensionVals[i])}, 0)' :
           'translate(0, ${dimensionScale.scale(dimensionVals[i])})');
@@ -79,43 +72,43 @@ class BarChartRenderer extends CartesianRendererBase {
         ..duration(theme.transitionDurationMilliseconds);
     }
 
-    var barWidth = (bars.rangeBand.abs() -
-        theme.defaultSeparatorWidth - theme.defaultStrokeWidth).toString();
+    var barWidth = bars.rangeBand.abs() -
+        theme.defaultSeparatorWidth - theme.defaultStrokeWidth;
 
     // Create and update the bars
     // Avoids animation on first render unless alwaysAnimate is set to true.
 
-    var bar = groups.selectAll('.bar-rdr-bar').dataWithCallback((d, i, c) => rows[i]);
-    var getBarHeight = (d) {
+    var bar = groups.selectAll(
+        '.bar-rdr-bar').dataWithCallback((d, i, c) => rows[i]);
+    var getBarLength = (d) {
       var scaled = measureScale.scale(d).round() - 1,
           ht = verticalBars ? rect.height - scaled : scaled;
-      return (ht < 0) ? '$RADIUS' : (ht + RADIUS).toString();
+      return (ht < 0) ? 0 : ht;
     };
-    var getBarY = (d) {
+    var getBarPos = (d) {
       num scaled = measureScale.scale(d) - theme.defaultStrokeWidth;
-      return scaled.toStringAsFixed(0);
+      return scaled.round();
+    };
+    var buildPath = (d, int i, bool animate) {
+      return verticalBars
+          ? topRoundedRect(
+              bars.scale(i).toInt() + theme.defaultStrokeWidth,
+              animate ? rect.height : getBarPos(d),
+              barWidth, animate ? 0 : getBarLength(d), RADIUS)
+          : rightRoundedRect(
+              1, bars.scale(i).toInt() + theme.defaultStrokeWidth,
+              animate ? 0 : getBarLength(d), barWidth, RADIUS);
     };
 
-    var enter = bar.enter.append('rect')
+    var enter = bar.enter.append('path')
       ..each((d, i, e) {
         var measure = series.measures.elementAt(i),
             colorStylePair = colorForKey(measure:measure);
 
         e.classes.add('bar-rdr-bar ${colorStylePair.last}');
-
         e.attributes
-          ..[verticalBars ? 'x' : 'y'] =
-              (bars.scale(i) + theme.defaultStrokeWidth).toString()
-          ..[verticalBars ? 'y' : 'x'] = verticalBars ?
-              (animateBarGroups ? rect.height.toString() : getBarY(d)) : '1'
-          ..[verticalBars ? 'height' : 'width'] =
-              animateBarGroups ? '${RADIUS}' : getBarHeight(d)
-          ..[verticalBars ? 'width' : 'height'] = barWidth
-          ..['stroke-width'] = '${theme.defaultStrokeWidth}px'
-          ..['rx'] = '${RADIUS}px'
-          ..['ry'] = '${RADIUS}px'
-          ..['clip-path'] =
-              verticalBars ? 'url("#rounded-top")' : 'url("#rounded-right")';
+          ..['d'] = buildPath(d, i, animateBarGroups)
+          ..['stroke-width'] = '${theme.defaultStrokeWidth}px';
 
         e.style
           ..setProperty('fill', colorStylePair.first)
@@ -133,7 +126,6 @@ class BarChartRenderer extends CartesianRendererBase {
       bar.each((d, i, e) {
         var measure = series.measures.elementAt(i),
             colorStylePair = colorForKey(measure: measure);
-
         e.attributes['data-column'] = '$measure';
         e.classes
           ..removeWhere((x) => ChartState.CLASS_NAMES.contains(x))
@@ -144,23 +136,16 @@ class BarChartRenderer extends CartesianRendererBase {
       });
 
       bar.transition()
-        ..attrWithCallback(verticalBars ? 'x' : 'y', (d, i, c) =>
-            bars.scale(i) + theme.defaultStrokeWidth)
-        ..attr(verticalBars ? 'width' : 'height', barWidth)
-        ..duration(theme.transitionDurationMilliseconds);
-
-      int delay = 0;
-      bar.transition()
-        ..attrWithCallback(verticalBars ? 'y' : 'x',
-            (d, i, e) => verticalBars ? getBarY(d) : '1')
-        ..attrWithCallback(verticalBars ? 'height': 'width',
-            (d, i, c) => getBarHeight(d))
-        ..delayWithCallback((d, i, c) =>
-            delay += theme.transitionDurationMilliseconds ~/
-                (series.measures.length * rows.length));
+        ..attrWithCallback('d', (d, i, e) => buildPath(d, i, false));
     }
 
     bar.exit.remove();
+  }
+
+  @override
+  void dispose() {
+    if (root == null) return;
+    root.selectAll('.bar-rdr-rowgroup').remove();
   }
 
   @override

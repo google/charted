@@ -94,12 +94,6 @@ abstract class CartesianRendererBase implements CartesianRenderer {
   Selection getSelectionForColumn(int column);
 
   @override
-  void dispose() {
-    if (root == null) return;
-    root.selectAll('.row-group').remove();
-  }
-
-  @override
   Extent get extent {
     assert(series != null && area != null);
     var rows = area.data.rows,

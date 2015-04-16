@@ -185,7 +185,9 @@
  */
 
 .bar-rdr-bar.item-selected,
-.bar-rdr-bar.item-previewed {
+.bar-rdr-bar.item-previewed,
+.stack-rdr-bar.item-selected,
+.stack-rdr-bar.item-previewed {
   filter: url('#active-shadow');
 }
 
