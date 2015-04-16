@@ -104,11 +104,23 @@
   margin-top: 0px;
 }
 
+.chart-legend-label {
+  flex-basis: 80px;
+  max-width: 120px;
+}
+
 .chart-legend-color,
 .chart-legend-more-color {
   width: 12px;
   height: 12px;
   margin: auto 8px;
+  border-radius: 2px;
+}
+.type-line-rdr > .chart-legend-color {
+  height: 4px;
+}
+.type-pie-rdr > .chart-legend-color {
+  border-radius: 6px;
 }
 
 .chart-legend-more-tooltip {

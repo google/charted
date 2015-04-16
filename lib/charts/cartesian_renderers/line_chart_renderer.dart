@@ -12,13 +12,15 @@ class LineChartRenderer extends CartesianRendererBase {
   final Iterable<int> dimensionsUsingBand = const[];
   final SubscriptionsDisposer _disposer = new SubscriptionsDisposer();
   final bool alwaysAnimate;
-  final bool ignoreState;
 
   List _xPositions = [];
   Map<int, CircleElement> _measureCircleMap = {};
   int currentDataIndex = -1;
 
-  LineChartRenderer({this.alwaysAnimate: false, this.ignoreState: false});
+  @override
+  final String name = "line-rdr";
+
+  LineChartRenderer({this.alwaysAnimate: false});
 
   /*
    * Returns false if the number of dimension axes on the area is 0.

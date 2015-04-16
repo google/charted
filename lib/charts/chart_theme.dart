@@ -39,6 +39,9 @@ abstract class ChartTheme {
   /// Stroke width used by all shapes.
   int get defaultStrokeWidth => 2;
 
+  /// Default font for computation of text metrics
+  String get defaultFont;
+
   /// Easing function for the transition
   EasingFunction  get transitionEasingType => Transition.defaultEasingType;
 

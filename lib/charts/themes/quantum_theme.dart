@@ -60,6 +60,8 @@ class QuantumChartTheme extends ChartTheme {
 
   AbsoluteRect get padding => const AbsoluteRect(10, 10, 0, 0);
 
+  String get defaultFont => '14px Roboto';
+
   String get filters => '''
     <filter id="active-shadow" x="-50%" y="-25%" width="200%" height="200%">
       <feOffset result="offOut" in="SourceGraphic" dx="0" dy="0" />

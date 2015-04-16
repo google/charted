@@ -13,12 +13,11 @@ class BarChartRenderer extends CartesianRendererBase {
 
   final Iterable<int> dimensionsUsingBand = const[0];
   final bool alwaysAnimate;
-  final bool ignoreState;
 
-  Pair<int,int> _highlight;
-  int _hover;
+  @override
+  final String name = "bar-rdr";
 
-  BarChartRenderer({this.alwaysAnimate: false, this.ignoreState: false});
+  BarChartRenderer({this.alwaysAnimate: false});
 
   /// Returns false if the number of dimension axes on the area is 0.
   /// Otherwise, the first dimension scale is used to render the chart.

@@ -13,9 +13,11 @@ class StackedBarChartRenderer extends CartesianRendererBase {
 
   final Iterable<int> dimensionsUsingBand = const[0];
   final bool alwaysAnimate;
-  final bool ignoreState;
 
-  StackedBarChartRenderer({this.alwaysAnimate: false, this.ignoreState: false});
+  @override
+  final String name = "stack-rdr";
+
+  StackedBarChartRenderer({this.alwaysAnimate: false});
 
   /// Returns false if the number of dimension axes on the area is 0.
   /// Otherwise, the first dimension scale is used to render the chart.
