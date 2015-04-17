@@ -22,6 +22,9 @@ abstract class CartesianRendererBase implements CartesianRenderer {
   Selection root;
   SelectionScope scope;
 
+  Pair<int,int> _hovered;
+  Pair<int,int> _highlighted;
+
   StreamController<ChartEvent> mouseOverController;
   StreamController<ChartEvent> mouseOutController;
   StreamController<ChartEvent> mouseClickController;
@@ -70,6 +73,10 @@ abstract class CartesianRendererBase implements CartesianRenderer {
             x is ChartSelectionChangeRecord ||
             x is ChartVisibilityChangeRecord ||
             x is ChartPreviewChangeRecord);
+    var valueStateChanged =
+        changes.any((x) =>
+            x is ChartHighlightChangeRecord ||
+            x is ChartHoverChangeRecord);
 
     if (itemStateChanged) {
       for (int i = 0; i < series.measures.length; ++i) {
@@ -89,7 +96,22 @@ abstract class CartesianRendererBase implements CartesianRenderer {
           ..duration(50);
       }
     }
+
+    if (valueStateChanged) {
+      var values = [];
+      if (_hovered != null) values.add(_hovered);
+      if (_highlighted != null) values.add(_highlighted);
+      if (state.hovered != null) values.add(state.hovered);
+      if (state.highlighted != null) values.add(state.highlighted);
+
+      values.forEach((Pair value) => updateValueState(value.first, value.last));
+
+      _hovered = state.hovered;
+      _highlighted = state.highlighted;
+    }
   }
+
+  void updateValueState(int column, int row);
 
   Selection getSelectionForColumn(int column);
 

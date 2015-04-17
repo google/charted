@@ -165,6 +165,10 @@ class BarChartRenderer extends CartesianRendererBase {
   Selection getSelectionForColumn(int column) =>
       root.selectAll('.bar-rdr-bar[data-column="$column"]');
 
+  @override
+  void updateValueState(int column, int row) {
+  }
+
   void _event(StreamController controller, data, int index, Element e) {
     if (controller == null) return;
     var rowStr = e.parent.dataset['row'];

@@ -86,19 +86,19 @@ class TextMetrics {
     if (computedWidth > width) {
       var indices = graphemeBreakIndices(text);
       var position = 0,
-          lo = 0, hi = indices.length, mid,
+          min = 0, max = indices.length - 1, mid,
           ellipsis = context.measureText('…').width;
       width = width - ellipsis;
-      while (lo < hi) {
-        mid = (lo + hi) ~/ 2;
+      while (max >= min) {
+        mid = (min + max) ~/ 2;
         position = indices[mid];
         if (context.measureText(text.substring(0, position)).width > width) {
-          hi = mid - 1;
+          max = mid - 1;
         } else {
-          lo = mid + 1;
+          min = mid + 1;
         }
       }
-      text = text.substring(0, indices[mid]) + '…';
+      text = text.substring(0, indices[max]) + '…';
     }
     return text;
   }

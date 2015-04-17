@@ -70,6 +70,9 @@ abstract class ChartState implements ChangeNotifier {
 
   /// Returns current selection state of a row or column.
   bool isSelected(int id);
+
+  factory ChartState({bool isMultiSelect: false}) =>
+      new _ChartState(isMultiSelect: isMultiSelect);
 }
 
 ///

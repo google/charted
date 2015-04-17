@@ -132,6 +132,10 @@ class BubbleChartRenderer extends CartesianRendererBase {
   Selection getSelectionForColumn(int column) =>
       root.selectAll('.measure-group[data-column="$column"]');
 
+  @override
+  void updateValueState(int column, int row) {
+  }
+
   void _event(StreamController controller, data, int index, Element e) {
     if (controller == null) return;
     var rowStr = e.parent.dataset['row'];

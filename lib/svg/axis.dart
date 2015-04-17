@@ -62,8 +62,8 @@ class SvgAxis {
               create(e, g.scope, rect:rect, font:font, isRTL:isRTL));
 
   /// Create an axis on [element]. Uses [scope] to save the data associations.
-  create(Element element, SelectionScope scope,
-      { Rect rect, String font, bool isRTL }) {
+  create(Element element,
+      SelectionScope scope, {Rect rect, String font, bool isRTL}) {
 
     var group = scope.selectElements([element]),
         older = _scales[element],
@@ -79,13 +79,6 @@ class SvgAxis {
         formatted = tickValues.map((x) => tickFormat(x)).toList(),
         range = current.rangeExtent;
 
-    // Create domain path, if we did not already create it.
-    var path = element.querySelector('.domain');
-    if (path == null) {
-      path = Namespace.createChildElement('path', element);
-      path.classes.add('domain');
-    }
-
     // When ticks don't have enough space on the horizontal axes, they are first
     // rotated by 45deg. Then, if required, they are clipped.
     bool rotateTicks = false;
@@ -99,7 +92,7 @@ class SvgAxis {
         rotateTicks = true;
 
         // Check if we have enough space to render full chart
-        allowedWidth = 1.4142 * (rect.height - textMetrics.fontSize);
+        allowedWidth = (1.4142 * rect.height) - (textMetrics.fontSize / 1.4142);
         if (maxLabelWidth > allowedWidth) {
           for (int i = 0; i < formatted.length; ++i) {
             formatted[i] = textMetrics.ellipsizeText(formatted[i], allowedWidth);
@@ -109,7 +102,6 @@ class SvgAxis {
     }
 
     var ticks = group.selectAll('.tick').data(tickValues, current.scale),
-        enter = ticks.enter.append('g'),
         exit = ticks.exit,
         transform = isLeft || isRight ? _yAxisTransform : _xAxisTransform,
         convert = isTop || isLeft ? -1 : 1;
@@ -117,16 +109,18 @@ class SvgAxis {
     // For entering ticks, add the line and text element for label.
     // Only attributes that are constant and solely depend on orientation
     // are set here.
-    enter.each((d, i, e) {
-      Element line = Namespace.createChildElement('line', e);
-      Element text = Namespace.createChildElement('text', e)
-          ..attributes['dy'] = isLeft || isRight
-              ? '0.32em'
-              : isBottom ? '0.71em' : '0';
-      e.classes.add('tick');
-      e.style.setProperty('opacity', EPSILON.toString());
-      e.append(line);
-      e.append(text);
+    var enter = ticks.enter.appendWithCallback((d, i, e) {
+      var group = Namespace.createChildElement('g', e)
+        ..classes.add('tick')
+        ..append(Namespace.createChildElement('line',  e))
+        ..append(Namespace.createChildElement('text', e)
+            ..attributes['dy'] = isLeft || isRight
+                ? '0.32em'
+                : isBottom ? '0.71em' : '0');
+      if (!isInitialRender) {
+        group.style.setProperty('opacity', EPSILON.toString());
+      }
+      return group;
     });
 
     // All attributes/styles/classes that may change due to theme and scale.
@@ -181,12 +175,16 @@ class SvgAxis {
 
       transform(enter, transformFn != null ? transformFn : older.scale);
       transform(ticks, transformFn != null ? transformFn : current.scale);
-
-      // Currently we don't support animations on exit.
-      exit.remove();
     }
 
-    // Append path to the element.
+    exit.remove();
+
+    // Append the outer domain.
+    var path = element.querySelector('.domain');
+    if (path == null) {
+      path = Namespace.createChildElement('path', element);
+      path.classes.add('domain');
+    }
     var tickSize = convert * outerTickSize;
     path.attributes['d'] = isLeft || isRight
         ? 'M${tickSize},${range.min}H0V${range.max}H${tickSize}'
@@ -195,18 +193,20 @@ class SvgAxis {
   }
 
   _xAxisTransform(Selection selection, transformFn) {
-    var transition = selection.transition()
-        ..attrWithCallback(
-            'transform', (d, i, e) => 'translate(${transformFn(d)},0)');
-    transition.transition()
-        ..style('opacity', '1.0');
+    selection.transition()
+      ..attrWithCallback(
+          'transform', (d, i, e) => 'translate(${transformFn(d)},0)');
+    selection.transition()
+      ..style('opacity', '1.0')
+      ..delay(50);
   }
 
   _yAxisTransform(Selection selection, transformFn) {
-    var transition = selection.transition()
-        ..attrWithCallback(
-            'transform', (d, i, e) => 'translate(0,${transformFn(d)})');
-    transition.transition()
-      ..style('opacity', '1.0');
+    selection.transition()
+      ..attrWithCallback(
+          'transform', (d, i, e) => 'translate(0,${transformFn(d)})');
+    selection.transition()
+      ..style('opacity', '1.0')
+      ..delay(50);
   }
 }
