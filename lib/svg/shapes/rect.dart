@@ -8,6 +8,9 @@
 
 part of charted.svg.shapes;
 
+/// Draw a rectangle at [x], [y] which is [width] pixels wide and
+/// [height] pixels height.  [topLeft], [topRight], [bottomRight] and
+/// [bottomLeft] are the corner radius at each of the four corners.
 String roundedRect(int x, int y, int width, int height,
     int topLeft, int topRight, int bottomRight, int bottomLeft) =>
         'M${x+topLeft},${y} '
@@ -20,8 +23,10 @@ String roundedRect(int x, int y, int width, int height,
         'L${x},${y+topLeft} '
             'Q${x},${y} ${x+topLeft},${y} Z';
 
+/// Draw a rectangle with rounded corners on both corners on the right.
 String rightRoundedRect(int x, int y, int width, int height, int radius) =>
     roundedRect(x, y, width, height, 0, radius, radius, 0);
 
+/// Draw a rectangle with rounded corners on both corners on the top.
 String topRoundedRect(int x, int y, int width, int height, int radius) =>
     roundedRect(x, y, width, height, radius, radius, 0, 0);

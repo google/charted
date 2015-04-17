@@ -500,7 +500,7 @@ class _EnterSelectionImpl implements EnterSelection {
     assert(fn != null);
     return selectWithCallback((datum, ei, e) {
           Element child = fn(datum, ei, e);
-          e.children.add(child);
+          e.append(child);
           return child;
         });
   }

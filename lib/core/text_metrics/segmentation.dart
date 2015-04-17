@@ -36,23 +36,34 @@ const GRAPHEME_BREAK_TABLE = const[
 
 /// Get type of a given char code.
 int _typeForRune(int rune) {
-  int position = binarySearch(CODE_POINT_BLOCKS, rune,
-      compare: (CodeRange a, int value) =>
-          a.start <= value && value <= a.end ? 0 : a.start.compareTo(value));
-  return position == -1
-      ? CODE_CATEGORY_OTHER
-      : CODE_POINT_BLOCKS[position].codePointType;
+  int count = CODE_POINT_BLOCKS.length ~/ 3;
+  int min = 0;
+  int max = count - 1;
+  while (max >= min) {
+    int mid = (max + min) ~/ 2;
+    int idx = mid * 3;
+    if (CODE_POINT_BLOCKS[idx] <= rune && rune <= CODE_POINT_BLOCKS[idx+1]) {
+      return CODE_POINT_BLOCKS[idx+2]; // Return the found character type
+    }
+    if (CODE_POINT_BLOCKS[idx] > rune) {
+      max = mid - 1;
+    }
+    else if (CODE_POINT_BLOCKS[idx+1] < rune) {
+      min = max + 1;
+    }
+  }
+  return CODE_CATEGORY_OTHER; // Defaults to OTHER.
 }
 
 Iterable<int> graphemeBreakIndices(String s) {
-  Runes runes = s.runes;
   List<int> indices = [];
   int previousType = 0;
-  for (int i = 0, len = runes.length; i < len; ++i) {
-    int currentType = _typeForRune(runes.elementAt(i));
+  for (var iter = s.runes.iterator; iter.moveNext();) {
+    int currentType = _typeForRune(iter.current);
     if (GRAPHEME_BREAK_TABLE[previousType * 12 + currentType] == 1) {
-      indices.add(i);
+      indices.add(iter.rawIndex);
     }
+    previousType = currentType;
   }
   return indices;
 }
