@@ -150,7 +150,7 @@ class SvgAxis {
             : (isRTLText ? 'end' : 'start'));
       }
 
-      text.text = fixTextDirection(formatted[i]);
+      text.text = fixSimpleTextDirection(formatted[i]);
 
       if (isInitialRender) {
         var dx = current is OrdinalScale ? current.rangeBand / 2 : 0;
