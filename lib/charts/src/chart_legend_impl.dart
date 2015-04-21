@@ -109,38 +109,71 @@ class _ChartLegend implements ChartLegend {
   void _createLegendItems() {
     var state = _area.state,
         rows = _root.selectAll(
-            '.chart-legend-row').data(_items, (x) => x.hashCode);
+            '.chart-legend-row').data(_items, (x) => x.hashCode),
+        isFirstRender = rows.length == 0;
 
-    var enter = rows.enter.appendWithCallback((d, i, e) =>
-        new Element.html(
-            '<div class="chart-legend-row">'
-              '<div class="chart-legend-color"></div>'
-              '<div class="chart-legend-label"></div>'
-              '${showValues ? "<div class=\"chart-legend-value\"></div>" : ""}'
-            '</div>'));
+    var enter = rows.enter.appendWithCallback((d, i, e) {
+      var row = Namespace.createChildElement('div', e),
+          color = Namespace.createChildElement('div', e)
+            ..className = 'chart-legend-color',
+          label = Namespace.createChildElement('div', e)
+            ..className = 'chart-legend-label',
+          value = showValues ? (Namespace.createChildElement('div', e)
+            ..className = 'chart-legend-value') : null;
 
-    rows.each((ChartLegendItem d, i, Element e) {
-      if (state != null) {
+      var rowStyles = ['chart-legend-row'];
+
+      // If this is the first time we are adding rows,
+      // Update elements before adding them to the DOM.
+      if (isFirstRender) {
         if (d.index == state.preview) {
-          e.classes.add('chart-legend-hover');
-        } else {
-          e.classes.remove('chart-legend-hover');
+          rowStyles.add('chart-legend-hover');
         }
         if (state.isSelected(d.index)) {
-          e.classes.add('chart-legend-selected');
-        } else {
-          e.classes.remove('chart-legend-selected');
+          rowStyles.add('chart-legend-selected');
+        }
+        rowStyles.addAll(
+            d.series.map((ChartSeries x) => 'type-${x.renderer.name}'));
+
+        color.style.setProperty('background-color', d.color);
+        row.append(color);
+        label.text = d.label;
+        row.append(label);
+
+        if (showValues) {
+          value.text = d.value;
+          value.style.setProperty('color', d.color);
         }
       }
-      e.classes.addAll(d.series.map((ChartSeries x) => 'type-${x.renderer.name}'));
-      (e.firstChild as Element).style.setProperty('background-color', d.color);
-      (e.children[1]).innerHtml = d.label;
-      if (showValues) {
-        (e.lastChild as Element)
-          ..innerHtml = d.value
-          ..style.setProperty('color', d.color);
-      }
+      row.classes.addAll(rowStyles);
+      return row;
     });
+
+    // We have elements in the DOM that need updating.
+    if (!isFirstRender) {
+      rows.each((ChartLegendItem d, i, Element e) {
+        if (state != null) {
+          if (d.index == state.preview) {
+            e.classes.add('chart-legend-hover');
+          } else {
+            e.classes.remove('chart-legend-hover');
+          }
+          if (state.isSelected(d.index)) {
+            e.classes.add('chart-legend-selected');
+          } else {
+            e.classes.remove('chart-legend-selected');
+          }
+        }
+        e.classes.addAll(d.series.map((ChartSeries x) => 'type-${x.renderer.name}'));
+        (e.firstChild as Element).style.setProperty('background-color', d.color);
+        (e.children[1]).innerHtml = d.label;
+        if (showValues) {
+          (e.lastChild as Element)
+            ..innerHtml = d.value
+            ..style.setProperty('color', d.color);
+        }
+      });
+    }
 
     if (state != null) {
       enter

@@ -13,7 +13,7 @@ import "dart:html" show Element;
 import "dart:math" as math;
 import "dart:async";
 
-import "package:intl/intl.dart" show BidiFormatter;
+import "package:intl/intl.dart" show BidiFormatter, Bidi, TextDirection;
 import "package:collection/collection.dart";
 import "package:quiver/core.dart";
 
