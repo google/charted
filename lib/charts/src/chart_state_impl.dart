@@ -16,23 +16,21 @@ part of charted.charts;
 ///
 class _ChartState extends ChangeNotifier implements ChartState {
   final bool isMultiSelect;
+  final bool isMultiHighlight;
+  final bool isSelectOrHighlight;
+
+  LinkedHashSet<int> hidden = new LinkedHashSet<int>();
 
   LinkedHashSet<int> selection = new LinkedHashSet<int>();
-  LinkedHashSet<int> hidden = new LinkedHashSet<int>();
-  Pair<int,int> _highlighted;
+  LinkedHashSet<Pair<int,int>> highlights = new LinkedHashSet<Pair<int,int>>();
+
   Pair<int,int> _hovered;
   int _preview;
 
-  _ChartState({this.isMultiSelect: false}) {}
-
-  set highlighted(Pair<int,int> value) {
-    if (value != _highlighted) {
-      _highlighted = value;
-      notifyChange(new ChartHighlightChangeRecord(_highlighted));
-    }
-    return value;
-  }
-  Pair<int,int> get highlighted => _highlighted;
+  _ChartState({
+    this.isMultiSelect: false,
+    this.isMultiHighlight: false,
+    this.isSelectOrHighlight: true});
 
   set hovered(Pair<int,int> value) {
     if (value != _hovered) {
@@ -75,6 +73,9 @@ class _ChartState extends ChangeNotifier implements ChartState {
       if (!isMultiSelect) {
         selection.clear();
       }
+      if (isSelectOrHighlight) {
+        highlights.clear();
+      }
       selection.add(id);
       notifyChange(new ChartSelectionChangeRecord(add:id));
     }
@@ -90,4 +91,31 @@ class _ChartState extends ChangeNotifier implements ChartState {
   }
 
   bool isSelected(int id) => selection.contains(id);
+
+  bool highlight(int column, int row) {
+    if (!isHighlighted(column, row)) {
+      if (!isMultiHighlight) {
+        highlights.clear();
+      }
+      if (isSelectOrHighlight) {
+        selection.clear();
+      }
+      var item = new Pair(column, row);
+      highlights.add(item);
+      notifyChange(new ChartHighlightChangeRecord(add: item));
+    }
+    return true;
+  }
+
+  bool unhighlight(int column, int row) {
+    if (isHighlighted(column, row)) {
+      var item = new Pair(column, row);
+      highlights.remove(item);
+      notifyChange(new ChartHighlightChangeRecord(remove: item));
+    }
+    return false;
+  }
+
+  bool isHighlighted(int column, int row) =>
+      highlights.any((x) => x.first == column && x.last == row);
 }

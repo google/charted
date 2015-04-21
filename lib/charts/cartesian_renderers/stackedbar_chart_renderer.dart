@@ -63,19 +63,23 @@ class StackedBarChartRenderer extends CartesianRendererBase {
     }
 
     var bar = groups.selectAll('.stack-rdr-bar').dataWithCallback((d, i, c) => d);
+
+    // TODO(prsd): Revisit animation and state tracking.
     var ic = -1,
         order = 0,
-        prevY = new List();
+        prevOffsetVal = new List();
 
     // Keep track of "y" values.
     // These are used to insert values in the middle of stack when necessary
     if (animateBarGroups) {
-      prevY.add(0);
+      prevOffsetVal.add(0);
       bar.each((d, i, e) {
+        var offset = e.dataset['offset'],
+            offsetVal = offset != null ? int.parse(offset) : 0;
         if (i > ic) {
-          prevY[prevY.length - 1] = e.attributes['y'];
+          prevOffsetVal[prevOffsetVal.length - 1] = offsetVal;
         } else {
-          prevY.add(e.attributes['y']);
+          prevOffsetVal.add(offsetVal);
         }
         ic = i;
       });
@@ -120,7 +124,7 @@ class StackedBarChartRenderer extends CartesianRendererBase {
     var getInitialBarPos = (i) {
       var tempY;
       if (i <= ic && i > 0) {
-        tempY = prevY[order];
+        tempY = prevOffsetVal[order];
         order++;
       } else {
         tempY = verticalBars ? rect.height : 0;
@@ -156,33 +160,37 @@ class StackedBarChartRenderer extends CartesianRendererBase {
 
     var barsCount = rows.first.length;
     var buildPath = (d, int i, bool animate) {
-      return verticalBars
-          ? topRoundedRect(
-              0, animate ? getInitialBarPos(i) : getBarPos(d, i),
-              barWidth, animate ? 0 : getBarLength(d, i),
-              i == barsCount - 1 ? RADIUS : 0)
-          : rightRoundedRect(
-              animate ? getInitialBarPos(i) : getBarPos(d, i), 0,
-              animate ? 0 : getBarLength(d, i), barWidth,
-              i == barsCount - 1 ? RADIUS : 0);
+      var position = animate ? getInitialBarPos(i) : getBarPos(d, i),
+          length = animate ? 0 : getBarLength(d, i),
+          radius = i == barsCount - 1 ? RADIUS : 0,
+          path = verticalBars
+              ? topRoundedRect(0, position, barWidth, length, radius)
+              : rightRoundedRect(position, 0, length, barWidth, radius);
+      return path;
     };
 
-    var enter = bar.enter.append('path')
-      ..each((d, i, e) {
-          var measure = series.measures.elementAt(_reverseIdx(i)),
-              colorStylePair = colorForKey(measure: measure);
-          e.classes.add('stack-rdr-bar ${colorStylePair.last}');
-          e.attributes
+    var enter = bar.enter.appendWithCallback((d, i, e) {
+          var rect = Namespace.createChildElement('path', e),
+              measure = series.measures.elementAt(_reverseIdx(i)),
+              row = int.parse(e.dataset['row']),
+              color = colorForValue(measure, row),
+              style = stylesForValue(measure, row);
+
+          rect.classes.add('stack-rdr-bar ${style.join(" ")}');
+          rect.attributes
             ..['d'] = buildPath(d, i, animateBarGroups)
-            ..['stroke-width'] = '${theme.defaultStrokeWidth}';
-          e.style
-            ..setProperty('fill', colorStylePair.first)
-            ..setProperty('stroke', colorStylePair.first);
+            ..['stroke-width'] = '${theme.defaultStrokeWidth}px';
+          rect.style
+            ..setProperty('fill', color)
+            ..setProperty('stroke', color);
 
           if (!animateBarGroups) {
-            e.attributes['data-column'] = '$measure';
+            rect.attributes['data-column'] = '$measure';
           }
-        })
+          return rect;
+        });
+
+    enter
       ..on('click', (d, i, e) => _event(mouseClickController, d, i, e))
       ..on('mouseover', (d, i, e) => _event(mouseOverController, d, i, e))
       ..on('mouseout', (d, i, e) => _event(mouseOutController, d, i, e));
@@ -190,28 +198,20 @@ class StackedBarChartRenderer extends CartesianRendererBase {
     if (animateBarGroups) {
       bar.each((d, i, e) {
         var measure = series.measures.elementAt(_reverseIdx(i)),
-            colorStylePair = colorForKey(measure: measure);
-
+            row = int.parse(e.parent.dataset['row']),
+            color = colorForValue(measure, row),
+            styles = stylesForValue(measure, row);
         e.attributes['data-column'] = '$measure';
         e.classes
-          ..removeWhere((x) => ChartState.CLASS_NAMES.contains(x))
-          ..add(colorStylePair.last);
+          ..removeAll(ChartState.VALUE_CLASS_NAMES)
+          ..addAll(styles);
         e.style
-          ..setProperty('fill', colorStylePair.first)
-          ..setProperty('stroke', colorStylePair.first);
+          ..setProperty('fill', color)
+          ..setProperty('stroke', color);
       });
 
       bar.transition()
-        ..attr(verticalBars? 'width' : 'height', barWidth)
-        ..duration(theme.transitionDurationMilliseconds);
-
-      bar.transition()
-        ..attrWithCallback(
-            verticalBars ? 'y' : 'x', (d, i, c) => getBarPos(d, i))
-        ..attrWithCallback(
-            verticalBars ? 'height' : 'width', (d, i, c) => getBarLength(d, i))
-        ..duration(theme.transitionDurationMilliseconds)
-        ..delay(50);
+        ..attrWithCallback('d', (d, i, e) => buildPath(d, i, false));
     }
 
     bar.exit.remove();
@@ -249,11 +249,27 @@ class StackedBarChartRenderer extends CartesianRendererBase {
   }
 
   @override
-  Selection getSelectionForColumn(int column) =>
-      root.selectAll('.stack-rdr-bar[data-column="$column"]');
+  void handleStateChanges(List<ChangeRecord> changes) {
+    var groups = host.querySelectorAll('.stack-rdr-rowgroup');
+    if (groups == null || groups.isEmpty) return;
 
-  @override
-  void updateValueState(int column, int row) {
+    for(int i = 0, len = groups.length; i < len; ++i) {
+      var group = groups.elementAt(i),
+          bars = group.querySelectorAll('.stack-rdr-bar'),
+          row = int.parse(group.dataset['row']);
+
+      for(int j = 0, barsCount = bars.length; j < barsCount; ++j) {
+        var bar = bars.elementAt(j),
+            column = int.parse(bar.dataset['column']),
+            color = colorForValue(column, row);
+
+        bar.classes.removeAll(ChartState.VALUE_CLASS_NAMES);
+        bar.classes.addAll(stylesForValue(column, row));
+        bar.style
+          ..setProperty('fill', color)
+          ..setProperty('stroke', color);
+      }
+    }
   }
 
   void _event(StreamController controller, data, int index, Element e) {

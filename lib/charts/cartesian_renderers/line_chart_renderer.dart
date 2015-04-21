@@ -57,7 +57,6 @@ class LineChartRenderer extends CartesianRendererBase {
         x.map((val) => dimensionScale.scale(val) + rangeBandOffset).toList();
 
     // Add circles that track user's pointer movements.
-    // TODO(prsd): Move to behavior.
     var linePoints = root.selectAll('.line-rdr-point').data(series.measures);
     linePoints.enter.append('circle').each((d, i, e) {
       e.classes.add('line-rdr-point');
@@ -65,11 +64,11 @@ class LineChartRenderer extends CartesianRendererBase {
     });
 
     linePoints.each((d, i, e) {
-      var colorStylePair = colorForKey(measure:d);
+      var color = colorForColumn(d);
       e.attributes
         ..['r'] = '4'
-        ..['stroke'] = colorStylePair.first
-        ..['fill'] = colorStylePair.first
+        ..['stroke'] = color
+        ..['fill'] = color
         ..['data-column'] = '$d';
     });
 
@@ -88,13 +87,14 @@ class LineChartRenderer extends CartesianRendererBase {
         });
 
     svgLines.each((d, i, e) {
-      var colorStylePair = colorForKey(index:i);
-      e.classes.removeWhere((x) => ChartState.CLASS_NAMES.contains(x));
-      e.classes.add(colorStylePair.last);
+      var column = series.measures.elementAt(i),
+          color = colorForColumn(column),
+          styles = stylesForColumn(column);
+      e.classes.addAll(styles);
       e.attributes
         ..['d'] = line.path(d, i, e)
-        ..['stroke'] = colorStylePair.first
-        ..['data-column'] = series.measures.elementAt(i).toString();
+        ..['stroke'] = color
+        ..['data-column'] = '$column';
     });
 
     svgLines.exit.remove();
@@ -108,24 +108,24 @@ class LineChartRenderer extends CartesianRendererBase {
     _disposer.dispose();
   }
 
-  @override
-  Selection getSelectionForColumn(int column) =>
+  Selection _getSelectionForColumn(int column) =>
       root.selectAll('.line-rdr-line[data-column="$column"]');
 
   @override
   void handleStateChanges(List<ChangeRecord> changes) {
-    resetColorCache();
+    resetStylesCache();
     for (int i = 0; i < series.measures.length; ++i) {
       var column = series.measures.elementAt(i),
-          selection = getSelectionForColumn(column),
-          colorStylePair = colorForKey(measure:column);
+          selection = _getSelectionForColumn(column),
+          color = colorForColumn(column),
+          styles = stylesForColumn(column);
       selection.each((d,i,e) {
         e.classes
-          ..removeWhere((x) => ChartState.CLASS_NAMES.contains(x))
-          ..add(colorStylePair.last);
+          ..removeAll(ChartState.COLUMN_CLASS_NAMES)
+          ..addAll(styles);
       });
       selection.transition()
-        ..style('stroke', colorStylePair.first)
+        ..style('stroke', color)
         ..duration(50);
     }
   }
