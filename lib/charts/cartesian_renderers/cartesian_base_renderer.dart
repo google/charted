@@ -16,7 +16,12 @@ abstract class CartesianRendererBase implements CartesianRenderer {
   ChartTheme theme;
   ChartState state;
   Rect rect;
-  List colorForKeyCache;
+
+  List<int> _columnStateCache;
+  List<Iterable<String>> _columnStylesCache;
+
+  final _valueColorCache = new Map<int,String>();
+  final _valueStylesCache = new Map<int,Iterable<String>>();
 
   Element host;
   Selection root;
@@ -35,7 +40,10 @@ abstract class CartesianRendererBase implements CartesianRenderer {
     if (this.area == null) {
       if (area.state != null) {
         this.state = area.state;
-        _disposer.add(this.state.changes.listen(handleStateChanges));
+        _disposer.add(this.state.changes.listen((changes) {
+          resetStylesCache();
+          handleStateChanges(changes);
+        }));
       }
     }
     this.area = area;
@@ -54,66 +62,20 @@ abstract class CartesianRendererBase implements CartesianRenderer {
 
     theme = area.theme;
     rect = area.layout.renderArea;
-    resetColorCache();
+    resetStylesCache();
   }
 
-  void resetColorCache() {
-    var data = area.data,
-        length = area.useRowColoring == true
-            ? data.rows.length
-            : data.columns.length;
-    colorForKeyCache = new List(length);
+  void resetStylesCache() {
+    var length = area.data.columns.length;
+    _columnStylesCache = new List(length);
+    _columnStateCache = new List(length);
+    _valueStylesCache.clear();
+    _valueColorCache.clear();
+    _computeColumnStates();
   }
 
   /// Override this method to handle state changes.
-  void handleStateChanges(List<ChangeRecord> changes) {
-    resetColorCache();
-    var itemStateChanged =
-        changes.any((x) =>
-            x is ChartSelectionChangeRecord ||
-            x is ChartVisibilityChangeRecord ||
-            x is ChartPreviewChangeRecord);
-    var valueStateChanged =
-        changes.any((x) =>
-            x is ChartHighlightChangeRecord ||
-            x is ChartHoverChangeRecord);
-
-    if (itemStateChanged) {
-      for (int i = 0; i < series.measures.length; ++i) {
-        var column = series.measures.elementAt(i),
-            selection = getSelectionForColumn(column),
-            colorStylePair = colorForKey(measure:column);
-
-        selection.each((d,i, Element e) {
-          e.classes
-            ..removeWhere((String x) => ChartState.CLASS_NAMES.contains(x))
-            ..add(colorStylePair.last);
-        });
-
-        selection.transition()
-          ..style('fill', colorStylePair.first)
-          ..style('stroke', colorStylePair.first)
-          ..duration(50);
-      }
-    }
-
-    if (valueStateChanged) {
-      var values = [];
-      if (_hovered != null) values.add(_hovered);
-      if (_highlighted != null) values.add(_highlighted);
-      if (state.hovered != null) values.add(state.hovered);
-      if (state.highlighted != null) values.add(state.highlighted);
-
-      values.forEach((Pair value) => updateValueState(value.first, value.last));
-
-      _hovered = state.hovered;
-      _highlighted = state.highlighted;
-    }
-  }
-
-  void updateValueState(int column, int row);
-
-  Selection getSelectionForColumn(int column);
+  void handleStateChanges(List<ChangeRecord> changes);
 
   @override
   Extent get extent {
@@ -159,38 +121,136 @@ abstract class CartesianRendererBase implements CartesianRenderer {
   double get bandOuterPadding =>
       area.theme.dimensionAxisTheme.axisOuterPadding;
 
-  /// Get color and class names for use with each item in the chart. Both are
-  /// based on the current state of the item.
-  Pair<String,String> colorForKey({int index, int measure}) {
-    int column = measure == null ? series.measures.elementAt(index) : measure;
-    if (colorForKeyCache[column] == null) {
-      int itemState = ChartTheme.STATE_NORMAL;
-      List<String> classes = [];
-
-      if (state != null) {
-        if (!state.selection.isEmpty) {
-          if (state.selection.contains(column)) {
-            classes.add(ChartState.SELECTED_CLASS);
-          } else {
-            classes.add(ChartState.UNSELECTED_CLASS);
-            itemState = ChartTheme.STATE_DISABLED;
+  void _computeColumnStates() {
+    area.config.series.forEach((ChartSeries series) {
+      series.measures.forEach((int column) {
+        if (_columnStateCache[column] != null) return;
+        int flags = 0;
+        if (state != null && area.useRowColoring == false) {
+          if (state.highlights.isNotEmpty) {
+            flags |= (state.highlights.any((x) => x.first == column)
+                ? ChartState.COL_HIGHLIGHTED
+                : ChartState.COL_UNHIGHLIGHTED);
+          }
+          if (state.selection.isNotEmpty) {
+            flags |= (state.isSelected(column)
+                ? ChartState.COL_SELECTED
+                : ChartState.COL_UNSELECTED);
+          }
+          if (!state.isVisible(column)) {
+            flags |= ChartState.COL_HIDDEN;
+          }
+          if (state.preview == column) {
+            flags |= ChartState.COL_PREVIEW;
+          }
+          if (state.hovered != null && state.hovered.first == column) {
+            flags |= ChartState.COL_HOVERED;
           }
         }
-        if (state.hidden.contains(column)) {
-          classes.add(ChartState.HIDDEN_CLASS);
-        }
-        if (state.preview == column) {
-          classes.add(ChartState.PREVIEW_CLASS);
-        }
-        if (state.preview == column && state.selection.isEmpty) {
-          itemState = ChartTheme.STATE_ACTIVE;
-        }
-      }
+        _columnStateCache[column] = flags;
+      });
+    });
+  }
 
-      colorForKeyCache[column] =
-          new Pair(theme.getColorForKey(column, itemState),
-              classes.join(' '));
+  Iterable<String> stylesForColumn(int column) {
+    if (_columnStylesCache[column] == null) {
+      if (state == null || area.useRowColoring) {
+        _columnStylesCache[column] = const[];
+      } else {
+        var styles = [],
+            flags = _columnStateCache[column];
+
+        if (flags & ChartState.COL_SELECTED != 0) {
+          styles.add(ChartState.COL_SELECTED_CLASS);
+        } else if (flags & ChartState.COL_UNSELECTED != 0){
+          styles.add(ChartState.COL_UNSELECTED_CLASS);
+        }
+
+        if (flags & ChartState.COL_HIGHLIGHTED != 0) {
+          styles.add(ChartState.COL_HIGHLIGHTED_CLASS);
+        } else if (flags & ChartState.COL_UNHIGHLIGHTED != 0) {
+          styles.add(ChartState.COL_UNHIGHLIGHTED_CLASS);
+        }
+
+        if (flags & ChartState.COL_HOVERED != 0) {
+          styles.add(ChartState.COL_HOVERED_CLASS);
+        }
+        if (flags & ChartState.COL_PREVIEW != 0) {
+          styles.add(ChartState.COL_PREVIEW_CLASS);
+        }
+        if (flags & ChartState.COL_HIDDEN != 0) {
+          styles.add(ChartState.COL_HIDDEN_CLASS);
+        }
+
+        _columnStylesCache[column] = styles;
+      }
     }
-    return colorForKeyCache[column];
+    return _columnStylesCache[column];
+  }
+
+  String colorForColumn(int column) =>
+      theme.getColorForKey(column,
+          _flagsToColorState(_columnStateCache[column]));
+
+  Iterable<String> stylesForValue(int column, int row) {
+    var hash = hash2(column, row);
+    if (_valueStylesCache[hash] == null) {
+      if (state == null) {
+        _valueStylesCache[hash] = const[];
+      } else {
+        var styles = stylesForColumn(column).toList();
+        if (state.highlights.isNotEmpty) {
+          styles.add(state.highlights.any((x) => x.last == row)
+              ? ChartState.VAL_HIGHLIGHTED_CLASS
+              : ChartState.VAL_UNHIGHLIGHTED_CLASS);
+        }
+        if (state.hovered != null && state.hovered.last == row) {
+          styles.add(ChartState.VAL_HOVERED_CLASS);
+        }
+        _valueStylesCache[hash] = styles;
+      }
+    }
+    return _valueStylesCache[hash];
+  }
+
+  String colorForValue(int column, int row) {
+    var hash = hash2(column, row);
+    if (_valueColorCache[hash] == null) {
+      if (state == null) {
+        _valueColorCache[hash] =
+            theme.getColorForKey(area.useRowColoring ? row : column);
+      } else {
+        var flags = _columnStateCache[column];
+        if (state.highlights.isNotEmpty) {
+          flags |= (state.highlights.any((x) => x.last == row)
+              ? ChartState.VAL_HIGHLIGHTED
+              : ChartState.VAL_UNHIGHLIGHTED);
+        }
+        if (state.hovered != null && state.hovered.last == row) {
+          flags |= ChartState.VAL_HOVERED;
+        }
+        _valueColorCache[hash] = theme.getColorForKey(
+            area.useRowColoring ? row : column, _flagsToColorState(flags));
+      }
+    }
+    return _valueColorCache[hash];
+  }
+
+  //
+  // TODO(prsd): Let ChartTheme specify the mapping
+  //
+  int _flagsToColorState(int flags) {
+    // Unselected columns and unhighlighted rows are inactive.
+    if (flags & ChartState.COL_UNSELECTED != 0 ||
+        flags & ChartState.VAL_UNHIGHLIGHTED != 0) {
+      return ChartTheme.STATE_INACTIVE;
+    }
+    // Selected columns and highlighted rows are active.
+    if (flags & ChartState.COL_PREVIEW != 0 ||
+        flags & ChartState.VAL_HOVERED != 0) {
+      return ChartTheme.STATE_ACTIVE;
+    }
+    // All others are normal.
+    return ChartTheme.STATE_NORMAL;
   }
 }

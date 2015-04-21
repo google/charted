@@ -18,15 +18,17 @@ import 'dart:typed_data';
 import 'package:charted/core/text_metrics.dart';
 import 'package:charted/core/utils.dart';
 import 'package:charted/core/scales.dart';
+import 'package:charted/core/interpolators.dart';
 import 'package:charted/layout/layout.dart';
 import 'package:charted/selection/selection.dart';
 import 'package:charted/svg/axis.dart';
 import 'package:charted/svg/shapes.dart';
 import 'package:charted/selection/transition.dart';
+
 import 'package:collection/equality.dart';
 import 'package:logging/logging.dart';
 import 'package:observe/observe.dart';
-import 'package:charted/core/interpolators.dart';
+import 'package:quiver/core.dart';
 
 part 'chart_area.dart';
 part 'chart_config.dart';

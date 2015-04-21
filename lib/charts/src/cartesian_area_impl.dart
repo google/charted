@@ -680,7 +680,11 @@ class _ChartSeriesInfo {
   _click(ChartEvent e) {
     var state = _area.state;
     if (state != null) {
-      state.highlighted = new Pair(e.column, e.row);
+      if (state.isHighlighted(e.column, e.row)) {
+        state.unhighlight(e.column, e.row);
+      } else {
+        state.highlight(e.column, e.row);
+      }
     }
     if (_area._valueMouseClickController != null) {
       _area._valueMouseClickController.add(e);
@@ -712,8 +716,8 @@ class _ChartSeriesInfo {
   }
 
   check() {
-    if (_renderer != _series.renderer) dispose();
-    if (_renderer == null) {
+    if (_renderer != _series.renderer) {
+      dispose();
       try {
         _disposer.addAll([
           _series.renderer.onValueClick.listen(_click),

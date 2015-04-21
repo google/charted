@@ -16,7 +16,7 @@ abstract class ChartTheme {
   static ChartTheme current = new QuantumChartTheme();
 
   /// Column/series when it is disabled, possibly because another is active
-  static const int STATE_DISABLED = 0;
+  static const int STATE_INACTIVE = 0;
 
   /// Column/Series that is normal
   static const int STATE_NORMAL = 1;

@@ -60,7 +60,7 @@ abstract class CartesianArea implements ChartArea {
       ChartConfig config, {
       bool autoUpdate: false,
       bool useTwoDimensionAxes: false,
-      bool useRowColoring,
+      bool useRowColoring: false,
       ChartState state }) =>
           new _CartesianArea(host, data, config, autoUpdate,
               useTwoDimensionAxes, useRowColoring, state);
@@ -116,7 +116,7 @@ abstract class ChartArea implements ChartAreaBehaviorSource {
   bool autoUpdate;
 
   /// When true, [ChartArea] and renderers that support coloring by row,
-  /// use row indices and values to color the chart.
+  /// use row indices and values to color the chart. Defaults to false.
   bool get useRowColoring;
 
   /// Geometry of components in this [ChartArea]
