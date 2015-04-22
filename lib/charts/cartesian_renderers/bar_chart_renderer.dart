@@ -108,11 +108,9 @@ class BarChartRenderer extends CartesianRendererBase {
         rect.classes.add('bar-rdr-bar ${style.join(" ")}');
         rect.attributes
           ..['d'] = buildPath(d, i, animateBarGroups)
-          ..['stroke-width'] = '${theme.defaultStrokeWidth}px';
-
-        rect.style
-          ..setProperty('fill', color)
-          ..setProperty('stroke', color);
+          ..['stroke-width'] = '${theme.defaultStrokeWidth}px'
+          ..['fill'] = color
+          ..['stroke'] = color;
 
         if (!animateBarGroups) {
           rect.attributes['data-column'] = '$measure';
@@ -129,13 +127,13 @@ class BarChartRenderer extends CartesianRendererBase {
             row = int.parse(e.parent.dataset['row']),
             color = colorForValue(measure, row),
             styles = stylesForValue(measure, row);
-        e.attributes['data-column'] = '$measure';
+        e.attributes
+          ..['data-column'] = '$measure'
+          ..['fill'] = color
+          ..['stroke'] = color;
         e.classes
           ..removeAll(ChartState.VALUE_CLASS_NAMES)
           ..addAll(styles);
-        e.style
-          ..setProperty('fill', color)
-          ..setProperty('stroke', color);
       });
 
       bar.transition()
@@ -182,9 +180,9 @@ class BarChartRenderer extends CartesianRendererBase {
 
         bar.classes.removeAll(ChartState.VALUE_CLASS_NAMES);
         bar.classes.addAll(stylesForValue(column, row));
-        bar.style
-          ..setProperty('fill', color)
-          ..setProperty('stroke', color);
+        bar.attributes
+          ..['fill'] = color
+          ..['stroke'] = color;
       }
     }
   }

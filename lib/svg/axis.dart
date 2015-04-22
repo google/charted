@@ -135,19 +135,21 @@ class SvgAxis {
             (convert * (math.max(innerTickSize, 0) + tickPadding)).toString();
 
         if (rotateTicks) {
-          text.attributes['transform'] = 'rotate(${isRTL ? -45 : 45})';
-          text.style.setProperty('text-anchor', isRTL ? 'end' : 'start');
+          text.attributes
+            ..['transform'] = 'rotate(${isRTL ? -45 : 45})'
+            ..['text-anchor'] = isRTL ? 'end' : 'start';
         } else {
-          text.attributes['transform'] = '';
-          text.style.setProperty('text-anchor', 'middle');
+          text.attributes
+            ..['transform'] = ''
+            ..['text-anchor'] = 'middle';
         }
       } else {
         line.attributes['x2'] = (convert * innerTickSize).toString();
-        text.attributes['x'] =
-            (convert * (math.max(innerTickSize, 0) + tickPadding)).toString();
-        text.style.setProperty('text-anchor', isLeft
-            ? (isRTLText ? 'start' : 'end')
-            : (isRTLText ? 'end' : 'start'));
+        text.attributes
+            ..['x'] = '${convert * (math.max(innerTickSize, 0) + tickPadding)}'
+            ..['text-anchor'] = isLeft
+                ? (isRTLText ? 'start' : 'end')
+                : (isRTLText ? 'end' : 'start');
       }
 
       text.text = fixSimpleTextDirection(formatted[i]);
@@ -157,6 +159,7 @@ class SvgAxis {
         e.attributes['transform'] = isTop || isBottom
             ? 'translate(${current.scale(d) + dx},0)'
             : 'translate(0,${current.scale(d) + dx})';
+      } else {
         e.style.setProperty('opacity', '1.0');
       }
     });

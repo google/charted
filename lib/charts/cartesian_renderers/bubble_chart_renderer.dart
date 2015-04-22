@@ -129,11 +129,27 @@ class BubbleChartRenderer extends CartesianRendererBase {
   }
 
   @override
-  Selection getSelectionForColumn(int column) =>
-      root.selectAll('.measure-group[data-column="$column"]');
+  void handleStateChanges(List<ChangeRecord> changes) {
+    var groups = host.querySelectorAll('.bar-rdr-rowgroup');
+    if (groups == null || groups.isEmpty) return;
 
-  @override
-  void updateValueState(int column, int row) {
+    for(int i = 0, len = groups.length; i < len; ++i) {
+      var group = groups.elementAt(i),
+          bars = group.querySelectorAll('.bar-rdr-bar'),
+          row = int.parse(group.dataset['row']);
+
+      for(int j = 0, barsCount = bars.length; j < barsCount; ++j) {
+        var bar = bars.elementAt(j),
+            column = int.parse(bar.dataset['column']),
+            color = colorForValue(column, row);
+
+        bar.classes.removeAll(ChartState.VALUE_CLASS_NAMES);
+        bar.classes.addAll(stylesForValue(column, row));
+        bar.style
+          ..setProperty('fill', color)
+          ..setProperty('stroke', color);
+      }
+    }
   }
 
   void _event(StreamController controller, data, int index, Element e) {

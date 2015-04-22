@@ -275,7 +275,11 @@ class _CartesianArea implements CartesianArea {
       _scope = new SelectionScope.element(host);
       _svg = _scope.append('svg:svg')..classed('chart-canvas');
       if (!isNullOrEmpty(theme.filters)) {
-        _svg.first.innerHtml = '<defs>${theme.filters}</defs>';
+        var element = _svg.first,
+            defs = Namespace.createChildElement('defs', element)
+              ..append(new SvgElement.svg(
+                  theme.filters, treeSanitizer: new NullTreeSanitizer()));
+        _svg.first.append(defs);
       }
       lowerBehaviorPane = _svg.append('g')..classed('lower-render-pane');
       visualization = _svg.append('g')..classed('chart-render-pane');
@@ -379,7 +383,7 @@ class _CartesianArea implements CartesianArea {
       } else {
         // Extent is available because [ChartRenderer.prepare] was already
         // called (when checking for valid series in [draw].
-        Iterable extents = listOfSeries.map((s) => s.renderer.extent);
+        Iterable extents = listOfSeries.map((s) => s.renderer.extent).toList();
         var lowest = min(extents.map((e) => e.min)),
             highest = max(extents.map((e) => e.max));
 

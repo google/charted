@@ -9,7 +9,7 @@
 /// A collection of utilities for use by rest of the library and it's users
 library charted.core.utils;
 
-import "dart:html" show Element;
+import "dart:html" show Element, NodeTreeSanitizer;
 import "dart:math" as math;
 import "dart:async";
 
@@ -41,4 +41,10 @@ typedef String FormatFunction(value);
 bool isNullOrEmpty(val) {
   assert(val == null || val is String || val is Iterable);
   return val == null || val.isEmpty;
+}
+
+/// An empty tree sanitizer for use with Element.html
+/// This sanitizer must not be used when attaching user input to the DOM.
+class NullTreeSanitizer implements NodeTreeSanitizer {
+  void sanitizeTree(_) {}
 }
