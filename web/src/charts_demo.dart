@@ -21,20 +21,27 @@ class ChartDemo {
   ChartDemo(this.title, this.host, this.config, this.data,
        { this.useTwoDimensions: false, this.behaviors: const [],
          this.isLayout: false }) {
-    host.innerHtml =
-        '<div class="chart-wrapper">'
-        '  <div class="chart-title-wrapper">'
-        '     <div class="chart-title">$title</div>'
-        '  </div>'
-        '  <div class="chart-host-wrapper">'
-        '    <div class="chart-host" dir="ltr"></div>'
-        '    <div class="chart-legend-host"></div>'
-        '  </div>'
-        '</div>';
-
-    var chartAreaHost = host.querySelector('.chart-host'),
-        chartLegendHost = host.querySelector('.chart-legend-host'),
+    var wrapper = document.createElement('div')..className = "chart-wrapper",
+        titleWrap = document.createElement('div')..className = "chart-title",
+        titleContainer = document.createElement('div')
+          ..className = 'chart-host'
+          ..text = title,
+        chartHostWrapper =
+            document.createElement('div')..className = "chart-host-wrapper",
+        chartAreaHost =
+            document.createElement('div')..className = "chart-host",
+        chartLegendHost =
+            document.createElement('div')..className = "chart-legend-host",
         state = new ChartState();
+
+    titleWrap.append(titleContainer);
+    chartHostWrapper
+      ..append(chartAreaHost)
+      ..append(chartLegendHost);
+    wrapper
+      ..append(titleWrap)
+      ..append(chartHostWrapper);
+    host.append(wrapper);
 
     config.legend = new ChartLegend(chartLegendHost, showValues: isLayout);
     area = isLayout
@@ -42,9 +49,9 @@ class ChartDemo {
         : new CartesianArea(chartAreaHost, data, config,
             autoUpdate: false, useTwoDimensionAxes: useTwoDimensions,
             state: state);
-    for (var behavior in behaviors) {
+    behaviors.forEach((behavior) {
       area.addChartBehavior(behavior);
-    }
+    });
   }
 
   void setTheme(ChartTheme theme) {

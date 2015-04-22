@@ -33,11 +33,13 @@ String fixSimpleTextDirection(String text) {
 var _spaceRegExp = new RegExp(r'\s+');
 var _digitsRegExp = new RegExp(r'\d');
 TextDirection estimateDirectionOfSimpleText(String text) {
-  var rtlCount = 0;
-  var total = 0;
-  var hasWeaklyLtr = false;
+  var rtlCount = 0,
+      total = 0,
+      hasWeaklyLtr = false,
+      tokens = text.split(_spaceRegExp);
 
-  for (String token in text.split(_spaceRegExp)) {
+  for (int i = 0, len = tokens.length; i < len; ++i) {
+    var token = tokens.elementAt(i);
     if (Bidi.startsWithRtl(token)) {
       rtlCount++;
       total++;
@@ -47,7 +49,6 @@ TextDirection estimateDirectionOfSimpleText(String text) {
       hasWeaklyLtr = true;
     }
   }
-
   if (total == 0) {
     return hasWeaklyLtr ? TextDirection.LTR : TextDirection.UNKNOWN;
   } else {

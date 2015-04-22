@@ -83,7 +83,7 @@ class LineChartRenderer extends CartesianRendererBase {
     svgLines.enter.append('path')
         ..each((d, i, e) {
           e.classes.add('line-rdr-line');
-          e.style.setProperty('fill', 'none');
+          e.attributes['fill'] = 'none';
         });
 
     svgLines.each((d, i, e) {
@@ -128,10 +128,6 @@ class LineChartRenderer extends CartesianRendererBase {
         ..style('stroke', color)
         ..duration(50);
     }
-  }
-
-  @override
-  void updateValueState(int column, int row) {
   }
 
   void _showTrackingCircles(int row) {

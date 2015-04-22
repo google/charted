@@ -81,15 +81,21 @@ abstract class CartesianRendererBase implements CartesianRenderer {
   Extent get extent {
     assert(series != null && area != null);
     var rows = area.data.rows,
-    max = rows.isEmpty ? 0 : rows[0][series.measures.first],
-    min = max;
+        measures = series.measures,
+        max = rows.isEmpty ? 0 : rows[0][measures.first],
+        min = max;
 
-    rows.forEach((row) {
-      series.measures.forEach((idx) {
-        if (row[idx] > max) max = row[idx];
-        if (row[idx] < min) min = row[idx];
-      });
-    });
+    for (int i = 0, len = rows.length; i < len; ++i) {
+      var row = rows.elementAt(i);
+      for (int j = 0, jLen = measures.length; j < jLen; ++j) {
+        var measure = measures.elementAt(j);
+        if (row[measure] > max) {
+          max = row[measure];
+        } else if (row[measure] < min) {
+          min = row[measure];
+        }
+      }
+    }
     return new Extent(min, max);
   }
 

@@ -25,7 +25,11 @@ class Namespace {
   /// supported namespace prefix, the created element will
   /// have the namespaceUri set to the correct URI.
   static Element createChildElement(String tag, Element parent) {
-    Namespace parsed = new Namespace(tag);
+    var separatorIndex = tag.indexOf(':');
+    if (separatorIndex == -1 && parent != null) {
+      return parent.ownerDocument.createElementNS(parent.namespaceUri, tag);
+    }
+    Namespace parsed = new Namespace._internal(tag, separatorIndex);
     return parsed.namespaceUri == null ?
         parent.ownerDocument.createElementNS(parent.namespaceUri, tag) :
         parent.ownerDocument.createElementNS(parsed.namespaceUri,
@@ -34,15 +38,18 @@ class Namespace {
 
   /// Local part of the Element's tag name.
   String localName;
-  
+
   /// Name space URI for the selected namespace.
   String namespaceUri;
 
   /// Parses a tag for namespace prefix and local name.
   /// If a known namespace prefix is found, sets the namespaceUri property
   /// to the URI of the namespace.
-  Namespace(String tagName) {
-    int separatorIdx = tagName.indexOf(':');
+  factory Namespace(String tagName) =>
+      new Namespace._internal(tagName, tagName.indexOf(':'));
+
+  /// Utility for use by createChildElement and factory constructor.
+  Namespace._internal(String tagName, int separatorIdx) {
     String prefix = tagName;
     if (separatorIdx >= 0) {
       prefix = tagName.substring(0, separatorIdx);

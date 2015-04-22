@@ -80,7 +80,8 @@ class _ChartLegend implements ChartLegend {
     if ((visibleItemsCount > 0) && (visibleItemsCount < items.length)) {
       _root.select('.chart-legend-more').remove();
       _root.append('div')
-        ..on('mouseover', (d, i, e) => _displayMoreItem(items.skip(visibleItemsCount)))
+        ..on('mouseover',
+            (d, i, e) => _displayMoreItem(items.skip(visibleItemsCount)))
         ..on('mouseleave', (d, i, e) => _hideMoreItem())
         ..text('${items.length - visibleItemsCount} more...')
         ..classed('chart-legend-more');
@@ -126,11 +127,13 @@ class _ChartLegend implements ChartLegend {
       // If this is the first time we are adding rows,
       // Update elements before adding them to the DOM.
       if (isFirstRender) {
-        if (d.index == state.preview) {
-          rowStyles.add('chart-legend-hover');
-        }
-        if (state.isSelected(d.index)) {
-          rowStyles.add('chart-legend-selected');
+        if (state != null) {
+          if (d.index == state.preview) {
+            rowStyles.add('chart-legend-hover');
+          }
+          if (state.isSelected(d.index)) {
+            rowStyles.add('chart-legend-selected');
+          }
         }
         rowStyles.addAll(
             d.series.map((ChartSeries x) => 'type-${x.renderer.name}'));

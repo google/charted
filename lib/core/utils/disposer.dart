@@ -35,6 +35,6 @@ class SubscriptionsDisposer {
     _subscriptions.forEach((StreamSubscription val) {
       if (val != null) val.cancel();
     });
-    _subscriptions.clear();
+    _subscriptions = [];
   }
 }
