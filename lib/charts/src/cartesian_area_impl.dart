@@ -424,13 +424,16 @@ class _CartesianArea implements CartesianArea {
     }));
 
     // List of measure and dimension axes that are displayed
+    assert(
+        isNullOrEmpty(config.displayedMeasureAxes) ||
+        config.displayedMeasureAxes.length < 2);
     var measureAxesCount = dimensionAxesCount == 1 ? 2 : 0,
-        displayedMeasureAxes = (config.displayedMeasureAxes == null ?
-            _measureAxes.keys.take(measureAxesCount) :
-                config.displayedMeasureAxes.take(measureAxesCount)).
-                    toList(growable:false),
+        displayedMeasureAxes = (isNullOrEmpty(config.displayedMeasureAxes)
+            ? _measureAxes.keys.take(measureAxesCount)
+            : config.displayedMeasureAxes.take(measureAxesCount)).
+                toList(growable: false),
         displayedDimensionAxes =
-            config.dimensions.take(dimensionAxesCount).toList(growable:false);
+            config.dimensions.take(dimensionAxesCount).toList(growable: false);
 
     // Compute size of the dimension axes
     if (config.renderDimensionAxes != false) {
@@ -480,7 +483,7 @@ class _CartesianArea implements CartesianArea {
       // Update measure axis (add/remove/update)
       axisGroups.enter.append('svg:g');
       axisGroups.each((axisId, index, group) {
-        _getMeasureAxis(axisId).draw(group, preRender: preRender);
+        _getMeasureAxis(axisId).draw(group, _scope, preRender: preRender);
         group.classes.clear();
         group.classes.addAll(['measure-axis-group','measure-${index}']);
       });
@@ -494,7 +497,7 @@ class _CartesianArea implements CartesianArea {
       // Update dimension axes (add/remove/update)
       dimAxisGroups.enter.append('svg:g');
       dimAxisGroups.each((column, index, group) {
-        _getDimensionAxis(column).draw(group, preRender: preRender);
+        _getDimensionAxis(column).draw(group, _scope, preRender: preRender);
         group.classes.clear();
         group.classes.addAll(['dimension-axis-group', 'dim-${index}']);
       });

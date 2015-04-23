@@ -42,6 +42,9 @@ abstract class CartesianArea implements ChartArea {
   /// is either one or two based on [useTwoDimensions]
   Iterable<Scale> get dimensionScales;
 
+  /// List of dimensions using a band of space on the axis
+  Iterable<int> get dimensionsUsingBands;
+
   /// Stream to notify when chart axes get updated.
   Stream<ChartArea> get onChartAxesUpdated;
 

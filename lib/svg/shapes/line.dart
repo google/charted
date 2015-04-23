@@ -37,13 +37,14 @@ class SvgLine implements SvgShape {
   final LineInterpolator interpolator;
 
   /// Tension of the line, as used by a few interpolators.
-  final int tension = 0;
+  final int tension;
 
   SvgLine({
       this.xValueAccessor: defaultDataToX,
       this.yValueAccessor: defaultDataToY,
       this.isDefined: defaultIsDefined,
-      String interpolate: 'linear'})
+      this.tension: 0,
+      String interpolate: LINE_INTERPOLATOR_LINEAR })
       : interpolator = LINE_INTERPOLATORS[interpolate] {
     assert(interpolator != null);
   }

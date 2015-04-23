@@ -22,14 +22,16 @@ class ChartDemo {
        { this.useTwoDimensions: false, this.behaviors: const [],
          this.isLayout: false }) {
     var wrapper = document.createElement('div')..className = "chart-wrapper",
-        titleWrap = document.createElement('div')..className = "chart-title",
+        titleWrap = document.createElement('div')
+          ..className = "chart-title-wrapper",
         titleContainer = document.createElement('div')
-          ..className = 'chart-host'
+          ..className = 'chart-title'
           ..text = title,
         chartHostWrapper =
             document.createElement('div')..className = "chart-host-wrapper",
-        chartAreaHost =
-            document.createElement('div')..className = "chart-host",
+        chartAreaHost = document.createElement('div')
+          ..className = "chart-host"
+          ..attributes['dir'] = 'ltr',
         chartLegendHost =
             document.createElement('div')..className = "chart-legend-host",
         state = new ChartState();
