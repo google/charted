@@ -54,6 +54,7 @@ class ChartDemo {
     behaviors.forEach((behavior) {
       area.addChartBehavior(behavior);
     });
+    area.addChartBehavior(new AxisLabelTooltip());
   }
 
   void setTheme(ChartTheme theme) {

@@ -17,7 +17,7 @@ class SubscriptionsDisposer {
     _subscriptions.add(value);
   }
 
-  void addAll(List<StreamSubscription> values, [Object handle]) {
+  void addAll(Iterable<StreamSubscription> values, [Object handle]) {
     for (var subscription in values) {
       add(subscription, handle);
     }

@@ -40,6 +40,7 @@ part 'chart_series.dart';
 part 'chart_state.dart';
 part 'chart_theme.dart';
 
+part 'behaviors/axis_label_tooltip.dart';
 part 'behaviors/chart_tooltip.dart';
 part 'behaviors/line_marker.dart';
 part 'behaviors/mouse_tracker.dart';
