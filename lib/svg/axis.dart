@@ -8,115 +8,103 @@
 
 library charted.svg.axis;
 
-import 'dart:html' show Element, window;
+import 'dart:html' show Element;
 import 'dart:math' as math;
 
 import 'package:charted/core/scales.dart';
 import 'package:charted/core/utils.dart';
-import 'package:charted/core/text_metrics.dart';
 import 'package:charted/selection/selection.dart';
 
 ///
-/// [SvgAxs] helps draw chart axes based on a given scale.
+/// [SvgAxis] helps draw chart axes based on a given scale.
 ///
 class SvgAxis {
+  /// Store of axis roots mapped to currently used scales
+  static final _scales = new Expando<Scale>();
+
   /// Orientation of the axis. Defaults to [ORIENTATION_BOTTOM].
   final String orientation;
 
-  final bool isLeft;
-  final bool isRight;
-  final bool isTop;
-  final bool isBottom;
-
   /// Scale used on this axis
-  Scale scale = new LinearScale();
+  final Scale scale;
 
   /// Size of all inner ticks
-  num innerTickSize = 6;
+  final num innerTickSize;
 
   /// Size of the outer two ticks
-  num outerTickSize = 6;
+  final num outerTickSize;
 
   /// Padding on the ticks
-  num tickPadding = 3;
+  final num tickPadding;
 
   /// List of values to be used on the ticks
-  List tickValues;
+  List _tickValues;
 
   /// Formatter for the tick labels
-  FormatFunction tickFormat;
+  FormatFunction _tickFormat;
 
-  /// Store of axis roots mapped to currently used scales
-  static Expando<Scale> _scales = new Expando<Scale>();
+  SvgAxis({
+      this.orientation: ORIENTATION_BOTTOM,
+      this.innerTickSize: 6,
+      this.outerTickSize: 6,
+      this.tickPadding: 3,
+      Iterable tickValues,
+      FormatFunction tickFormat,
+      Scale scale }) : scale = scale == null ? new LinearScale() : scale {
+    _tickFormat = tickFormat == null
+        ? this.scale.createTickFormatter()
+        : tickFormat;
+    _tickValues = isNullOrEmpty(tickValues) ? this.scale.ticks : tickValues;
+  }
 
-  SvgAxis(String orientation)
-      : orientation = orientation == null ? ORIENTATION_BOTTOM : orientation,
-        isLeft = orientation == ORIENTATION_LEFT,
-        isRight = orientation == ORIENTATION_RIGHT,
-        isTop = orientation == ORIENTATION_TOP,
-        isBottom = orientation == ORIENTATION_BOTTOM;
+  Iterable get tickValues => _tickValues;
+
+  FormatFunction get tickFormat => _tickFormat;
 
   /// Draw an axis on each non-null element in selection
-  draw(Selection g, { Rect rect, String font, isRTL: false }) =>
-          g.each((d, i, e) =>
-              create(e, g.scope, rect:rect, font:font, isRTL:isRTL));
+  draw(Selection g, {SvgAxisTicks axisTicksBuilder, bool isRTL}) =>
+      g.each((d, i, e) => create(
+          e, g.scope, axisTicksBuilder: axisTicksBuilder, isRTL: isRTL));
 
-  /// Create an axis on [element]. Uses [scope] to save the data associations.
-  create(Element element,
-      SelectionScope scope, {Rect rect, String font, bool isRTL}) {
+  /// Create an axis on [element].
+  create(Element element, SelectionScope scope, {
+      SvgAxisTicks axisTicksBuilder, bool isRTL: false}) {
 
     var group = scope.selectElements([element]),
         older = _scales[element],
         current = _scales[element] = scale.clone(),
-        isInitialRender = older == null;    // Drawing axis first time.
+        isInitialRender = older == null;
 
-    older = older == null ? current : older;
+    var isLeft = orientation == ORIENTATION_LEFT,
+        isRight = !isLeft && orientation == ORIENTATION_RIGHT,
+        isVertical = isLeft || isRight,
+        isBottom = !isVertical && orientation == ORIENTATION_BOTTOM,
+        isTop = !(isVertical || isBottom) && orientation == ORIENTATION_TOP,
+        isHorizontal = !isVertical;
 
-    var tickFormat = this.tickFormat == null
-            ? current.createTickFormatter()
-            : this.tickFormat,
-        tickValues = this.tickValues == null ? current.ticks : this.tickValues,
-        formatted = tickValues.map((x) => tickFormat(x)).toList(),
-        range = current.rangeExtent;
-
-    // When ticks don't have enough space on the horizontal axes, they are first
-    // rotated by 45deg. Then, if required, they are clipped.
-    bool rotateTicks = false;
-    if ((isBottom || isTop) && rect != null && !isNullOrEmpty(font)) {
-      var textMetrics = new TextMetrics(fontStyle: font);
-      var allowedWidth = (range.max - range.min) ~/ formatted.length;
-      var maxLabelWidth = textMetrics.getLongestTextWidth(formatted);
-
-      // Check if we need rotation
-      if (0.90 * allowedWidth < maxLabelWidth) {
-        rotateTicks = true;
-
-        // Check if we have enough space to render full chart
-        allowedWidth = (1.4142 * rect.height) - (textMetrics.fontSize / 1.4142);
-        if (maxLabelWidth > allowedWidth) {
-          for (int i = 0; i < formatted.length; ++i) {
-            formatted[i] = textMetrics.ellipsizeText(formatted[i], allowedWidth);
-          }
-        }
-      }
+    if (older == null) older = current;
+    if (axisTicksBuilder == null) {
+      axisTicksBuilder = new SvgAxisTicks();
     }
+    axisTicksBuilder.init(this);
 
-    var ticks = group.selectAll('.tick').data(tickValues, current.scale),
+    var values = axisTicksBuilder.ticks,
+        formatted = axisTicksBuilder.formattedTicks,
+        ellipsized = axisTicksBuilder.shortenedTicks;
+
+    var ticks = group.selectAll('.tick').data(values, current.scale),
         exit = ticks.exit,
-        transform = isLeft || isRight ? _yAxisTransform : _xAxisTransform,
-        convert = isTop || isLeft ? -1 : 1;
+        transform = isVertical ? _yAxisTransform : _xAxisTransform,
+        sign = isTop || isLeft ? -1 : 1,
+        isEllipsized = ellipsized != formatted;
 
-    // For entering ticks, add the line and text element for label.
-    // Only attributes that are constant and solely depend on orientation
-    // are set here.
     var enter = ticks.enter.appendWithCallback((d, i, e) {
       var group = Namespace.createChildElement('g', e)
         ..classes.add('tick')
         ..append(Namespace.createChildElement('line',  e))
         ..append(Namespace.createChildElement('text', e)
-            ..attributes['dy'] = isLeft || isRight
-                ? '0.32em'
-                : isBottom ? '0.71em' : '0');
+            ..attributes['dy'] =
+                isVertical ? '0.32em' : (isBottom ? '0.71em' : '0'));
       if (!isInitialRender) {
         group.style.setProperty('opacity', EPSILON.toString());
       }
@@ -124,19 +112,21 @@ class SvgAxis {
     });
 
     // All attributes/styles/classes that may change due to theme and scale.
+    // TODO(prsd): Order elements before updating ticks.
     ticks.each((d, i, e) {
       Element line = e.firstChild;
       Element text = e.lastChild;
       bool isRTLText = false; // FIXME(prsd)
 
-      if (isBottom || isTop) {
-        line.attributes['y2'] = (convert * innerTickSize).toString();
+      if (isHorizontal) {
+        line.attributes['y2'] = (sign * innerTickSize).toString();
         text.attributes['y'] =
-            (convert * (math.max(innerTickSize, 0) + tickPadding)).toString();
+            (sign * (math.max(innerTickSize, 0) + tickPadding)).toString();
 
-        if (rotateTicks) {
+        if (axisTicksBuilder.rotation != 0) {
           text.attributes
-            ..['transform'] = 'rotate(${isRTL ? -45 : 45})'
+            ..['transform'] =
+                'rotate(${(isRTL ? -1 : 1) * axisTicksBuilder.rotation})'
             ..['text-anchor'] = isRTL ? 'end' : 'start';
         } else {
           text.attributes
@@ -144,19 +134,20 @@ class SvgAxis {
             ..['text-anchor'] = 'middle';
         }
       } else {
-        line.attributes['x2'] = (convert * innerTickSize).toString();
+        line.attributes['x2'] = (sign * innerTickSize).toString();
         text.attributes
-            ..['x'] = '${convert * (math.max(innerTickSize, 0) + tickPadding)}'
+            ..['x'] = '${sign * (math.max(innerTickSize, 0) + tickPadding)}'
             ..['text-anchor'] = isLeft
                 ? (isRTLText ? 'start' : 'end')
                 : (isRTLText ? 'end' : 'start');
       }
 
-      text.text = fixSimpleTextDirection(formatted[i]);
+      text.text = fixSimpleTextDirection(ellipsized.elementAt(i));
+      text.attributes['data-detail'] = formatted.elementAt(i);
 
       if (isInitialRender) {
         var dx = current is OrdinalScale ? current.rangeBand / 2 : 0;
-        e.attributes['transform'] = isTop || isBottom
+        e.attributes['transform'] = isHorizontal
             ? 'translate(${current.scale(d) + dx},0)'
             : 'translate(0,${current.scale(d) + dx})';
       } else {
@@ -183,12 +174,13 @@ class SvgAxis {
     exit.remove();
 
     // Append the outer domain.
-    var path = element.querySelector('.domain');
+    var path = element.querySelector('.domain'),
+        tickSize = sign * outerTickSize,
+        range = current.rangeExtent;
     if (path == null) {
       path = Namespace.createChildElement('path', element);
       path.classes.add('domain');
     }
-    var tickSize = convert * outerTickSize;
     path.attributes['d'] = isLeft || isRight
         ? 'M${tickSize},${range.min}H0V${range.max}H${tickSize}'
         : 'M${range.min},${tickSize}V0H${range.max}V${tickSize}';
@@ -199,17 +191,40 @@ class SvgAxis {
     selection.transition()
       ..attrWithCallback(
           'transform', (d, i, e) => 'translate(${transformFn(d)},0)');
-    selection.transition()
-      ..style('opacity', '1.0')
-      ..delay(50);
   }
 
   _yAxisTransform(Selection selection, transformFn) {
     selection.transition()
       ..attrWithCallback(
           'transform', (d, i, e) => 'translate(0,${transformFn(d)})');
-    selection.transition()
-      ..style('opacity', '1.0')
-      ..delay(50);
   }
+}
+
+/// Interface and the default implementation of [SvgAxisTicks].
+/// SvgAxisTicks provides strategy to handle overlapping ticks on an
+/// axis.  Default implementation assumes that the ticks don't overlap.
+class SvgAxisTicks {
+  bool _ellipsized;
+  int _rotation;
+  List _ticks;
+  List _formattedTicks;
+
+  void init(SvgAxis axis) {
+    _ticks = axis.tickValues;
+    _formattedTicks = _ticks.map((x) => axis.tickFormat(x));
+  }
+
+  /// When non-zero, indicates the angle by which each tick value must be
+  /// rotated to avoid the overlap.
+  int get rotation => _rotation;
+
+  /// List of ticks that will be displayed on the axis.
+  Iterable get ticks => _ticks;
+
+  /// List of formatted ticks values.
+  Iterable get formattedTicks => _formattedTicks;
+
+  /// List of clipped tick values, if they had to be clipped. Must be same
+  /// as the [formattedTicks] if none of the ticks were ellipsized.
+  Iterable get shortenedTicks => _formattedTicks;
 }

@@ -119,15 +119,8 @@ abstract class ChartAxisTheme {
   /// visualization.
   int get verticalAxisWidth => 200;
 
-  /// When set to true, the horizontal axes resize to fit the labels.
-  bool get horizontalAxisAutoResize => true;
-
-  /// Height of horizontal axis when it is not resizing automatically. If
-  /// [autoResizeAxis] is set to true [horizontalAxisHeight] is used as the
-  /// maximum height of the horizontal axis.
-  ///
-  /// Width of horizontal axis is automatically computed based on width of the
-  /// visualization.
+  /// Height of horizontal axis. Width of horizontal axis is automatically
+  /// computed based on width of the visualization.
   int get horizontalAxisHeight => 200;
 
   /// Font used by axis ticks. When specified, axis uses efficient off-screen

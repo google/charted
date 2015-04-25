@@ -45,7 +45,7 @@ main() {
   // Chart with custom measure axis with specific domain on the scale.
   var series2 = new ChartSeries("one", [1, 3, 2, 6],
           new StackedBarChartRenderer(),
-      // measureAxisId matches the id later used in registerMeasureAxis().
+          // measureAxisId matches the id later used in registerMeasureAxis().
           measureAxisIds: ['fixed_domain']),
       data2 = new ChartData(COLUMNS, DATA),
       config2 = new ChartConfig([series2], [0]);

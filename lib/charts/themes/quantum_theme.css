@@ -58,6 +58,17 @@
   color: #424242;
 }
 
+.chart-axis-label-tooltip {
+  color: white;
+  opacity: 0;
+  transition: opacity .25s;
+  background-color: black;
+  position: absolute;
+  padding: 4px;
+  border-radius: 2px;
+  z-index: 9999;
+}
+
 .chart-axis-text,
 .dimension-axis-group text, .measure-axis-group text {
   font-size: 12px;
