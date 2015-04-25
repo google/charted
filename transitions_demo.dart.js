@@ -2004,17 +2004,18 @@ else if(3*c<2)return a+(b-a)*(0.6666666666666666-c)*6
 return a}},
 Aq:{
 "^":"a;Q,a",
-qK:function(a){var z,y
-z=C.xB.OY(a,":")
-if(z>=0){y=C.xB.Nj(a,0,z)
-this.Q=C.xB.yn(a,z+1)}else y=a
-if(C.tQ.NZ(y))this.a=C.tQ.p(0,y)
+Nq:function(a,b){var z
+if(b>=0){z=C.xB.Nj(a,0,b)
+this.Q=C.xB.yn(a,b+1)}else z=a
+if(C.tQ.NZ(z))this.a=C.tQ.p(0,z)
 else this.Q=a},
-static:{JN:function(a,b){var z,y
-z=new Z.Aq(null,null)
-z.qK(a)
-y=z.a
-return y==null?b.ownerDocument.createElementNS(b.namespaceURI,a):b.ownerDocument.createElementNS(y,z.Q)}}}}],["","",,D,{
+static:{JN:function(a,b){var z,y,x
+z=C.xB.OY(a,":")
+if(z===-1&&b!=null)return b.ownerDocument.createElementNS(b.namespaceURI,a)
+y=new Z.Aq(null,null)
+y.Nq(a,z)
+x=y.a
+return x==null?b.ownerDocument.createElementNS(b.namespaceURI,a):b.ownerDocument.createElementNS(x,y.Q)}}}}],["","",,D,{
 "^":"",
 QL:[function(){var z,y,x,w,v,u,t,s,r,q,p,o,n,m,l,k,j,i,h,g,f,e,d,c,b,a,a0,a1,a2,a3,a4,a5,a6
 z=new S.U(new P.N(null),new P.N(null),null,null)

@@ -895,17 +895,18 @@ a.d=null}}}],["","",,Z,{
 "^":"",
 Aq:{
 "^":"a;Q,a",
-qK:function(a){var z,y
-z=C.xB.OY(a,":")
-if(z>=0){y=C.xB.Nj(a,0,z)
-this.Q=C.xB.yn(a,z+1)}else y=a
-if(C.tQ.x4(y))this.a=C.tQ.p(0,y)
+Nq:function(a,b){var z
+if(b>=0){z=C.xB.Nj(a,0,b)
+this.Q=C.xB.yn(a,b+1)}else z=a
+if(C.tQ.x4(z))this.a=C.tQ.p(0,z)
 else this.Q=a},
-static:{JN:function(a,b){var z,y
-z=new Z.Aq(null,null)
-z.qK(a)
-y=z.a
-return y==null?b.ownerDocument.createElementNS(b.namespaceURI,a):b.ownerDocument.createElementNS(y,z.Q)}}},
+static:{JN:function(a,b){var z,y,x
+z=C.xB.OY(a,":")
+if(z===-1&&b!=null)return b.ownerDocument.createElementNS(b.namespaceURI,a)
+y=new Z.Aq(null,null)
+y.Nq(a,z)
+x=y.a
+return x==null?b.ownerDocument.createElementNS(b.namespaceURI,a):b.ownerDocument.createElementNS(x,y.Q)}}},
 PY:{
 "^":"a;x:Q>,y:a>,N:b>,fg:c>",
 m:function(a,b){var z,y
