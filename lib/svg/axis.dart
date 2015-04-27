@@ -62,7 +62,7 @@ class SvgAxis {
   FormatFunction get tickFormat => _tickFormat;
 
   /// Draw an axis on each non-null element in selection
-  draw(Selection g, {SvgAxisTicks axisTicksBuilder, bool isRTL}) =>
+  draw(Selection g, {SvgAxisTicks axisTicksBuilder, bool isRTL: false}) =>
       g.each((d, i, e) => create(
           e, g.scope, axisTicksBuilder: axisTicksBuilder, isRTL: isRTL));
 
@@ -204,10 +204,10 @@ class SvgAxis {
 /// SvgAxisTicks provides strategy to handle overlapping ticks on an
 /// axis.  Default implementation assumes that the ticks don't overlap.
 class SvgAxisTicks {
-  bool _ellipsized;
-  int _rotation;
-  List _ticks;
-  List _formattedTicks;
+  bool _ellipsized = false;
+  int _rotation = 0;
+  Iterable _ticks;
+  Iterable _formattedTicks;
 
   void init(SvgAxis axis) {
     _ticks = axis.tickValues;
