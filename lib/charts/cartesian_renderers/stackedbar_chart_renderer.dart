@@ -176,7 +176,10 @@ class StackedBarChartRenderer extends CartesianRendererBase {
               color = colorForValue(measure, row),
               style = stylesForValue(measure, row);
 
-          rect.classes.add('stack-rdr-bar ${style.join(" ")}');
+          rect.classes.add(style.isNotEmpty
+              ? 'stack-rdr-bar ${style.join(" ")}'
+              : 'stack-rdr-bar');
+
           rect.attributes
             ..['d'] = buildPath(d, i, animateBarGroups)
             ..['stroke-width'] = '${theme.defaultStrokeWidth}px'

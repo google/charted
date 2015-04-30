@@ -53,7 +53,7 @@ void _dumpPropertiesData(String data) {
   buffer.write(HEADER);
   buffer.writeln('const CODE_POINT_BLOCKS = const[');
 
-  List<CodeRange> items = [];
+  List<Iterable> items = [];
   data.split('\n').forEach((String line) {
     Match match = lineRegExp.matchAsPrefix(line);
     if (match == null) return;
@@ -62,11 +62,11 @@ void _dumpPropertiesData(String data) {
     int end =
         match.group(2) == null ? start : int.parse(match.group(2), radix:16);
 
-    items.add(new CodeRange(start, end, CodeUnitCategory[match.group(3)]));
-    items.sort((a, b) => a.start.compareTo(b.start));
+    items.add([start, end, CodeUnitCategory[match.group(3)]]);
+    items.sort((a, b) => a.first.compareTo(b.first));
   });
 
-  buffer.write('  ${items.join(',\n  ')}');
+  buffer.write(items.map((List range) => range.join(', ')).join(',\n  '));
   buffer.writeln();
   buffer.writeln('];');
   print(buffer.toString());

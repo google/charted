@@ -59,13 +59,6 @@ abstract class ChartTheme {
 
   /// Padding around the rendered chart. Defaults to 10px in all directions
   AbsoluteRect get padding => const AbsoluteRect(10, 10, 10, 10);
-
-  /// Special filters that can be applied to the shapes.
-  /// In SVG, these may add blurring, drop-shadow and other effects to charts.
-  String get filters => '';
-
-  /// Returns a filter (id/url) for key
-  String getFilterForKey(key, [int state]);
 }
 
 abstract class ChartAxisTheme {

@@ -114,28 +114,25 @@ draw_charts() {
 main() {
   var textMetrics = new tm.TextMetrics(fontStyle: '14px Roboto');
 
-  Element button = querySelector('#draw-charts');
-  button.onClick.listen((_) {
-    draw_charts();
+  draw_charts();
 
-    Element chartsContainer = querySelector('.demos-container');
-    InputElement useRTLScriptCheckBox = querySelector('#rtl-use-script'),
-        switchAxesForRTLCheckBox = querySelector('#rtl-switch-axes'),
-        useRTLLayoutCheckBox = querySelector('#rtl-use-layout');
+  Element chartsContainer = querySelector('.demos-container');
+  InputElement useRTLScriptCheckBox = querySelector('#rtl-use-script'),
+      switchAxesForRTLCheckBox = querySelector('#rtl-switch-axes'),
+      useRTLLayoutCheckBox = querySelector('#rtl-use-layout');
 
-    useRTLLayoutCheckBox.onChange.listen((_) {
-      bool isRTL = useRTLLayoutCheckBox.checked;
-      charts.forEach((ChartDemo x) => x.config.isRTL = isRTL);
-      chartsContainer.attributes['dir'] = isRTL ? 'rtl' : 'ltr';
-    });
+  useRTLLayoutCheckBox.onChange.listen((_) {
+    bool isRTL = useRTLLayoutCheckBox.checked;
+    charts.forEach((ChartDemo x) => x.config.isRTL = isRTL);
+    chartsContainer.attributes['dir'] = isRTL ? 'rtl' : 'ltr';
+  });
 
-    useRTLScriptCheckBox.onChange.listen((_) {
-      bool isRTL = useRTLScriptCheckBox.checked;
-      Iterable DATA_SOURCE = isRTL ? SMALL_DATA_RTL : SMALL_DATA;
-      charts.forEach((ChartDemo x) {
-        x.area.data = new ChartData(SMALL_DATA_COLUMNS, DATA_SOURCE);
-        x.draw();
-      });
+  useRTLScriptCheckBox.onChange.listen((_) {
+    bool isRTL = useRTLScriptCheckBox.checked;
+    Iterable DATA_SOURCE = isRTL ? SMALL_DATA_RTL : SMALL_DATA;
+    charts.forEach((ChartDemo x) {
+      x.area.data = new ChartData(SMALL_DATA_COLUMNS, DATA_SOURCE);
+      x.draw();
     });
   });
 }
