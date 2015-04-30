@@ -50,7 +50,7 @@ abstract class HierarchyLayout<T extends HierarchyNode> {
     }
 
     // Reorder the list so that root is the first element and the list contains
-    // the hierarcy of nodes in depth first order.
+    // the hierarchy of nodes in depth first order.
     var hierarchyNodeList = [];
     var root = nodeList.where((e) => e.depth == 0).elementAt(0);
     var children = [root];

@@ -104,7 +104,7 @@ class _ChartData extends ChangeNotifier implements ChartData {
       totalLength += length + 3;
     }
 
-    // Second pass for building the string buffer and padd each cell with space
+    // Second pass for building the string buffer and pad each cell with space
     // according to the difference between cell string length and max length.
     var strBuffer = new StringBuffer();
     strBuffer.write('-' * totalLength + '\n');

@@ -28,7 +28,7 @@ class SvgLine implements SvgShape {
   /// Callback to access/convert datum to y coordinate value.
   final SelectionValueAccessor<num> yValueAccessor;
 
-  /// Callback that is used to determine if a valaue is considered valid.
+  /// Callback that is used to determine if a value is considered valid.
   /// If [isDefined] returns false at any time, the value isn't part
   /// of the line - the line would be split.
   final SelectionCallback<bool> isDefined;

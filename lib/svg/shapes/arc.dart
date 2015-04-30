@@ -114,7 +114,7 @@ class SvgArcData {
 
 /// Returns the interpolator between two [SvgArcData] [a] and [b].
 ///
-/// The interpolator will interpolate the older innerRadius and outerDadius with
+/// The interpolator will interpolate the older innerRadius and outerRadius with
 /// newer ones, as well as older startAngle and endAngle with newer ones.
 Interpolator interpolateSvgArcData(SvgArcData a, SvgArcData b) {
   var ast = a.startAngle,

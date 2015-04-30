@@ -108,8 +108,6 @@ void main() {
   String shape1 = 'M50 100 L50 200 L100 200 Z';
   String shape2 = 'M900 0 L750 200 L900 200 Z';
 
-  var stringInterpolator = createStringInterpolator(shape1, shape2);
-
   Selection g2 = svg.append('g');
 
   var text5 = g2.append('text');

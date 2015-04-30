@@ -86,10 +86,10 @@ class TimeFormat {
     'L': 'SSS',
     'p': 'a',
     'S': 'ss',
-    'U': 'ww',        // TODO(songrenchu): ICU doesn't disdinguish 'U' and 'W',
+    'U': 'ww',        // TODO(songrenchu): ICU doesn't distinguish 'U' and 'W',
                       // and not supported by Dart: DateFormat
     'w': 'ee',        // TODO(songrenchu): e not supported by Dart: DateFormat
-    'W': 'ww',        // TODO(songrenchu): ICU doesn't disdinguish 'U' and 'W',
+    'W': 'ww',        // TODO(songrenchu): ICU doesn't distinguish 'U' and 'W',
                       // and not supported by Dart: DateFormat
     'x': 'MM/dd/yyyy',
     'X': 'HH:mm:ss',

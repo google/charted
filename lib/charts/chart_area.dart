@@ -139,7 +139,7 @@ abstract class ChartArea implements ChartAreaBehaviorSource {
   /// - If [preRender] is set, [ChartArea] attempts to build all non data
   ///   dependant elements of the chart.
   /// - When [schedulePostRender] is not null, non-essential elements/tasks
-  ///   of chart building are post-poned until the future is resolved.
+  ///   of chart building are postponed until the future is resolved.
   void draw({bool preRender: false, Future schedulePostRender});
 
   /// Force destroy the ChartArea.

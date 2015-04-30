@@ -149,7 +149,7 @@ abstract class ScaleUtils {
       : new RoundingFunctions.identity();
 
   /// Returns a Function that given a value x on the domain, returns the
-  /// corrsponding value on the range on a bilinear scale.
+  /// corresponding value on the range on a bilinear scale.
   ///
   /// @param domain         The domain of the scale.
   /// @param range          The range of the scale.
@@ -163,7 +163,7 @@ abstract class ScaleUtils {
   }
 
   /// Returns a Function that given a value x on the domain, returns the
-  /// corrsponding value on the range on a polylinear scale.
+  /// corresponding value on the range on a polylinear scale.
   ///
   /// @param domain         The domain of the scale.
   /// @param range          The range of the scale.

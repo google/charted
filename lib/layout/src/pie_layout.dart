@@ -80,6 +80,6 @@ class PieLayout {
   /** Default start angle callback - returns 0 */
   static num defaultStartAngleCallback(d, i, _) => 0;
 
-  /** Default end angle calback - returns 2 * PI */
+  /** Default end angle callback - returns 2 * PI */
   static num defaultEndAngleCallback(d, i, _) => 2 * PI;
 }

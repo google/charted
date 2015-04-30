@@ -112,8 +112,7 @@ draw_charts() {
 }
 
 main() {
-  var textMetrics = new tm.TextMetrics(fontStyle: '14px Roboto');
-
+  new tm.TextMetrics(fontStyle: '14px Roboto');
   draw_charts();
 
   Element chartsContainer = querySelector('.demos-container');
