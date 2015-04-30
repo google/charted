@@ -105,7 +105,10 @@ class BarChartRenderer extends CartesianRendererBase {
             color = colorForValue(measure, row),
             style = stylesForValue(measure, row);
 
-        rect.classes.add('bar-rdr-bar ${style.join(" ")}');
+        rect.classes.add(style.isNotEmpty
+            ? 'bar-rdr-bar ${style.join(" ")}'
+            : 'bar-rdr-bar');
+
         rect.attributes
           ..['d'] = buildPath(d, i, animateBarGroups)
           ..['stroke-width'] = '${theme.defaultStrokeWidth}px'
