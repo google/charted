@@ -12,7 +12,7 @@
       .controls {
         padding: 30px;
         border-right: 1px solid #d3d3d3;
-        background-color: #eee;
+        background-color: #eeeeee;
         display: flex;
         flex-direction: column;
         justify-content: space-between;
@@ -24,10 +24,10 @@
       }
       .control-category {
         padding: 10px 0;
-        border-bottom: 1px solid #ccc;
+        border-bottom: 1px solid #cccccc;
       }
       .control-category:last-child {
-        border-bottom: 0px;
+        border-bottom: 0;
       }
       button, select {
         margin-bottom: 10px;
@@ -47,20 +47,17 @@
         <a href="https://github.com/google/charted/tree/master/web">
         the Charted GitHub repository</a>
         <div class="control-category">
-          <button id="draw-charts">Draw charts!</button>
-        </div>
-        <div class="control-category">
           <h2>Internationalization</h2>
           <div>
-            <input type="checkbox" id="rtl-use-script"></input>
+            <input type="checkbox" id="rtl-use-script"/>
             <label for="rtl-use-script">Use RTL script</label>
           </div>
           <div>
-            <input type="checkbox" id="rtl-use-layout"></input>
+            <input type="checkbox" id="rtl-use-layout"/>
             <label for="rtl-use-layout">Use RTL Layout</label>
           </div>
           <div>
-            <input type="checkbox" id="rtl-switch-axes" disabled></input>
+            <input type="checkbox" id="rtl-switch-axes" disabled/>
             <label for="rtl-switch-axes">Switch axis direction for RTL</label>
           </div>
         </div>
