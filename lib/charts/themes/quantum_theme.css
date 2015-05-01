@@ -103,6 +103,7 @@
 .chart-legend-selected,
 .chart-legend-hover {
   color: #434343;
+  font-weight: bold;
 }
 
 .chart-legend-more-row {

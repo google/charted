@@ -122,7 +122,7 @@ class _ChartLegend implements ChartLegend {
           value = showValues ? (Namespace.createChildElement('div', e)
             ..className = 'chart-legend-value') : null;
 
-      var rowStyles = ['chart-legend-row'];
+      var rowStyles = ['chart-legend-row'].toList();
 
       // If this is the first time we are adding rows,
       // Update elements before adding them to the DOM.
@@ -146,6 +146,7 @@ class _ChartLegend implements ChartLegend {
         if (showValues) {
           value.text = d.value;
           value.style.setProperty('color', d.color);
+          row.append(value);
         }
       }
       row.classes.addAll(rowStyles);
@@ -167,7 +168,7 @@ class _ChartLegend implements ChartLegend {
             e.classes.remove('chart-legend-selected');
           }
         }
-        e.classes.addAll(d.series.map((ChartSeries x) => 'type-${x.renderer.name}'));
+        e.classes.addAll(d.series.map((x) => 'type-${x.renderer.name}'));
         (e.firstChild as Element).style.setProperty('background-color', d.color);
         (e.children[1]).innerHtml = d.label;
         if (showValues) {

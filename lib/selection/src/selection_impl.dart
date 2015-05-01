@@ -328,8 +328,6 @@ class _SelectionImpl implements Selection {
         exitGroups = [];
 
     // Create a dummy node to be used with enter() selection.
-    // TODO(prsd): Use virtual DOM. It could be upto 50 times faster than
-    //             using a html element for dummy.
     Object dummy(val) {
       var element = new Object();
       scope.associate(element, val);
