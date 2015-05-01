@@ -54,7 +54,7 @@ abstract class ChartTheme {
   /// Theme passed to the measure axes - only used by cartesian charts
   ChartAxisTheme get measureAxisTheme => null;
 
-  /// Theme passed to the dimension axes - only used by catesian charts
+  /// Theme passed to the dimension axes - only used by cartesian charts
   ChartAxisTheme get dimensionAxisTheme => null;
 
   /// Padding around the rendered chart. Defaults to 10px in all directions

@@ -47,7 +47,7 @@ class ChartDemo {
 
     config.legend = new ChartLegend(chartLegendHost, showValues: isLayout);
     area = isLayout
-        ? new LayoutArea(chartAreaHost, data, config, false)
+        ? new LayoutArea(chartAreaHost, data, config, false, state: state)
         : new CartesianArea(chartAreaHost, data, config,
             autoUpdate: false, useTwoDimensionAxes: useTwoDimensions,
             state: state);

@@ -9,9 +9,6 @@
 part of charted.charts;
 
 class _ChartAxis {
-  static const List _VERTICAL_ORIENTATIONS =
-      const [ ORIENTATION_LEFT, ORIENTATION_RIGHT ];
-
   CartesianArea _area;
   ChartAxisConfig _config;
   ChartAxisTheme _theme;

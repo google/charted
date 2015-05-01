@@ -141,7 +141,7 @@ class TreeMapLayout extends HierarchyLayout {
     }
   }
 
-  /// Compuetes the most amount of area needed to layout the list of nodes.
+  /// Computes the most amount of area needed to layout the list of nodes.
   num _worst(List<TreeMapNode> nodes, num length, num pArea) {
     var area;
     var rmax = 0;

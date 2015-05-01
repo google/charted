@@ -1,4 +1,5 @@
 
+/*noinspection CssUnknownTarget,CssUnknownTarget*/
 @import '//fonts.googleapis.com/css?family=Roboto:400,700';
 
 /*
@@ -102,6 +103,7 @@
 .chart-legend-selected,
 .chart-legend-hover {
   color: #434343;
+  font-weight: bold;
 }
 
 .chart-legend-more-row {
@@ -185,16 +187,13 @@
 
 .line-rdr-line {
   stroke-width: 2px;
-  transition: stroke-width .4s;
+  transition: stroke-width .2s;
   stroke-linecap: round;
-}
-
-.line-rdr-line.col-selected {
-  stroke-width: 4px;
 }
 
 .line-rdr-line.col-selected,
 .line-rdr-line.col-previewed {
+  stroke-width: 4px;
   filter: url('quantum_theme.svg#drop-shadow');
 }
 

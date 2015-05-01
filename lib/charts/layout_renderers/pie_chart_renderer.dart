@@ -26,6 +26,8 @@ class PieChartRenderer extends LayoutRendererBase {
 
   final List<ChartLegendItem> _legend = [];
 
+  Iterable otherRow;
+
   PieChartRenderer({
       num innerRadiusRatio: 0,
       bool showLabels,
@@ -61,7 +63,6 @@ class PieChartRenderer extends LayoutRendererBase {
     rows.sort((a, b) => b[measure].compareTo(a[measure]));
 
     // Limit items to the passed maxSliceCount
-    var otherRow;
     if (rows.length > maxSliceCount) {
       var displayed = rows.take(maxSliceCount).toList();
       var otherItemsValue = 0;
@@ -86,24 +87,26 @@ class PieChartRenderer extends LayoutRendererBase {
             outerRadiusCallback: (d, i, e) => radius);
 
     var pie = root.selectAll('.pie-path').data(data);
-    var colorForData = (Iterable row) =>
-        row.hashCode == otherRow.hashCode
-            ? theme.getOtherColor()
-            : theme.getColorForKey(row.elementAt(dimension));
 
-    pie.enter.append('path').each((d, i, e) {
-      e.classes.add('pie-path');
-      e.attributes
-        ..['fill'] = colorForData(d.data)
-        ..['d'] = arc.path(d, i, host)
-        ..['stroke-width'] = '1px'
-        ..['stroke'] = '#ffffff';
-      e.append(
-          Namespace.createChildElement('text', e)
-            ..classes.add('pie-label'));
-    });
+    pie.enter.append('path').classed('pie-path');
 
     pie
+      ..each((d, i, e) {
+        var styles = stylesForData(d.data, i);
+        e.classes.removeAll(ChartState.VALUE_CLASS_NAMES);
+        if (!isNullOrEmpty(styles)) {
+          e.classes.addAll(styles);
+        }
+        e.attributes
+          ..['fill'] = colorForData(d.data, i)
+          ..['d'] = arc.path(d, i, host)
+          ..['stroke-width'] = '1px'
+          ..['stroke'] = '#ffffff';
+
+        e.append(
+            Namespace.createChildElement('text', e)
+              ..classes.add('pie-label'));
+      })
       ..on('click', (d, i, e) => _event(mouseClickController, d, i, e))
       ..on('mouseover', (d, i, e) => _event(mouseOverController, d, i, e))
       ..on('mouseout', (d, i, e) => _event(mouseOutController, d, i, e));
@@ -114,11 +117,29 @@ class PieChartRenderer extends LayoutRendererBase {
     var items = new List.generate(data.length, (i) {
       SvgArcData d = data.elementAt(i);
       Iterable row = d.data;
-      return new ChartLegendItem(color: colorForData(row),
+      return new ChartLegendItem(index: i, color: colorForData(row, i),
           label: row.elementAt(dimension), series: [series],
           value: '${(((d.endAngle - d.startAngle) * 50) / math.PI).toStringAsFixed(2)}%');
     });
     return _legend..addAll(area.config.isRTL ? items.reversed : items);
+  }
+
+  String colorForData(Iterable row, int index) =>
+      colorForValue(index, isTail: row.hashCode == otherRow.hashCode);
+
+  Iterable<String> stylesForData(Iterable row, int index) =>
+      stylesForValue(index, isTail: row.hashCode == otherRow.hashCode);
+
+  @override
+  handleStateChanges(List<ChangeRecord> changes) {
+    root.selectAll('.pie-path').each((d, i, e) {
+      var styles = stylesForData(d.data, i);
+      e.classes.removeAll(ChartState.VALUE_CLASS_NAMES);
+      if (!isNullOrEmpty(styles)) {
+        e.classes.addAll(styles);
+      }
+      e.attributes['fill'] = colorForData(d.data, i);
+    });
   }
 
   @override
@@ -129,9 +150,7 @@ class PieChartRenderer extends LayoutRendererBase {
 
   void _event(StreamController controller, data, int index, Element e) {
      if (controller == null) return;
-     var rowStr = e.parent.dataset['row'];
-     var row = rowStr != null ? int.parse(rowStr) : null;
-     controller.add(
-         new _ChartEvent(scope.event, area, series, row, index, data.value));
+     controller.add(new _ChartEvent(
+         scope.event, area, series, index, series.measures.first, data.value));
    }
 }

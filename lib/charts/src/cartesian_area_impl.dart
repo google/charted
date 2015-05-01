@@ -75,8 +75,6 @@ class _CartesianArea implements CartesianArea {
 
   ChartData _data;
   ChartConfig _config;
-  ObservableList<int> selectedMeasures = new ObservableList();
-  ObservableList<int> hoveredMeasures = new ObservableList();
   int _dimensionAxesCount;
   bool _autoUpdate = false;
 
@@ -718,13 +716,13 @@ class _ChartSeriesInfo {
   check() {
     if (_renderer != _series.renderer) {
       dispose();
-      try {
+      if (_series.renderer is ChartRendererBehaviorSource){
         _disposer.addAll([
           _series.renderer.onValueClick.listen(_click),
           _series.renderer.onValueMouseOver.listen(_mouseOver),
           _series.renderer.onValueMouseOut.listen(_mouseOut)
         ]);
-      } on UnimplementedError {};
+      }
     }
     _renderer = _series.renderer;
   }

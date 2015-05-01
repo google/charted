@@ -27,9 +27,6 @@ abstract class CartesianRendererBase implements CartesianRenderer {
   Selection root;
   SelectionScope scope;
 
-  Pair<int,int> _hovered;
-  Pair<int,int> _highlighted;
-
   StreamController<ChartEvent> mouseOverController;
   StreamController<ChartEvent> mouseOutController;
   StreamController<ChartEvent> mouseClickController;

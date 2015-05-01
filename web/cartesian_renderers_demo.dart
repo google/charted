@@ -93,7 +93,7 @@ draw_charts() {
       combo_config =
           new ChartConfig([combo_bar_series, combo_line_series], [0]),
       combo_data = new ChartData(SMALL_DATA_COLUMNS, SMALL_DATA),
-      combo_demo = new ChartDemo('Combo chart &mdash; bar and line',
+      combo_demo = new ChartDemo('Combo chart - bar and line',
           querySelector('.combo-chart'), combo_config, combo_data);
   charts.add(combo_demo);
 
@@ -104,7 +104,7 @@ draw_charts() {
       combo2_config =
           new ChartConfig([combo2_bar_series, combo2_line_series], [0]),
       combo2_data = new ChartData(SMALL_DATA_COLUMNS, SMALL_DATA),
-      combo2_demo = new ChartDemo('Combo chart &mdash; stacked and line',
+      combo2_demo = new ChartDemo('Combo chart - stacked and line',
           querySelector('.combo2-chart'), combo2_config, combo2_data);
   charts.add(combo2_demo);
 
@@ -112,8 +112,7 @@ draw_charts() {
 }
 
 main() {
-  var textMetrics = new tm.TextMetrics(fontStyle: '14px Roboto');
-
+  new tm.TextMetrics(fontStyle: '14px Roboto');
   draw_charts();
 
   Element chartsContainer = querySelector('.demos-container');

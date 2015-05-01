@@ -54,10 +54,10 @@ class SelectionScope {
   Event event;
 
   /** Returns the stored for the given [element]. */
-  datum(Element element) => element == null ? null : _associations[element];
+  datum(Object element) => element == null ? null : _associations[element];
 
   /** Associates data to the given [element]. */
-  associate(Element element, datum) =>
+  associate(Object element, datum) =>
       datum != null ? _associations[element] = datum : null;
 
   /**
