@@ -208,7 +208,9 @@ class LineChartRenderer extends CartesianRendererBase {
   }
 
   void _mouseClickHandler(d, int i, Element e) {
-    area.state.select(int.parse(e.dataset['column']));
+    if (area.state != null) {
+      area.state.select(int.parse(e.dataset['column']));
+    }
     if (mouseClickController != null && e.tagName == 'circle') {
       var row = int.parse(e.dataset['row']),
           column = int.parse(e.dataset['column']);
@@ -218,7 +220,9 @@ class LineChartRenderer extends CartesianRendererBase {
   }
 
   void _mouseOverHandler(d, i, e) {
-    area.state.preview = int.parse(e.dataset['column']);
+    if (area.state != null) {
+      area.state.preview = int.parse(e.dataset['column']);
+    }
     if (mouseOverController != null && e.tagName == 'circle') {
       var row = int.parse(e.dataset['row']),
           column = int.parse(e.dataset['column']);
@@ -228,7 +232,8 @@ class LineChartRenderer extends CartesianRendererBase {
   }
 
   void _mouseOutHandler(d, i, e) {
-    if (area.state.preview == int.parse(e.dataset['column'])) {
+    if (area.state != null &&
+        area.state.preview == int.parse(e.dataset['column'])) {
       area.state.preview = null;
     }
     if (mouseOutController != null && e.tagName == 'circle') {

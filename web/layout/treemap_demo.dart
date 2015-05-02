@@ -10,9 +10,9 @@ library charted.demo.treemap;
 
 import 'dart:html';
 
-import 'package:charted/layout/layout.dart';
-import 'package:charted/selection/selection.dart';
-import 'package:charted/charts/charts.dart';
+import '../../lib/layout/layout.dart';
+import '../../lib/selection/selection.dart';
+import '../../lib/charts/charts.dart';
 import 'dart:math';
 
 main() {

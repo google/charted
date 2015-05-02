@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <title>Charted &mdash; Renderers Demo</title>
-    <link rel="stylesheet" href="src/charts_demo.css">
+    <link rel="stylesheet" href="../demo_charts.css">
     <style>
       body {
         padding: 0;
@@ -12,7 +12,7 @@
       .controls {
         padding: 30px;
         border-right: 1px solid #d3d3d3;
-        background-color: #eee;
+        background-color: #eeeeee;
         display: flex;
         flex-direction: column;
         justify-content: space-between;
@@ -24,7 +24,7 @@
       }
       .control-category {
         padding: 10px 0;
-        border-bottom: 1px solid #ccc;
+        border-bottom: 1px solid #cccccc;
       }
       .control-category:last-child {
         border-bottom: 0;
@@ -42,8 +42,10 @@
   <body>
     <div class="controls">
       <div class="controls-inner">
-        <h1 class="title">Charted &mdash; Layout chart renderers</h1>
-        Source code for this demo is available in <a href="https://github.com/google/charted/tree/master/web">the Charted GitHub repository</a>
+        <h1 class="title">Charted &mdash; Cartesian chart renderers</h1>
+        Source code for this demo is available in
+        <a href="https://github.com/google/charted/tree/master/web">
+        the Charted GitHub repository</a>
         <div class="control-category">
           <h2>Internationalization</h2>
           <div>
@@ -62,11 +64,18 @@
       </div>
     </div>
     <div class="demos-container">
-      <div class="chart pie-chart"></div>
-      <div class="chart pie2-chart"></div>
-      <div class="chart donut-chart"></div>
+      <div class="chart line-chart"></div>
+      <div class="chart bar-chart"></div>
+      <div class="chart grouped-bar-chart"></div>
+      <div class="chart stacked-bar-chart"></div>
+      <div class="chart horiz-bar-chart"></div>
+      <div class="chart horiz-grouped-bar-chart"></div>
+      <div class="chart horiz-stacked-bar-chart"></div>
+      <div class="chart combo-chart"></div>
+      <div class="chart combo2-chart"></div>
+      <div class="chart bubble-chart"></div>
     </div>
-    <script type="application/dart" src="layout_renderers_demo.dart"></script>
+    <script type="application/dart" src="demo_cartesian_renderers.dart"></script>
     <script src="packages/browser/dart.js"></script>
   </body>
 </html>
