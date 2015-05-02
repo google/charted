@@ -11,7 +11,7 @@ Charted provides
 ## Screenshot of Charted interactive demo
 ![Screenshot of Charted interactive demo](charted-demo-screenshot.png)
 
-## Get started with interactive demo
+## Get started with the interactive demo
 Get started with Charted by trying out the interactive demo provided with the package. Follow these instructions and get it running locally on your machine (Git and the Dart SDK has to be installed first):
 ```bash
 git clone git@github.com:google/charted.git
