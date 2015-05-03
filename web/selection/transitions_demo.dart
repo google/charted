@@ -7,7 +7,7 @@
  */
 library charted.demos.transitions;
 
-import '../../lib/charted.dart';
+import 'package:charted/charted.dart';
 
 void main() {
   SelectionScope scope = new SelectionScope.selector('.wrapper');
