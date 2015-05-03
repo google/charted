@@ -379,9 +379,11 @@ class _CartesianArea implements CartesianArea {
             highest = max(extents.map((e) => e.max));
 
         // Use default domain if lowest and highest are the same, right now
-        // lowest is always 0, change to lowest when we make use of it.
-        // TODO(prsd): Allow negative values and non-zero lower values.
-        domain = (highest != 0) ? [0, highest] : [0, 1];
+        // lowest is always 0 unless it is less than 0 - change to lowest when
+        // we make use of it.
+        domain = highest == lowest
+            ? [0, 1]
+            : (lowest <= 0 ? [lowest, highest] : [0, highest]);
       }
       axis.initAxisDomain(sampleCol, false, domain);
     });

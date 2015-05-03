@@ -16,7 +16,7 @@ void drawBarLineCombo(String selector, bool grouped) {
       config = new ChartConfig([series1, series2], [0])
         ..legend = new ChartLegend(legendHost),
       data = new ChartData(
-          ORDINAL_SMALL_DATA_COLUMNS, ORDINAL_SMALL_DATA),
+          ORDINAL_DATA_COLUMNS, ORDINAL_DATA),
       state = new ChartState();
 
   var area = new CartesianArea(areaHost, data, config, state: state);
@@ -38,7 +38,7 @@ void drawStackedBarLineCombo(String selector) {
       config = new ChartConfig([series1, series2], [0])
         ..legend = new ChartLegend(legendHost),
       data = new ChartData(
-          ORDINAL_SMALL_DATA_COLUMNS, ORDINAL_SMALL_DATA),
+          ORDINAL_DATA_COLUMNS, ORDINAL_DATA),
       state = new ChartState();
 
   var area = new CartesianArea(areaHost, data, config, state: state);

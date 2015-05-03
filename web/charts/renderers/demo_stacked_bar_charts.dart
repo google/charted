@@ -14,7 +14,7 @@ void drawSimpleStackedChart(String selector) {
       config = new ChartConfig([series], [0])
         ..legend = new ChartLegend(legendHost),
       data = new ChartData(
-          ORDINAL_SMALL_DATA_COLUMNS, ORDINAL_SMALL_DATA),
+          ORDINAL_DATA_COLUMNS, ORDINAL_DATA),
       state = new ChartState();
 
   var area = new CartesianArea(areaHost, data, config, state: state);
@@ -35,7 +35,7 @@ void drawHorizontalStackedChart(String selector) {
         ..legend = new ChartLegend(legendHost)
         ..isLeftAxisPrimary = true,
       data = new ChartData(
-          ORDINAL_SMALL_DATA_COLUMNS, ORDINAL_SMALL_DATA),
+          ORDINAL_DATA_COLUMNS, ORDINAL_DATA),
       state = new ChartState();
 
   var area = new CartesianArea(areaHost, data, config, state: state);

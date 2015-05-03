@@ -40,13 +40,13 @@ String getTypeForRenderer(CartesianRenderer renderer) {
 }
 
 main() {
-  List DATA_SOURCE = ORDINAL_SMALL_DATA;
+  List DATA_SOURCE = ORDINAL_DATA;
   ChartSeries activeSeries,
       defaultSeries = new ChartSeries("Default series",
           new ObservableList.from([ 2, 3 ]), new BarChartRenderer());
 
   ObservableList rows = new ObservableList.from(DATA_SOURCE.sublist(0, 10)),
-      columns = new ObservableList.from(ORDINAL_SMALL_DATA_COLUMNS),
+      columns = new ObservableList.from(ORDINAL_DATA_COLUMNS),
       seriesList = new ObservableList.from([ defaultSeries ]);
 
   ChartData data = new ChartData(columns, rows);
@@ -93,7 +93,7 @@ main() {
   useRTLScriptCheckBox.onChange.listen((_) {
     bool isRTL = useRTLScriptCheckBox.checked;
     rows.clear();
-    DATA_SOURCE = isRTL ? ORDINAL_SMALL_DATA_RTL : ORDINAL_SMALL_DATA;
+    DATA_SOURCE = isRTL ? ORDINAL_DATA_RTL : ORDINAL_DATA;
     rows.addAll(DATA_SOURCE.sublist(0, 10));
   });
 
@@ -201,10 +201,10 @@ main() {
 
   updateColumnsList() {
     columnButtons.children.clear();
-    for (int i = 0; i < ORDINAL_SMALL_DATA_COLUMNS.length; ++i) {
+    for (int i = 0; i < ORDINAL_DATA_COLUMNS.length; ++i) {
       if (i == 0) continue;
       var row = new DivElement(),
-          spec = ORDINAL_SMALL_DATA_COLUMNS.elementAt(i),
+          spec = ORDINAL_DATA_COLUMNS.elementAt(i),
           button = new InputElement()
             ..className = 'column-button'
             ..type = 'checkbox'

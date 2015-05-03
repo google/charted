@@ -14,8 +14,7 @@ void drawSimpleBarChart(String selector, bool grouped) {
           "one", grouped ? [2, 3] : [2], new BarChartRenderer()),
       config = new ChartConfig([series], [0])
         ..legend = new ChartLegend(legendHost),
-      data = new ChartData(
-          ORDINAL_SMALL_DATA_COLUMNS, ORDINAL_SMALL_DATA),
+      data = new ChartData(ORDINAL_DATA_COLUMNS, ORDINAL_DATA),
       state = new ChartState();
 
   var area = new CartesianArea(areaHost, data, config, state: state);
@@ -36,8 +35,7 @@ void drawHorizontalBarChart(String selector, bool grouped) {
       config = new ChartConfig([series], [0])
         ..legend = new ChartLegend(legendHost)
         ..isLeftAxisPrimary = true,
-      data = new ChartData(
-          ORDINAL_SMALL_DATA_COLUMNS, ORDINAL_SMALL_DATA),
+      data = new ChartData(ORDINAL_DATA_COLUMNS, ORDINAL_DATA),
       state = new ChartState();
 
   var area = new CartesianArea(areaHost, data, config, state: state);
@@ -49,9 +47,44 @@ void drawHorizontalBarChart(String selector, bool grouped) {
 }
 
 void drawChartWithNegativeNumbers(String selector, bool grouped) {
+  var wrapper = document.querySelector(selector),
+      areaHost = wrapper.querySelector('.chart-host'),
+      legendHost = wrapper.querySelector('.chart-legend-host');
+
+  var series = new ChartSeries(
+          "one", grouped ? [2, 3] : [2], new BarChartRenderer()),
+      config = new ChartConfig([series], [0])
+        ..legend = new ChartLegend(legendHost),
+      data = new ChartData(ORDINAL_DATA_COLUMNS, ORDINAL_DATA_WITH_NEGATIVE),
+      state = new ChartState();
+
+  var area = new CartesianArea(areaHost, data, config, state: state);
+
+  createDefaultCartesianBehaviors().forEach((behavior) {
+    area.addChartBehavior(behavior);
+  });
+  area.draw();
 }
 
 void drawHorizontalChartWithNegativeNumbers(String selector, bool grouped) {
+  var wrapper = document.querySelector(selector),
+      areaHost = wrapper.querySelector('.chart-host'),
+      legendHost = wrapper.querySelector('.chart-legend-host');
+
+  var series = new ChartSeries(
+          "one", grouped ? [2, 3] : [2], new BarChartRenderer()),
+      config = new ChartConfig([series], [0])
+        ..legend = new ChartLegend(legendHost)
+        ..isLeftAxisPrimary = true,
+      data = new ChartData(ORDINAL_DATA_COLUMNS, ORDINAL_DATA_WITH_NEGATIVE),
+      state = new ChartState();
+
+  var area = new CartesianArea(areaHost, data, config, state: state);
+
+  createDefaultCartesianBehaviors().forEach((behavior) {
+    area.addChartBehavior(behavior);
+  });
+  area.draw();
 }
 
 main() {

@@ -157,16 +157,22 @@ class LineChartRenderer extends CartesianRendererBase {
     var yScale = area.measureScales(series).first;
     root.selectAll('.line-rdr-point').each((d, i, e) {
       var x = _xPositions[row],
-          y = yScale.scale(area.data.rows.elementAt(row).elementAt(d));
-      e.attributes
-        ..['cx'] = '$x'
-        ..['cy'] = '$y'
-        ..['fill'] = colorForColumn(d)
-        ..['stroke'] = colorForColumn(d)
-        ..['data-row'] = '$row';
-      e.style
-        ..setProperty('opacity', '1')
-        ..setProperty('visibility', 'visible');
+          measureVal = area.data.rows.elementAt(row).elementAt(d);
+      if (measureVal != null && measureVal.isFinite) {
+        e.attributes
+          ..['cx'] = '$x'
+          ..['cy'] = '${yScale.scale(measureVal)}'
+          ..['fill'] = colorForColumn(d)
+          ..['stroke'] = colorForColumn(d)
+          ..['data-row'] = '$row';
+        e.style
+          ..setProperty('opacity', '1')
+          ..setProperty('visibility', 'visible');
+      } else {
+        e.style
+          ..setProperty('opacity', '$EPSILON')
+          ..setProperty('visibility', 'hidden');
+      }
     });
   }
 
