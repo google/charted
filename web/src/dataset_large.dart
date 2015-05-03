@@ -1,2 +1,0 @@
-
-part of charted.demo;

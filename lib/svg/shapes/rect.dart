@@ -24,9 +24,29 @@ String roundedRect(int x, int y, int width, int height,
             'Q${x},${y} ${x+topLeft},${y} Z';
 
 /// Draw a rectangle with rounded corners on both corners on the right.
-String rightRoundedRect(int x, int y, int width, int height, int radius) =>
-    roundedRect(x, y, width, height, 0, radius, radius, 0);
+String rightRoundedRect(int x, int y, int width, int height, int radius) {
+  if (width < radius) radius = width;
+  if (height < radius * 2) radius = height ~/ 2;
+  return roundedRect(x, y, width, height, 0, radius, radius, 0);
+}
 
 /// Draw a rectangle with rounded corners on both corners on the top.
-String topRoundedRect(int x, int y, int width, int height, int radius) =>
-    roundedRect(x, y, width, height, radius, radius, 0, 0);
+String topRoundedRect(int x, int y, int width, int height, int radius) {
+  if (height < radius) radius = height;
+  if (width < radius * 2) radius = width ~/ 2;
+  return roundedRect(x, y, width, height, radius, radius, 0, 0);
+}
+
+/// Draw a rectangle with rounded corners on both corners on the right.
+String leftRoundedRect(int x, int y, int width, int height, int radius) {
+  if (width < radius) radius = width;
+  if (height < radius * 2) radius = height ~/ 2;
+  return roundedRect(x, y, width, height, radius, 0, 0, radius);
+}
+
+/// Draw a rectangle with rounded corners on both corners on the top.
+String bottomRoundedRect(int x, int y, int width, int height, int radius) {
+  if (height < radius) radius = height;
+  if (width < radius * 2) radius = width ~/ 2;
+  return roundedRect(x, y, width, height, 0, 0, radius, radius);
+}
