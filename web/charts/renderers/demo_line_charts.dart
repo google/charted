@@ -24,7 +24,7 @@ void drawOrdinalLineChart(String selector) {
   area.draw();
 }
 
-void drawTimeSeriesChart(String selector) {
+void drawOrdinalWithBreaks(String selector) {
   var wrapper = document.querySelector(selector),
       areaHost = wrapper.querySelector('.chart-host'),
       legendHost = wrapper.querySelector('.chart-legend-host');
@@ -32,27 +32,7 @@ void drawTimeSeriesChart(String selector) {
   var series = new ChartSeries("one", [2, 3], new LineChartRenderer()),
       config = new ChartConfig([series], [0])
         ..legend = new ChartLegend(legendHost),
-      data = new ChartData(TIMESERIES_DATA_COLUMNS, TIMESERIES_DATA),
-      state = new ChartState();
-
-  var area = new CartesianArea(areaHost, data, config, state: state);
-
-  createDefaultCartesianBehaviors().forEach((behavior) {
-    area.addChartBehavior(behavior);
-  });
-  area.draw();
-}
-
-void drawTimeSeriesWithBreaks(String selector) {
-  var wrapper = document.querySelector(selector),
-      areaHost = wrapper.querySelector('.chart-host'),
-      legendHost = wrapper.querySelector('.chart-legend-host');
-
-  var series = new ChartSeries("one", [2, 3], new LineChartRenderer()),
-      config = new ChartConfig([series], [0])
-        ..legend = new ChartLegend(legendHost),
-      data = new ChartData(
-          TIMESERIES_DATA_COLUMNS, TIMESERIES_DATA_WITH_BREAKS),
+      data = new ChartData(ORDINAL_DATA_COLUMNS, ORDINAL_DATA_WITH_BREAKS),
       state = new ChartState();
 
   var area = new CartesianArea(areaHost, data, config, state: state);
@@ -82,16 +62,15 @@ void drawOrdinalWithNegative(String selector) {
   area.draw();
 }
 
-void drawTimeSeriesWithNegative(String selector) {
+void drawTimeSeriesChart(String selector) {
   var wrapper = document.querySelector(selector),
       areaHost = wrapper.querySelector('.chart-host'),
       legendHost = wrapper.querySelector('.chart-legend-host');
 
-  var series = new ChartSeries("one", [2, 3], new LineChartRenderer()),
+  var series = new ChartSeries("one", [1, 2, 3], new LineChartRenderer()),
       config = new ChartConfig([series], [0])
         ..legend = new ChartLegend(legendHost),
-      data = new ChartData(
-          TIMESERIES_DATA_COLUMNS, TIMESERIES_DATA_WITH_NEGATIVE),
+      data = new ChartData(TIMESERIES_DATA_COLUMNS, TIMESERIES_DATA),
       state = new ChartState();
 
   var area = new CartesianArea(areaHost, data, config, state: state);
@@ -104,9 +83,8 @@ void drawTimeSeriesWithNegative(String selector) {
 
 main() {
   drawOrdinalLineChart('#ordinal-line-chart');
-  drawTimeSeriesChart('#time-series-chart');
-  drawTimeSeriesWithBreaks('#time-series-with-breaks');
+  drawOrdinalWithBreaks('#ordinal-with-breaks');
   drawOrdinalWithNegative('#ordinal-with-negative');
-  drawTimeSeriesWithNegative('#time-series-with-negative');
+  drawTimeSeriesChart('#time-series-chart');
 }
 
