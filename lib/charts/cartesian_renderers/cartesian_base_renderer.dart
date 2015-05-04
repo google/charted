@@ -21,6 +21,7 @@ abstract class CartesianRendererBase implements CartesianRenderer {
   List<Iterable<String>> _columnStylesCache;
 
   final _valueColorCache = new Map<int,String>();
+  final _valueFilterCache = new Map<int,String>();
   final _valueStylesCache = new Map<int,Iterable<String>>();
 
   Element host;
@@ -68,6 +69,7 @@ abstract class CartesianRendererBase implements CartesianRenderer {
     _columnStateCache = new List(length);
     _valueStylesCache.clear();
     _valueColorCache.clear();
+    _valueFilterCache.clear();
     _computeColumnStates();
   }
 
@@ -195,8 +197,10 @@ abstract class CartesianRendererBase implements CartesianRenderer {
   }
 
   String colorForColumn(int column) =>
-      theme.getColorForKey(column,
-          _flagsToColorState(_columnStateCache[column]));
+      theme.getColorForKey(column, _columnStateCache[column]);
+
+  String filterForColumn(int column) =>
+      theme.getFilterForState(_columnStateCache[column]);
 
   Iterable<String> stylesForValue(int column, int row) {
     var hash = hash2(column, row);
@@ -222,41 +226,37 @@ abstract class CartesianRendererBase implements CartesianRenderer {
   String colorForValue(int column, int row) {
     var hash = hash2(column, row);
     if (_valueColorCache[hash] == null) {
-      if (state == null) {
-        _valueColorCache[hash] =
-            theme.getColorForKey(area.useRowColoring ? row : column);
-      } else {
-        var flags = _columnStateCache[column];
-        if (state.highlights.isNotEmpty) {
-          flags |= (state.highlights.any((x) => x.last == row)
-              ? ChartState.VAL_HIGHLIGHTED
-              : ChartState.VAL_UNHIGHLIGHTED);
-        }
-        if (state.hovered != null && state.hovered.last == row) {
-          flags |= ChartState.VAL_HOVERED;
-        }
-        _valueColorCache[hash] = theme.getColorForKey(
-            area.useRowColoring ? row : column, _flagsToColorState(flags));
-      }
+      _cacheColorsAndFilter(hash, column, row);
     }
     return _valueColorCache[hash];
   }
 
-  //
-  // TODO(prsd): Let ChartTheme specify the mapping
-  //
-  int _flagsToColorState(int flags) {
-    // Unselected columns and unhighlighted rows are inactive.
-    if (flags & ChartState.COL_UNSELECTED != 0 ||
-        flags & ChartState.VAL_UNHIGHLIGHTED != 0) {
-      return ChartTheme.STATE_INACTIVE;
+  String filterForValue(int column, int row) {
+    var hash = hash2(column, row);
+    if (_valueFilterCache[hash] == null) {
+      _cacheColorsAndFilter(hash, column, row);
     }
-    // Selected columns and highlighted rows are active.
-    if (flags & ChartState.COL_PREVIEW != 0 ||
-        flags & ChartState.VAL_HOVERED != 0) {
-      return ChartTheme.STATE_ACTIVE;
+    return _valueFilterCache[hash];
+  }
+
+  _cacheColorsAndFilter(int hash, int column, int row) {
+    if (state == null) {
+      _valueColorCache[hash] =
+          theme.getColorForKey(area.useRowColoring ? row : column);
+      _valueFilterCache[hash] = theme.getFilterForState(flags);
+    } else {
+      var flags = _columnStateCache[column];
+      if (state.highlights.isNotEmpty) {
+        flags |= (state.highlights.any((x) => x.last == row)
+        ? ChartState.VAL_HIGHLIGHTED
+        : ChartState.VAL_UNHIGHLIGHTED);
+      }
+      if (state.hovered != null && state.hovered.last == row) {
+        flags |= ChartState.VAL_HOVERED;
+      }
+      _valueColorCache[hash] =
+          theme.getColorForKey(area.useRowColoring ? row : column, flags);
+      _valueFilterCache[hash] = theme.getFilterForState(flags);
     }
-    // All others are normal.
-    return ChartTheme.STATE_NORMAL;
   }
 }

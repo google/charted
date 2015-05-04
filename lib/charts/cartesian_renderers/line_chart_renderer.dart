@@ -85,12 +85,18 @@ class LineChartRenderer extends CartesianRendererBase {
     svgLines.each((d, i, e) {
       var column = series.measures.elementAt(i),
           color = colorForColumn(column),
+          filter = filterForColumn(column),
           styles = stylesForColumn(column);
       e.classes.addAll(styles);
       e.attributes
         ..['d'] = line.path(d, i, e)
         ..['stroke'] = color
         ..['data-column'] = '$column';
+      if (isNullOrEmpty(filter)) {
+        e.attributes.remove('filter');
+      } else {
+        e.attributes['filter'] = filter;
+      }
     });
 
     if (area.state != null) {
@@ -118,10 +124,17 @@ class LineChartRenderer extends CartesianRendererBase {
 
     for (int i = 0, len = lines.length; i < len; ++i) {
       var line = lines.elementAt(i),
-          column = int.parse(line.dataset['column']);
+          column = int.parse(line.dataset['column']),
+          filter = filterForColumn(column);
       line.classes.removeAll(ChartState.COLUMN_CLASS_NAMES);
       line.classes.addAll(stylesForColumn(column));
       line.attributes['stroke'] = colorForColumn(column);
+
+      if (isNullOrEmpty(filter)) {
+        line.attributes.remove('filter');
+      } else {
+        line.attributes['filter'] = filter;
+      }
     }
   }
 
@@ -159,15 +172,22 @@ class LineChartRenderer extends CartesianRendererBase {
       var x = _xPositions[row],
           measureVal = area.data.rows.elementAt(row).elementAt(d);
       if (measureVal != null && measureVal.isFinite) {
+        var color = colorForColumn(d),
+            filter = filterForColumn(d);
         e.attributes
           ..['cx'] = '$x'
           ..['cy'] = '${yScale.scale(measureVal)}'
-          ..['fill'] = colorForColumn(d)
-          ..['stroke'] = colorForColumn(d)
+          ..['fill'] = color
+          ..['stroke'] = color
           ..['data-row'] = '$row';
         e.style
           ..setProperty('opacity', '1')
           ..setProperty('visibility', 'visible');
+        if (isNullOrEmpty(filter)) {
+          e.attributes.remove('filter');
+        } else {
+          e.attributes['filter'] = filter;
+        }
       } else {
         e.style
           ..setProperty('opacity', '$EPSILON')

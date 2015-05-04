@@ -272,6 +272,14 @@ class _CartesianArea implements CartesianArea {
     if (_scope == null) {
       _scope = new SelectionScope.element(host);
       _svg = _scope.append('svg:svg')..classed('chart-canvas');
+      if (!isNullOrEmpty(theme.filters)) {
+        var element = _svg.first,
+        defs = Namespace.createChildElement('defs', element)
+          ..append(new SvgElement.svg(
+            theme.filters, treeSanitizer: new NullTreeSanitizer()));
+        _svg.first.append(defs);
+      }
+
       lowerBehaviorPane = _svg.append('g')..classed('lower-render-pane');
       visualization = _svg.append('g')..classed('chart-render-pane');
       upperBehaviorPane = _svg.append('g')..classed('upper-render-pane');
@@ -436,7 +444,7 @@ class _CartesianArea implements CartesianArea {
       for (int i = 0, len = displayedDimensionAxes.length; i < len; ++i) {
         var axis = _dimensionAxes[displayedDimensionAxes[i]],
             orientation = _orientRTL(dimensionAxisOrientations[i]);
-        axis.prepareToDraw(orientation, theme.dimensionAxisTheme);
+        axis.prepareToDraw(orientation);
         layout._axes[orientation] = axis.size;
       }
     }
@@ -449,7 +457,7 @@ class _CartesianArea implements CartesianArea {
       displayedMeasureAxes.asMap().forEach((int index, String key) {
         var axis = _measureAxes[key],
             orientation = _orientRTL(measureAxisOrientations[index]);
-        axis.prepareToDraw(orientation, theme.measureAxisTheme);
+        axis.prepareToDraw(orientation);
         layout._axes[orientation] = axis.size;
       });
     }
@@ -464,8 +472,7 @@ class _CartesianArea implements CartesianArea {
     if (_measureAxes.length != displayedMeasureAxes.length) {
       _measureAxes.keys.forEach((String axisId) {
         if (displayedMeasureAxes.contains(axisId)) return;
-        _getMeasureAxis(axisId).initAxisScale(
-            [layout.renderArea.height, 0], theme.measureAxisTheme);
+        _getMeasureAxis(axisId).initAxisScale([layout.renderArea.height, 0]);
       });
     }
 
@@ -504,8 +511,7 @@ class _CartesianArea implements CartesianArea {
             axis = _dimensionAxes[column],
             orientation = dimensionAxisOrientations[i];
         axis.initAxisScale(orientation == ORIENTATION_LEFT ?
-            [layout.renderArea.height, 0] : [0, layout.renderArea.width],
-            theme.dimensionAxisTheme);
+            [layout.renderArea.height, 0] : [0, layout.renderArea.width]);
       };
     }
   }

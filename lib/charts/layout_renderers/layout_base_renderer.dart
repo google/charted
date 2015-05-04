@@ -142,18 +142,5 @@ abstract class LayoutRendererBase implements LayoutRenderer {
 
   String colorForValue(int row, {bool isTail: false}) => isTail
       ? theme.getOtherColor()
-      : theme.getColorForKey(row, _flagsToColorState(_valueStateCache[row]));
-
-  int _flagsToColorState(int flags) {
-    // Unhighlighted rows are inactive.
-    if (flags & ChartState.VAL_UNHIGHLIGHTED != 0) {
-      return ChartTheme.STATE_INACTIVE;
-    }
-    // Highlighted rows are active.
-    if (flags & ChartState.VAL_HOVERED != 0) {
-      return ChartTheme.STATE_ACTIVE;
-    }
-    // All others are normal.
-    return ChartTheme.STATE_NORMAL;
-  }
+      : theme.getColorForKey(row, _valueStateCache[row]);
 }

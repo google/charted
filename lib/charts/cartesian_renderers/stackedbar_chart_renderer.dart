@@ -175,6 +175,7 @@ class StackedBarChartRenderer extends CartesianRendererBase {
               measure = series.measures.elementAt(_reverseIdx(i)),
               row = int.parse(e.dataset['row']),
               color = colorForValue(measure, row),
+              filter = filterForValue(measure, row),
               style = stylesForValue(measure, row);
 
           rect.classes.add(style.isNotEmpty
@@ -187,6 +188,9 @@ class StackedBarChartRenderer extends CartesianRendererBase {
             ..['fill'] = color
             ..['stroke'] = color;
 
+          if (!isNullOrEmpty(filter)) {
+            rect.attributes['filter'] = filter;
+          }
           if (!animateBarGroups) {
             rect.attributes['data-column'] = '$measure';
           }
@@ -203,6 +207,7 @@ class StackedBarChartRenderer extends CartesianRendererBase {
         var measure = series.measures.elementAt(_reverseIdx(i)),
             row = int.parse(e.parent.dataset['row']),
             color = colorForValue(measure, row),
+            filter = filterForValue(measure, row),
             styles = stylesForValue(measure, row);
         e.attributes
           ..['data-column'] = '$measure'
@@ -211,6 +216,11 @@ class StackedBarChartRenderer extends CartesianRendererBase {
         e.classes
           ..removeAll(ChartState.VALUE_CLASS_NAMES)
           ..addAll(styles);
+        if (isNullOrEmpty(filter)) {
+          e.attributes.remove('filter');
+        } else {
+          e.attributes['filter'] = filter;
+        }
       });
 
       bar.transition()
@@ -267,13 +277,19 @@ class StackedBarChartRenderer extends CartesianRendererBase {
       for(int j = 0, barsCount = bars.length; j < barsCount; ++j) {
         var bar = bars.elementAt(j),
             column = int.parse(bar.dataset['column']),
-            color = colorForValue(column, row);
+            color = colorForValue(column, row),
+            filter = filterForValue(column, row);
 
         bar.classes.removeAll(ChartState.VALUE_CLASS_NAMES);
         bar.classes.addAll(stylesForValue(column, row));
         bar.attributes
           ..['fill'] = color
           ..['stroke'] = color;
+        if (isNullOrEmpty(filter)) {
+          bar.attributes.remove('filter');
+        } else {
+          bar.attributes['filter'] = filter;
+        }
       }
     }
   }

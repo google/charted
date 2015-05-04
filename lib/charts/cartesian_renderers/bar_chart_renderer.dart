@@ -119,6 +119,7 @@ class BarChartRenderer extends CartesianRendererBase {
             measure = series.measures.elementAt(i),
             row = int.parse(e.dataset['row']),
             color = colorForValue(measure, row),
+            filter = filterForValue(measure, row),
             style = stylesForValue(measure, row);
 
         rect.classes.add(style.isNotEmpty
@@ -131,6 +132,9 @@ class BarChartRenderer extends CartesianRendererBase {
           ..['fill'] = color
           ..['stroke'] = color;
 
+        if (!isNullOrEmpty(filter)) {
+          rect.attributes['filter'] = filter;
+        }
         if (!animateBarGroups) {
           rect.attributes['data-column'] = '$measure';
         }
@@ -145,6 +149,7 @@ class BarChartRenderer extends CartesianRendererBase {
         var measure = series.measures.elementAt(i),
             row = int.parse(e.parent.dataset['row']),
             color = colorForValue(measure, row),
+            filter = filterForValue(measure, row),
             styles = stylesForValue(measure, row);
         e.attributes
           ..['data-column'] = '$measure'
@@ -153,6 +158,11 @@ class BarChartRenderer extends CartesianRendererBase {
         e.classes
           ..removeAll(ChartState.VALUE_CLASS_NAMES)
           ..addAll(styles);
+        if (isNullOrEmpty(filter)) {
+          e.attributes.remove('filter');
+        } else {
+          e.attributes['filter'] = filter;
+        }
       });
 
       bar.transition()
@@ -174,13 +184,13 @@ class BarChartRenderer extends CartesianRendererBase {
     assert(series != null && area != null);
     var measuresCount = series.measures.length;
     return measuresCount > 2 ? 1 - (measuresCount / (measuresCount + 1)) :
-        area.theme.dimensionAxisTheme.axisBandInnerPadding;
+        area.theme.getDimensionAxisTheme().axisBandInnerPadding;
   }
 
   @override
   double get bandOuterPadding {
     assert(series != null && area != null);
-    return area.theme.dimensionAxisTheme.axisBandOuterPadding;
+    return area.theme.getDimensionAxisTheme().axisBandOuterPadding;
   }
 
   @override
@@ -196,13 +206,19 @@ class BarChartRenderer extends CartesianRendererBase {
       for(int j = 0, barsCount = bars.length; j < barsCount; ++j) {
         var bar = bars.elementAt(j),
             column = int.parse(bar.dataset['column']),
-            color = colorForValue(column, row);
+            color = colorForValue(column, row),
+            filter = filterForValue(column, row);
 
         bar.classes.removeAll(ChartState.VALUE_CLASS_NAMES);
         bar.classes.addAll(stylesForValue(column, row));
         bar.attributes
           ..['fill'] = color
           ..['stroke'] = color;
+        if (isNullOrEmpty(filter)) {
+          bar.attributes.remove('filter');
+        } else {
+          bar.attributes['filter'] = filter;
+        }
       }
     }
   }
