@@ -50,17 +50,17 @@ class QuantumChartTheme extends ChartTheme {
     // Inactive color when another key is active or selected.
     if (state & ChartState.COL_UNSELECTED != 0 ||
         state & ChartState.VAL_UNHIGHLIGHTED != 0) {
-      return colors[0];
+      return colors.elementAt(0);
     }
 
     // Active color when this key is being hovered upon
     if (state & ChartState.COL_PREVIEW != 0 ||
         state & ChartState.VAL_HOVERED != 0) {
-      return colors[2];
+      return colors.elementAt(2);
     }
 
     // All others are normal.
-    return colors[1];
+    return colors.elementAt(1);
   }
 
   @override
