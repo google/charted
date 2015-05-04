@@ -2492,7 +2492,7 @@ qc:function(a,b,c){var z,y
 z=this.d
 if(z==null){z=this.c
 this.x.q(0,a,z.eJ(this.a.f?c:b))
-this.y.q(0,a,this.c.f8(this.gP6()))}else{y=this.f[b]
+this.y.q(0,a,this.c.f8(0))}else{y=this.f[b]
 z=z.ch
 if(z.Q!==0)y|=z.Vr(0,new X.Ba(c))?$.YK:$.xJ
 z=this.d.cx
