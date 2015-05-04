@@ -243,7 +243,7 @@ abstract class CartesianRendererBase implements CartesianRenderer {
     if (state == null) {
       _valueColorCache[hash] =
           theme.getColorForKey(area.useRowColoring ? row : column);
-      _valueFilterCache[hash] = theme.getFilterForState(flags);
+      _valueFilterCache[hash] = theme.getFilterForState(0);
     } else {
       var flags = _columnStateCache[column];
       if (state.highlights.isNotEmpty) {
