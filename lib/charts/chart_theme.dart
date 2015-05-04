@@ -28,6 +28,13 @@ abstract class ChartTheme {
   /// For a given input key, the output is always the same.
   String getColorForKey(key, [int state]);
 
+  /// Markup for filters that is added to all chart elements. These filters
+  /// can be referenced using url() in values returned by [getFilterForState].
+  String filters;
+
+  /// Returns any filters that must be applied based on the element's state
+  String getFilterForState(int state);
+
   /// Color for overflow and other items.
   /// For example, the collect all bucket used by pie-chart.
   String getOtherColor([int state]);
@@ -52,10 +59,10 @@ abstract class ChartTheme {
   int get transitionDurationMilliseconds => 250;
 
   /// Theme passed to the measure axes - only used by cartesian charts
-  ChartAxisTheme getMeasureAxisTheme(Scale scale) => null;
+  ChartAxisTheme getMeasureAxisTheme([Scale scale]) => null;
 
   /// Theme passed to the dimension axes - only used by cartesian charts
-  ChartAxisTheme getDimensionAxisTheme(Scale scale) => null;
+  ChartAxisTheme getDimensionAxisTheme([Scale scale]) => null;
 
   /// Padding around the rendered chart. Defaults to 10px in all directions
   AbsoluteRect get padding => const AbsoluteRect(10, 10, 10, 10);
