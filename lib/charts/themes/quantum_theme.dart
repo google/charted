@@ -53,12 +53,15 @@ class QuantumChartTheme extends ChartTheme {
           ? OTHER_COLORS.elementAt(state)
           : OTHER_COLORS;
 
-  ChartAxisTheme get measureAxisTheme =>
+  ChartAxisTheme getMeasureAxisTheme(Scale _) =>
       const _QuantumChartAxisTheme(ChartAxisTheme.FILL_RENDER_AREA, 5);
-  ChartAxisTheme get dimensionAxisTheme =>
-      const _QuantumChartAxisTheme(0, 10);
 
-  AbsoluteRect get padding => const AbsoluteRect(10, 10, 0, 0);
+  ChartAxisTheme getDimensionAxisTheme(Scale scale) =>
+      scale is OrdinalScale
+          ? const _QuantumChartAxisTheme(0, 10)
+          : const _QuantumChartAxisTheme(4, 10);
+
+  AbsoluteRect get padding => const AbsoluteRect(10, 40, 0, 0);
 
   String get defaultFont => '14px Roboto';
 }
@@ -74,6 +77,6 @@ class _QuantumChartAxisTheme implements ChartAxisTheme {
   final verticalAxisWidth = 75;
   final horizontalAxisAutoResize = false;
   final horizontalAxisHeight = 50;
-  final ticksFont = '14px Roboto';
+  final ticksFont = '12px Roboto';
   const _QuantumChartAxisTheme(this.axisTickSize, this.axisTickCount);
 }

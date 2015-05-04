@@ -88,7 +88,6 @@
   font-size: 14px;
   margin-bottom: 16px;
   position: relative;
-  padding-left: 20px;
   cursor: default;
 }
 
@@ -118,7 +117,6 @@
 }
 
 .chart-legend-label {
-  flex-basis: 80px;
   max-width: 120px;
 }
 
