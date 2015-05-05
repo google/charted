@@ -85,12 +85,18 @@ class LineChartRenderer extends CartesianRendererBase {
     svgLines.each((d, i, e) {
       var column = series.measures.elementAt(i),
           color = colorForColumn(column),
+          filter = filterForColumn(column),
           styles = stylesForColumn(column);
       e.classes.addAll(styles);
       e.attributes
         ..['d'] = line.path(d, i, e)
         ..['stroke'] = color
         ..['data-column'] = '$column';
+      if (isNullOrEmpty(filter)) {
+        e.attributes.remove('filter');
+      } else {
+        e.attributes['filter'] = filter;
+      }
     });
 
     if (area.state != null) {
@@ -118,10 +124,17 @@ class LineChartRenderer extends CartesianRendererBase {
 
     for (int i = 0, len = lines.length; i < len; ++i) {
       var line = lines.elementAt(i),
-          column = int.parse(line.dataset['column']);
+          column = int.parse(line.dataset['column']),
+          filter = filterForColumn(column);
       line.classes.removeAll(ChartState.COLUMN_CLASS_NAMES);
       line.classes.addAll(stylesForColumn(column));
       line.attributes['stroke'] = colorForColumn(column);
+
+      if (isNullOrEmpty(filter)) {
+        line.attributes.remove('filter');
+      } else {
+        line.attributes['filter'] = filter;
+      }
     }
   }
 
@@ -157,16 +170,29 @@ class LineChartRenderer extends CartesianRendererBase {
     var yScale = area.measureScales(series).first;
     root.selectAll('.line-rdr-point').each((d, i, e) {
       var x = _xPositions[row],
-          y = yScale.scale(area.data.rows.elementAt(row).elementAt(d));
-      e.attributes
-        ..['cx'] = '$x'
-        ..['cy'] = '$y'
-        ..['fill'] = colorForColumn(d)
-        ..['stroke'] = colorForColumn(d)
-        ..['data-row'] = '$row';
-      e.style
-        ..setProperty('opacity', '1')
-        ..setProperty('visibility', 'visible');
+          measureVal = area.data.rows.elementAt(row).elementAt(d);
+      if (measureVal != null && measureVal.isFinite) {
+        var color = colorForColumn(d),
+            filter = filterForColumn(d);
+        e.attributes
+          ..['cx'] = '$x'
+          ..['cy'] = '${yScale.scale(measureVal)}'
+          ..['fill'] = color
+          ..['stroke'] = color
+          ..['data-row'] = '$row';
+        e.style
+          ..setProperty('opacity', '1')
+          ..setProperty('visibility', 'visible');
+        if (isNullOrEmpty(filter)) {
+          e.attributes.remove('filter');
+        } else {
+          e.attributes['filter'] = filter;
+        }
+      } else {
+        e.style
+          ..setProperty('opacity', '$EPSILON')
+          ..setProperty('visibility', 'hidden');
+      }
     });
   }
 
@@ -208,7 +234,9 @@ class LineChartRenderer extends CartesianRendererBase {
   }
 
   void _mouseClickHandler(d, int i, Element e) {
-    area.state.select(int.parse(e.dataset['column']));
+    if (area.state != null) {
+      area.state.select(int.parse(e.dataset['column']));
+    }
     if (mouseClickController != null && e.tagName == 'circle') {
       var row = int.parse(e.dataset['row']),
           column = int.parse(e.dataset['column']);
@@ -218,7 +246,9 @@ class LineChartRenderer extends CartesianRendererBase {
   }
 
   void _mouseOverHandler(d, i, e) {
-    area.state.preview = int.parse(e.dataset['column']);
+    if (area.state != null) {
+      area.state.preview = int.parse(e.dataset['column']);
+    }
     if (mouseOverController != null && e.tagName == 'circle') {
       var row = int.parse(e.dataset['row']),
           column = int.parse(e.dataset['column']);
@@ -228,7 +258,8 @@ class LineChartRenderer extends CartesianRendererBase {
   }
 
   void _mouseOutHandler(d, i, e) {
-    if (area.state.preview == int.parse(e.dataset['column'])) {
+    if (area.state != null &&
+        area.state.preview == int.parse(e.dataset['column'])) {
       area.state.preview = null;
     }
     if (mouseOutController != null && e.tagName == 'circle') {

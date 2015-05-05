@@ -30,6 +30,8 @@ a:link, a:visited {
 
 .chart-wrapper {
   padding: 40px;
+  width: 800px;
+  height: 400px;
 }
 
 .chart-controls {

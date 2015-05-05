@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Charted &mdash; Demo of column and bar charts</title>
+    <link rel="stylesheet" href="../demo_charts.css">
+</head>
+<body>
+<div>
+    <div class="chart-wrapper" id="ordinal-line-chart">
+        <div class="chart-title-wrapper">
+            <div class="chart-title">Ordinal dimension</div>
+        </div>
+        <div class="chart-host-wrapper">
+            <div class="chart-host" dir="ltr"></div>
+            <div class="chart-legend-host"></div>
+        </div>
+    </div>
+
+    <div class="chart-wrapper" id="ordinal-with-breaks">
+        <div class="chart-title-wrapper">
+            <div class="chart-title">Ordinal dimension with breaks</div>
+        </div>
+        <div class="chart-host-wrapper">
+            <div class="chart-host" dir="ltr"></div>
+            <div class="chart-legend-host"></div>
+        </div>
+    </div>
+
+    <div class="chart-wrapper" id="ordinal-with-negative">
+        <div class="chart-title-wrapper">
+            <div class="chart-title">
+                Ordinal dimension (with negative values)
+            </div>
+        </div>
+        <div class="chart-host-wrapper">
+            <div class="chart-host" dir="ltr"></div>
+            <div class="chart-legend-host"></div>
+        </div>
+    </div>
+
+    <div class="chart-wrapper" id="time-series-chart">
+        <div class="chart-title-wrapper">
+            <div class="chart-title">Time series</div>
+        </div>
+        <div class="chart-host-wrapper">
+            <div class="chart-host" dir="ltr"></div>
+            <div class="chart-legend-host"></div>
+        </div>
+    </div>
+</div>
+<script type="application/dart" src="demo_line_charts.dart"></script>
+<script src="packages/browser/dart.js"></script>
+</body>
+</html>

@@ -88,7 +88,6 @@
   font-size: 14px;
   margin-bottom: 16px;
   position: relative;
-  padding-left: 20px;
   cursor: default;
 }
 
@@ -118,7 +117,6 @@
 }
 
 .chart-legend-label {
-  flex-basis: 80px;
   max-width: 120px;
 }
 
@@ -194,27 +192,11 @@
 .line-rdr-line.col-selected,
 .line-rdr-line.col-previewed {
   stroke-width: 4px;
-  filter: url('quantum_theme.svg#drop-shadow');
 }
 
 .line-rdr-point {
   opacity: 0;
   transition: opacity .2s;
-}
-
-/*
- * Styles for BarChartRenderer and StackedBarChartRenderer
- */
-
-.bar-rdr-bar.col-selected,
-.bar-rdr-bar.col-previewed,
-.stack-rdr-bar.col-selected,
-.stack-rdr-bar.col-previewed,
-.bar-rdr-bar.row-hovered,
-.bar-rdr-bar.row-highlighted,
-.stack-rdr-bar.row-hovered,
-.stack-rdr-bar.row-highlighted {
-  filter: url('quantum_theme.svg#drop-shadow');
 }
 
 /*
