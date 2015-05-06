@@ -265,6 +265,21 @@ class StackedBarChartRenderer extends CartesianRendererBase {
   }
 
   @override
+  Extent extentForRow(Iterable row) {
+    assert(series != null && area != null);
+    var measures = series.measures,
+        sum = 0;
+    for (int i = 0, len = measures.length;  i < len; ++i) {
+      var measure = measures.elementAt(i),
+          value = row.elementAt(measure);
+      if (value != null && value.isFinite) {
+        sum = sum + value;
+      }
+    }
+    return new Extent(sum, sum);
+  }
+
+  @override
   void handleStateChanges(List<ChangeRecord> changes) {
     var groups = host.querySelectorAll('.stack-rdr-rowgroup');
     if (groups == null || groups.isEmpty) return;
@@ -298,8 +313,9 @@ class StackedBarChartRenderer extends CartesianRendererBase {
     if (controller == null) return;
     var rowStr = e.parent.dataset['row'];
     var row = rowStr != null ? int.parse(rowStr) : null;
-    controller.add(new _ChartEvent(
-        scope.event, area, series, row, _reverseIdx(index), data));
+    controller.add(
+        new _ChartEvent(scope.event, area, series, row,
+            series.measures.elementAt(_reverseIdx(index)), data));
   }
 
   // Stacked bar chart renders items from bottom to top (first measure is at

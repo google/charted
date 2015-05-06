@@ -203,26 +203,51 @@
  * Styles for the tooltip.
  */
 
-.tooltip {
+.tooltip,
+.hovercard {
   opacity: 0;
   display: flex;
   flex-direction: column;
   position: absolute;
   border-radius: 2px;
   border: 1px solid #C1C1C1;
-  padding: 20px;
+  padding: 16px;
   box-shadow: 0 2px 1px rgba(0, 0, 0, 0.2);
   z-index: 9999;
   background-color: white;
   font-size: 14px;
-  pointer-events: none;
   transition: opacity .25s;
+  pointer-events: none;
 }
 
-.tooltip-title {
+.tooltip-title,
+.hovercard-title {
   color: #434343;
   font-weight: bold;
   margin-bottom: 16px;
+}
+
+.hovercard-measure {
+  display: flex;
+  color: #838383;
+}
+.hovercard-measure.hovercard-multi {
+  flex-direction: row;
+  margin-bottom: 16px;
+}
+.hovercard-measure.hovercard-single {
+  flex-direction: column;
+}
+.hovercard-measure:last-child {
+  margin-bottom: 0;
+}
+
+.hovercard-single .hovercard-measure-value {
+  font-size: 24px;
+}
+.hovercard-multi .hovercard-measure-label {
+  padding-right: 16px;
+  flex: 1;
 }
 
 .tooltip-total {
