@@ -24,12 +24,3 @@ const CodeUnitCategory = const{
   'LVT': 10,
   'Regional_Indicator': 11
 };
-
-class CodeRange {
-  final int start;
-  final int end;
-  final int codePointType;
-  const CodeRange(this.start, this.end, this.codePointType);
-  toString() => "const CodeRange($start, $end, $codePointType)";
-}
-

@@ -6,7 +6,7 @@
  * https://developers.google.com/open-source/licenses/bsd
  */
 
-library charted.demo.custom_axis;
+library charted.demo.charts.custom_axis;
 
 import 'dart:html';
 import 'package:charted/charts/charts.dart';
@@ -40,8 +40,6 @@ main() {
           data, config, autoUpdate:false, useTwoDimensionAxes:false);
   area.draw();
 
-
-
   // Chart with custom measure axis with specific domain on the scale.
   var series2 = new ChartSeries("one", [1, 3, 2, 6],
           new StackedBarChartRenderer(),
@@ -61,8 +59,6 @@ main() {
   var customAxisChart = new CartesianArea(querySelector('.custom-domain'),
           data2, config2, autoUpdate:false, useTwoDimensionAxes:false);
   customAxisChart.draw();
-
-
 
   // Chart with custom measure axis with specific tick values.
   var series3 = new ChartSeries("one", [1, 3, 2, 6],

@@ -70,32 +70,48 @@ class BarChartRenderer extends CartesianRendererBase {
         ..duration(theme.transitionDurationMilliseconds);
     }
 
+    // TODO: Test interactions between stroke width and bar width.
+
     var barWidth = bars.rangeBand.abs() -
-        theme.defaultSeparatorWidth - theme.defaultStrokeWidth;
+            theme.defaultSeparatorWidth - theme.defaultStrokeWidth,
+        strokeWidth = theme.defaultStrokeWidth,
+        strokeWidthOffset = strokeWidth ~/ 2;
 
     // Create and update the bars
     // Avoids animation on first render unless alwaysAnimate is set to true.
 
-    var bar = groups.selectAll(
-        '.bar-rdr-bar').dataWithCallback((d, i, c) => rows[i]);
+    var bar = groups.selectAll('.bar-rdr-bar').dataWithCallback(
+            (d, i, c) => rows[i]),
+        scaled0 = measureScale.scale(0).round();
+
     var getBarLength = (d) {
-      var scaled = measureScale.scale(d).round() - 1,
-          ht = verticalBars ? rect.height - scaled : scaled;
+      var scaledVal = measureScale.scale(d).round(),
+          ht = verticalBars
+              ? (d >= 0 ? scaled0 - scaledVal : scaledVal - scaled0)
+              : (d >= 0 ? scaledVal - scaled0 : scaled0 - scaledVal);
+      ht = ht - strokeWidth;
       return (ht < 0) ? 0 : ht;
     };
     var getBarPos = (d) {
-      num scaled = measureScale.scale(d) - theme.defaultStrokeWidth;
-      return scaled.round();
+      var scaledVal = measureScale.scale(d).round();
+      return verticalBars
+          ? (d >= 0 ? scaledVal : scaled0) + strokeWidthOffset
+          : (d >= 0 ? scaled0 : scaledVal) + strokeWidthOffset;
     };
     var buildPath = (d, int i, bool animate) {
-      return verticalBars
-          ? topRoundedRect(
-              bars.scale(i).toInt() + theme.defaultStrokeWidth,
-              animate ? rect.height : getBarPos(d),
-              barWidth, animate ? 0 : getBarLength(d), RADIUS)
-          : rightRoundedRect(
-              1, bars.scale(i).toInt() + theme.defaultStrokeWidth,
-              animate ? 0 : getBarLength(d), barWidth, RADIUS);
+      if (d == null) return '';
+      if (verticalBars) {
+        var fn = d > 0 ? topRoundedRect : bottomRoundedRect;
+        return fn(
+            bars.scale(i).toInt() + strokeWidthOffset,
+            animate ? rect.height : getBarPos(d),
+            barWidth, animate ? 0 : getBarLength(d), RADIUS);
+      } else {
+        var fn = d > 0 ? rightRoundedRect  : leftRoundedRect;
+        return fn(
+            getBarPos(d), bars.scale(i).toInt() + strokeWidthOffset,
+            animate ? 0 : getBarLength(d), barWidth, RADIUS);
+      }
     };
 
     var enter = bar.enter.appendWithCallback((d, i, e) {
@@ -103,15 +119,22 @@ class BarChartRenderer extends CartesianRendererBase {
             measure = series.measures.elementAt(i),
             row = int.parse(e.dataset['row']),
             color = colorForValue(measure, row),
+            filter = filterForValue(measure, row),
             style = stylesForValue(measure, row);
 
-        rect.classes.add('bar-rdr-bar ${style.join(" ")}');
+        rect.classes.add(style.isNotEmpty
+            ? 'bar-rdr-bar ${style.join(" ")}'
+            : 'bar-rdr-bar');
+
         rect.attributes
           ..['d'] = buildPath(d, i, animateBarGroups)
-          ..['stroke-width'] = '${theme.defaultStrokeWidth}px'
+          ..['stroke-width'] = '${strokeWidth}px'
           ..['fill'] = color
           ..['stroke'] = color;
 
+        if (!isNullOrEmpty(filter)) {
+          rect.attributes['filter'] = filter;
+        }
         if (!animateBarGroups) {
           rect.attributes['data-column'] = '$measure';
         }
@@ -126,6 +149,7 @@ class BarChartRenderer extends CartesianRendererBase {
         var measure = series.measures.elementAt(i),
             row = int.parse(e.parent.dataset['row']),
             color = colorForValue(measure, row),
+            filter = filterForValue(measure, row),
             styles = stylesForValue(measure, row);
         e.attributes
           ..['data-column'] = '$measure'
@@ -134,10 +158,16 @@ class BarChartRenderer extends CartesianRendererBase {
         e.classes
           ..removeAll(ChartState.VALUE_CLASS_NAMES)
           ..addAll(styles);
+        if (isNullOrEmpty(filter)) {
+          e.attributes.remove('filter');
+        } else {
+          e.attributes['filter'] = filter;
+        }
       });
 
       bar.transition()
-        ..attrWithCallback('d', (d, i, e) => buildPath(d, i, false));
+        ..attrWithCallback('d',
+            (d, i, e) => buildPath(d, i, false));
     }
 
     bar.exit.remove();
@@ -154,13 +184,13 @@ class BarChartRenderer extends CartesianRendererBase {
     assert(series != null && area != null);
     var measuresCount = series.measures.length;
     return measuresCount > 2 ? 1 - (measuresCount / (measuresCount + 1)) :
-        area.theme.dimensionAxisTheme.axisBandInnerPadding;
+        area.theme.getDimensionAxisTheme().axisBandInnerPadding;
   }
 
   @override
   double get bandOuterPadding {
     assert(series != null && area != null);
-    return area.theme.dimensionAxisTheme.axisBandOuterPadding;
+    return area.theme.getDimensionAxisTheme().axisBandOuterPadding;
   }
 
   @override
@@ -176,13 +206,19 @@ class BarChartRenderer extends CartesianRendererBase {
       for(int j = 0, barsCount = bars.length; j < barsCount; ++j) {
         var bar = bars.elementAt(j),
             column = int.parse(bar.dataset['column']),
-            color = colorForValue(column, row);
+            color = colorForValue(column, row),
+            filter = filterForValue(column, row);
 
         bar.classes.removeAll(ChartState.VALUE_CLASS_NAMES);
         bar.classes.addAll(stylesForValue(column, row));
         bar.attributes
           ..['fill'] = color
           ..['stroke'] = color;
+        if (isNullOrEmpty(filter)) {
+          bar.attributes.remove('filter');
+        } else {
+          bar.attributes['filter'] = filter;
+        }
       }
     }
   }

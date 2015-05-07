@@ -1201,4 +1201,3 @@ const CODE_POINT_BLOCKS = const[
   65520, 65528, 3,
   65529, 65531, 3
 ];
-

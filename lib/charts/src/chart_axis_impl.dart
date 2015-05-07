@@ -9,9 +9,6 @@
 part of charted.charts;
 
 class _ChartAxis {
-  static const List _VERTICAL_ORIENTATIONS =
-      const [ ORIENTATION_LEFT, ORIENTATION_RIGHT ];
-
   CartesianArea _area;
   ChartAxisConfig _config;
   ChartAxisTheme _theme;
@@ -41,6 +38,11 @@ class _ChartAxis {
       _scale = _columnSpec.createDefaultScale();
     }
 
+    // We have the scale, get theme.
+    _theme = isDimension
+        ? _area.theme.getDimensionAxisTheme(scale)
+        : _area.theme.getMeasureAxisTheme(scale);
+
     // Sets the domain if not using a custom scale.
     if (_config == null || (_config != null && _config.scale == null)) {
       scale.domain = domain;
@@ -48,13 +50,13 @@ class _ChartAxis {
     }
   }
 
-  void initAxisScale(Iterable range, ChartAxisTheme theme) {
+  void initAxisScale(Iterable range) {
     assert(scale != null);
     if (scale is OrdinalScale) {
       var usingBands = _area.dimensionsUsingBands.contains(_column),
-          innerPadding = usingBands ? theme.axisBandInnerPadding : 1.0,
+          innerPadding = usingBands ? _theme.axisBandInnerPadding : 1.0,
           outerPadding = usingBands ?
-              theme.axisBandOuterPadding : theme.axisOuterPadding;
+              _theme.axisBandOuterPadding : _theme.axisOuterPadding;
 
       // This is because when left axis is primary the first data row should
       // appear on top of the y-axis instead of on bottom.
@@ -65,12 +67,12 @@ class _ChartAxis {
           rangeRoundBands(range, innerPadding, outerPadding);
     } else {
       scale.range = range;
+      scale.ticksCount = _theme.axisTickCount;
     }
   }
 
-  void prepareToDraw(String orientation, ChartAxisTheme theme) {
+  void prepareToDraw(String orientation) {
     if (orientation == null) orientation = ORIENTATION_BOTTOM;
-    _theme = theme;
     _orientation = orientation;
     _isVertical =
         _orientation == ORIENTATION_LEFT || _orientation == ORIENTATION_RIGHT;
@@ -88,17 +90,17 @@ class _ChartAxis {
           formatter = _columnSpec.formatter == null
               ? scale.createTickFormatter()
               : _columnSpec.formatter,
-          textMetrics = new TextMetrics(fontStyle: theme.ticksFont),
+          textMetrics = new TextMetrics(fontStyle: _theme.ticksFont),
           formattedTicks = ticks.map((x) => formatter(x)).toList(),
           shortenedTicks = formattedTicks;
 
       var width = textMetrics.getLongestTextWidth(formattedTicks).ceil();
-      if (width > theme.verticalAxisWidth) {
-        width = theme.verticalAxisWidth;
+      if (width > _theme.verticalAxisWidth) {
+        width = _theme.verticalAxisWidth;
         shortenedTicks = formattedTicks.map(
             (x) => textMetrics.ellipsizeText(x, width.toDouble())).toList();
       }
-      if (theme.verticalAxisAutoResize) {
+      if (_theme.verticalAxisAutoResize) {
         size.width =
             width + _theme.axisTickPadding + math.max(_theme.axisTickSize, 0);
       }
@@ -126,10 +128,11 @@ class _ChartAxis {
 
     if (!_isVertical) {
       _axisTicksPlacement =
-          new RotateHorizontalAxisTicks(rect, _config, _theme);
+          new RotateHorizontalAxisTicks(rect,
+              _theme.ticksFont, _theme.axisTickSize + _theme.axisTickPadding);
     }
 
-    initAxisScale(range, _theme);
+    initAxisScale(range);
     var axis = new SvgAxis(orientation: _orientation,
         innerTickSize: innerTickSize, outerTickSize: 0,
         tickPadding: _theme.axisTickPadding,
@@ -162,36 +165,39 @@ class PrecomputedAxisTicks implements SvgAxisTicks {
 
 class RotateHorizontalAxisTicks implements SvgAxisTicks {
   final Rect rect;
-  final ChartAxisConfig config;
-  final ChartAxisTheme theme;
+  final String ticksFont;
+  final int tickLineLength;
 
   int rotation = 0;
   Iterable ticks;
   Iterable formattedTicks;
   Iterable shortenedTicks;
 
-  RotateHorizontalAxisTicks(this.rect, this.config, this.theme);
+  RotateHorizontalAxisTicks(this.rect, this.ticksFont, this.tickLineLength);
 
   void init(SvgAxis axis) {
     assert(
         axis.orientation == ORIENTATION_BOTTOM ||
         axis.orientation == ORIENTATION_TOP);
-    assert(theme.ticksFont != null);
+    assert(ticksFont != null);
     ticks = axis.tickValues;
     formattedTicks = ticks.map((x) => axis.tickFormat(x)).toList();
     shortenedTicks = formattedTicks;
 
     var range = axis.scale.rangeExtent,
-        textMetrics = new TextMetrics(fontStyle: theme.ticksFont),
+        textMetrics = new TextMetrics(fontStyle: ticksFont),
         allowedWidth = (range.max - range.min) ~/ ticks.length,
         maxLabelWidth = textMetrics.getLongestTextWidth(formattedTicks);
 
     // Check if we need rotation
     if (0.90 * allowedWidth < maxLabelWidth) {
+      var rectHeight = tickLineLength > 0
+          ? rect.height - tickLineLength
+          : rect.height;
       rotation = 45;
 
       // Check if we have enough space to render full chart
-      allowedWidth = (1.4142 * rect.height) - (textMetrics.fontSize / 1.4142);
+      allowedWidth = (1.4142 * (rectHeight)) - (textMetrics.fontSize / 1.4142);
       if (maxLabelWidth > allowedWidth) {
         shortenedTicks = formattedTicks.map(
             (x) => textMetrics.ellipsizeText(x, allowedWidth)).toList();

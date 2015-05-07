@@ -62,7 +62,8 @@ class StackedBarChartRenderer extends CartesianRendererBase {
         ..duration(theme.transitionDurationMilliseconds);
     }
 
-    var bar = groups.selectAll('.stack-rdr-bar').dataWithCallback((d, i, c) => d);
+    var bar =
+        groups.selectAll('.stack-rdr-bar').dataWithCallback((d, i, c) => d);
 
     // TODO(prsd): Revisit animation and state tracking.
     var ic = -1,
@@ -174,15 +175,22 @@ class StackedBarChartRenderer extends CartesianRendererBase {
               measure = series.measures.elementAt(_reverseIdx(i)),
               row = int.parse(e.dataset['row']),
               color = colorForValue(measure, row),
+              filter = filterForValue(measure, row),
               style = stylesForValue(measure, row);
 
-          rect.classes.add('stack-rdr-bar ${style.join(" ")}');
+          rect.classes.add(style.isNotEmpty
+              ? 'stack-rdr-bar ${style.join(" ")}'
+              : 'stack-rdr-bar');
+
           rect.attributes
-            ..['d'] = buildPath(d, i, animateBarGroups)
+            ..['d'] = buildPath(d == null ? 0 : d, i, animateBarGroups)
             ..['stroke-width'] = '${theme.defaultStrokeWidth}px'
             ..['fill'] = color
             ..['stroke'] = color;
 
+          if (!isNullOrEmpty(filter)) {
+            rect.attributes['filter'] = filter;
+          }
           if (!animateBarGroups) {
             rect.attributes['data-column'] = '$measure';
           }
@@ -199,6 +207,7 @@ class StackedBarChartRenderer extends CartesianRendererBase {
         var measure = series.measures.elementAt(_reverseIdx(i)),
             row = int.parse(e.parent.dataset['row']),
             color = colorForValue(measure, row),
+            filter = filterForValue(measure, row),
             styles = stylesForValue(measure, row);
         e.attributes
           ..['data-column'] = '$measure'
@@ -207,10 +216,16 @@ class StackedBarChartRenderer extends CartesianRendererBase {
         e.classes
           ..removeAll(ChartState.VALUE_CLASS_NAMES)
           ..addAll(styles);
+        if (isNullOrEmpty(filter)) {
+          e.attributes.remove('filter');
+        } else {
+          e.attributes['filter'] = filter;
+        }
       });
 
       bar.transition()
-        ..attrWithCallback('d', (d, i, e) => buildPath(d, i, false));
+        ..attrWithCallback('d',
+            (d, i, e) => buildPath(d == null ? 0 : d, i, false));
     }
 
     bar.exit.remove();
@@ -230,18 +245,20 @@ class StackedBarChartRenderer extends CartesianRendererBase {
   Extent get extent {
     assert(area != null && series != null);
     var rows = area.data.rows,
-    max = rows.isEmpty ? 0 : rows[0][series.measures.first],
-    min = max;
+        max = SMALL_INT_MIN,
+        min = SMALL_INT_MAX;
 
     rows.forEach((row) {
-      if (row[series.measures.first] < min)
-        min = row[series.measures.first];
-
-      var bar = 0;
+      var bar = null;
       series.measures.forEach((idx) {
-        bar += row[idx];
+        var value = row[idx];
+        if (value != null && value.isFinite) {
+          if (bar == null) bar = 0;
+          bar += value;
+        }
       });
       if (bar > max) max = bar;
+      if (bar < min) min = bar;
     });
 
     return new Extent(min, max);
@@ -260,13 +277,19 @@ class StackedBarChartRenderer extends CartesianRendererBase {
       for(int j = 0, barsCount = bars.length; j < barsCount; ++j) {
         var bar = bars.elementAt(j),
             column = int.parse(bar.dataset['column']),
-            color = colorForValue(column, row);
+            color = colorForValue(column, row),
+            filter = filterForValue(column, row);
 
         bar.classes.removeAll(ChartState.VALUE_CLASS_NAMES);
         bar.classes.addAll(stylesForValue(column, row));
         bar.attributes
           ..['fill'] = color
           ..['stroke'] = color;
+        if (isNullOrEmpty(filter)) {
+          bar.attributes.remove('filter');
+        } else {
+          bar.attributes['filter'] = filter;
+        }
       }
     }
   }

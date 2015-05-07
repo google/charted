@@ -9,10 +9,17 @@
 part of charted.charts;
 
 abstract class LayoutRendererBase implements LayoutRenderer {
+  static const MAX_SUPPORTED_ROWS = 250;
+  final SubscriptionsDisposer _disposer = new SubscriptionsDisposer();
+
   LayoutArea area;
   ChartSeries series;
   ChartTheme theme;
+  ChartState state;
   Rect rect;
+
+  List<int> _valueStateCache;
+  List<Iterable<String>> _valueStylesCache;
 
   Element host;
   Selection root;
@@ -24,6 +31,16 @@ abstract class LayoutRendererBase implements LayoutRenderer {
 
   void _ensureAreaAndSeries(ChartArea area, ChartSeries series) {
     assert(area != null && series != null);
+    assert(this.area == null || this.area == area);
+    if (this.area == null) {
+      if (area.state != null) {
+        this.state = area.state;
+        _disposer.add(this.state.changes.listen((changes) {
+          resetStylesCache();
+          handleStateChanges(changes);
+        }));
+      }
+    }
     this.area = area;
     this.series = series;
   }
@@ -40,7 +57,17 @@ abstract class LayoutRendererBase implements LayoutRenderer {
 
     theme = area.theme;
     rect = area.layout.renderArea;
+    resetStylesCache();
   }
+
+  void resetStylesCache() {
+    var length = math.min(area.data.rows.length, MAX_SUPPORTED_ROWS);
+    _valueStylesCache = new List(length);
+    _valueStateCache = new List(length);
+    _computeValueStates();
+  }
+
+  void handleStateChanges(List<ChangeRecord> changes);
 
   @override
   void dispose() {
@@ -72,7 +99,48 @@ abstract class LayoutRendererBase implements LayoutRenderer {
     return mouseClickController.stream;
   }
 
-  /// Get a color using the theme's ordinal scale of colors
-  String colorForKey(i, [int state = ChartTheme.STATE_NORMAL]) =>
-      area.theme.getColorForKey(series.measures.elementAt(i), state);
+  void _computeValueStates() {
+    var length = math.min(area.data.rows.length, MAX_SUPPORTED_ROWS);
+    for (int i = 0, len = length; i < len; ++i) {
+      int flags = 0;
+      if (state != null) {
+        if (state.selection.isNotEmpty) {
+          flags |= (state.isSelected(i))
+              ? ChartState.VAL_HIGHLIGHTED
+              : ChartState.VAL_UNHIGHLIGHTED;
+        }
+        if (state.preview == i) {
+          flags |= ChartState.VAL_HOVERED;
+        }
+      }
+      _valueStateCache[i] = flags;
+    }
+  }
+
+  Iterable<String> stylesForValue(int row, { bool isTail: false }) {
+    if (_valueStylesCache[row] == null) {
+      if (state == null || isTail == true) {
+        _valueStylesCache[row] = const[];
+      } else {
+        var styles = [],
+            flags = _valueStateCache[row];
+
+        if (flags & ChartState.VAL_HIGHLIGHTED != 0) {
+          styles.add(ChartState.VAL_HIGHLIGHTED_CLASS);
+        } else if (flags & ChartState.VAL_UNHIGHLIGHTED != 0) {
+          styles.add(ChartState.VAL_UNHIGHLIGHTED_CLASS);
+        }
+        if (flags & ChartState.VAL_HOVERED != 0) {
+          styles.add(ChartState.VAL_HOVERED_CLASS);
+        }
+
+        _valueStylesCache[row] = styles;
+      }
+    }
+    return _valueStylesCache[row];
+  }
+
+  String colorForValue(int row, {bool isTail: false}) => isTail
+      ? theme.getOtherColor()
+      : theme.getColorForKey(row, _valueStateCache[row]);
 }

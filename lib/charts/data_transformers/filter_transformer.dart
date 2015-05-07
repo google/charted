@@ -29,7 +29,7 @@ class FilterTransformer extends ChangeNotifier
   /**
    * Transforms the input data with the list of [FilterDefinition] specified in
    * the constructor.  If the rows and columns are ObservableList in the data,
-   * changes in rows and columns in input data will trigger tranform to be
+   * changes in rows and columns in input data will trigger transform to be
    * performed again to update the output rows and columns.
    */
   ChartData transform(ChartData data) {

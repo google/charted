@@ -18,6 +18,10 @@ class _ChartState extends ChangeNotifier implements ChartState {
   final bool isMultiSelect;
   final bool isMultiHighlight;
   final bool isSelectOrHighlight;
+  final bool supportColumnSelection;
+  final bool supportColumnPreview;
+  final bool supportValueHighlight;
+  final bool supportValueHover;
 
   LinkedHashSet<int> hidden = new LinkedHashSet<int>();
 
@@ -28,11 +32,16 @@ class _ChartState extends ChangeNotifier implements ChartState {
   int _preview;
 
   _ChartState({
+    this.supportColumnSelection: true,
+    this.supportColumnPreview: true,
+    this.supportValueHighlight: true,
+    this.supportValueHover: true,
     this.isMultiSelect: false,
     this.isMultiHighlight: false,
     this.isSelectOrHighlight: true});
 
   set hovered(Pair<int,int> value) {
+    if (!this.supportValueHover) return null;
     if (value != _hovered) {
       _hovered = value;
       notifyChange(new ChartHoverChangeRecord(_hovered));
@@ -42,6 +51,7 @@ class _ChartState extends ChangeNotifier implements ChartState {
   Pair<int,int> get hovered => _hovered;
 
   set preview(int value) {
+    if (!this.supportColumnPreview) return null;
     if (value != _preview) {
       _preview = value;
       notifyChange(new ChartPreviewChangeRecord(_preview));
@@ -69,6 +79,7 @@ class _ChartState extends ChangeNotifier implements ChartState {
   bool isVisible(int id) => !hidden.contains(id);
 
   bool select(int id) {
+    if (!this.supportColumnSelection) return false;
     if (!selection.contains(id)) {
       if (!isMultiSelect) {
         selection.clear();
@@ -93,6 +104,7 @@ class _ChartState extends ChangeNotifier implements ChartState {
   bool isSelected(int id) => selection.contains(id);
 
   bool highlight(int column, int row) {
+    if (!this.supportValueHighlight) return false;
     if (!isHighlighted(column, row)) {
       if (!isMultiHighlight) {
         highlights.clear();

@@ -15,7 +15,7 @@ import "dart:math" as math;
 import "package:charted/core/utils.dart";
 import "package:charted/selection/transition.dart";
 
-part "src/selection_scope.dart";
+part "selection_scope.dart";
 part "src/selection_impl.dart";
 
 /**

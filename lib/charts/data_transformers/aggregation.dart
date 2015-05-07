@@ -465,7 +465,7 @@ class AggregationModel {
       // ci => index of the cached value in [currentDim]
       for (int di = 0, ci = 0; di < dimensionCount; ++di, ci += 2) {
         // If a dimension value changed, then all dimensions that are lower
-        // in the heirarchy change too.
+        // in the hierarchy change too.
         if (reset ||
             currentDim[ci] != _dimEnumCache[dimensionDataOffset + di]) {
           currentDim[ci] = _dimEnumCache[dimensionDataOffset + di];

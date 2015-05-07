@@ -1,4 +1,5 @@
 
+/*noinspection CssUnknownTarget,CssUnknownTarget*/
 @import '//fonts.googleapis.com/css?family=Roboto:400,700';
 
 /*
@@ -6,7 +7,7 @@
  */
 
 .chart-wrapper {
-  font-family: 'Roboto';
+  font-family: Roboto, sans-serif;
   display: block;
 }
 
@@ -49,7 +50,7 @@
  */
 
 .chart-canvas {
-  font-family: 'Roboto';
+  font-family: Roboto, sans-serif;
   display: block;
 }
 
@@ -87,7 +88,6 @@
   font-size: 14px;
   margin-bottom: 16px;
   position: relative;
-  padding-left: 20px;
   cursor: default;
 }
 
@@ -102,6 +102,7 @@
 .chart-legend-selected,
 .chart-legend-hover {
   color: #434343;
+  font-weight: bold;
 }
 
 .chart-legend-more-row {
@@ -112,11 +113,10 @@
 }
 
 .chart-legend-more-row:first-child {
-  margin-top: 0px;
+  margin-top: 0;
 }
 
 .chart-legend-label {
-  flex-basis: 80px;
   max-width: 120px;
 }
 
@@ -138,10 +138,10 @@
   position: absolute;
   left: 70px;
   padding: 10px;
-  top: 0px;
+  top: 0;
   border-radius: 2px;
   border: 1px solid #C1C1C1;
-  box-shadow: 0px 2px 1px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 2px 1px rgba(0, 0, 0, 0.2);
   z-index: 9999;
   background-color: white;
   font-size: 14px;
@@ -185,37 +185,18 @@
 
 .line-rdr-line {
   stroke-width: 2px;
-  transition: stroke-width .4s;
+  transition: stroke-width .2s;
   stroke-linecap: round;
-}
-
-.line-rdr-line.col-selected {
-  stroke-width: 4px;
 }
 
 .line-rdr-line.col-selected,
 .line-rdr-line.col-previewed {
-  filter: url('#active-shadow');
+  stroke-width: 4px;
 }
 
 .line-rdr-point {
   opacity: 0;
   transition: opacity .2s;
-}
-
-/*
- * Styles for BarChartRenderer and StackedBarChartRenderer
- */
-
-.bar-rdr-bar.col-selected,
-.bar-rdr-bar.col-previewed,
-.stack-rdr-bar.col-selected,
-.stack-rdr-bar.col-previewed,
-.bar-rdr-bar.row-hovered,
-.bar-rdr-bar.row-highlighted,
-.stack-rdr-bar.row-hovered,
-.stack-rdr-bar.row-highlighted {
-  filter: url('#active-shadow');
 }
 
 /*
@@ -230,7 +211,7 @@
   border-radius: 2px;
   border: 1px solid #C1C1C1;
   padding: 20px;
-  box-shadow: 0px 2px 1px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 2px 1px rgba(0, 0, 0, 0.2);
   z-index: 9999;
   background-color: white;
   font-size: 14px;
@@ -260,7 +241,7 @@
 }
 
 .tooltip-item:last-child {
-  margin-bottom: 0px;
+  margin-bottom: 0;
 }
 
 .tooltip .tooltip-item-value {

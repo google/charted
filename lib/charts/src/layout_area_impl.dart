@@ -24,6 +24,9 @@ class _LayoutArea implements LayoutArea {
   final bool useRowColoring = true;
 
   @override
+  final ChartState state;
+
+  @override
   _ChartAreaLayout layout = new _ChartAreaLayout();
 
   @override
@@ -36,15 +39,10 @@ class _LayoutArea implements LayoutArea {
   bool isReady = false;
 
   @override
-  ChartState state;
-
-  @override
   ChartTheme theme;
 
   ChartData _data;
   ChartConfig _config;
-  ObservableList<int> selectedMeasures = new ObservableList();
-  ObservableList<int> hoveredMeasures = new ObservableList();
   bool _autoUpdate = false;
 
   SelectionScope _scope;
@@ -66,7 +64,8 @@ class _LayoutArea implements LayoutArea {
       this.host,
       ChartData data,
       ChartConfig config,
-      bool autoUpdate) : _autoUpdate = autoUpdate {
+      bool autoUpdate,
+      this.state) : _autoUpdate = autoUpdate {
     assert(host != null);
     assert(isNotInline(host));
 
@@ -215,25 +214,40 @@ class _LayoutArea implements LayoutArea {
 
     // Save and subscribe to events on the the current renderer.
     _renderer = series.renderer;
-    try {
+    if (_renderer is ChartRendererBehaviorSource) {
       _rendererDisposer.addAll([
         _renderer.onValueClick.listen((ChartEvent e) {
+          if (state != null) {
+            if (state.isSelected(e.row)) {
+              state.unselect(e.row);
+            } else {
+              state.select(e.row);
+            }
+          }
           if (_valueMouseClickController != null) {
             _valueMouseClickController.add(e);
           }
         }),
         _renderer.onValueMouseOver.listen((ChartEvent e) {
+          if (state != null) {
+            state.preview = e.row;
+          }
           if (_valueMouseOverController != null) {
             _valueMouseOverController.add(e);
           }
         }),
         _renderer.onValueMouseOut.listen((ChartEvent e) {
+          if (state != null) {
+            if (e.row == state.preview) {
+              state.hovered = null;
+            }
+          }
           if (_valueMouseOutController != null) {
             _valueMouseOutController.add(e);
           }
         })
       ]);
-    } on UnimplementedError {};
+    }
 
     Iterable<ChartLegendItem> legend =
         _renderer.layout(group, schedulePostRender:schedulePostRender);

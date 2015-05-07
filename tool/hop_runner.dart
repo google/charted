@@ -30,17 +30,14 @@ Task createUnitTestsTask() =>
 /// in simple html unit test configuration - useHtmlConfiguration().
 void checkTestsOutput(TaskContext context, ProcessResult process) {
   var output = (process.stdout as String),
-      passRegEx = new RegExp(r"^[0-9]+\s+PASS\s"),
       failRegEx = new RegExp(r"^[0-9]+\s+FAIL\s"),
       errorRegEx = new RegExp(r"^[0-9]+\s+ERROR\s"),
-      passCount = 0,
       failCount = 0,
       errorCount = 0;
 
   context.info(output);
 
   for (var line in output.split('\n')) {
-    if (line.contains(passRegEx)) passCount++;
     if (line.contains(failRegEx)) failCount++;
     if (line.contains(errorRegEx)) errorCount++;
   }
@@ -49,4 +46,3 @@ void checkTestsOutput(TaskContext context, ProcessResult process) {
     context.fail('FAIL: $failCount\nERROR: $errorCount');
   }
 }
-

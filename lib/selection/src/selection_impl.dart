@@ -66,7 +66,7 @@ class _SelectionImpl implements Selection {
 
   /**
    * Same as [all] but only uses the first element matching [selector] when
-   * [selector] is speficied.  Otherwise, call [fn] which must return the
+   * [selector] is specified.  Otherwise, call [fn] which must return the
    * element to be selected.
    */
   _SelectionImpl.single({String selector, SelectionCallback<Element> fn,
@@ -328,10 +328,8 @@ class _SelectionImpl implements Selection {
         exitGroups = [];
 
     // Create a dummy node to be used with enter() selection.
-    // TODO(prsd): Use virtual DOM. It could be upto 50 times faster than
-    //             using a html element for dummy.
-    Element dummy(val) {
-      var element = new Element.tag('charted-dummy');
+    Object dummy(val) {
+      var element = new Object();
       scope.associate(element, val);
       return element;
     };
@@ -385,7 +383,7 @@ class _SelectionImpl implements Selection {
 
         // Iterate through the previously saved keys to
         // find a list of elements that don't have data anymore.
-        // We don't use elementsByKey.keys() becuase that does not
+        // We don't use elementsByKey.keys() because that does not
         // guarantee the order of returned keys.
         for (int i = 0, len = elementsLength; i < len; ++i) {
           if (elementsByKey.containsKey(keysOnDOM[i])) {

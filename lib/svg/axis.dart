@@ -143,7 +143,11 @@ class SvgAxis {
       }
 
       text.text = fixSimpleTextDirection(ellipsized.elementAt(i));
-      text.attributes['data-detail'] = formatted.elementAt(i);
+      if (isEllipsized) {
+        text.attributes['data-detail'] = formatted.elementAt(i);
+      } else {
+        text.attributes.remove('data-detail');
+      }
 
       if (isInitialRender) {
         var dx = current is OrdinalScale ? current.rangeBand / 2 : 0;
