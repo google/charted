@@ -87,8 +87,8 @@ abstract class LayoutArea implements ChartArea {
   factory LayoutArea(
       dynamic host,
       ChartData data,
-      ChartConfig config,
-      bool autoUpdate, {
+      ChartConfig config, {
+      bool autoUpdate,
       ChartState state }) =>
           new _LayoutArea(host, data, config, autoUpdate, state);
 }

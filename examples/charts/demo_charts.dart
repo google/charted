@@ -5,7 +5,7 @@ import "package:charted/charts/charts.dart";
 /// Helper method to create default behaviors for cartesian chart demos.
 Iterable<ChartBehavior> createDefaultCartesianBehaviors() =>
     new List.from([
-        new Hovercard(isMultiValue: true, isMouseTracking: true),
+        new Hovercard(isMultiValue: true),
         new AxisLabelTooltip()
     ]);
 

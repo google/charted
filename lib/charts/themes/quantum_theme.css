@@ -118,6 +118,7 @@
 
 .chart-legend-label {
   max-width: 120px;
+  flex: 1;
 }
 
 .chart-legend-color,

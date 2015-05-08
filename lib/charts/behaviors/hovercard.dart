@@ -82,7 +82,8 @@ class Hovercard implements ChartBehavior {
     _state = area.state;
 
     // If we don't have state, fall back to mouse events.
-    _isMouseTracking = _isMouseTracking == true || _state == null;
+    _isMouseTracking =
+        _isMouseTracking == true || _state == null || _area is LayoutArea;
 
     // Subscribe to events.
     if (_isMouseTracking) {
@@ -151,6 +152,7 @@ class Hovercard implements ChartBehavior {
       _hovercardRoot.attributes['dir'] = 'rtl';
       _hovercardRoot.classes.add('rtl');
     }
+    _area.host.style.position = 'relative';
     _area.host.append(_hovercardRoot);
   }
 
@@ -335,21 +337,27 @@ class Hovercard implements ChartBehavior {
       displayedCols.sort();
       displayedCols.forEach((int column) {
         var spec = columns.elementAt(column),
+            label = _area.useRowColoring
+                ? rowData.elementAt(_area.config.dimensions.first)
+                : spec.label,
             colorKey = _area.useRowColoring ? row : column,
             formatter = _getFormatterForColumn(column);
         measureVals.add(
             new ChartLegendItem(
-                label: spec.label,
+                label: label,
                 value: formatter(rowData.elementAt(column)),
                 color: _area.theme.getColorForKey(colorKey)));
       });
     } else {
       var spec = columns.elementAt(column),
           colorKey = _area.useRowColoring ? row : column,
-          formatter = _getFormatterForColumn(column);
+          formatter = _getFormatterForColumn(column),
+          label = _area.useRowColoring
+              ? rowData.elementAt(_area.config.dimensions.first)
+              : spec.label;
       measureVals.add(
           new ChartLegendItem(
-              label: spec.label,
+              label: label,
               value: formatter(rowData.elementAt(column)),
               color: _area.theme.getColorForKey(colorKey)));
     }
@@ -360,13 +368,13 @@ class Hovercard implements ChartBehavior {
   String _getDimensionTitle(int column, int row) {
     var rowData = _area.data.rows.elementAt(row),
         colSpec = _area.data.columns.elementAt(column);
-    if (_area is CartesianArea) {
+    if (_area.useRowColoring) {
+      return colSpec.label;
+    } else {
       var count = (_area as CartesianArea).useTwoDimensionAxes ? 2 : 1,
           dimensions = _area.config.dimensions.take(count);
       return dimensions.map(
           (int c) => _getFormatterForColumn(c)(rowData[c])).join(', ');
-    } else {
-      // TODO: Implement the LayoutArea case!
     }
   }
 
