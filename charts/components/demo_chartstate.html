@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Charted &mdash; Demo of chart state</title>
+    <link rel="stylesheet" href="../demo_charts.css">
+    <style>
+        .chart-host-wrapper {
+            width: 500px !important;
+        }
+        .chart-host {
+            width: 100% !important;
+        }
+        .charts-bar {
+            display: flex;
+            flex-direction: row;
+        }
+    </style>
+</head>
+<body>
+<div>
+    <div class="charts-bar">
+        <div class="chart-wrapper" id="simple-bar-chart">
+            <div class="chart-title-wrapper">
+                <div class="chart-title">Simple bar chart</div>
+            </div>
+            <div class="chart-host-wrapper">
+                <div class="chart-host" dir="ltr"></div>
+            </div>
+        </div>
+
+        <div class="chart-wrapper" id="horizontal-bar-chart">
+            <div class="chart-title-wrapper">
+                <div class="chart-title">Chart sharing the same state object</div>
+            </div>
+            <div class="chart-host-wrapper">
+                <div class="chart-host" dir="ltr"></div>
+            </div>
+        </div>
+    </div>
+    <div style="width: 50%; margin: 0 auto; padding: 50px; line-height: 2em;">
+        <p>Multiple charts can share the same ChartState object. When they do,
+        any changes to state on one chart is indicated in the other chart too.
+        Try hovering on a bar in one of the charts above!</p>
+
+        <p>ChartState supports <a href="#" id="hover">hovering</a> and
+        <a href="#" id="highlight">highlighting</a> a value and
+        <a href="#" id="select">selecting</a> and
+        <a href="#" id="preview">previewing</a> a series (actually a column)</p>
+
+        <p>Try hovering on blue text in above paragraph. ChartState can be
+        updated from scripts outside the chart too!</p>
+    </div>
+</div>
+<script type="application/dart" src="demo_chartstate.dart"></script>
+<script src="packages/browser/dart.js"></script>
+</body>
+</html>
