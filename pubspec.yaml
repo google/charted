@@ -1,5 +1,5 @@
 name: charted
-version: 0.2.2
+version: 0.2.5dev
 authors:
 - Prasad Sunkari <prsd@google.com>
 - Michael Cheng <midoringo@google.com>
@@ -18,5 +18,5 @@ dev_dependencies:
   unittest: any
 transformers:
 - $dart2js:
-    minify: false
+    minify: true
     commandLineOptions: [--trust-type-annotations, --trust-primitives]
