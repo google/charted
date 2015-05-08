@@ -54,28 +54,25 @@ class Hovercard implements ChartBehavior {
   final HovercardBuilder builder;
 
   bool _isMouseTracking;
-  bool _isMouseRelativePlacement;
   bool _isMultiValue;
   bool _showDimensionTitle;
 
-  Iterable placementOrder = const['top', 'right', 'bottom', 'left'];
+  Iterable placementOrder =
+      const['orientation', 'top', 'right', 'bottom', 'left', 'orientation'];
   int offset = 20;
 
   ChartArea _area;
   ChartState _state;
-  ChartEvent _currentEvent;
   SubscriptionsDisposer _disposer = new SubscriptionsDisposer();
 
   Element _hovercardRoot;
 
   Hovercard({
       bool isMouseTracking,
-      bool isMouseRelativePlacement,
       bool isMultiValue: false,
       bool showDimensionTitle: false,
       this.builder}) {
     _isMouseTracking = isMouseTracking;
-    _isMouseRelativePlacement = isMouseRelativePlacement;
     _isMultiValue = isMultiValue;
     _showDimensionTitle = showDimensionTitle;
   }
@@ -86,10 +83,6 @@ class Hovercard implements ChartBehavior {
 
     // If we don't have state, fall back to mouse events.
     _isMouseTracking = _isMouseTracking == true || _state == null;
-
-    // If placement was not specified, default to value relative placement.
-    _isMouseRelativePlacement =
-        _isMouseRelativePlacement == true || _area is! CartesianArea;
 
     // Subscribe to events.
     if (_isMouseTracking) {
@@ -109,10 +102,21 @@ class Hovercard implements ChartBehavior {
 
   void _handleMouseOver(ChartEvent e) {
     _ensureHovercard();
+    _hovercardRoot.children.clear();
+    _hovercardRoot.append(builder != null
+        ? builder(e.column, e.row)
+        : _createTooltip(e.column, e.row));
+    _hovercardRoot.style
+      ..visibility = 'visible'
+      ..opacity = '1.0';
+    _updateTooltipPosition(evt: e);
   }
 
   void _handleMouseOut(ChartEvent e) {
     _ensureHovercard();
+    _hovercardRoot.style
+      ..visibility = 'hidden'
+      ..opacity = '$EPSILON';
   }
 
   void _handleStateChange(Iterable<ChangeRecord> changes) {
@@ -129,7 +133,9 @@ class Hovercard implements ChartBehavior {
         ..opacity = '$EPSILON';
     } else {
       _hovercardRoot.children.clear();
-      _hovercardRoot.append(_createTooltip(value.first, value.last));
+      _hovercardRoot.append(builder != null
+          ? builder(value.first, value.last)
+          : _createTooltip(value.first, value.last));
       _hovercardRoot.style
         ..visibility = 'visible'
         ..opacity = '1.0';
@@ -148,22 +154,28 @@ class Hovercard implements ChartBehavior {
     _area.host.append(_hovercardRoot);
   }
 
-  void _updateTooltipPosition({ChartEvent e, int column, int row}) {
-    assert(e != null || column != null && row != null);
-    if (e != null) {
-      _positionAtMousePointer(e);
-    } else {
-      assert(_area is CartesianArea);
+  void _updateTooltipPosition({ChartEvent evt, int column, int row}) {
+    assert(evt != null || column != null && row != null);
+    if (_isMouseTracking && evt != null) {
+      _positionAtMousePointer(evt);
+    } else if (_area is CartesianArea) {
       if ((_area as CartesianArea).useTwoDimensionAxes) {
         _positionOnTwoDimensionCartesian(column, row);
       } else {
         _positionOnSingleDimensionCartesian(column, row);
       }
+    } else {
+      _positionOnLayout(column, row);
     }
   }
 
-  void _positionAtMousePointer(ChartEvent e) {
-    // TODO: Implement positioning at mouse pointer.
+  void _positionAtMousePointer(ChartEvent e) =>
+      _positionAtPoint(e.chartX, e.chartY, offset, offset, false, false);
+
+  void _positionOnLayout(column, row) {
+    // Currently for layouts, when hovercard is triggered due to change
+    // in ChartState, we render hovercard in the middle of layout.
+    // TODO: Get bounding rect from LayoutRenderer and position relative to it.
   }
 
   void _positionOnTwoDimensionCartesian(int column, int row) {
@@ -176,7 +188,6 @@ class Hovercard implements ChartBehavior {
         dimensionScale = area.dimensionScales.first,
         measureScale = _getScaleForColumn(column),
         dimensionOffset = this.offset,
-        measureOffset = 0,
         dimensionCenterOffset = 0;
 
     // If we are using bands on the one axis that is shown
@@ -211,12 +222,17 @@ class Hovercard implements ChartBehavior {
       measurePosition = measureScale.scale(rowData.elementAt(column));
     }
 
-    _positionAtPoint(dimensionPosition, measurePosition,
-        0, dimensionOffset, isNegative, area.config.isLeftAxisPrimary);
+    if (area.config.isLeftAxisPrimary) {
+      _positionAtPoint(measurePosition, dimensionPosition,
+          0, dimensionOffset, isNegative, true);
+    } else {
+      _positionAtPoint(dimensionPosition, measurePosition,
+          dimensionOffset, 0, isNegative, false);
+    }
   }
 
-  void _positionAtPoint(
-      num x, num y, num xBand, num yBand, bool negative, bool isLeftPrimary) {
+  void _positionAtPoint(num x, num y,
+      num xBand, num yBand, bool negative, [bool isLeftPrimary = false]) {
     var rect = _hovercardRoot.getBoundingClientRect(),
         width = rect.width,
         height = rect.height,
@@ -225,23 +241,50 @@ class Hovercard implements ChartBehavior {
             (_area.layout.renderArea.y),
         scaleToHostX =
             (_area.theme.padding != null ? _area.theme.padding.start: 0) +
-            (_area.layout.renderArea.x);
+            (_area.layout.renderArea.x),
+        renderAreaHeight = _area.layout.renderArea.height,
+        renderAreaWidth = _area.layout.renderArea.width;
 
-    if (scaleToHostY == null || scaleToHostY < 0) scaleToHostY = 0;
+    if (scaleToHostY < 0) scaleToHostY = 0;
+    if (scaleToHostX < 0) scaleToHostX = 0;
 
-    if (isLeftPrimary) {
-      _hovercardRoot.style
-        ..top = '${x - height / 2 + scaleToHostY}px'
-        ..left = negative
-            ? '${y - width + scaleToHostX}px'
-            : '${y + scaleToHostX}px';
-    } else {
-      _hovercardRoot.style
-        ..top = negative
-            ? '${y + scaleToHostY}px'
-            : '${y - height + scaleToHostY}px'
-        ..left = '${x - width / 2 + scaleToHostX}px';
+    num top = 0, left = 0;
+    for (int i = 0, len = placementOrder.length; i < len; ++i) {
+      String placement = placementOrder.elementAt(i);
+
+      // Place the popup based on the orientation.
+      if (placement == 'orientation') {
+        placement = isLeftPrimary ? 'right' : 'top';
+      }
+
+      if (placement == 'top') {
+        top = negative ? y + yBand : y - (height + yBand);
+        left = isLeftPrimary ? x - width : x - width / 2;
+      }
+      if (placement == 'right') {
+        top = isLeftPrimary ? y - height / 2 : y;
+        left = negative ? x - (width + xBand) : x + xBand;
+      }
+      if (placement == 'left') {
+        top = isLeftPrimary ? y - height / 2 : y;
+        left = negative ? x + xBand : x - (width + xBand);
+      }
+      if (placement == 'bottom') {
+        top = negative ? y - (height + yBand) : y + yBand;
+        left = isLeftPrimary ? x - width : x - width / 2;
+      }
+
+      // Check if the popup is contained in the RenderArea.
+      // If not, try other placements.
+      if (top > 0 && left > 0 &&
+          top + height < renderAreaHeight && left + width < renderAreaWidth) {
+        break;
+      }
     }
+
+    _hovercardRoot.style
+      ..top = '${top + scaleToHostY}px'
+      ..left = '${left + scaleToHostX}px';
   }
 
   Element _createTooltip(int column, int row) {
