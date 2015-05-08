@@ -11,6 +11,7 @@ part of charted.charts;
 /// Displays tooltip for the values as user moves the mouse pointer over
 /// values in the chart. It displays all the active values in the data row
 /// and use the value in the dimension as the title.
+@deprecated('Use Hovercard')
 class ChartTooltip implements ChartBehavior {
   static const _TOOLTIP_OFFSET = 10;
   final String orientation;
