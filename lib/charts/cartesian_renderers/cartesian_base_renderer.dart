@@ -102,6 +102,27 @@ abstract class CartesianRendererBase implements CartesianRenderer {
   }
 
   @override
+  Extent extentForRow(Iterable row) {
+    assert(series != null && area != null);
+    var measures = series.measures,
+        max = SMALL_INT_MIN,
+        min = SMALL_INT_MAX;
+
+    for (int i = 0, len = measures.length;  i < len; ++i) {
+      var measure = measures.elementAt(i),
+          value = row.elementAt(measure);
+      if (value != null && value.isFinite) {
+        if (value > max) {
+          max = value;
+        } else if (value < min) {
+          min = value;
+        }
+      }
+    }
+    return new Extent(min, max);
+  }
+
+  @override
   Stream<ChartEvent> get onValueMouseOver {
     if (mouseOverController == null) {
       mouseOverController = new StreamController.broadcast(sync: true);

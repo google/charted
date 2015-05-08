@@ -18,6 +18,9 @@ abstract class CartesianRenderer extends ChartRenderer {
   /// Extent has valid values only if [prepare] was already called.
   Extent get extent;
 
+  /// Returns extent of a given row.
+  Extent extentForRow(Iterable row);
+
   /// Indicates if this renderer uses range "band" on any of the dimension
   /// axis. Band is space taken on the dimension axis (if more than a point).
   ///

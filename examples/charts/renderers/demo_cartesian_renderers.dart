@@ -65,7 +65,7 @@ class ChartDemo {
       area.addChartBehavior(behavior);
     });
 
-    area.addChartBehavior(new ChartTooltip());
+    area.addChartBehavior(new Hovercard(isMultiValue: true));
     if (!isLayout) {
       area.addChartBehavior(new AxisLabelTooltip());
     }

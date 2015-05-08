@@ -31,10 +31,6 @@ abstract class CartesianArea implements ChartArea {
   ///   - A bubble-chart has two dimension axis (both 'x' and 'y')
   bool get useTwoDimensionAxes;
 
-  /// When true, [ChartArea] and renderers that support coloring by row,
-  /// use row indices and values to color the chart. Defaults to false.
-  bool get useRowColoring;
-
   /// Scales used to render the measure axis of the given [ChartSeries]. Each
   /// series may use more than one measure scale.
   ///
@@ -85,6 +81,9 @@ abstract class CartesianArea implements ChartArea {
 /// not have any scales and axes.
 ///
 abstract class LayoutArea implements ChartArea {
+  /// Layout area always uses row coloring.
+  bool get useRowColoring => true;
+
   factory LayoutArea(
       dynamic host,
       ChartData data,
@@ -128,6 +127,10 @@ abstract class ChartArea implements ChartAreaBehaviorSource {
   /// True when all components of the chart have been updated - either already
   /// drawn or are in the process of transitioning in.
   bool get isReady;
+
+  /// When true, [ChartArea] and renderers that support coloring by row,
+  /// use row indices and values to color the chart. Defaults to false.
+  bool get useRowColoring;
 
   /// State of the chart - selection and highlights.
   ChartState get state;

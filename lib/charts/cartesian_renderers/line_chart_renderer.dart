@@ -19,6 +19,11 @@ class LineChartRenderer extends CartesianRendererBase {
 
   bool _trackingPointsCreated = false;
   List _xPositions = [];
+
+  // Currently hovered row/column
+  int _savedOverRow = 0;
+  int _savedOverColumn = 0;
+
   int currentDataIndex = -1;
 
   @override
@@ -153,8 +158,9 @@ class LineChartRenderer extends CartesianRendererBase {
         ..['stroke'] = color
         ..['fill'] = color
         ..['data-column'] = '$d';
-    })
+      })
       ..on('click', _mouseClickHandler)
+      ..on('mousemove', _mouseOverHandler)  // Ensure that we update values
       ..on('mouseover', _mouseOverHandler)
       ..on('mouseout', _mouseOutHandler);
 
@@ -250,10 +256,10 @@ class LineChartRenderer extends CartesianRendererBase {
       area.state.preview = int.parse(e.dataset['column']);
     }
     if (mouseOverController != null && e.tagName == 'circle') {
-      var row = int.parse(e.dataset['row']),
-          column = int.parse(e.dataset['column']);
-      mouseOverController.add(
-          new _ChartEvent(scope.event, area, series, row, column, d));
+      _savedOverRow = int.parse(e.dataset['row']);
+      _savedOverColumn = int.parse(e.dataset['column']);
+      mouseOverController.add(new _ChartEvent(
+          scope.event, area, series, _savedOverRow, _savedOverColumn, d));
     }
   }
 
@@ -265,8 +271,8 @@ class LineChartRenderer extends CartesianRendererBase {
     if (mouseOutController != null && e.tagName == 'circle') {
       var row = int.parse(e.dataset['row']),
           column = int.parse(e.dataset['column']);
-      mouseOutController.add(
-          new _ChartEvent(scope.event, area, series, row, column, d));
+      mouseOutController.add(new _ChartEvent(
+          scope.event, area, series, _savedOverRow, _savedOverColumn, d));
     }
   }
 }
