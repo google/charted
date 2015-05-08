@@ -34,10 +34,10 @@ a:link, a:visited {
 }
 
 .chart-host-wrapper {
-  height: 350px;
+  height: 300px;
 }
 .chart-legend-host {
-  max-height: 350px;
+  max-height: 300px;
   overflow-y: auto;
 }
 
