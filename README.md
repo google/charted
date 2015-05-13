@@ -9,7 +9,7 @@ Charted provides
 * An interactive demo 
 
 ## Screenshot of Charted interactive demo
-![Screenshot of Charted interactive demo](charted-demo-screenshot.png)
+![Screenshot of Charted interactive demo](https://raw.githubusercontent.com/google/charted/master/charted-demo-screenshot.png)
 
 ## Get started with the interactive demo
 Get started with Charted by trying out the interactive demo provided with the package. Follow these instructions and get it running locally on your machine (Git and the Dart SDK has to be installed first):
