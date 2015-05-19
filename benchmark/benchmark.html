@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Benchmark</title>
+    <style>
+        @import url(http://fonts.googleapis.com/css?family=Roboto);
+        @import url(../packages/charted/charts/themes/quantum_theme.css);
+
+        body {
+            font-family: Roboto, sans-serif;
+            color: #666;
+            font-size: 13px;
+            padding: 20px;
+        }
+
+        h1, h2, h3, h4, h5 {
+            font-weight: normal;
+            color: #333;
+        }
+
+        h1 {
+            font-size: 20px;
+        }
+
+        .chart-wrapper {
+            padding: 40px;
+            width: 800px;
+        }
+
+        .chart-host-wrapper {
+            height: 300px;
+        }
+        .chart-legend-host {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>Benchmark</h1>
+    <button id="line-button">Line</button>
+    <button id="bar-button">Bar</button>
+    <button id="pie-button">Pie</button>
+    <button id="multi-button">Multi</button>
+    <div class="charts-container"></div>
+
+    <script type="application/dart" src="benchmark.dart"></script>
+    <script type="text/javascript" src="packages/browser/dart.js"></script>
+</body>
+</html>
+
+
