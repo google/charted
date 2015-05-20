@@ -33,7 +33,6 @@ class TreeMapLayout extends HierarchyLayout {
   /// A sticky treemap layout will preserve the relative arrangement of nodes
   /// across transitions. (not yet implemented)
   bool _sticky = false;
-  var _stickies;
 
   /// The available layout size to the specified two-element array of numbers
   /// representing width and height.
@@ -52,7 +51,6 @@ class TreeMapLayout extends HierarchyLayout {
   get sticky => _sticky;
   set sticky (bool sticky) {
     _sticky = sticky;
-    _stickies = null;
   }
 
   // TODO (midoringo): handle the sticky case.
@@ -80,12 +78,9 @@ class TreeMapLayout extends HierarchyLayout {
 
   void _position(List<TreeMapNode> nodes, num length, MutableRect rect,
       bool flush, num area) {
-    var i = -1;
-    var n = nodes.length;
     var x = rect.x;
     var y = rect.y;
     var v = length > 0 ? (area / length).round() : 0;
-    var o;
     if (length == rect.width) {
       if (flush || (v > rect.height)) v = rect.height;
       for (var node in nodes) {
@@ -134,7 +129,7 @@ class TreeMapLayout extends HierarchyLayout {
 
   /// Scales the node base on it's value and the layout area.
   void _scale(List<TreeMapNode> children, var factor) {
-    var child, area;
+    var area;
     for (var child in children) {
       area = child.value * (factor < 0 ? 0 : factor);
       child.area = area <= 0 ? 0 : area;
@@ -167,7 +162,7 @@ class TreeMapLayout extends HierarchyLayout {
       List<TreeMapNode> nodes = [];
       var area = 0;
       var remaining = new List.from(children);
-      var child, score, n,
+      var score, n,
       best = double.INFINITY,
       length = (mode == TREEMAP_LAYOUT_SLICE) ? rect.width :
           (mode == TREEMAP_LAYOUT_DICE) ? rect.height :

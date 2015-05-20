@@ -98,7 +98,7 @@ class _ChartAxis {
       if (width > _theme.verticalAxisWidth) {
         width = _theme.verticalAxisWidth;
         shortenedTicks = formattedTicks.map(
-            (x) => textMetrics.ellipsizeText(x, width.toDouble())).toList();
+            (x) => textMetrics.ellipsizeText(x, width)).toList();
       }
       if (_theme.verticalAxisAutoResize) {
         size.width =
@@ -116,7 +116,6 @@ class _ChartAxis {
     var rect = _area.layout.axes[_orientation],
         renderAreaRect = _area.layout.renderArea,
         range =  _isVertical ? [rect.height, 0] : [0, rect.width],
-        className = (_isVertical ? 'vertical-axis': 'horizontal-axis'),
         innerTickSize = _theme.axisTickSize <= ChartAxisTheme.FILL_RENDER_AREA
             ? 0 - (_isVertical ? renderAreaRect.width : renderAreaRect.height)
             : _theme.axisTickSize,

@@ -238,7 +238,7 @@ class StackedBarChartRenderer extends CartesianRendererBase {
 
   @override
   double get bandInnerPadding =>
-      area.theme.dimensionAxisTheme.axisBandInnerPadding;
+      area.theme.getDimensionAxisTheme().axisBandInnerPadding;
 
   @override
   Extent get extent {

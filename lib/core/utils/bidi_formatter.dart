@@ -21,7 +21,6 @@ fixMarkupDirection(String markup) =>
 String fixSimpleTextDirection(String text) {
   TextDirection direction = estimateDirectionOfSimpleText(text);
   if (TextDirection.RTL == direction) {
-    var result = text;
     var marker = direction == TextDirection.RTL ? Bidi.RLE : Bidi.LRE;
     return "${marker}$text${Bidi.PDF}";
   }

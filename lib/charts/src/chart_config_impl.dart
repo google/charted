@@ -53,8 +53,12 @@ class _ChartConfig extends ChangeNotifier implements ChartConfig {
     notifyChange(const ChartConfigChangeRecord());
 
     // Monitor each series for changes on them
-    values.forEach((item) => _disposer.add(item.changes.listen(
-        (_) => notifyChange(const ChartConfigChangeRecord())), item));
+    values.forEach((item) {
+      if (item is Observable) {
+        _disposer.add(item.changes.listen(
+                (_) => notifyChange(const ChartConfigChangeRecord())), item);
+      }
+    });
 
     // Monitor series for changes.  When the list changes, update
     // subscriptions to ChartSeries changes.

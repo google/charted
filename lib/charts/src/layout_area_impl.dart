@@ -191,8 +191,8 @@ class _LayoutArea implements LayoutArea {
     }
 
     // Compute chart sizes and filter out unsupported series
-    var size = _computeChartSize(),
-        series = config.series.firstWhere(
+    _computeChartSize();
+    var series = config.series.firstWhere(
             (s) => s.renderer.prepare(this, s), orElse: () => null),
         group = visualization.first.querySelector('.series-group');
 

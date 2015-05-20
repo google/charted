@@ -148,7 +148,7 @@ abstract class CartesianRendererBase implements CartesianRenderer {
 
   double get bandInnerPadding => 1.0;
   double get bandOuterPadding =>
-      area.theme.dimensionAxisTheme.axisOuterPadding;
+      area.theme.getDimensionAxisTheme().axisOuterPadding;
 
   void _computeColumnStates() {
     area.config.series.forEach((ChartSeries series) {

@@ -22,7 +22,6 @@ class MouseTracker implements ChartBehavior {
   bool _showing;
 
   Element _lower;
-  Element _upper;
 
   StreamSubscription _mouseMoveSubscription;
   StreamSubscription _mouseInSubscription;
@@ -31,7 +30,6 @@ class MouseTracker implements ChartBehavior {
   void init(ChartArea area, Selection upper, Selection lower) {
     _area = area;
     _lower = lower.first;
-    _upper = upper.first;
 
     if (area is CartesianArea) {
       _mouseInSubscription = _area.onMouseOver.listen(_show);
