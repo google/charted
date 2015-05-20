@@ -36,9 +36,6 @@ class AnimationTimer extends LinkedListEntry {
   /// Start time of the animation.
   final int time;
 
-  /// Indicates if the timer is finished (the callback returned true)
-  bool _finished = false;
-
   /// Schedule a new [callback] to be called [delay] micro-seconds after
   /// [then] micro-seconds since epoch.
   AnimationTimer(this.callback, { int delay: 0, int then: null })

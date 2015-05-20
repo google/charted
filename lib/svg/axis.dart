@@ -100,7 +100,7 @@ class SvgAxis {
 
     var enter = ticks.enter.appendWithCallback((d, i, e) {
       var group = Namespace.createChildElement('g', e)
-        ..classes.add('tick')
+        ..attributes['class'] = 'tick'
         ..append(Namespace.createChildElement('line',  e))
         ..append(Namespace.createChildElement('text', e)
             ..attributes['dy'] =
@@ -119,9 +119,9 @@ class SvgAxis {
       bool isRTLText = false; // FIXME(prsd)
 
       if (isHorizontal) {
-        line.attributes['y2'] = (sign * innerTickSize).toString();
+        line.attributes['y2'] = '${sign * innerTickSize}';
         text.attributes['y'] =
-            (sign * (math.max(innerTickSize, 0) + tickPadding)).toString();
+            '${sign * (math.max(innerTickSize, 0) + tickPadding)}';
 
         if (axisTicksBuilder.rotation != 0) {
           text.attributes
@@ -130,16 +130,16 @@ class SvgAxis {
             ..['text-anchor'] = isRTL ? 'end' : 'start';
         } else {
           text.attributes
-            ..['transform'] = ''
+            ..remove('transform')
             ..['text-anchor'] = 'middle';
         }
       } else {
-        line.attributes['x2'] = (sign * innerTickSize).toString();
+        line.attributes['x2'] = '${sign * innerTickSize}';
         text.attributes
-            ..['x'] = '${sign * (math.max(innerTickSize, 0) + tickPadding)}'
-            ..['text-anchor'] = isLeft
-                ? (isRTLText ? 'start' : 'end')
-                : (isRTLText ? 'end' : 'start');
+          ..['x'] = '${sign * (math.max(innerTickSize, 0) + tickPadding)}'
+          ..['text-anchor'] = isLeft
+              ? (isRTLText ? 'start' : 'end')
+              : (isRTLText ? 'end' : 'start');
       }
 
       text.text = fixSimpleTextDirection(ellipsized.elementAt(i));
@@ -182,8 +182,8 @@ class SvgAxis {
         tickSize = sign * outerTickSize,
         range = current.rangeExtent;
     if (path == null) {
-      path = Namespace.createChildElement('path', element);
-      path.classes.add('domain');
+      path = Namespace.createChildElement('path', element)
+          ..setAttribute('class', 'domain');
     }
     path.attributes['d'] = isLeft || isRight
         ? 'M${tickSize},${range.min}H0V${range.max}H${tickSize}'
@@ -208,7 +208,6 @@ class SvgAxis {
 /// SvgAxisTicks provides strategy to handle overlapping ticks on an
 /// axis.  Default implementation assumes that the ticks don't overlap.
 class SvgAxisTicks {
-  bool _ellipsized = false;
   int _rotation = 0;
   Iterable _ticks;
   Iterable _formattedTicks;

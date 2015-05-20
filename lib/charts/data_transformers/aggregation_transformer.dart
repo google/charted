@@ -119,7 +119,6 @@ class AggregationTransformer extends ChangeNotifier
   _generateAggregatedRow(List<Iterable> aggregatedRows, List dimensionValues) {
     var entity = _model.facts(dimensionValues);
     var dimensionLevel = dimensionValues.length - 1;
-    var currentDimValue = dimensionValues.last;
 
     // Dimension is not expanded at this level.  Generate data rows and fill int
     // value base on whether the column is dimension column or facts column.

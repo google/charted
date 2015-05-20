@@ -28,9 +28,7 @@ abstract class HierarchyLayout<T extends HierarchyNode> {
   /// first element its children in depth first order.
   List<T> layout(List rows, int parentColumn, int labelColumn,
       int valueColumn) {
-    Map<int, List> parentMap = {};
     List<HierarchyNode> nodeList = [];
-    var rootRow;
     for (var row in rows) {
       nodeList.add(createNode(row[labelColumn], row[valueColumn], 0));
     }

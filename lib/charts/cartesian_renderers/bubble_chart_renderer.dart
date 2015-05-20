@@ -20,10 +20,6 @@ class BubbleChartRenderer extends CartesianRendererBase {
   @override
   final String name = "bubble-rdr";
 
-  StreamController<ChartEvent> _mouseOverController;
-  StreamController<ChartEvent> _mouseOutController;
-  StreamController<ChartEvent> _mouseClickController;
-
   BubbleChartRenderer({
       this.maxBubbleRadius: 20.0,
       this.alwaysAnimate: false});
@@ -49,7 +45,6 @@ class BubbleChartRenderer extends CartesianRendererBase {
     }
 
     var geometry = area.layout.renderArea,
-        measuresCount = series.measures.length,
         bubbleRadiusScale = area.measureScales(series).first,
         xDimensionScale = area.dimensionScales.first,
         yDimensionScale = area.dimensionScales.last,
@@ -110,7 +105,8 @@ class BubbleChartRenderer extends CartesianRendererBase {
   double get bandInnerPadding => 1.0;
 
   @override
-  double get bandOuterPadding => area.theme.dimensionAxisTheme.axisOuterPadding;
+  double get bandOuterPadding =>
+      area.theme.getDimensionAxisTheme().axisOuterPadding;
 
   @override
   Extent get extent {
