@@ -6,7 +6,7 @@ Charted provides
 * A selection API similar to D3.js
 * Visualization utilities ported from D3.js
 * An easy-to-use API to create charts including an SVG implementation based on the Selection API.
-* An interactive demo 
+* An interactive demo
 
 ## Screenshot of Charted interactive demo
 ![Screenshot of Charted interactive demo](https://raw.githubusercontent.com/google/charted/master/charted-demo-screenshot.png)
@@ -16,6 +16,5 @@ Get started with Charted by trying out the interactive demo provided with the pa
 ```bash
 git clone git@github.com:google/charted.git
 cd charted
-pub serve example
+pub serve examples
 ```
-
