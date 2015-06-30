@@ -92,7 +92,8 @@ class ChartTooltip implements ChartBehavior {
     var activeMeasures = [];
     if (showSelectedMeasure) {
       activeMeasures.addAll(_state.selection);
-      activeMeasures.add(_state.preview);
+      activeMeasures.add(_state.preview != null ? _state.preview :
+          _state.hovered.first);
       if (activeMeasures.isEmpty) {
         for (var series in _area.config.series) {
           activeMeasures.addAll(series.measures);
@@ -109,7 +110,7 @@ class ChartTooltip implements ChartBehavior {
     items.enter.append('div')
         ..classed('tooltip-item')
         ..classedWithCallback('active', (d, i, c) =>
-            !showSelectedMeasure && (i == e.column));
+            !showSelectedMeasure && (d == e.column));
 
     // Display the label for the currently active series.
     var tooltipItems = _tooltipRoot.selectAll('.tooltip-item');

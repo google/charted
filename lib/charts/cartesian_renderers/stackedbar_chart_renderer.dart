@@ -298,7 +298,8 @@ class StackedBarChartRenderer extends CartesianRendererBase {
     var rowStr = e.parent.dataset['row'];
     var row = rowStr != null ? int.parse(rowStr) : null;
     controller.add(new _ChartEvent(
-        scope.event, area, series, row, _reverseIdx(index), data));
+        scope.event, area, series, row,
+        series.measures.elementAt(_reverseIdx(index)), data));
   }
 
   // Stacked bar chart renders items from bottom to top (first measure is at
