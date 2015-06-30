@@ -59,14 +59,17 @@ class AxisLabelTooltip implements ChartBehavior {
     _tooltipRoot.style
       ..left = '${position.x}px'
       ..top = '${position.y}px'
-      ..opacity = '1';
+      ..opacity = '1'
+      ..visibility = 'visible';
   }
 
   void _handleMouseOut(MouseEvent e) {
     Element target = e.target;
     if (!target.dataset.containsKey('detail')) return;
     if (_tooltipRoot != null) {
-      _tooltipRoot.style.opacity = '0';
+      _tooltipRoot.style
+        ..opacity = '0'
+        ..visibility = 'hidden';
     }
   }
 

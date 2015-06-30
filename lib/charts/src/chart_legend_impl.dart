@@ -156,24 +156,26 @@ class _ChartLegend implements ChartLegend {
     // We have elements in the DOM that need updating.
     if (!isFirstRender) {
       rows.each((ChartLegendItem d, i, Element e) {
+        var classes = e.classes;
         if (state != null) {
           if (d.index == state.preview) {
-            e.classes.add('chart-legend-hover');
+            classes.add('chart-legend-hover');
           } else {
-            e.classes.remove('chart-legend-hover');
+            classes.remove('chart-legend-hover');
           }
           if (state.isSelected(d.index)) {
-            e.classes.add('chart-legend-selected');
+            classes.add('chart-legend-selected');
           } else {
-            e.classes.remove('chart-legend-selected');
+            classes.remove('chart-legend-selected');
           }
         }
-        e.classes.addAll(d.series.map((x) => 'type-${x.renderer.name}'));
-        (e.firstChild as Element).style.setProperty('background-color', d.color);
-        (e.children[1]).innerHtml = d.label;
+        classes.addAll(d.series.map((x) => 'type-${x.renderer.name}'));
+
+        (e.children[0]).style.setProperty('background-color', d.color);
+        (e.children[1]).text = d.label;
         if (showValues) {
           (e.lastChild as Element)
-            ..innerHtml = d.value
+            ..text = d.value
             ..style.setProperty('color', d.color);
         }
       });

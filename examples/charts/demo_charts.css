@@ -31,7 +31,14 @@ a:link, a:visited {
 .chart-wrapper {
   padding: 40px;
   width: 800px;
-  height: 400px;
+}
+
+.chart-host-wrapper {
+  height: 300px;
+}
+.chart-legend-host {
+  max-height: 300px;
+  overflow-y: auto;
 }
 
 .chart-controls {

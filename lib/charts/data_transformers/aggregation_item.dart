@@ -62,7 +62,6 @@ class _AggregationItemImpl extends ChangeNotifier implements AggregationItem {
 
   String _key;
 
-  int _length;
   int _factsOffset;
 
   /*
@@ -77,7 +76,6 @@ class _AggregationItemImpl extends ChangeNotifier implements AggregationItem {
     }
 
     // facts + list of items + list of children (drilldown)
-    _length =  model._aggregationTypesCount * model._factFields.length + 2;
     _factsOffset = model._dimToAggrMap[_key];
   }
 

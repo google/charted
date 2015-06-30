@@ -28,16 +28,10 @@ class _ChartEvent implements ChartEvent {
   final num value;
 
   @override
-  num scaledX;
+  num chartX = 0;
 
   @override
-  num scaledY;
-
-  @override
-  num chartX;
-
-  @override
-  num chartY;
+  num chartY = 0;
 
   _ChartEvent(this.source, this.area,
       [this.series, this.row, this.column, this.value]) {
@@ -45,7 +39,9 @@ class _ChartEvent implements ChartEvent {
         left = area.config.isRTL
             ? area.theme.padding.end
             : area.theme.padding.start;
-    chartX = source.client.x - hostRect.left - left;
-    chartY = source.client.y - hostRect.top - area.theme.padding.top;
+    if (source != null) {
+      chartX = source.client.x - hostRect.left - left;
+      chartY = source.client.y - hostRect.top - area.theme.padding.top;
+    }
   }
 }

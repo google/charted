@@ -63,7 +63,7 @@ class LineMarker implements ChartBehavior {
             index == 0 && !_isLeftAxisPrimary,
         scale = _area.dimensionScales.elementAt(index),
         scaled = scale.scale(positions[column]),
-        theme = _area.theme.dimensionAxisTheme,
+        theme = _area.theme.getDimensionAxisTheme(),
         renderAreaRect = _area.layout.renderArea,
         left = renderAreaRect.x,
         right = initial ? left : (left + renderAreaRect.width),

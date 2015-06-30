@@ -65,27 +65,22 @@ class StackedBarChartRenderer extends CartesianRendererBase {
     var bar =
         groups.selectAll('.stack-rdr-bar').dataWithCallback((d, i, c) => d);
 
-    // TODO(prsd): Revisit animation and state tracking.
-    var ic = -1,
-        order = 0,
-        prevOffsetVal = new List();
+    var prevOffsetVal = new List();
 
     // Keep track of "y" values.
     // These are used to insert values in the middle of stack when necessary
     if (animateBarGroups) {
-      prevOffsetVal.add(0);
       bar.each((d, i, e) {
         var offset = e.dataset['offset'],
             offsetVal = offset != null ? int.parse(offset) : 0;
-        if (i > ic) {
-          prevOffsetVal[prevOffsetVal.length - 1] = offsetVal;
-        } else {
+        if (i == 0) {
           prevOffsetVal.add(offsetVal);
+        } else {
+          prevOffsetVal[prevOffsetVal.length - 1] = offsetVal;
         }
-        ic = i;
       });
-      ic = 1000000000;
-    }
+     }
+
 
     var barWidth = dimensionScale.rangeBand - theme.defaultStrokeWidth;
 
@@ -122,6 +117,8 @@ class StackedBarChartRenderer extends CartesianRendererBase {
 
     // Initial "y" position of a bar that is being created.
     // Only used when animateBarGroups is set to true.
+    var ic = 10000000,
+        order = 0;
     var getInitialBarPos = (i) {
       var tempY;
       if (i <= ic && i > 0) {
@@ -160,42 +157,44 @@ class StackedBarChartRenderer extends CartesianRendererBase {
     };
 
     var barsCount = rows.first.length;
-    var buildPath = (d, int i, bool animate) {
+    var buildPath = (d, int i, Element e, bool animate) {
       var position = animate ? getInitialBarPos(i) : getBarPos(d, i),
           length = animate ? 0 : getBarLength(d, i),
           radius = i == barsCount - 1 ? RADIUS : 0,
           path = verticalBars
               ? topRoundedRect(0, position, barWidth, length, radius)
               : rightRoundedRect(position, 0, length, barWidth, radius);
+      e.attributes['data-offset'] = verticalBars ?
+          position.toString() : (position + length).toString();
       return path;
     };
 
     var enter = bar.enter.appendWithCallback((d, i, e) {
-          var rect = Namespace.createChildElement('path', e),
-              measure = series.measures.elementAt(_reverseIdx(i)),
-              row = int.parse(e.dataset['row']),
-              color = colorForValue(measure, row),
-              filter = filterForValue(measure, row),
-              style = stylesForValue(measure, row);
+      var rect = Namespace.createChildElement('path', e),
+          measure = series.measures.elementAt(_reverseIdx(i)),
+          row = int.parse(e.dataset['row']),
+          color = colorForValue(measure, row),
+          filter = filterForValue(measure, row),
+          style = stylesForValue(measure, row);
 
-          rect.classes.add(style.isNotEmpty
-              ? 'stack-rdr-bar ${style.join(" ")}'
-              : 'stack-rdr-bar');
+      rect.classes.add(style.isNotEmpty
+          ? 'stack-rdr-bar ${style.join(" ")}'
+          : 'stack-rdr-bar');
 
-          rect.attributes
-            ..['d'] = buildPath(d == null ? 0 : d, i, animateBarGroups)
-            ..['stroke-width'] = '${theme.defaultStrokeWidth}px'
-            ..['fill'] = color
-            ..['stroke'] = color;
+      rect.attributes
+        ..['d'] = buildPath (d == null ? 0 : d, i, rect, animateBarGroups)
+        ..['stroke-width'] = '${theme.defaultStrokeWidth}px'
+        ..['fill'] = color
+        ..['stroke'] = color;
 
-          if (!isNullOrEmpty(filter)) {
-            rect.attributes['filter'] = filter;
-          }
-          if (!animateBarGroups) {
-            rect.attributes['data-column'] = '$measure';
-          }
-          return rect;
-        });
+      if (!isNullOrEmpty(filter)) {
+        rect.attributes['filter'] = filter;
+      }
+      if (!animateBarGroups) {
+        rect.attributes['data-column'] = '$measure';
+      }
+      return rect;
+    });
 
     enter
       ..on('click', (d, i, e) => _event(mouseClickController, d, i, e))
@@ -225,7 +224,7 @@ class StackedBarChartRenderer extends CartesianRendererBase {
 
       bar.transition()
         ..attrWithCallback('d',
-            (d, i, e) => buildPath(d == null ? 0 : d, i, false));
+            (d, i, e) => buildPath(d == null ? 0 : d, i, e, false));
     }
 
     bar.exit.remove();
@@ -239,7 +238,7 @@ class StackedBarChartRenderer extends CartesianRendererBase {
 
   @override
   double get bandInnerPadding =>
-      area.theme.dimensionAxisTheme.axisBandInnerPadding;
+      area.theme.getDimensionAxisTheme().axisBandInnerPadding;
 
   @override
   Extent get extent {

@@ -114,7 +114,7 @@ class BarChartRenderer extends CartesianRendererBase {
       }
     };
 
-    var enter = bar.enter.appendWithCallback((d, i, e) {
+    bar.enter.appendWithCallback((d, i, e) {
         var rect = Namespace.createChildElement('path', e),
             measure = series.measures.elementAt(i),
             row = int.parse(e.dataset['row']),

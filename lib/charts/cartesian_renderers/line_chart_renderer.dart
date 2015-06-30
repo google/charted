@@ -19,6 +19,11 @@ class LineChartRenderer extends CartesianRendererBase {
 
   bool _trackingPointsCreated = false;
   List _xPositions = [];
+
+  // Currently hovered row/column
+  int _savedOverRow = 0;
+  int _savedOverColumn = 0;
+
   int currentDataIndex = -1;
 
   @override
@@ -76,21 +81,21 @@ class LineChartRenderer extends CartesianRendererBase {
 
     // Add lines and hook up hover and selection events.
     var svgLines = root.selectAll('.line-rdr-line').data(lines);
-    svgLines.enter.append('path')
-        ..each((d, i, e) {
-          e.classes.add('line-rdr-line');
-          e.attributes['fill'] = 'none';
-        });
+    svgLines.enter.append('path').each((d, i, e) {
+      e.attributes['fill'] = 'none';
+    });
 
     svgLines.each((d, i, e) {
       var column = series.measures.elementAt(i),
           color = colorForColumn(column),
           filter = filterForColumn(column),
           styles = stylesForColumn(column);
-      e.classes.addAll(styles);
       e.attributes
         ..['d'] = line.path(d, i, e)
         ..['stroke'] = color
+        ..['class'] = styles.isEmpty
+            ? 'line-rdr-line'
+            : 'line-rdr-line ${styles.join(' ')}'
         ..['data-column'] = '$column';
       if (isNullOrEmpty(filter)) {
         e.attributes.remove('filter');
@@ -153,8 +158,9 @@ class LineChartRenderer extends CartesianRendererBase {
         ..['stroke'] = color
         ..['fill'] = color
         ..['data-column'] = '$d';
-    })
+      })
       ..on('click', _mouseClickHandler)
+      ..on('mousemove', _mouseOverHandler)  // Ensure that we update values
       ..on('mouseover', _mouseOverHandler)
       ..on('mouseout', _mouseOutHandler);
 
@@ -221,8 +227,7 @@ class LineChartRenderer extends CartesianRendererBase {
     _trackingPointsCreated = false;
     _disposer.add(area.onMouseMove.listen((ChartEvent event) {
       if (area.layout.renderArea.contains(event.chartX, event.chartY)) {
-        var renderAreaX = event.chartX - area.layout.renderArea.x,
-            row = _getNearestRowIndex(event.chartX);
+        var row = _getNearestRowIndex(event.chartX);
         window.animationFrame.then((_) => _showTrackingCircles(row));
       } else {
         _hideTrackingCircles();
@@ -250,10 +255,10 @@ class LineChartRenderer extends CartesianRendererBase {
       area.state.preview = int.parse(e.dataset['column']);
     }
     if (mouseOverController != null && e.tagName == 'circle') {
-      var row = int.parse(e.dataset['row']),
-          column = int.parse(e.dataset['column']);
-      mouseOverController.add(
-          new _ChartEvent(scope.event, area, series, row, column, d));
+      _savedOverRow = int.parse(e.dataset['row']);
+      _savedOverColumn = int.parse(e.dataset['column']);
+      mouseOverController.add(new _ChartEvent(
+          scope.event, area, series, _savedOverRow, _savedOverColumn, d));
     }
   }
 
@@ -263,10 +268,8 @@ class LineChartRenderer extends CartesianRendererBase {
       area.state.preview = null;
     }
     if (mouseOutController != null && e.tagName == 'circle') {
-      var row = int.parse(e.dataset['row']),
-          column = int.parse(e.dataset['column']);
-      mouseOutController.add(
-          new _ChartEvent(scope.event, area, series, row, column, d));
+      mouseOutController.add(new _ChartEvent(
+          scope.event, area, series, _savedOverRow, _savedOverColumn, d));
     }
   }
 }

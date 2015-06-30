@@ -17,8 +17,6 @@ class _SelectionImpl implements Selection {
   Iterable<SelectionGroup> groups;
   SelectionScope scope;
 
-  Transition _transition;
-
   /**
    * Creates a new selection.
    *
@@ -440,9 +438,7 @@ class _SelectionImpl implements Selection {
     throw new UnimplementedError();
   }
 
-  Transition transition() {
-    return _transition = new Transition(this);
-  }
+  Transition transition() => new Transition(this);
 }
 
 /* Implementation of [DataSelection] */
@@ -509,8 +505,7 @@ class _EnterSelectionImpl implements EnterSelection {
   }
 
   Selection selectWithCallback(SelectionCallback<Element> fn) {
-    var subgroups = [],
-        gi = 0;
+    var subgroups = [];
     for (int gi = 0, len = groups.length; gi < len; ++gi) {
       final g = groups.elementAt(gi);
       final u = update.groups.elementAt(gi);

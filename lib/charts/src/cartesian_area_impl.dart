@@ -75,7 +75,6 @@ class _CartesianArea implements CartesianArea {
 
   ChartData _data;
   ChartConfig _config;
-  int _dimensionAxesCount;
   bool _autoUpdate = false;
 
   SelectionScope _scope;
@@ -146,9 +145,11 @@ class _CartesianArea implements CartesianArea {
   set data(ChartData value) {
     _data = value;
     _dataEventsDisposer.dispose();
+    _pendingLegendUpdate = true;
 
     if (autoUpdate && _data != null && _data is Observable) {
       _dataEventsDisposer.add((_data as Observable).changes.listen((_) {
+        _pendingLegendUpdate = true;
         draw();
       }));
     }
@@ -276,7 +277,7 @@ class _CartesianArea implements CartesianArea {
         var element = _svg.first,
         defs = Namespace.createChildElement('defs', element)
           ..append(new SvgElement.svg(
-            theme.filters, treeSanitizer: new NullTreeSanitizer()));
+              theme.filters, treeSanitizer: new NullTreeSanitizer()));
         _svg.first.append(defs);
       }
 
@@ -291,8 +292,8 @@ class _CartesianArea implements CartesianArea {
     }
 
     // Compute chart sizes and filter out unsupported series
-    var size = _computeChartSize(),
-        series = config.series.where((s) =>
+    _computeChartSize();
+    var series = config.series.where((s) =>
             _isSeriesValid(s) && s.renderer.prepare(this, s)),
         selection = visualization.selectAll('.series-group').
             data(series, (x) => x.hashCode),
@@ -358,8 +359,8 @@ class _CartesianArea implements CartesianArea {
           ? MEASURE_AXIS_IDS
           : s.measureAxisIds;
       measureAxisIds.forEach((axisId) {
-        var axis = _getMeasureAxis(axisId),  // Creates axis if required
-            users = measureAxisUsers[axisId];
+        _getMeasureAxis(axisId);  // Creates axis if required
+        var users = measureAxisUsers[axisId];
         if (users == null) {
           measureAxisUsers[axisId] = [s];
         } else {
@@ -484,8 +485,7 @@ class _CartesianArea implements CartesianArea {
       axisGroups.enter.append('svg:g');
       axisGroups.each((axisId, index, group) {
         _getMeasureAxis(axisId).draw(group, _scope, preRender: preRender);
-        group.classes.clear();
-        group.classes.addAll(['measure-axis-group','measure-${index}']);
+        group.attributes['class'] = 'measure-axis-group measure-${index}';
       });
       axisGroups.exit.remove();
     }
@@ -498,8 +498,7 @@ class _CartesianArea implements CartesianArea {
       dimAxisGroups.enter.append('svg:g');
       dimAxisGroups.each((column, index, group) {
         _getDimensionAxis(column).draw(group, _scope, preRender: preRender);
-        group.classes.clear();
-        group.classes.addAll(['dimension-axis-group', 'dim-${index}']);
+        group.attributes['class'] = 'dimension-axis-group dim-${index}';
       });
       dimAxisGroups.exit.remove();
     } else {

@@ -8,7 +8,6 @@
 
 library charted.core.text_metrics.segmentation;
 
-import "package:collection/algorithms.dart";
 import "package:charted/core/text_metrics/segmentation_utils.dart";
 import "package:charted/core/text_metrics/segmentation_data.dart";
 

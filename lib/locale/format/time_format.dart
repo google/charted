@@ -104,12 +104,11 @@ class TimeFormat {
         i = -1,
         j = 0,
         n = template.length,
-        formatPad,
         tempChar;
     while (++i < n) {
       if (template[i] == '%') {
         string.add(template.substring(j, i));
-        if ((formatPad = timeFormatPads[tempChar = template[++i]]) != null)
+        if ((timeFormatPads[tempChar = template[++i]]) != null)
           tempChar = template[++i];
         if (timeFormatsTransform[tempChar] != null)
           string.add(timeFormatsTransform[tempChar]);

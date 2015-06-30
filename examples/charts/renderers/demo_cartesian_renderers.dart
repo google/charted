@@ -56,7 +56,7 @@ class ChartDemo {
 
     config.legend = new ChartLegend(chartLegendHost, showValues: isLayout);
     area = isLayout
-        ? new LayoutArea(chartAreaHost, data, config, false, state: state)
+        ? new LayoutArea(chartAreaHost, data, config, state: state)
         : new CartesianArea(chartAreaHost, data, config,
             autoUpdate: false, useTwoDimensionAxes: useTwoDimensions,
             state: state);
@@ -65,7 +65,7 @@ class ChartDemo {
       area.addChartBehavior(behavior);
     });
 
-    area.addChartBehavior(new ChartTooltip());
+    area.addChartBehavior(new Hovercard(isMultiValue: true));
     if (!isLayout) {
       area.addChartBehavior(new AxisLabelTooltip());
     }
