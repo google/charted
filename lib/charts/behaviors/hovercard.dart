@@ -292,9 +292,7 @@ class Hovercard implements ChartBehavior {
   }
 
   Element _createTooltip(int column, int row) {
-    var rows = _area.data.rows,
-        columns = _area.data.columns,
-        element = new Element.div();
+    var element = new Element.div();
     if (_showDimensionTitle) {
       var titleElement = new Element.div()
         ..className = 'hovercard-title'
