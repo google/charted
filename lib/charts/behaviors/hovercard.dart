@@ -56,7 +56,7 @@ class Hovercard implements ChartBehavior {
   bool _isMouseTracking;
   bool _isMultiValue;
   bool _showDimensionTitle;
-  bool _showAllColumnsInData;
+  List<int> _columnsToShow;
 
   Iterable placementOrder =
       const['orientation', 'top', 'right', 'bottom', 'left', 'orientation'];
@@ -72,12 +72,12 @@ class Hovercard implements ChartBehavior {
       bool isMouseTracking,
       bool isMultiValue: false,
       bool showDimensionTitle: false,
-      bool showAllColumnsInData: false,
+      List columnsToShow: const [],
       this.builder}) {
     _isMouseTracking = isMouseTracking;
     _isMultiValue = isMultiValue;
     _showDimensionTitle = showDimensionTitle;
-    _showAllColumnsInData = showAllColumnsInData;
+    _columnsToShow = columnsToShow;
   }
 
   void init(ChartArea area, Selection _, Selection __) {
@@ -325,11 +325,8 @@ class Hovercard implements ChartBehavior {
   Iterable<ChartLegendItem> _getMeasuresData(int column, int row) {
     var measureVals = <ChartLegendItem>[];
 
-    if (_showAllColumnsInData) {
-      var displayedCols = new List.generate(_area.data.columns.length,
-          (i) => i);
-      displayedCols.removeWhere((i) =>_area.config.dimensions.contains(i));
-      displayedCols.forEach((int column) {
+    if (_columnsToShow.isNotEmpty) {
+      _columnsToShow.forEach((int column) {
         measureVals.add(_createHovercardItem(column, row));
       });
     } else if (_isMultiValue) {
@@ -398,9 +395,10 @@ class Hovercard implements ChartBehavior {
       }
     }
     if (formatter == null) {
+      // Formatter function must return String.  Default to identity function
+      // but return the toString() instead.
       formatter = (x) => x.toString();
     }
     return formatter;
   }
 }
-
