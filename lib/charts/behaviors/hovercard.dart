@@ -56,6 +56,7 @@ class Hovercard implements ChartBehavior {
   bool _isMouseTracking;
   bool _isMultiValue;
   bool _showDimensionTitle;
+  Iterable<int> _columnsToShow;
 
   Iterable placementOrder =
       const['orientation', 'top', 'right', 'bottom', 'left', 'orientation'];
@@ -71,10 +72,12 @@ class Hovercard implements ChartBehavior {
       bool isMouseTracking,
       bool isMultiValue: false,
       bool showDimensionTitle: false,
+      List columnsToShow: const [],
       this.builder}) {
     _isMouseTracking = isMouseTracking;
     _isMultiValue = isMultiValue;
     _showDimensionTitle = showDimensionTitle;
+    _columnsToShow = columnsToShow;
   }
 
   void init(ChartArea area, Selection _, Selection __) {
@@ -217,8 +220,7 @@ class Hovercard implements ChartBehavior {
         measurePosition = measureScale.scale(max);
         isNegative = max < 0;
       });
-    }
-    else {
+    } else {
       var value = rowData.elementAt(column);
       isNegative = value < 0;
       measurePosition = measureScale.scale(rowData.elementAt(column));
@@ -321,11 +323,13 @@ class Hovercard implements ChartBehavior {
   }
 
   Iterable<ChartLegendItem> _getMeasuresData(int column, int row) {
-    var rowData = _area.data.rows.elementAt(row),
-        columns =  _area.data.columns,
-        measureVals = <ChartLegendItem>[];
+    var measureVals = <ChartLegendItem>[];
 
-    if (_isMultiValue) {
+    if (_columnsToShow.isNotEmpty) {
+      _columnsToShow.forEach((int column) {
+        measureVals.add(_createHovercardItem(column, row));
+      });
+    } else if (_isMultiValue) {
       var displayedCols = [];
       _area.config.series.forEach((ChartSeries series) {
         series.measures.forEach((int column) {
@@ -334,33 +338,28 @@ class Hovercard implements ChartBehavior {
       });
       displayedCols.sort();
       displayedCols.forEach((int column) {
-        var spec = columns.elementAt(column),
-            label = _area.useRowColoring
-                ? rowData.elementAt(_area.config.dimensions.first)
-                : spec.label,
-            colorKey = _area.useRowColoring ? row : column,
-            formatter = _getFormatterForColumn(column);
-        measureVals.add(
-            new ChartLegendItem(
-                label: label,
-                value: formatter(rowData.elementAt(column)),
-                color: _area.theme.getColorForKey(colorKey)));
+        measureVals.add(_createHovercardItem(column, row));
       });
     } else {
-      var spec = columns.elementAt(column),
-          colorKey = _area.useRowColoring ? row : column,
-          formatter = _getFormatterForColumn(column),
-          label = _area.useRowColoring
-              ? rowData.elementAt(_area.config.dimensions.first)
-              : spec.label;
-      measureVals.add(
-          new ChartLegendItem(
-              label: label,
-              value: formatter(rowData.elementAt(column)),
-              color: _area.theme.getColorForKey(colorKey)));
+      measureVals.add(_createHovercardItem(column, row));
     }
 
     return measureVals;
+  }
+
+  ChartLegendItem _createHovercardItem(int column, int row) {
+    var rowData = _area.data.rows.elementAt(row),
+        columns =  _area.data.columns,
+        spec = columns.elementAt(column),
+        colorKey = _area.useRowColoring ? row : column,
+        formatter = _getFormatterForColumn(column),
+        label = _area.useRowColoring
+            ? rowData.elementAt(_area.config.dimensions.first)
+            : spec.label;
+    return new ChartLegendItem(
+        label: label,
+        value: formatter(rowData.elementAt(column)),
+        color: _area.theme.getColorForKey(colorKey));
   }
 
   String _getDimensionTitle(int column, int row) {
@@ -372,7 +371,8 @@ class Hovercard implements ChartBehavior {
       var count = (_area as CartesianArea).useTwoDimensionAxes ? 2 : 1,
           dimensions = _area.config.dimensions.take(count);
       return dimensions.map(
-          (int c) => _getFormatterForColumn(c)(rowData[c])).join(', ');
+          (int c) =>
+              _getFormatterForColumn(c)(rowData.elementAt(c))).join(', ');
     }
   }
 
@@ -395,9 +395,10 @@ class Hovercard implements ChartBehavior {
       }
     }
     if (formatter == null) {
-      formatter = identityFunction;
+      // Formatter function must return String.  Default to identity function
+      // but return the toString() instead.
+      formatter = (x) => x.toString();
     }
     return formatter;
   }
 }
-
