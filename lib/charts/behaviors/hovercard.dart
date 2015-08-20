@@ -56,7 +56,7 @@ class Hovercard implements ChartBehavior {
   bool _isMouseTracking;
   bool _isMultiValue;
   bool _showDimensionTitle;
-  List<int> _columnsToShow;
+  Iterable<int> _columnsToShow;
 
   Iterable placementOrder =
       const['orientation', 'top', 'right', 'bottom', 'left', 'orientation'];
