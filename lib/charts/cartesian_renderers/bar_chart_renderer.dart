@@ -99,7 +99,7 @@ class BarChartRenderer extends CartesianRendererBase {
           : (d >= 0 ? scaled0 : scaledVal) + strokeWidthOffset;
     };
     var buildPath = (d, int i, bool animate) {
-      if (d == null) return '';
+      if (d == null || d == 0) return '';
       if (verticalBars) {
         var fn = d > 0 ? topRoundedRect : bottomRoundedRect;
         return fn(
