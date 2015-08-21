@@ -114,7 +114,7 @@ class BarChartRenderer extends CartesianRendererBase {
       }
     };
 
-    var enter = bar.enter.appendWithCallback((d, i, e) {
+    bar.enter.appendWithCallback((d, i, e) {
         var rect = Namespace.createChildElement('path', e),
             measure = series.measures.elementAt(i),
             row = int.parse(e.dataset['row']),
@@ -122,10 +122,9 @@ class BarChartRenderer extends CartesianRendererBase {
             filter = filterForValue(measure, row),
             style = stylesForValue(measure, row);
 
-        if (!isNullOrEmpty(style)) {
-          rect.classes.addAll(style);
-        }
-        rect.classes.add('bar-rdr-bar');
+        rect.classes.add(style.isNotEmpty
+            ? 'bar-rdr-bar ${style.join(" ")}'
+            : 'bar-rdr-bar');
 
         rect.attributes
           ..['d'] = buildPath(d, i, animateBarGroups)
