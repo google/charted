@@ -313,7 +313,7 @@ class Hovercard implements ChartBehavior {
             ..append(labelElement)
             ..append(valueElement);
 
-      measureElement.className = _isMultiValue
+      measureElement.className = _columnsToShow.length > 1 || _isMultiValue
           ? 'hovercard-measure hovercard-multi'
           : 'hovercard-measure hovercard-single';
       element.append(measureElement);
@@ -329,7 +329,7 @@ class Hovercard implements ChartBehavior {
       _columnsToShow.forEach((int column) {
         measureVals.add(_createHovercardItem(column, row));
       });
-    } else if (_isMultiValue) {
+    } else if (_columnsToShow.length > 1 || _isMultiValue) {
       var displayedCols = [];
       _area.config.series.forEach((ChartSeries series) {
         series.measures.forEach((int column) {

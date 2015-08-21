@@ -99,7 +99,7 @@ class BarChartRenderer extends CartesianRendererBase {
           : (d >= 0 ? scaled0 : scaledVal) + strokeWidthOffset;
     };
     var buildPath = (d, int i, bool animate) {
-      if (d == null) return '';
+      if (d == null || d == 0) return '';
       if (verticalBars) {
         var fn = d > 0 ? topRoundedRect : bottomRoundedRect;
         return fn(
@@ -114,7 +114,7 @@ class BarChartRenderer extends CartesianRendererBase {
       }
     };
 
-    bar.enter.appendWithCallback((d, i, e) {
+    var enter = bar.enter.appendWithCallback((d, i, e) {
         var rect = Namespace.createChildElement('path', e),
             measure = series.measures.elementAt(i),
             row = int.parse(e.dataset['row']),
@@ -122,9 +122,10 @@ class BarChartRenderer extends CartesianRendererBase {
             filter = filterForValue(measure, row),
             style = stylesForValue(measure, row);
 
-        rect.classes.add(style.isNotEmpty
-            ? 'bar-rdr-bar ${style.join(" ")}'
-            : 'bar-rdr-bar');
+        if (!isNullOrEmpty(style)) {
+          rect.classes.addAll(style);
+        }
+        rect.classes.add('bar-rdr-bar');
 
         rect.attributes
           ..['d'] = buildPath(d, i, animateBarGroups)
