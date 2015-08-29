@@ -160,6 +160,13 @@ abstract class Transition {
    */
   Transition transition();
 
+  /**
+   * Removes all selected elements from the DOM at the end of the transition.
+   * If any of the selected elements have another transition scheduled when
+   * this transition ends, said elements will not be removed.
+   */
+  void remove();
+
   /** Factory method to create an instance of the default implementation */
   factory Transition(Selection selection) => new _TransitionImpl(selection);
 }

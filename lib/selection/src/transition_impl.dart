@@ -7,6 +7,10 @@
  */
 part of charted.selection.transition;
 
+// handle transitions on an element-basis, so we can cancel if another is
+// scheduled
+Map<Element, int> _transitionMap = {};
+
 class _TransitionImpl implements Transition {
   SelectionCallback _delay = (d, i, c) => 0;
   SelectionCallback _duration =
@@ -20,6 +24,7 @@ class _TransitionImpl implements Transition {
   Map<Element, List<Map>> _attrMap = {};
   Map<Element, int> _durationMap = {};
   bool _interrupted = false;
+  bool _remove = false;
   var _timerDelay = 0;
 
   _TransitionImpl(this._selection, [num delay = 0]) {
@@ -98,6 +103,12 @@ class _TransitionImpl implements Transition {
         _attrMap[c] = tweenList;
         _durationMap[c] = _duration(d, i, c);
         _timerMap[new AnimationTimer(_tick, delay: _delay(d, i, c))] = c;
+
+        if(!_transitionMap.containsKey(c)) {
+          _transitionMap[c] = 1;
+        } else {
+          _transitionMap[c]++;
+        }
       });
       return true;
     }, delay: delay);
@@ -132,7 +143,22 @@ class _TransitionImpl implements Transition {
     for (Interpolator tween in _attrMap[activeNode]) {
       tween(ease(t));
     }
-    return (t >= 1) ? true : false;
+
+    if (t >= 1) {
+      if (_remove && _transitionMap[activeNode] == 1) {
+        activeNode.remove();
+      }
+
+      if(_transitionMap[activeNode] > 1) {
+        _transitionMap[activeNode]--;
+      } else {
+        _transitionMap.remove(activeNode);
+      }
+
+      return true;
+    }
+
+    return false;
   }
 
   // Interrupts the transition.
@@ -164,5 +190,9 @@ class _TransitionImpl implements Transition {
     t.ease = ease;
     t.durationWithCallback(_duration);
     return t;
+  }
+
+  void remove() {
+    _remove = true;
   }
 }
