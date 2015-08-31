@@ -1,6 +1,7 @@
 build/
 *.swp
 packages
+.packages
 .pub
 pubspec.lock
 .idea
