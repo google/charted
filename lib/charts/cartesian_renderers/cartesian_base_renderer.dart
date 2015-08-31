@@ -87,8 +87,7 @@ abstract class CartesianRendererBase implements CartesianRenderer {
     for (int i = 0, len = rows.length; i < len; ++i) {
       var row = rows.elementAt(i);
       for (int j = 0, jLen = measures.length; j < jLen; ++j) {
-        var measure = measures.elementAt(j),
-            value = row.elementAt(measure);
+        var value = row.elementAt(measures.elementAt(j));
         if (value != null && value.isFinite) {
           if (value > max) {
             max = value;

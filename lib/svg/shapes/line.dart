@@ -59,7 +59,7 @@ class SvgLine implements SvgShape {
       final d = data.elementAt(i);
       if (isDefined(d, i, e)) {
         points.add(new math.Point(xValueAccessor(d, i), yValueAccessor(d, i)));
-      } else {
+      } else if (points.isNotEmpty){
         segments.write('M${interpolator(points, tension)}');
         points.clear();
       }

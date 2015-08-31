@@ -73,12 +73,12 @@ Iterable ORDINAL_DATA_WITH_BREAKS = const [
     const ['February',  5.61, -16,   8],
     const ['March',     8.26,  36,   9],
     const ['April',   null, null, null],
-    const ['May',      18.50,  77, -46],
+    const ['May',     null, null, null],
     const ['June',     14.61,  60,   8],
     const ['July',      3.26,   9,   6],
     const ['August',    1.46,   9,   3],
     const ['September', 1.46,  13,   9],
-    const ['October',   2.46,  29,   3],
+    const ['October', null, null, null],
     const ['November',  4.46,  33,   9],
     const ['December',  8.46,  19,   3]
 ];
