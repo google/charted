@@ -20,6 +20,7 @@ class PieChartRenderer extends LayoutRendererBase {
   final String otherItemsLabel;
   final String otherItemsColor;
   final showLabels;
+  final sortDataByValue;
 
   @override
   final String name = "pie-rdr";
@@ -31,6 +32,7 @@ class PieChartRenderer extends LayoutRendererBase {
   PieChartRenderer({
       num innerRadiusRatio: 0,
       bool showLabels,
+      this.sortDataByValue: true,
       this.statsMode: STATS_PERCENTAGE,
       this.maxSliceCount: SMALL_INT_MAX,
       this.otherItemsLabel: 'Other',
@@ -60,7 +62,9 @@ class PieChartRenderer extends LayoutRendererBase {
         rows = area.data.rows.where(
             (x) => x != null && x[measure] != null).toList();
 
-    rows.sort((a, b) => b[measure].compareTo(a[measure]));
+    if (sortDataByValue) {
+      rows.sort((a, b) => b[measure].compareTo(a[measure]));
+    }
 
     // Limit items to the passed maxSliceCount
     if (rows.length > maxSliceCount) {
