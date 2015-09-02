@@ -64,8 +64,8 @@ class _LayoutArea implements LayoutArea {
       this.host,
       ChartData data,
       ChartConfig config,
-      bool autoUpdate,
-      this.state) : _autoUpdate = autoUpdate {
+      this._autoUpdate,
+      this.state) {
     assert(host != null);
     assert(isNotInline(host));
 
