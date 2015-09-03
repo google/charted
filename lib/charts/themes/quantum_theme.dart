@@ -80,13 +80,13 @@ class QuantumChartTheme extends ChartTheme {
 
   @override
   ChartAxisTheme getMeasureAxisTheme([Scale _]) =>
-      const _QuantumChartAxisTheme(ChartAxisTheme.FILL_RENDER_AREA, 5);
+      const QuantumChartAxisTheme(ChartAxisTheme.FILL_RENDER_AREA, 5);
 
   @override
   ChartAxisTheme getDimensionAxisTheme([Scale scale]) =>
       scale == null || scale is OrdinalScale
-          ? const _QuantumChartAxisTheme(0, 10)
-          : const _QuantumChartAxisTheme(4, 10);
+          ? const QuantumChartAxisTheme(0, 10)
+          : const QuantumChartAxisTheme(4, 10);
 
   @override
   AbsoluteRect get padding => const AbsoluteRect(10, 40, 0, 0);
@@ -110,7 +110,7 @@ class QuantumChartTheme extends ChartTheme {
   String get defaultFont => '14px Roboto';
 }
 
-class _QuantumChartAxisTheme implements ChartAxisTheme {
+class QuantumChartAxisTheme implements ChartAxisTheme {
   @override
   final axisOuterPadding = 0.1;
 
@@ -144,5 +144,5 @@ class _QuantumChartAxisTheme implements ChartAxisTheme {
   @override
   final ticksFont = '12px Roboto';
 
-  const _QuantumChartAxisTheme(this.axisTickSize, this.axisTickCount);
+  const QuantumChartAxisTheme(this.axisTickSize, this.axisTickCount);
 }

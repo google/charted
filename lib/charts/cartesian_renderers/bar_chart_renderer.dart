@@ -122,9 +122,10 @@ class BarChartRenderer extends CartesianRendererBase {
             filter = filterForValue(measure, row),
             style = stylesForValue(measure, row);
 
-        rect.classes.add(style.isNotEmpty
-            ? 'bar-rdr-bar ${style.join(" ")}'
-            : 'bar-rdr-bar');
+        if (!isNullOrEmpty(style)) {
+          rect.classes.addAll(style);
+        }
+        rect.classes.add('bar-rdr-bar');
 
         rect.attributes
           ..['d'] = buildPath(d, i, animateBarGroups)
