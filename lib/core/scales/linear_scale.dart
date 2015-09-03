@@ -34,7 +34,7 @@ class LinearScale implements Scale {
     _reset();
   }
 
-  void _reset() {
+  void _reset({bool nice: false}) {
     if (nice) {
       _domain = ScaleUtils.nice(
           _domain, ScaleUtils.niceStep(_linearTickRange().step));
@@ -65,7 +65,7 @@ class LinearScale implements Scale {
   @override
   set domain(Iterable value) {
     _domain = value;
-    _reset();
+    _reset(nice: _nice);
   }
 
   @override
@@ -115,7 +115,7 @@ class LinearScale implements Scale {
     assert(value != null);
     if (value != null && _nice != value) {
       _nice = value;
-      _reset();
+      _reset(nice: _nice);
     }
   }
 
