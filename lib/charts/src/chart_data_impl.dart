@@ -8,14 +8,14 @@
 
 part of charted.charts;
 
-class _ChartData extends ChangeNotifier implements ChartData {
+class DefaultChartDataImpl extends ChangeNotifier implements ChartData {
   Iterable<ChartColumnSpec> _columns;
   Iterable<Iterable> _rows;
 
   bool _hasObservableRows = false;
   SubscriptionsDisposer _disposer = new SubscriptionsDisposer();
 
-  _ChartData(Iterable<ChartColumnSpec> columns, Iterable<Iterable> rows) {
+  DefaultChartDataImpl(Iterable<ChartColumnSpec> columns, Iterable<Iterable> rows) {
     this.columns = columns;
     this.rows = rows;
   }

@@ -229,7 +229,7 @@ class BarChartRenderer extends CartesianRendererBase {
     var rowStr = e.parent.dataset['row'];
     var row = rowStr != null ? int.parse(rowStr) : null;
     controller.add(
-        new _ChartEvent(scope.event, area,
+        new DefaultChartEventImpl(scope.event, area,
             series, row, series.measures.elementAt(index), data));
   }
 }

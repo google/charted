@@ -176,7 +176,7 @@ class PieChartRenderer extends LayoutRendererBase {
   void _event(StreamController controller, data, int index, Element e) {
     // Currently, events are not supported on "Other" pie
     if (controller == null || data.data == SMALL_INT_MAX) return;
-    controller.add(new _ChartEvent(
+    controller.add(new DefaultChartEventImpl(
          scope.event, area, series, data.data, series.measures.first, data.value));
   }
 }

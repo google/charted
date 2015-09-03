@@ -65,7 +65,7 @@ abstract class CartesianArea implements ChartArea {
       bool useTwoDimensionAxes: false,
       bool useRowColoring: false,
       ChartState state }) =>
-          new _CartesianArea(host, data, config, autoUpdate,
+          new DefaultCartesianAreaImpl(host, data, config, autoUpdate,
               useTwoDimensionAxes, useRowColoring, state);
 }
 
@@ -90,7 +90,7 @@ abstract class LayoutArea implements ChartArea {
       ChartConfig config, {
       bool autoUpdate: false,
       ChartState state }) =>
-          new _LayoutArea(host, data, config, autoUpdate, state);
+          new DefaultLayoutAreaImpl(host, data, config, autoUpdate, state);
 }
 
 ///

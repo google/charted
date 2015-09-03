@@ -298,7 +298,7 @@ class StackedBarChartRenderer extends CartesianRendererBase {
     if (controller == null) return;
     var rowStr = e.parent.dataset['row'];
     var row = rowStr != null ? int.parse(rowStr) : null;
-    controller.add(new _ChartEvent(
+    controller.add(new DefaultChartEventImpl(
         scope.event, area, series, row,
         series.measures.elementAt(_reverseIdx(index)), data));
   }

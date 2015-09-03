@@ -8,7 +8,7 @@
 
 part of charted.charts;
 
-class _ChartAxis {
+class DefaultChartAxisImpl {
   CartesianArea _area;
   ChartAxisConfig _config;
   ChartAxisTheme _theme;
@@ -25,8 +25,8 @@ class _ChartAxis {
 
   MutableRect size;
 
-  _ChartAxis.withAxisConfig(this._area, this._config);
-  _ChartAxis(this._area);
+  DefaultChartAxisImpl.withAxisConfig(this._area, this._config);
+  DefaultChartAxisImpl(this._area);
 
   void initAxisDomain(int column, bool isDimension, Iterable domain) {
     _columnSpec = _area.data.columns.elementAt(column);

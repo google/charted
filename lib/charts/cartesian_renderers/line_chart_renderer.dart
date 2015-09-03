@@ -246,7 +246,7 @@ class LineChartRenderer extends CartesianRendererBase {
       var row = int.parse(e.dataset['row']),
           column = int.parse(e.dataset['column']);
       mouseClickController.add(
-          new _ChartEvent(scope.event, area, series, row, column, d));
+          new DefaultChartEventImpl(scope.event, area, series, row, column, d));
     }
   }
 
@@ -257,7 +257,7 @@ class LineChartRenderer extends CartesianRendererBase {
     if (mouseOverController != null && e.tagName == 'circle') {
       _savedOverRow = int.parse(e.dataset['row']);
       _savedOverColumn = int.parse(e.dataset['column']);
-      mouseOverController.add(new _ChartEvent(
+      mouseOverController.add(new DefaultChartEventImpl(
           scope.event, area, series, _savedOverRow, _savedOverColumn, d));
     }
   }
@@ -268,7 +268,7 @@ class LineChartRenderer extends CartesianRendererBase {
       area.state.preview = null;
     }
     if (mouseOutController != null && e.tagName == 'circle') {
-      mouseOutController.add(new _ChartEvent(
+      mouseOutController.add(new DefaultChartEventImpl(
           scope.event, area, series, _savedOverRow, _savedOverColumn, d));
     }
   }
