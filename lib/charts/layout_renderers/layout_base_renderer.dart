@@ -118,8 +118,9 @@ abstract class LayoutRendererBase implements LayoutRenderer {
   }
 
   Iterable<String> stylesForValue(int row, { bool isTail: false }) {
+    if (isTail == true) return const[];
     if (_valueStylesCache[row] == null) {
-      if (state == null || isTail == true) {
+      if (state == null) {
         _valueStylesCache[row] = const[];
       } else {
         var styles = [],
