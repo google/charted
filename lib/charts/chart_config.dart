@@ -67,7 +67,7 @@ abstract class ChartConfig {
 
   /// Factory method to create an instance of the default implementation
   factory ChartConfig(
-      Iterable<ChartSeries> series, Iterable<int> dimensions) = _ChartConfig;
+      Iterable<ChartSeries> series, Iterable<int> dimensions) = DefaultChartConfigImpl;
 }
 
 ///

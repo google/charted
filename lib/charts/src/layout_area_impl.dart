@@ -10,7 +10,7 @@ part of charted.charts;
 
 /// Creates an empty area and provides generic API for interaction with layout
 /// based charts.
-class _LayoutArea implements LayoutArea {
+class DefaultLayoutAreaImpl implements LayoutArea {
   /// Disposer for all change stream subscriptions related to data.
   final _dataEventsDisposer = new SubscriptionsDisposer();
 
@@ -60,7 +60,7 @@ class _LayoutArea implements LayoutArea {
   StreamController<ChartEvent> _valueMouseOutController;
   StreamController<ChartEvent> _valueMouseClickController;
 
-  _LayoutArea(
+  DefaultLayoutAreaImpl(
       this.host,
       ChartData data,
       ChartConfig config,
@@ -265,27 +265,27 @@ class _LayoutArea implements LayoutArea {
   @override
   Stream<ChartEvent> get onMouseUp =>
       host.onMouseUp
-          .map((MouseEvent e) => new _ChartEvent(e, this));
+          .map((MouseEvent e) => new DefaultChartEventImpl(e, this));
 
   @override
   Stream<ChartEvent> get onMouseDown =>
       host.onMouseDown
-          .map((MouseEvent e) => new _ChartEvent(e, this));
+          .map((MouseEvent e) => new DefaultChartEventImpl(e, this));
 
   @override
   Stream<ChartEvent> get onMouseOver =>
       host.onMouseOver
-          .map((MouseEvent e) => new _ChartEvent(e, this));
+          .map((MouseEvent e) => new DefaultChartEventImpl(e, this));
 
   @override
   Stream<ChartEvent> get onMouseOut =>
       host.onMouseOut
-          .map((MouseEvent e) => new _ChartEvent(e, this));
+          .map((MouseEvent e) => new DefaultChartEventImpl(e, this));
 
   @override
   Stream<ChartEvent> get onMouseMove =>
       host.onMouseMove
-          .map((MouseEvent e) => new _ChartEvent(e, this));
+          .map((MouseEvent e) => new DefaultChartEventImpl(e, this));
 
   @override
   Stream<ChartEvent> get onValueClick {

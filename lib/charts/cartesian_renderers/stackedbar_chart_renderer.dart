@@ -39,7 +39,7 @@ class StackedBarChartRenderer extends CartesianRendererBase {
     var rows = new List()
       ..addAll(area.data.rows.map((e) =>
           new List.generate(measuresCount,
-              (i) => e[series.measures.elementAt(_reverseIdx(i))])));
+              (i) => e.elementAt(series.measures.elementAt(_reverseIdx(i))))));
 
     var dimensionVals = area.data.rows.map(
         (row) => row.elementAt(area.config.dimensions.first)).toList();
@@ -177,9 +177,10 @@ class StackedBarChartRenderer extends CartesianRendererBase {
           filter = filterForValue(measure, row),
           style = stylesForValue(measure, row);
 
-      rect.classes.add(style.isNotEmpty
-          ? 'stack-rdr-bar ${style.join(" ")}'
-          : 'stack-rdr-bar');
+      if (!isNullOrEmpty(style)) {
+        rect.classes.addAll(style);
+      }
+      rect.classes.add('stack-rdr-bar');
 
       rect.attributes
         ..['d'] = buildPath (d == null ? 0 : d, i, rect, animateBarGroups)
@@ -250,7 +251,7 @@ class StackedBarChartRenderer extends CartesianRendererBase {
     rows.forEach((row) {
       var bar = null;
       series.measures.forEach((idx) {
-        var value = row[idx];
+        var value = row.elementAt(idx);
         if (value != null && value.isFinite) {
           if (bar == null) bar = 0;
           bar += value;
@@ -297,7 +298,7 @@ class StackedBarChartRenderer extends CartesianRendererBase {
     if (controller == null) return;
     var rowStr = e.parent.dataset['row'];
     var row = rowStr != null ? int.parse(rowStr) : null;
-    controller.add(new _ChartEvent(
+    controller.add(new DefaultChartEventImpl(
         scope.event, area, series, row,
         series.measures.elementAt(_reverseIdx(index)), data));
   }

@@ -153,6 +153,6 @@ class BubbleChartRenderer extends CartesianRendererBase {
     var rowStr = e.parent.dataset['row'];
     var row = rowStr != null ? int.parse(rowStr) : null;
     controller.add(
-        new _ChartEvent(_scope.event, area, series, row, index, data));
+        new DefaultChartEventImpl(_scope.event, area, series, row, index, data));
   }
 }

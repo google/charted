@@ -8,7 +8,7 @@
 
 part of charted.charts;
 
-class _ChartLegend implements ChartLegend {
+class DefaultChartLegendImpl implements ChartLegend {
   static const CLASS_PREFIX = 'chart-legend';
 
   final Element host;
@@ -23,7 +23,8 @@ class _ChartLegend implements ChartLegend {
 
   Iterable<ChartLegendItem> _items;
 
-  _ChartLegend(this.host, this.visibleItemsCount, this.showValues, String title)
+  DefaultChartLegendImpl(
+      this.host, this.visibleItemsCount, this.showValues, String title)
       : _title = title {
     assert(host != null);
   }

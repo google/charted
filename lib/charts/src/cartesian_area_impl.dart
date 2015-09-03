@@ -11,7 +11,7 @@ part of charted.charts;
 /// Displays either one or two dimension axes and zero or more measure axis.
 /// The number of measure axes displayed is zero in charts like bubble chart
 /// which contain two dimension axes.
-class _CartesianArea implements CartesianArea {
+class DefaultCartesianAreaImpl implements CartesianArea {
   /// Default identifiers used by the measure axes
   static const MEASURE_AXIS_IDS = const['_default'];
 
@@ -32,10 +32,10 @@ class _CartesianArea implements CartesianArea {
   ];
 
   /// Mapping of measure axis Id to it's axis.
-  final _measureAxes = new LinkedHashMap<String, _ChartAxis>();
+  final _measureAxes = new LinkedHashMap<String, DefaultChartAxisImpl>();
 
   /// Mapping of dimension column index to it's axis.
-  final _dimensionAxes = new LinkedHashMap<int, _ChartAxis>();
+  final _dimensionAxes = new LinkedHashMap<int, DefaultChartAxisImpl>();
 
   /// Disposer for all change stream subscriptions related to data.
   final _dataEventsDisposer = new SubscriptionsDisposer();
@@ -92,7 +92,7 @@ class _CartesianArea implements CartesianArea {
   StreamController<ChartEvent> _valueMouseClickController;
   StreamController<ChartArea> _chartAxesUpdatedController;
 
-  _CartesianArea(
+  DefaultCartesianAreaImpl(
       this.host,
       ChartData data,
       ChartConfig config,
@@ -191,12 +191,12 @@ class _CartesianArea implements CartesianArea {
 
   /// Gets measure axis from cache - creates a new instance of _ChartAxis
   /// if one was not already created for the given [axisId].
-  _ChartAxis _getMeasureAxis(String axisId) {
+  DefaultChartAxisImpl _getMeasureAxis(String axisId) {
     _measureAxes.putIfAbsent(axisId, () {
       var axisConf = config.getMeasureAxis(axisId),
           axis = axisConf != null ?
-              new _ChartAxis.withAxisConfig(this, axisConf) :
-                  new _ChartAxis(this);
+              new DefaultChartAxisImpl.withAxisConfig(this, axisConf) :
+                  new DefaultChartAxisImpl(this);
       return axis;
     });
     return _measureAxes[axisId];
@@ -204,12 +204,12 @@ class _CartesianArea implements CartesianArea {
 
   /// Gets a dimension axis from cache - creates a new instance of _ChartAxis
   /// if one was not already created for the given dimension [column].
-  _ChartAxis _getDimensionAxis(int column) {
+  DefaultChartAxisImpl _getDimensionAxis(int column) {
     _dimensionAxes.putIfAbsent(column, () {
       var axisConf = config.getDimensionAxis(column),
           axis = axisConf != null ?
-              new _ChartAxis.withAxisConfig(this, axisConf) :
-                  new _ChartAxis(this);
+              new DefaultChartAxisImpl.withAxisConfig(this, axisConf) :
+                  new DefaultChartAxisImpl(this);
       return axis;
     });
     return _dimensionAxes[column];
@@ -577,27 +577,27 @@ class _CartesianArea implements CartesianArea {
   @override
   Stream<ChartEvent> get onMouseUp =>
       host.onMouseUp
-          .map((MouseEvent e) => new _ChartEvent(e, this));
+          .map((MouseEvent e) => new DefaultChartEventImpl(e, this));
 
   @override
   Stream<ChartEvent> get onMouseDown =>
       host.onMouseDown
-          .map((MouseEvent e) => new _ChartEvent(e, this));
+          .map((MouseEvent e) => new DefaultChartEventImpl(e, this));
 
   @override
   Stream<ChartEvent> get onMouseOver =>
       host.onMouseOver
-          .map((MouseEvent e) => new _ChartEvent(e, this));
+          .map((MouseEvent e) => new DefaultChartEventImpl(e, this));
 
   @override
   Stream<ChartEvent> get onMouseOut =>
       host.onMouseOut
-          .map((MouseEvent e) => new _ChartEvent(e, this));
+          .map((MouseEvent e) => new DefaultChartEventImpl(e, this));
 
   @override
   Stream<ChartEvent> get onMouseMove =>
       host.onMouseMove
-          .map((MouseEvent e) => new _ChartEvent(e, this));
+          .map((MouseEvent e) => new DefaultChartEventImpl(e, this));
 
   @override
   Stream<ChartEvent> get onValueClick {
@@ -678,8 +678,8 @@ class _ChartSeriesInfo {
   CartesianRenderer _renderer;
   SubscriptionsDisposer _disposer = new SubscriptionsDisposer();
 
-  _ChartSeries _series;
-  _CartesianArea _area;
+  DefaultChartSeriesImpl _series;
+  DefaultCartesianAreaImpl _area;
   _ChartSeriesInfo(this._area, this._series);
 
   _click(ChartEvent e) {

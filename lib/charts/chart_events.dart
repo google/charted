@@ -80,6 +80,9 @@ abstract class ChartEvent {
 
   /// Y position relative to the rendered chart
   num get chartY;
+
+  factory ChartEvent(Event source, ChartArea area,
+      [ChartSeries series, int row, int column, value]) = DefaultChartEventImpl;
 }
 
 /// Interface implemented by chart behaviors.

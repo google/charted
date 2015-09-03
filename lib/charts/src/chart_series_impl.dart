@@ -8,7 +8,7 @@
 
 part of charted.charts;
 
-class _ChartSeries extends ChangeNotifier implements ChartSeries {
+class DefaultChartSeriesImpl extends ChangeNotifier implements ChartSeries {
   final String name;
 
   Iterable<String> _measureAxisIds;
@@ -17,7 +17,7 @@ class _ChartSeries extends ChangeNotifier implements ChartSeries {
 
   SubscriptionsDisposer _disposer = new SubscriptionsDisposer();
 
-  _ChartSeries(this.name, Iterable<int> measures, this._renderer,
+  DefaultChartSeriesImpl(this.name, Iterable<int> measures, this._renderer,
       Iterable<String> measureAxisIds) {
     this.measures = measures;
     this.measureAxisIds = measureAxisIds;

@@ -14,7 +14,7 @@ part of charted.charts;
 /// - In [CartesianArea] it is always a column.
 /// - In [LayoutArea] renders choose either columns or rows.
 ///
-class _ChartState extends ChangeNotifier implements ChartState {
+class DefaultChartStateImpl extends ChangeNotifier implements ChartState {
   final bool isMultiSelect;
   final bool isMultiHighlight;
   final bool isSelectOrHighlight;
@@ -31,7 +31,7 @@ class _ChartState extends ChangeNotifier implements ChartState {
   Pair<int,int> _hovered;
   int _preview;
 
-  _ChartState({
+  DefaultChartStateImpl({
     this.supportColumnSelection: true,
     this.supportColumnPreview: true,
     this.supportValueHighlight: true,

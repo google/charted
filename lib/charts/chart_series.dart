@@ -56,7 +56,7 @@ class ChartSeries {
   /// [ChartSeries].
   factory ChartSeries(String name, Iterable<int> measures,
       ChartRenderer renderer, { Iterable<String> measureAxisIds : null }) =>
-          new _ChartSeries(name, measures, renderer, measureAxisIds);
+          new DefaultChartSeriesImpl(name, measures, renderer, measureAxisIds);
 }
 
 

@@ -98,7 +98,7 @@ abstract class ChartState implements ChangeNotifier {
   bool isHighlighted(int column, int row);
 
   factory ChartState({bool isMultiSelect: false}) =>
-      new _ChartState(isMultiSelect: isMultiSelect);
+      new DefaultChartStateImpl(isMultiSelect: isMultiSelect);
 }
 
 ///

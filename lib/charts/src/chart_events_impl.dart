@@ -8,7 +8,7 @@
 
 part of charted.charts;
 
-class _ChartEvent implements ChartEvent {
+class DefaultChartEventImpl implements ChartEvent {
   @override
   final ChartArea area;
 
@@ -33,7 +33,7 @@ class _ChartEvent implements ChartEvent {
   @override
   num chartY = 0;
 
-  _ChartEvent(this.source, this.area,
+  DefaultChartEventImpl(this.source, this.area,
       [this.series, this.row, this.column, this.value]) {
     var hostRect = area.host.getBoundingClientRect(),
         left = area.config.isRTL

@@ -8,7 +8,7 @@
 
 part of charted.charts;
 
-class _ChartConfig extends ChangeNotifier implements ChartConfig {
+class DefaultChartConfigImpl extends ChangeNotifier implements ChartConfig {
   final Map<String,ChartAxisConfig> _measureAxisRegistry = {};
   final Map<int,ChartAxisConfig> _dimensionAxisRegistry = {};
   final SubscriptionsDisposer _disposer = new SubscriptionsDisposer();
@@ -39,7 +39,7 @@ class _ChartConfig extends ChangeNotifier implements ChartConfig {
   @override
   bool switchAxesForRTL = true;
 
-  _ChartConfig(Iterable<ChartSeries> series, Iterable<int> dimensions) {
+  DefaultChartConfigImpl(Iterable<ChartSeries> series, Iterable<int> dimensions) {
     this.series = series;
     this.dimensions = dimensions;
   }
