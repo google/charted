@@ -117,6 +117,8 @@
 }
 
 .chart-legend-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
   max-width: 120px;
   flex: 1;
 }
