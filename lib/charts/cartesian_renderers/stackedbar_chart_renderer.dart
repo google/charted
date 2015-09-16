@@ -17,6 +17,10 @@ class StackedBarChartRenderer extends CartesianRendererBase {
   @override
   final String name = "stack-rdr";
 
+  /// Used to capture the last measure with data in a data row.  This is used
+  /// to decided whether to round the cornor of the bar or not.
+  List<int> _lastMeasureWithData = [];
+
   StackedBarChartRenderer({this.alwaysAnimate: false});
 
   /// Returns false if the number of dimension axes on the area is 0.
@@ -157,13 +161,15 @@ class StackedBarChartRenderer extends CartesianRendererBase {
     };
 
     var barsCount = rows.first.length;
-    var buildPath = (d, int i, Element e, bool animate) {
+    var buildPath = (d, int i, Element e, bool animate, int roundIdx) {
       var position = animate ? getInitialBarPos(i) : getBarPos(d, i),
           length = animate ? 0 : getBarLength(d, i),
-          radius = i == barsCount - 1 ? RADIUS : 0,
-          path = verticalBars
-              ? topRoundedRect(0, position, barWidth, length, radius)
-              : rightRoundedRect(position, 0, length, barWidth, radius);
+          radius = series.measures.elementAt(_reverseIdx(i)) == roundIdx ? RADIUS : 0,
+          path = (d != 0)
+              ? verticalBars
+                  ? topRoundedRect(0, position, barWidth, length, radius)
+                  : rightRoundedRect(position, 0, length, barWidth, radius)
+              : '';
       e.attributes['data-offset'] = verticalBars ?
           position.toString() : (position + length).toString();
       return path;
@@ -175,7 +181,8 @@ class StackedBarChartRenderer extends CartesianRendererBase {
           row = int.parse(e.dataset['row']),
           color = colorForValue(measure, row),
           filter = filterForValue(measure, row),
-          style = stylesForValue(measure, row);
+          style = stylesForValue(measure, row),
+          roundIndex = _lastMeasureWithData[row];
 
       if (!isNullOrEmpty(style)) {
         rect.classes.addAll(style);
@@ -183,7 +190,8 @@ class StackedBarChartRenderer extends CartesianRendererBase {
       rect.classes.add('stack-rdr-bar');
 
       rect.attributes
-        ..['d'] = buildPath (d == null ? 0 : d, i, rect, animateBarGroups)
+        ..['d'] = buildPath (d == null ? 0 : d, i, rect, animateBarGroups,
+            roundIndex)
         ..['stroke-width'] = '${theme.defaultStrokeWidth}px'
         ..['fill'] = color
         ..['stroke'] = color;
@@ -224,8 +232,11 @@ class StackedBarChartRenderer extends CartesianRendererBase {
       });
 
       bar.transition()
-        ..attrWithCallback('d',
-            (d, i, e) => buildPath(d == null ? 0 : d, i, e, false));
+        ..attrWithCallback('d', (d, i, e) {
+          var row = int.parse(e.parent.dataset['row']),
+              roundIndex = _lastMeasureWithData[row];
+          return buildPath(d == null ? 0 : d, i, e, false, roundIndex);
+      });
     }
 
     bar.exit.remove();
@@ -246,7 +257,9 @@ class StackedBarChartRenderer extends CartesianRendererBase {
     assert(area != null && series != null);
     var rows = area.data.rows,
         max = SMALL_INT_MIN,
-        min = SMALL_INT_MAX;
+        min = SMALL_INT_MAX,
+        rowIndex = 0;
+    _lastMeasureWithData = new List.generate(rows.length, (i) => -1);
 
     rows.forEach((row) {
       var bar = null;
@@ -255,10 +268,14 @@ class StackedBarChartRenderer extends CartesianRendererBase {
         if (value != null && value.isFinite) {
           if (bar == null) bar = 0;
           bar += value;
+          if (value != 0 && _lastMeasureWithData[rowIndex] == -1) {
+            _lastMeasureWithData[rowIndex] = idx;
+          }
         }
       });
       if (bar > max) max = bar;
       if (bar < min) min = bar;
+      rowIndex++;
     });
 
     return new Extent(min, max);
