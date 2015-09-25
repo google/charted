@@ -391,7 +391,9 @@ class DefaultCartesianAreaImpl implements CartesianArea {
         // lowest is always 0 unless it is less than 0 - change to lowest when
         // we make use of it.
         domain = highest == lowest
-            ? [0, 1]
+            ? (highest == 0
+                ? [0, 1]
+                : (highest < 0 ? [highest, 0] : [0, highest]))
             : (lowest <= 0 ? [lowest, highest] : [0, highest]);
       }
       axis.initAxisDomain(sampleCol, false, domain);
