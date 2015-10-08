@@ -57,7 +57,7 @@ class TextMetrics {
   double getTextWidth(String text, {String fontStyle}) {
     assert(text.length <= MAX_STRING_LENGTH);
     setFontStyle(fontStyle);
-    return context.measureText(text).width;
+    return context.measureText(text).width.toDouble();
   }
 
   /// Gets length of the longest string in the given [strings].
@@ -67,7 +67,7 @@ class TextMetrics {
     double maxWidth = 0.0;
     for (int i = 0; i < strings.length; ++i) {
       assert(strings.elementAt(i).length <= MAX_STRING_LENGTH);
-      double width = context.measureText(strings.elementAt(i)).width;
+      double width = context.measureText(strings.elementAt(i)).width.toDouble();
       if (width > maxWidth) {
         maxWidth = width;
       }
@@ -82,7 +82,7 @@ class TextMetrics {
   String ellipsizeText(String text, double width, {String fontStyle}) {
     assert(text.length <= MAX_STRING_LENGTH);
     setFontStyle(fontStyle);
-    double computedWidth = context.measureText(text).width;
+    double computedWidth = context.measureText(text).width.toDouble();
     if (computedWidth > width) {
       var indices = graphemeBreakIndices(text);
       var position = 0,
