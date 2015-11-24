@@ -30,8 +30,7 @@ class ObjectFactory<T> {
     if (!_components.containsKey(name)) {
       throw new ArgumentError('Element $name not found in ComponentFactory');
     }
-    var creator = _components[name],
-        instance = creator();
+    var creator = _components[name], instance = creator();
     if (instance == null) {
       throw new ArgumentError('Component $name initialization failed.');
     }

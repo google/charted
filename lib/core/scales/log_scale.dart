@@ -21,9 +21,7 @@ class LogScale implements Scale {
   static const defaultBase = 10;
   static const defaultDomain = const [1, 10];
   static final negativeNumbersRoundFunctionsPair =
-      new RoundingFunctions(
-          (x) => -((-x).floor()),
-          (x) => -((-x).ceil()));
+      new RoundingFunctions((x) => -((-x).floor()), (x) => -((-x).ceil()));
 
   final LinearScale _linear;
 
@@ -43,8 +41,9 @@ class LogScale implements Scale {
         _nice = source._nice,
         _ticksCount = source._ticksCount;
 
-  num _log(x) => (_positive ?
-      math.log(x < 0 ? 0 : x) : -math.log(x > 0 ? 0 : -x)) / math.log(base);
+  num _log(x) =>
+      (_positive ? math.log(x < 0 ? 0 : x) : -math.log(x > 0 ? 0 : -x)) /
+          math.log(base);
 
   num _pow(x) => _positive ? math.pow(base, x) : -math.pow(base, -x);
 

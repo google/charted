@@ -14,11 +14,11 @@ part of charted.locale.format;
  * specifier with the number properties of the locale.
  */
 class NumberFormat {
-
   // [[fill]align][sign][symbol][0][width][,][.precision][type]
-  static RegExp FORMAT_REGEX =
-      new RegExp(r'(?:([^{])?([<>=^]))?([+\- ])?([$#])?(0)?(\d+)?(,)?'
-      r'(\.-?\d+)?([a-z%])?', caseSensitive: false);
+  static RegExp FORMAT_REGEX = new RegExp(
+      r'(?:([^{])?([<>=^]))?([+\- ])?([$#])?(0)?(\d+)?(,)?'
+      r'(\.-?\d+)?([a-z%])?',
+      caseSensitive: false);
 
   String localeDecimal;
   String localeThousands;
@@ -31,24 +31,23 @@ class NumberFormat {
     localeThousands = locale.thousands;
     localeGrouping = locale.grouping;
     localeCurrency = locale.currency;
-    formatGroup = (localeGrouping != null) ? (value) {
-      var i = value.length,
-          t = [],
-          j = 0,
-          g = localeGrouping[0];
-      while (i > 0 && g > 0) {
-        if (i - g >= 0) {
-          i = i - g;
-        } else {
-          g = i;
-          i = 0;
-        }
-        var length = (i + g) < value.length ? (i + g) : value.length;
-        t.add(value.substring(i, length));
-        g = localeGrouping[j = (j + 1) % localeGrouping.length];
-      }
-      return t.reversed.join(localeThousands);
-    } : (x) => x;
+    formatGroup = (localeGrouping != null)
+        ? (value) {
+            var i = value.length, t = [], j = 0, g = localeGrouping[0];
+            while (i > 0 && g > 0) {
+              if (i - g >= 0) {
+                i = i - g;
+              } else {
+                g = i;
+                i = 0;
+              }
+              var length = (i + g) < value.length ? (i + g) : value.length;
+              t.add(value.substring(i, length));
+              g = localeGrouping[j = (j + 1) % localeGrouping.length];
+            }
+            return t.reversed.join(localeThousands);
+          }
+        : (x) => x;
   }
 
   /**
@@ -70,8 +69,8 @@ class NumberFormat {
         zfill = match.group(5),
         width = match.group(6) != null ? int.parse(match.group(6)) : 0,
         comma = match.group(7) != null,
-        precision = match.group(8) != null ?
-            int.parse(match.group(8).substring(1)) : null,
+        precision =
+        match.group(8) != null ? int.parse(match.group(8).substring(1)) : null,
         type = match.group(9),
         scale = 1,
         prefix = '',
@@ -87,16 +86,35 @@ class NumberFormat {
     }
 
     switch (type) {
-      case 'n': comma = true; type = 'g'; break;
-      case '%': scale = 100; suffix = '%'; type = 'f'; break;
-      case 'p': scale = 100; suffix = '%'; type = 'r'; break;
+      case 'n':
+        comma = true;
+        type = 'g';
+        break;
+      case '%':
+        scale = 100;
+        suffix = '%';
+        type = 'f';
+        break;
+      case 'p':
+        scale = 100;
+        suffix = '%';
+        type = 'r';
+        break;
       case 'b':
       case 'o':
       case 'x':
-      case 'X': if (symbol == '#') prefix = '0' + type.toLowerCase(); break;
+      case 'X':
+        if (symbol == '#') prefix = '0' + type.toLowerCase();
+        break;
       case 'c':
-      case 'd': integer = true; precision = 0; break;
-      case 's': scale = -1; type = 'r'; break;
+      case 'd':
+        integer = true;
+        precision = 0;
+        break;
+      case 's':
+        scale = -1;
+        type = 'r';
+        break;
     }
 
     if (symbol == '\$') {
@@ -141,8 +159,8 @@ class NumberFormat {
       // format.  Preserve the existing suffix, if any, such as the
       // currency symbol.
       if (scale < 0) {
-        FormatPrefix unit = new FormatPrefix(value,
-            (precision != null) ? precision : 0);
+        FormatPrefix unit =
+            new FormatPrefix(value, (precision != null) ? precision : 0);
         value = unit.scale(value);
         fullSuffix = unit.symbol + suffix;
       } else {
@@ -168,10 +186,13 @@ class NumberFormat {
         before = formatGroup(before);
       }
 
-      var length = prefix.length + before.length + after.length +
+      var length = prefix.length +
+              before.length +
+              after.length +
               (zcomma ? 0 : negative.length),
-          padding = length < width ? new List.filled(
-              (length = width - length + 1), '').join(fill) : '';
+          padding = length < width
+              ? new List.filled((length = width - length + 1), '').join(fill)
+              : '';
 
       // If the fill character is '0', grouping is applied after padding.
       if (zcomma) {
@@ -185,17 +206,23 @@ class NumberFormat {
       value = before + after;
 
       // Apply any padding and alignment attributes before returning the string.
-      return (align == '<' ? negative + value + padding
-          : align == '>' ? padding + negative + value
-          : align == '^' ? padding.substring(0, length >>= 1) + negative +
-              value + padding.substring(length)
-          : negative + (zcomma ? value : padding + value)) + fullSuffix;
+      return (align == '<'
+              ? negative + value + padding
+              : align == '>'
+                  ? padding + negative + value
+                  : align == '^'
+                      ? padding.substring(0, length >>= 1) +
+                          negative +
+                          value +
+                          padding.substring(length)
+                      : negative + (zcomma ? value : padding + value)) +
+          fullSuffix;
     };
   }
 
   // Gets the format function by given type.
   NumberFormatFunction _getFormatFunction(String type) {
-    switch(type) {
+    switch (type) {
       case 'b':
         return (num x, [int p = 0]) => x.toInt().toRadixString(2);
       case 'c':

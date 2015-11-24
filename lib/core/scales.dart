@@ -106,7 +106,7 @@ abstract class OrdinalScale extends Scale {
   void rangeRoundBands(Iterable range, [double padding, double outerPadding]);
 }
 
-class RoundingFunctions extends Pair<RoundFunction,RoundFunction> {
+class RoundingFunctions extends Pair<RoundFunction, RoundFunction> {
   RoundingFunctions(RoundFunction floor, RoundFunction ceil)
       : super(floor, ceil);
 
@@ -123,10 +123,9 @@ class RoundingFunctions extends Pair<RoundFunction,RoundFunction> {
 /// Namespacing container for utilities used by scales.
 abstract class ScaleUtils {
   /// Utility to return extent of sorted [values].
-  static Extent extent(Iterable values) =>
-      values.first < values.last
-          ? new Extent(values.first, values.last)
-          : new Extent(values.last, values.first);
+  static Extent extent(Iterable values) => values.first < values.last
+      ? new Extent(values.first, values.last)
+      : new Extent(values.last, values.first);
 
   /// Extends [values] to round numbers based on the given pair of
   /// floor and ceil functions.  [functions] is a pair of rounding function
@@ -156,8 +155,8 @@ abstract class ScaleUtils {
   /// @param range          The range of the scale.
   /// @param uninterpolator The uninterpolator for domain values.
   /// @param interpolator   The interpolator for range values.
-  static Function bilinearScale(List domain, List range,
-      Function uninterpolator, Function interpolator) {
+  static Function bilinearScale(
+      List domain, List range, Function uninterpolator, Function interpolator) {
     var u = uninterpolator(domain[0], domain[1]),
         i = interpolator(range[0], range[1]);
     return (x) => i(u(x));
@@ -170,12 +169,9 @@ abstract class ScaleUtils {
   /// @param range          The range of the scale.
   /// @param uninterpolator The uninterpolator for domain values.
   /// @param interpolator   The interpolator for range values.
-  static Function polylinearScale(List domain, List range,
-      Function uninterpolator, Function interpolator) {
-    var u = [],
-        i = [],
-        j = 0,
-        k = math.min(domain.length, range.length) - 1;
+  static Function polylinearScale(
+      List domain, List range, Function uninterpolator, Function interpolator) {
+    var u = [], i = [], j = 0, k = math.min(domain.length, range.length) - 1;
 
     // Handle descending domains.
     if (domain[k] < domain[0]) {

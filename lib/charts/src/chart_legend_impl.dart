@@ -100,7 +100,7 @@ class DefaultChartLegendImpl implements ChartLegend {
     var tooltip = _root.select('.chart-legend-more-tooltip');
     if (tooltip.isEmpty) {
       tooltip = _root.select('.chart-legend-more').append('div')
-          ..classed('chart-legend-more-tooltip');
+        ..classed('chart-legend-more-tooltip');
     }
     tooltip.style('opacity', '1');
 
@@ -110,8 +110,8 @@ class DefaultChartLegendImpl implements ChartLegend {
   /// Creates legend items starting at the given index.
   void _createLegendItems() {
     var state = _area.state,
-        rows = _root.selectAll(
-            '.chart-legend-row').data(_items, (x) => x.hashCode),
+        rows =
+        _root.selectAll('.chart-legend-row').data(_items, (x) => x.hashCode),
         isFirstRender = rows.length == 0;
 
     var enter = rows.enter.appendWithCallback((d, i, e) {
@@ -120,8 +120,10 @@ class DefaultChartLegendImpl implements ChartLegend {
             ..className = 'chart-legend-color',
           label = Namespace.createChildElement('div', e)
             ..className = 'chart-legend-label',
-          value = showValues ? (Namespace.createChildElement('div', e)
-            ..className = 'chart-legend-value') : null;
+          value = showValues
+              ? (Namespace.createChildElement('div', e)
+                ..className = 'chart-legend-value')
+              : null;
 
       var rowStyles = ['chart-legend-row'].toList();
 
@@ -136,8 +138,8 @@ class DefaultChartLegendImpl implements ChartLegend {
             rowStyles.add('chart-legend-selected');
           }
         }
-        rowStyles.addAll(
-            d.series.map((ChartSeries x) => 'type-${x.renderer.name}'));
+        rowStyles
+            .addAll(d.series.map((ChartSeries x) => 'type-${x.renderer.name}'));
 
         color.style.setProperty('background-color', d.color);
         row.append(color);
@@ -186,17 +188,17 @@ class DefaultChartLegendImpl implements ChartLegend {
       enter
         ..on('mouseover', (d, i, e) => state.preview = d.index)
         ..on('mouseout', (d, i, e) {
-            if (state.preview == d.index) {
-              state.preview = null;
-            }
-          })
+          if (state.preview == d.index) {
+            state.preview = null;
+          }
+        })
         ..on('click', (d, i, e) {
-            if (state.isSelected(d.index)) {
-              state.unselect(d.index);
-            } else {
-              state.select(d.index);
-            }
-          });
+          if (state.isSelected(d.index)) {
+            state.unselect(d.index);
+          } else {
+            state.select(d.index);
+          }
+        });
     }
 
     rows.exit.remove();

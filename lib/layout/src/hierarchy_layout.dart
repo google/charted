@@ -26,8 +26,8 @@ abstract class HierarchyLayout<T extends HierarchyNode> {
   /// parentColumn and valueColumn which is used to construct the hierarchy.
   /// The returned list of nodes contains the hierarchy with root being the
   /// first element its children in depth first order.
-  List<T> layout(List rows, int parentColumn, int labelColumn,
-      int valueColumn) {
+  List<T> layout(
+      List rows, int parentColumn, int labelColumn, int valueColumn) {
     List<HierarchyNode> nodeList = [];
     for (var row in rows) {
       nodeList.add(createNode(row[labelColumn], row[valueColumn], 0));
@@ -38,8 +38,9 @@ abstract class HierarchyLayout<T extends HierarchyNode> {
       if (parentRow == ROOT_ROW_INDEX) continue;
       var currentNode = nodeList[i];
       var parentNode = nodeList[parentRow];
-      (parentNode.children.isEmpty) ? parentNode.children = [currentNode] :
-          parentNode.children.add(currentNode);
+      (parentNode.children.isEmpty)
+          ? parentNode.children = [currentNode]
+          : parentNode.children.add(currentNode);
       currentNode.parent = parentNode;
       currentNode.depth = parentNode.depth + 1;
       for (var child in currentNode.children) {
@@ -72,7 +73,6 @@ abstract class HierarchyLayout<T extends HierarchyNode> {
   /// Default sorting method for comparing node a and b.
   static int hierarchySort(HierarchyNode a, HierarchyNode b) =>
       b.value - a.value;
-
 }
 
 abstract class HierarchyNode {

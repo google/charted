@@ -55,16 +55,16 @@ class DefaultChartAxisImpl {
     if (scale is OrdinalScale) {
       var usingBands = _area.dimensionsUsingBands.contains(_column),
           innerPadding = usingBands ? _theme.axisBandInnerPadding : 1.0,
-          outerPadding = usingBands ?
-              _theme.axisBandOuterPadding : _theme.axisOuterPadding;
+          outerPadding =
+          usingBands ? _theme.axisBandOuterPadding : _theme.axisOuterPadding;
 
       // This is because when left axis is primary the first data row should
       // appear on top of the y-axis instead of on bottom.
       if (_area.config.isLeftAxisPrimary) {
         range = range.toList().reversed;
       }
-      (scale as OrdinalScale).
-          rangeRoundBands(range, innerPadding, outerPadding);
+      (scale as OrdinalScale)
+          .rangeRoundBands(range, innerPadding, outerPadding);
     } else {
       scale.range = range;
       scale.ticksCount = _theme.axisTickCount;
@@ -97,8 +97,9 @@ class DefaultChartAxisImpl {
       var width = textMetrics.getLongestTextWidth(formattedTicks).ceil();
       if (width > _theme.verticalAxisWidth) {
         width = _theme.verticalAxisWidth;
-        shortenedTicks = formattedTicks.map(
-            (x) => textMetrics.ellipsizeText(x, width)).toList();
+        shortenedTicks = formattedTicks
+            .map((x) => textMetrics.ellipsizeText(x, width))
+            .toList();
       }
       if (_theme.verticalAxisAutoResize) {
         size.width =
@@ -115,7 +116,7 @@ class DefaultChartAxisImpl {
 
     var rect = _area.layout.axes[_orientation],
         renderAreaRect = _area.layout.renderArea,
-        range =  _isVertical ? [rect.height, 0] : [0, rect.width],
+        range = _isVertical ? [rect.height, 0] : [0, rect.width],
         innerTickSize = _theme.axisTickSize <= ChartAxisTheme.FILL_RENDER_AREA
             ? 0 - (_isVertical ? renderAreaRect.width : renderAreaRect.height)
             : _theme.axisTickSize,
@@ -126,24 +127,25 @@ class DefaultChartAxisImpl {
     element.attributes['transform'] = 'translate(${rect.x}, ${rect.y})';
 
     if (!_isVertical) {
-      _axisTicksPlacement =
-          new RotateHorizontalAxisTicks(rect,
-              _theme.ticksFont, _theme.axisTickSize + _theme.axisTickPadding);
+      _axisTicksPlacement = new RotateHorizontalAxisTicks(
+          rect, _theme.ticksFont, _theme.axisTickSize + _theme.axisTickPadding);
     }
 
     initAxisScale(range);
-    var axis = new SvgAxis(orientation: _orientation,
-        innerTickSize: innerTickSize, outerTickSize: 0,
+    var axis = new SvgAxis(
+        orientation: _orientation,
+        innerTickSize: innerTickSize,
+        outerTickSize: 0,
         tickPadding: _theme.axisTickPadding,
-        tickFormat: _columnSpec.formatter, tickValues: tickValues,
+        tickFormat: _columnSpec.formatter,
+        tickValues: tickValues,
         scale: scale);
 
     axis.create(element, scope,
         axisTicksBuilder: _axisTicksPlacement, isRTL: _area.config.isRTL);
   }
 
-  void clear() {
-  }
+  void clear() {}
 
   // Scale passed through configuration takes precedence
   Scale get scale =>
@@ -175,8 +177,7 @@ class RotateHorizontalAxisTicks implements SvgAxisTicks {
   RotateHorizontalAxisTicks(this.rect, this.ticksFont, this.tickLineLength);
 
   void init(SvgAxis axis) {
-    assert(
-        axis.orientation == ORIENTATION_BOTTOM ||
+    assert(axis.orientation == ORIENTATION_BOTTOM ||
         axis.orientation == ORIENTATION_TOP);
     assert(ticksFont != null);
     ticks = axis.tickValues;
@@ -190,16 +191,16 @@ class RotateHorizontalAxisTicks implements SvgAxisTicks {
 
     // Check if we need rotation
     if (0.90 * allowedWidth < maxLabelWidth) {
-      var rectHeight = tickLineLength > 0
-          ? rect.height - tickLineLength
-          : rect.height;
+      var rectHeight =
+          tickLineLength > 0 ? rect.height - tickLineLength : rect.height;
       rotation = 45;
 
       // Check if we have enough space to render full chart
       allowedWidth = (1.4142 * (rectHeight)) - (textMetrics.fontSize / 1.4142);
       if (maxLabelWidth > allowedWidth) {
-        shortenedTicks = formattedTicks.map(
-            (x) => textMetrics.ellipsizeText(x, allowedWidth)).toList();
+        shortenedTicks = formattedTicks
+            .map((x) => textMetrics.ellipsizeText(x, allowedWidth))
+            .toList();
       }
     }
   }

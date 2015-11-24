@@ -24,8 +24,8 @@ abstract class ChartLegend {
 
   /// Factory to create an instance of the default implementation.
   factory ChartLegend(Element host,
-      {maxItems: 0, title: '', showValues: false}) =>
-          new DefaultChartLegendImpl(host, maxItems, showValues, title);
+          {maxItems: 0, title: '', showValues: false}) =>
+      new DefaultChartLegendImpl(host, maxItems, showValues, title);
 }
 
 ///
@@ -52,6 +52,11 @@ class ChartLegendItem {
   /// List of series that this column is part of
   Iterable<ChartSeries> series;
 
-  ChartLegendItem({this.index, this.color,
-      this.label, this.description, this.series, this.value});
+  ChartLegendItem(
+      {this.index,
+      this.color,
+      this.label,
+      this.description,
+      this.series,
+      this.value});
 }

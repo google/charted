@@ -11,7 +11,7 @@ part of charted.charts;
 /// A behavior that draws marking lines on the chart.
 class LineMarker implements ChartBehavior {
   /// Position of the line markers.
-  final Map<int,dynamic> positions;
+  final Map<int, dynamic> positions;
 
   /// If true, the markers are drawn above the series
   final bool drawAboveSeries;
@@ -37,8 +37,7 @@ class LineMarker implements ChartBehavior {
     _area = area;
     _parent = drawAboveSeries ? upper : lower;
     _isLeftAxisPrimary = _area.config.isLeftAxisPrimary;
-    _axesChangeSubscription =
-        _area.onChartAxesUpdated.listen((_) => _update());
+    _axesChangeSubscription = _area.onChartAxesUpdated.listen((_) => _update());
     _update();
   }
 
@@ -53,14 +52,14 @@ class LineMarker implements ChartBehavior {
     assert(_isDimension(column));
 
     int index;
-    for(index = 0;
-        _area.config.dimensions.elementAt(index) != column; ++index);
+    for (index = 0;
+        _area.config.dimensions.elementAt(index) != column;
+        ++index);
 
     assert(index == 0 || index == 1 && _area.useTwoDimensionAxes);
 
     var dimensionAtBottom =
-            index == 1 && _isLeftAxisPrimary ||
-            index == 0 && !_isLeftAxisPrimary,
+        index == 1 && _isLeftAxisPrimary || index == 0 && !_isLeftAxisPrimary,
         scale = _area.dimensionScales.elementAt(index),
         scaled = scale.scale(positions[column]),
         theme = _area.theme.getDimensionAxisTheme(),
@@ -71,8 +70,7 @@ class LineMarker implements ChartBehavior {
         top = initial ? bottom : renderAreaRect.y;
 
     if (scale is OrdinalScale) {
-      var band = scale.rangeBand,
-          bandPadding = theme.axisBandInnerPadding;
+      var band = scale.rangeBand, bandPadding = theme.axisBandInnerPadding;
       scaled = scaled - band * bandPadding + _area.theme.defaultStrokeWidth;
       band = band + 2 * (band * bandPadding - _area.theme.defaultStrokeWidth);
       return dimensionAtBottom
@@ -89,10 +87,9 @@ class LineMarker implements ChartBehavior {
     throw new UnimplementedError('Measure axis markers');
   }
 
-  String _getMarkerPath(int column, bool initial) =>
-      _isDimension(column)
-          ? _pathForDimension(column, initial)
-          : _pathForMeasure(column, initial);
+  String _getMarkerPath(int column, bool initial) => _isDimension(column)
+      ? _pathForDimension(column, initial)
+      : _pathForMeasure(column, initial);
 
   void _update() {
     if (!_area.isReady) return;
@@ -104,11 +101,11 @@ class LineMarker implements ChartBehavior {
     });
 
     if (animate) {
-      _markers.transition()
+      _markers
+          .transition()
           .attrWithCallback('d', (d, i, e) => _getMarkerPath(d, false));
     }
 
     _markers.exit.remove();
   }
 }
-

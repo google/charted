@@ -117,14 +117,13 @@ abstract class LayoutRendererBase implements LayoutRenderer {
     }
   }
 
-  Iterable<String> stylesForValue(int row, { bool isTail: false }) {
-    if (isTail == true) return const[];
+  Iterable<String> stylesForValue(int row, {bool isTail: false}) {
+    if (isTail == true) return const [];
     if (_valueStylesCache[row] == null) {
       if (state == null) {
-        _valueStylesCache[row] = const[];
+        _valueStylesCache[row] = const [];
       } else {
-        var styles = [],
-            flags = _valueStateCache[row];
+        var styles = [], flags = _valueStateCache[row];
 
         if (flags & ChartState.VAL_HIGHLIGHTED != 0) {
           styles.add(ChartState.VAL_HIGHLIGHTED_CLASS);

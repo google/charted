@@ -54,11 +54,11 @@ class ChartSeries {
 
   /// Factory function to create an instance of internal implementation of
   /// [ChartSeries].
-  factory ChartSeries(String name, Iterable<int> measures,
-      ChartRenderer renderer, { Iterable<String> measureAxisIds : null }) =>
-          new DefaultChartSeriesImpl(name, measures, renderer, measureAxisIds);
+  factory ChartSeries(
+          String name, Iterable<int> measures, ChartRenderer renderer,
+          {Iterable<String> measureAxisIds: null}) =>
+      new DefaultChartSeriesImpl(name, measures, renderer, measureAxisIds);
 }
-
 
 ///
 /// Implementation of [ChangeRecord] that is used to notify changes to

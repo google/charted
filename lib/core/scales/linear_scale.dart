@@ -40,15 +40,15 @@ class LinearScale implements Scale {
           _domain, ScaleUtils.niceStep(_linearTickRange().step));
     }
 
-    Function linear = math.min(_domain.length, _range.length) > 2 ?
-        ScaleUtils.polylinearScale : ScaleUtils.bilinearScale;
+    Function linear = math.min(_domain.length, _range.length) > 2
+        ? ScaleUtils.polylinearScale
+        : ScaleUtils.bilinearScale;
 
     Function uninterpolator = clamp ? uninterpolateClamp : uninterpolateNumber;
     InterpolatorGenerator interpolator =
         _rounded ? createRoundedNumberInterpolator : createNumberInterpolator;
 
-    _invert =
-        linear(_range, _domain, uninterpolator, createNumberInterpolator);
+    _invert = linear(_range, _domain, uninterpolator, createNumberInterpolator);
     _scale = linear(_domain, _range, uninterpolator, interpolator);
   }
 
@@ -136,18 +136,15 @@ class LinearScale implements Scale {
       extent = ScaleUtils.extent(_domain);
     }
     var span = extent.max - extent.min,
-        step =
-            math.pow(10, (math.log(span / _ticksCount) / math.LN10).floor()),
+        step = math.pow(10, (math.log(span / _ticksCount) / math.LN10).floor()),
         err = _ticksCount / span * step;
 
     // Filter ticks to get closer to the desired count.
     if (err <= .15) {
       step *= 10;
-    }
-    else if (err <= .35) {
+    } else if (err <= .35) {
       step *= 5;
-    }
-    else if (err <= .75) {
+    } else if (err <= .75) {
       step *= 2;
     }
 

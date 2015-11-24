@@ -15,7 +15,8 @@ class DefaultChartDataImpl extends ChangeNotifier implements ChartData {
   bool _hasObservableRows = false;
   SubscriptionsDisposer _disposer = new SubscriptionsDisposer();
 
-  DefaultChartDataImpl(Iterable<ChartColumnSpec> columns, Iterable<Iterable> rows) {
+  DefaultChartDataImpl(
+      Iterable<ChartColumnSpec> columns, Iterable<Iterable> rows) {
     this.columns = columns;
     this.rows = rows;
   }
@@ -36,17 +37,18 @@ class DefaultChartDataImpl extends ChangeNotifier implements ChartData {
 
     _rows = value;
     if (_rows is ObservableList) {
-      _disposer.add(
-          (_rows as ObservableList).listChanges.listen(rowsChanged));
+      _disposer.add((_rows as ObservableList).listChanges.listen(rowsChanged));
     }
 
     if (_rows.every((row) => row is ObservableList)) {
       _hasObservableRows = true;
       for (int i = 0; i < _rows.length; i++) {
         var row = _rows.elementAt(i);
-        _disposer.add(row.listChanges.listen((changes)
-            => _valuesChanged(i, changes)), row);
-      };
+        _disposer.add(
+            row.listChanges.listen((changes) => _valuesChanged(i, changes)),
+            row);
+      }
+      ;
     } else if (_rows is Observable) {
       logger.info('List of rows is Observable, but not rows themselves!');
     }
@@ -62,16 +64,17 @@ class DefaultChartDataImpl extends ChangeNotifier implements ChartData {
     changes.forEach((ListChangeRecord change) {
       change.removed.forEach((item) => _disposer.unsubscribe(item));
 
-      for(int i = 0; i < change.addedCount; i++) {
-        var index = change.index + i,
-            row = _rows.elementAt(index);
+      for (int i = 0; i < change.addedCount; i++) {
+        var index = change.index + i, row = _rows.elementAt(index);
 
         if (row is! ObservableList) {
           logger.severe('A non-observable row was added! '
               'Changes on this row will not be monitored');
         } else {
-          _disposer.add(row.listChanges.listen((changes)
-              => _valuesChanged(index, changes)), row);
+          _disposer.add(
+              row.listChanges
+                  .listen((changes) => _valuesChanged(index, changes)),
+              row);
         }
       }
     });
@@ -98,7 +101,7 @@ class DefaultChartDataImpl extends ChangeNotifier implements ChartData {
       }
     }
 
-    var totalLength = 1;  // 1 for the leading '|'.
+    var totalLength = 1; // 1 for the leading '|'.
     for (var length in cellDataLength) {
       // 3 for the leading and trailing ' ' padding and trailing '|'.
       totalLength += length + 3;

@@ -1,15 +1,15 @@
-/*
- * Copyright 2014 Google Inc. All rights reserved.
- *
- * Use of this source code is governed by a BSD-style
- * license that can be found in the LICENSE file or at
- * https://developers.google.com/open-source/licenses/bsd
- */
+//
+// Copyright 2014 Google Inc. All rights reserved.
+//
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file or at
+// https://developers.google.com/open-source/licenses/bsd
+//
 
 part of charted.charts;
 
 class LineChartRenderer extends CartesianRendererBase {
-  final Iterable<int> dimensionsUsingBand = const[];
+  final Iterable<int> dimensionsUsingBand = const [];
   final SubscriptionsDisposer _disposer = new SubscriptionsDisposer();
 
   final bool alwaysAnimate;
@@ -29,16 +29,14 @@ class LineChartRenderer extends CartesianRendererBase {
   @override
   final String name = "line-rdr";
 
-  LineChartRenderer({
-      this.alwaysAnimate: false,
+  LineChartRenderer(
+      {this.alwaysAnimate: false,
       this.trackDataPoints: true,
       this.trackOnDimensionAxis: false,
-      this.quantitativeScaleProximity: 5 });
+      this.quantitativeScaleProximity: 5});
 
-  /*
-   * Returns false if the number of dimension axes on the area is 0.
-   * Otherwise, the first dimension scale is used to render the chart.
-   */
+  // Returns false if the number of dimension axes on the area is 0.
+  // Otherwise, the first dimension scale is used to render the chart.
   @override
   bool prepare(ChartArea area, ChartSeries series) {
     _ensureAreaAndSeries(area, series);
@@ -62,8 +60,9 @@ class LineChartRenderer extends CartesianRendererBase {
 
     // We only support one dimension axes, so we always use the
     // first dimension.
-    var x = area.data.rows.map(
-        (row) => row.elementAt(area.config.dimensions.first)).toList();
+    var x = area.data.rows
+        .map((row) => row.elementAt(area.config.dimensions.first))
+        .toList();
 
     var rangeBandOffset =
         dimensionScale is OrdinalScale ? dimensionScale.rangeBand / 2 : 0;
@@ -152,15 +151,15 @@ class LineChartRenderer extends CartesianRendererBase {
 
     linePoints
       ..each((d, i, e) {
-      var color = colorForColumn(d);
-      e.attributes
-        ..['r'] = '4'
-        ..['stroke'] = color
-        ..['fill'] = color
-        ..['data-column'] = '$d';
+        var color = colorForColumn(d);
+        e.attributes
+          ..['r'] = '4'
+          ..['stroke'] = color
+          ..['fill'] = color
+          ..['data-column'] = '$d';
       })
       ..on('click', _mouseClickHandler)
-      ..on('mousemove', _mouseOverHandler)  // Ensure that we update values
+      ..on('mousemove', _mouseOverHandler) // Ensure that we update values
       ..on('mouseover', _mouseOverHandler)
       ..on('mouseout', _mouseOutHandler);
 
@@ -178,8 +177,7 @@ class LineChartRenderer extends CartesianRendererBase {
       var x = _xPositions[row],
           measureVal = area.data.rows.elementAt(row).elementAt(d);
       if (measureVal != null && measureVal.isFinite) {
-        var color = colorForColumn(d),
-            filter = filterForColumn(d);
+        var color = colorForColumn(d), filter = filterForColumn(d);
         e.attributes
           ..['cx'] = '$x'
           ..['cy'] = '${yScale.scale(measureVal)}'
@@ -216,8 +214,9 @@ class LineChartRenderer extends CartesianRendererBase {
       if (pos < chartX) {
         lastSmallerValue = pos;
       } else {
-        return i == 0 ? 0 :
-          (chartX - lastSmallerValue <= pos - chartX) ? i - 1 : i;
+        return i == 0
+            ? 0
+            : (chartX - lastSmallerValue <= pos - chartX) ? i - 1 : i;
       }
     }
     return _xPositions.length - 1;

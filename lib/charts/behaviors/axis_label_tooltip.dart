@@ -38,10 +38,9 @@ class AxisLabelTooltip implements ChartBehavior {
   void _subscribe() {
     var elements = _area.host.querySelectorAll(_AXIS_SELECTOR);
     _disposer.dispose();
-    _disposer.addAll(
-        elements.map((x) => x.onMouseOver.listen(_handleMouseOver)));
-    _disposer.addAll(
-        elements.map((x) => x.onMouseOut.listen(_handleMouseOut)));
+    _disposer
+        .addAll(elements.map((x) => x.onMouseOver.listen(_handleMouseOver)));
+    _disposer.addAll(elements.map((x) => x.onMouseOut.listen(_handleMouseOut)));
   }
 
   void _handleMouseOver(MouseEvent e) {
@@ -51,10 +50,8 @@ class AxisLabelTooltip implements ChartBehavior {
     ensureRenderAreaRect();
 
     _tooltipRoot.text = target.dataset['detail'];
-    var position = computeTooltipPosition(
-        target.getBoundingClientRect(),
-        _tooltipRoot.getBoundingClientRect(),
-        _renderAreaRect);
+    var position = computeTooltipPosition(target.getBoundingClientRect(),
+        _tooltipRoot.getBoundingClientRect(), _renderAreaRect);
 
     _tooltipRoot.style
       ..left = '${position.x}px'
@@ -94,12 +91,13 @@ class AxisLabelTooltip implements ChartBehavior {
     _renderAreaRect = new math.Rectangle(
         _hostAreaRect.left + layout.chartArea.x + layout.renderArea.x,
         _hostAreaRect.top + layout.chartArea.y + layout.renderArea.y,
-        layout.renderArea.width, layout.renderArea.height);
+        layout.renderArea.width,
+        layout.renderArea.height);
   }
 
   /// Computes the ideal tooltip position based on orientation.
-  math.Point computeTooltipPosition(math.Rectangle label,
-      math.Rectangle tooltip, math.Rectangle renderArea) {
+  math.Point computeTooltipPosition(
+      math.Rectangle label, math.Rectangle tooltip, math.Rectangle renderArea) {
     var x = label.left + (label.width - tooltip.width) / 2,
         y = label.top + (label.height - tooltip.height) / 2;
 

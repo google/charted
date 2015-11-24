@@ -86,7 +86,9 @@ class TextMetrics {
     if (computedWidth > width) {
       var indices = graphemeBreakIndices(text);
       var position = 0,
-          min = 0, max = indices.length - 1, mid,
+          min = 0,
+          max = indices.length - 1,
+          mid,
           ellipsis = context.measureText('…').width;
       width = width - ellipsis;
       while (max >= min) {
@@ -108,6 +110,5 @@ class TextMetrics {
   /// if it had to be truncated.
   /// Calling this method may force a layout on the document. For better
   /// performance, use [TextMetrics.ellipsizeText].
-  static ellipsizeTextElement() {
-  }
+  static ellipsizeTextElement() {}
 }

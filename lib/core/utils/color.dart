@@ -17,9 +17,9 @@ class Color {
   int _b = 0;
 
   // Internal representation of HSL
-  int _h = 0;   // 0 <= _h <= 360
-  int _s = 0;   // 0 <= _s <= 100
-  int _l = 0;   // 0 <= _l <= 100
+  int _h = 0; // 0 <= _h <= 360
+  int _s = 0; // 0 <= _s <= 100
+  int _l = 0; // 0 <= _l <= 100
 
   // Alpha value for this color
   double _a = 0.0;
@@ -33,33 +33,33 @@ class Color {
 
   /// Create an instance using a string representing color in RGB color space.
   /// The input string, [value], can be one of the following formats:
-  /// 
+  ///
   ///    #RGB
   ///    #RRGGBB
-  ///    
+  ///
   ///    rgb(R, G, B)
   ///    rgba(R, G, B, A)
-  /// 
+  ///
   /// R, G and B represent intensities of Red, Green and Blue channels and A
   /// represents the alpha channel (transparency)
-  /// 
+  ///
   /// When using these formats:
   ///     0 <= R,G,B <= 255
   ///     0 <= A <= 1.0
   factory Color.fromRgbString(String value) =>
-      isHexColorString(value) ? _fromHexString(value) : _fromRgbString(value); 
-  
+      isHexColorString(value) ? _fromHexString(value) : _fromRgbString(value);
+
   /// Create an instance from HSL colors.
   Color.fromHsla(this._h, this._s, this._l, this._a) : _hasHslColors = true;
 
   /// Create an instance using a string representing color in HSL color space.
   /// The input string, [value], can be in one of the following formats:
-  /// 
+  ///
   ///     hsl(H, S%, L%)
   ///     hsla(H, S%, L%, A)
-  /// 
+  ///
   /// H, S and L represent Hue, Saturation and Luminosity respectively.
-  /// 
+  ///
   /// When using these formats:
   ///     0 <= H <= 360
   ///     0 <= S,L <= 100
@@ -249,12 +249,12 @@ class Color {
 
   /// Tests if [str] is a color represented by hsl() or hsla()
   static bool isHslColorString(String str) => hslaColorRegExp.hasMatch(str);
-  
+
   /// Create an instance using the passed RGB string.
   static Color _fromRgbString(String value) {
-    int pos =
-        (value.startsWith('rgb(') || value.startsWith('RGB(')) ? 4 :
-        (value.startsWith('rgba(') || value.startsWith('RGBA(')) ? 5 : 0;
+    int pos = (value.startsWith('rgb(') || value.startsWith('RGB('))
+        ? 4
+        : (value.startsWith('rgba(') || value.startsWith('RGBA(')) ? 5 : 0;
     if (pos != 0) {
       final params = value.substring(pos, value.length - 1).split(',');
       int r = int.parse(params[0]),
@@ -278,10 +278,9 @@ class Color {
     if (hex.length == 3) {
       for (final char in hex) {
         final val = int.parse(char, radix: 16);
-        rgb = (rgb * 16 + val ) * 16 + val;
+        rgb = (rgb * 16 + val) * 16 + val;
       }
-    }
-    else if (hex.length == 6){
+    } else if (hex.length == 6) {
       rgb = int.parse(hex, radix: 16);
     }
 
@@ -291,9 +290,9 @@ class Color {
 
   /// Create an instance using the passed HSL color string.
   static Color _fromHslString(String value) {
-    int pos =
-        (value.startsWith('hsl(') || value.startsWith('HSL(')) ? 4 :
-        (value.startsWith('hsla(') || value.startsWith('HSLA(')) ? 5 : 0;
+    int pos = (value.startsWith('hsl(') || value.startsWith('HSL('))
+        ? 4
+        : (value.startsWith('hsla(') || value.startsWith('HSLA(')) ? 5 : 0;
     if (pos != 0) {
       final params = value.substring(pos, value.length - 1).split(',');
       int h = int.parse(params[0]),

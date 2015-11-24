@@ -13,7 +13,7 @@ BidiFormatter _bidiFormatter = new BidiFormatter.LTR();
 
 /// Fix direction of HTML using <span dir="..."> for RTL when required
 fixMarkupDirection(String markup) =>
-    _bidiFormatter.wrapWithSpan(markup, isHtml:true);
+    _bidiFormatter.wrapWithSpan(markup, isHtml: true);
 
 /// Fix direction of text using unicode markers for RTL when required
 /// This is a simplified version of BidiFormatter.wrapWithUnicode that

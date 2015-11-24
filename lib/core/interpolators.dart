@@ -7,12 +7,12 @@
 //
 
 /// A collection of interpolator generators and easing functions.
-/// 
+///
 /// Interpolators provide intermediate state when transitioning from one
 /// frame to another in an animation.
-/// 
-/// Easing functions indicate progress of an animation to interpolators. 
-/// 
+///
+/// Easing functions indicate progress of an animation to interpolators.
+///
 /// Currently provides interpolator for various types, including basic types
 /// like numbers, colors, strings, transforms and for iterables.
 library charted.core.interpolators;

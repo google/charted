@@ -1,59 +1,44 @@
-/*
- * Copyright 2014 Google Inc. All rights reserved.
- *
- * Use of this source code is governed by a BSD-style
- * license that can be found in the LICENSE file or at
- * https://developers.google.com/open-source/licenses/bsd
- */
+//
+// Copyright 2014 Google Inc. All rights reserved.
+//
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file or at
+// https://developers.google.com/open-source/licenses/bsd
+//
 
 part of charted.charts;
 
-/**
- * AggregationItem is created by [AggregationModel] to make access to facts
- * observable. Users must use AggregationItem.isValid before trying to access
- * the aggregations.
- */
+/// AggregationItem is created by [AggregationModel] to make access to facts
+/// observable. Users must use AggregationItem.isValid before trying to access
+/// the aggregations.
 abstract class AggregationItem extends ChangeNotifier {
-  /**
-   * List of dimension fields in effect
-   */
+  /// List of dimension fields in effect
   List<String> dimensions;
 
-  /**
-   * Check if this entity is valid.
-   * Currently the only case where an entity becomes invalid
-   * is when a groupBy is called on the model.
-   */
+  /// Check if this entity is valid.
+  /// Currently the only case where an entity becomes invalid
+  /// is when a groupBy is called on the model.
   bool get isValid;
 
-  /**
-   * Fetch the fact from AggregationModel and return it
-   * Currently takes keys in the form of "sum(spend)", where sum is
-   * the aggregation type and spend is fact's field name.
-   *
-   * Currently, "sum", "count", "min", "max", "avg", "valid" and "avgOfValid"
-   * are supported as the operators.
-   */
+  /// Fetch the fact from AggregationModel and return it
+  /// Currently takes keys in the form of "sum(spend)", where sum is
+  /// the aggregation type and spend is fact's field name.
+  ///
+  /// Currently, "sum", "count", "min", "max", "avg", "valid" and "avgOfValid"
+  /// are supported as the operators.
+  operator [](String key);
 
-  operator[](String key);
-
-  /**
-   * Check if we support a given key.
-   */
+  /// Check if we support a given key.
   bool containsKey(String key);
 
-  /**
-   * List of valid field names for this entity.
-   * It's the combined list of accessors for individual items, items in
-   * the next dimension and all possible facts defined on the view.
-   */
+  /// List of valid field names for this entity.
+  /// It's the combined list of accessors for individual items, items in
+  /// the next dimension and all possible facts defined on the view.
   Iterable<String> get fieldNames;
 }
 
-/*
- * Implementation of AggregationItem
- * Instances of _AggregationItemImpl are created only by AggregationModel
- */
+/// Implementation of AggregationItem
+/// Instances of _AggregationItemImpl are created only by AggregationModel
 class _AggregationItemImpl extends ChangeNotifier implements AggregationItem {
   static final List<String> derivedAggregationTypes = ['count', 'avg'];
 
@@ -64,9 +49,7 @@ class _AggregationItemImpl extends ChangeNotifier implements AggregationItem {
 
   int _factsOffset;
 
-  /*
-   * Currently entities are created only when they have valid aggregations
-   */
+  /// Currently entities are created only when they have valid aggregations
   _AggregationItemImpl(this.model, this.dimensions, this._key) {
     if (model == null) {
       throw new ArgumentError('Model cannot be null');
@@ -79,23 +62,19 @@ class _AggregationItemImpl extends ChangeNotifier implements AggregationItem {
     _factsOffset = model._dimToAggrMap[_key];
   }
 
-  /**
-   * _dimToAggrMap got updated on the model, update ourselves accordingly
-   */
+  /// _dimToAggrMap got updated on the model, update ourselves accordingly
   void update() {
     _factsOffset = model._dimToAggrMap[_key];
   }
 
-  /*
-   * Mark this entity as invalid.
-   */
+  /// Mark this entity as invalid.
   void clear() {
     _factsOffset = null;
   }
 
   bool get isValid => _factsOffset != null;
 
-  dynamic operator[](String key) {
+  dynamic operator [](String key) {
     if (!isValid) {
       throw new StateError('Entity is not valid anymore');
     }
@@ -116,11 +95,10 @@ class _AggregationItemImpl extends ChangeNotifier implements AggregationItem {
 
     // Try parsing int if every element in factFields is int.
     if (model._factFields.every((e) => e is int)) {
-      factIndex = model._factFields.indexOf(int.parse(factName,
-          onError: (e) {
-            throw new ArgumentError('Type of factFields are int but factName' +
-                'contains non int value');
-          }));
+      factIndex = model._factFields.indexOf(int.parse(factName, onError: (e) {
+        throw new ArgumentError('Type of factFields are int but factName' +
+            'contains non int value');
+      }));
     }
     if (factIndex == -1) {
       throw new ArgumentError('Model not configured for ${factName}');
@@ -128,7 +106,8 @@ class _AggregationItemImpl extends ChangeNotifier implements AggregationItem {
 
     int offset = _factsOffset + factIndex * model._aggregationTypesCount;
     // No items for the corresponding fact, so return null.
-    if (aggrFunc != 'count' && aggrFunc != 'avg' &&
+    if (aggrFunc != 'count' &&
+        aggrFunc != 'avg' &&
         model._aggregations[offset + model._offsetCnt].toInt() == 0) {
       return null;
     }
@@ -136,13 +115,13 @@ class _AggregationItemImpl extends ChangeNotifier implements AggregationItem {
     if (aggrFuncIndex != -1) {
       return model._aggregations[offset + aggrFuncIndex];
     } else if (aggrFunc == 'count') {
-      return model._aggregations[_factsOffset +
-                                 model._offsetFilteredCount].toInt();
+      return model._aggregations[_factsOffset + model._offsetFilteredCount]
+          .toInt();
     } else if (aggrFunc == 'avg') {
       return model._aggregations[offset + model._offsetSum] /
-             model._aggregations[_factsOffset + model._offsetFilteredCount].
-          toInt();
-    }  else if (aggrFunc == 'avgOfValid') {
+          model._aggregations[_factsOffset + model._offsetFilteredCount]
+              .toInt();
+    } else if (aggrFunc == 'avgOfValid') {
       return model._aggregations[offset + model._offsetSum] /
           model._aggregations[offset + model._offsetCnt].toInt();
     }
@@ -198,9 +177,7 @@ class _AggregationItemImpl extends ChangeNotifier implements AggregationItem {
     return model._itemFieldNamesCache;
   }
 
-  /*
-   * TODO(prsd): Implementation of [Observable]
-   */
+  // TODO(prsd): Implementation of [Observable]
   Stream<List<ChangeRecord>> get changes {
     throw new UnimplementedError();
   }
@@ -218,12 +195,12 @@ class _AggregationItemsIterator implements Iterator {
   int _count;
   int _endOfRows;
 
-  _AggregationItemsIterator(this.model, List<String> this.dimensions,
-                           String this.key) {
+  _AggregationItemsIterator(
+      this.model, List<String> this.dimensions, String this.key) {
     int offset = model._dimToAggrMap[key];
     if (offset != null) {
-      int factsEndOffset = offset +
-          model._factFields.length * model._aggregationTypesCount;
+      int factsEndOffset =
+          offset + model._factFields.length * model._aggregationTypesCount;
       _start = model._aggregations[factsEndOffset].toInt();
       _count = model._aggregations[factsEndOffset + 1].toInt();
       _endOfRows = model._rows.length;
@@ -241,15 +218,14 @@ class _AggregationItemsIterator implements Iterator {
       return false;
     }
 
-    /*
-     * If model had a filter applied, then check if _current points to a
-     * filtered-in row, else skip till we find one.
-     * Also, make sure (even if something else went wrong) we don't go
-     * beyond the number of items in the model.
-     */
+    // If model had a filter applied, then check if _current points to a
+    // filtered-in row, else skip till we find one.
+    // Also, make sure (even if something else went wrong) we don't go
+    // beyond the number of items in the model.
     if (this.model._filterResults != null) {
       while ((this.model._filterResults[_current ~/ AggregationModel.SMI_BITS] &
-              (1 << _current % AggregationModel.SMI_BITS)) == 0 &&
+                  (1 << _current % AggregationModel.SMI_BITS)) ==
+              0 &&
           _current <= _endOfRows) {
         ++_current;
       }

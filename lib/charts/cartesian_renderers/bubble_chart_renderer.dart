@@ -1,15 +1,15 @@
-/*
- * Copyright 2014 Google Inc. All rights reserved.
- *
- * Use of this source code is governed by a BSD-style
- * license that can be found in the LICENSE file or at
- * https://developers.google.com/open-source/licenses/bsd
- */
+//
+// Copyright 2014 Google Inc. All rights reserved.
+//
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file or at
+// https://developers.google.com/open-source/licenses/bsd
+//
 
 part of charted.charts;
 
 class BubbleChartRenderer extends CartesianRendererBase {
-  final Iterable<int> dimensionsUsingBand = const[];
+  final Iterable<int> dimensionsUsingBand = const [];
   final double maxBubbleRadius;
   final bool alwaysAnimate;
 
@@ -20,13 +20,9 @@ class BubbleChartRenderer extends CartesianRendererBase {
   @override
   final String name = "bubble-rdr";
 
-  BubbleChartRenderer({
-      this.maxBubbleRadius: 20.0,
-      this.alwaysAnimate: false});
+  BubbleChartRenderer({this.maxBubbleRadius: 20.0, this.alwaysAnimate: false});
 
-  /*
-   * BubbleChart needs two dimension axes.
-   */
+  /// BubbleChart needs two dimension axes.
   @override
   bool prepare(ChartArea area, ChartSeries series) {
     _ensureAreaAndSeries(area, series);
@@ -50,7 +46,7 @@ class BubbleChartRenderer extends CartesianRendererBase {
         yDimensionScale = area.dimensionScales.last,
         theme = area.theme,
         bubbleRadiusFactor =
-            maxBubbleRadius / min([geometry.width, geometry.height]);
+        maxBubbleRadius / min([geometry.width, geometry.height]);
 
     String color(i) => theme.getColorForKey(series.measures.elementAt(i));
 
@@ -79,8 +75,8 @@ class BubbleChartRenderer extends CartesianRendererBase {
     });
     group.exit.remove();
 
-    var measures = group.selectAll('.bubble').dataWithCallback(
-        (d, i, e) => columns[i]);
+    var measures =
+        group.selectAll('.bubble').dataWithCallback((d, i, e) => columns[i]);
 
     measures.enter.append('circle')..classed('bubble');
     measures.each((d, i, e) {
@@ -111,9 +107,7 @@ class BubbleChartRenderer extends CartesianRendererBase {
   @override
   Extent get extent {
     assert(series != null && area != null);
-    var rows = area.data.rows,
-        max = rows[0][series.measures.first],
-        min = max;
+    var rows = area.data.rows, max = rows[0][series.measures.first], min = max;
 
     rows.forEach((row) {
       series.measures.forEach((idx) {
@@ -129,21 +123,19 @@ class BubbleChartRenderer extends CartesianRendererBase {
     var groups = host.querySelectorAll('.bar-rdr-rowgroup');
     if (groups == null || groups.isEmpty) return;
 
-    for(int i = 0, len = groups.length; i < len; ++i) {
+    for (int i = 0, len = groups.length; i < len; ++i) {
       var group = groups.elementAt(i),
           bars = group.querySelectorAll('.bar-rdr-bar'),
           row = int.parse(group.dataset['row']);
 
-      for(int j = 0, barsCount = bars.length; j < barsCount; ++j) {
+      for (int j = 0, barsCount = bars.length; j < barsCount; ++j) {
         var bar = bars.elementAt(j),
             column = int.parse(bar.dataset['column']),
             color = colorForValue(column, row);
 
         bar.classes.removeAll(ChartState.VALUE_CLASS_NAMES);
         bar.classes.addAll(stylesForValue(column, row));
-        bar.style
-          ..setProperty('fill', color)
-          ..setProperty('stroke', color);
+        bar.style..setProperty('fill', color)..setProperty('stroke', color);
       }
     }
   }
@@ -152,7 +144,7 @@ class BubbleChartRenderer extends CartesianRendererBase {
     if (controller == null) return;
     var rowStr = e.parent.dataset['row'];
     var row = rowStr != null ? int.parse(rowStr) : null;
-    controller.add(
-        new DefaultChartEventImpl(_scope.event, area, series, row, index, data));
+    controller.add(new DefaultChartEventImpl(
+        _scope.event, area, series, row, index, data));
   }
 }

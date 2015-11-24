@@ -80,15 +80,15 @@ class _OrdinalScale implements OrdinalScale {
 
   @override
   void rangeBands(Iterable range,
-      [double padding = 0.0, double outerPadding]) =>
-          _setRangeBands(this, range, padding,
-              outerPadding == null ? padding : outerPadding);
+          [double padding = 0.0, double outerPadding]) =>
+      _setRangeBands(
+          this, range, padding, outerPadding == null ? padding : outerPadding);
 
   @override
   void rangeRoundBands(Iterable range,
-      [double padding = 0.0, double outerPadding]) =>
-          _setRangeRoundBands(this, range, padding,
-              outerPadding == null ? padding : outerPadding);
+          [double padding = 0.0, double outerPadding]) =>
+      _setRangeRoundBands(
+          this, range, padding, outerPadding == null ? padding : outerPadding);
 
   @override
   num get rangeBand => _rangeBand;
@@ -121,9 +121,9 @@ class _OrdinalScale implements OrdinalScale {
           stop = range.last,
           step = (stop - start) / (s.domain.length - 1 + padding);
 
-      s._range = s._steps(s.domain.length < 2
-          ? (start + stop) / 2
-          : start + step * padding / 2, step);
+      s._range = s._steps(
+          s.domain.length < 2 ? (start + stop) / 2 : start + step * padding / 2,
+          step);
       s._rangeBand = 0;
       s._rangeExtent = new Extent(start, stop);
     };
@@ -132,8 +132,8 @@ class _OrdinalScale implements OrdinalScale {
     }
   }
 
-  static void _setRangeBands(_OrdinalScale scale,
-      Iterable range, double padding, double outerPadding) {
+  static void _setRangeBands(_OrdinalScale scale, Iterable range,
+      double padding, double outerPadding) {
     scale._reset = (_OrdinalScale s) {
       var start = range.first,
           stop = range.last,
@@ -143,13 +143,13 @@ class _OrdinalScale implements OrdinalScale {
       s._rangeBand = step * (1 - padding);
       s._rangeExtent = new Extent(start, stop);
     };
-    if (scale.domain.isNotEmpty){
+    if (scale.domain.isNotEmpty) {
       scale._reset(scale);
     }
   }
 
-  static void _setRangeRoundBands(_OrdinalScale scale,
-      Iterable range, double padding, double outerPadding) {
+  static void _setRangeRoundBands(_OrdinalScale scale, Iterable range,
+      double padding, double outerPadding) {
     scale._reset = (_OrdinalScale s) {
       var start = range.first,
           stop = range.last,

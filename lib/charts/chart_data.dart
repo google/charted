@@ -20,8 +20,8 @@ abstract class ChartData {
   Iterable<Iterable> get rows;
 
   /// Create a new instance of [ChartData]'s internal implementation
-  factory ChartData(
-      Iterable<ChartColumnSpec> columns, Iterable<Iterable> rows) = DefaultChartDataImpl;
+  factory ChartData(Iterable<ChartColumnSpec> columns,
+      Iterable<Iterable> rows) = DefaultChartDataImpl;
 }
 
 ///
@@ -36,7 +36,6 @@ abstract class ChartDataTransform {
   /// of rows and columns from the current one
   ChartData transform(ChartData source);
 }
-
 
 ///
 /// Implementation of [ChangeRecord], that is used to notify when rows get added
@@ -74,9 +73,9 @@ class ChartColumnSpec {
   static const String TYPE_STRING = 'string';
   static const String TYPE_TIMESTAMP = 'timestamp';
 
-  static const List ORDINAL_SCALES = const [ TYPE_STRING ];
-  static const List LINEAR_SCALES = const [ TYPE_NUMBER ];
-  static const List TIME_SCALES = const [ TYPE_DATE, TYPE_TIMESTAMP ];
+  static const List ORDINAL_SCALES = const [TYPE_STRING];
+  static const List LINEAR_SCALES = const [TYPE_NUMBER];
+  static const List TIME_SCALES = const [TYPE_DATE, TYPE_TIMESTAMP];
 
   /// Formatter for values that belong to this column
   final FormatFunction formatter;
@@ -102,20 +101,20 @@ class ChartColumnSpec {
   Scale createDefaultScale() {
     if (useOrdinalScale == true) {
       return new OrdinalScale();
-    }
-    else if (LINEAR_SCALES.contains(type)) {
+    } else if (LINEAR_SCALES.contains(type)) {
       return new LinearScale();
-    }
-    else if (TIME_SCALES.contains(type)) {
+    } else if (TIME_SCALES.contains(type)) {
       return new TimeScale();
     }
     return null;
   }
 
-  ChartColumnSpec({this.label, String type : TYPE_NUMBER,
-      this.formatter, bool useOrdinalScale})
-      : useOrdinalScale =
-            useOrdinalScale == true ||
+  ChartColumnSpec(
+      {this.label,
+      String type: TYPE_NUMBER,
+      this.formatter,
+      bool useOrdinalScale})
+      : useOrdinalScale = useOrdinalScale == true ||
             useOrdinalScale == null && ORDINAL_SCALES.contains(type),
         type = type;
 }

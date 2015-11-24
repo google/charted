@@ -57,16 +57,13 @@ abstract class CartesianArea implements ChartArea {
   ///   change.  When not set, [draw] must be called to update the chart.
   /// - When [useTwoDimensionAxes] is set, the chart uses both 'x' and 'y'
   ///   axes as dimensions.
-  factory CartesianArea(
-      dynamic host,
-      ChartData data,
-      ChartConfig config, {
-      bool autoUpdate: false,
-      bool useTwoDimensionAxes: false,
-      bool useRowColoring: false,
-      ChartState state }) =>
-          new DefaultCartesianAreaImpl(host, data, config, autoUpdate,
-              useTwoDimensionAxes, useRowColoring, state);
+  factory CartesianArea(dynamic host, ChartData data, ChartConfig config,
+          {bool autoUpdate: false,
+          bool useTwoDimensionAxes: false,
+          bool useRowColoring: false,
+          ChartState state}) =>
+      new DefaultCartesianAreaImpl(host, data, config, autoUpdate,
+          useTwoDimensionAxes, useRowColoring, state);
 }
 
 ///
@@ -84,13 +81,9 @@ abstract class LayoutArea implements ChartArea {
   /// Layout area always uses row coloring.
   bool get useRowColoring => true;
 
-  factory LayoutArea(
-      dynamic host,
-      ChartData data,
-      ChartConfig config, {
-      bool autoUpdate: false,
-      ChartState state }) =>
-          new DefaultLayoutAreaImpl(host, data, config, autoUpdate, state);
+  factory LayoutArea(dynamic host, ChartData data, ChartConfig config,
+          {bool autoUpdate: false, ChartState state}) =>
+      new DefaultLayoutAreaImpl(host, data, config, autoUpdate, state);
 }
 
 ///

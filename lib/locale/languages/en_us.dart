@@ -23,22 +23,50 @@ class EnUsLocale extends Locale {
   final identifier = 'en_US';
   final decimal = '.';
   final thousands = ',';
-  final grouping = const[3];
-  final currency = const['\$', ''];
+  final grouping = const [3];
+  final currency = const ['\$', ''];
   final dateTime = '%a %b %e %X %Y';
   final date = '%m/%d/%Y';
   final time = '%H =>%M =>%S';
-  final periods = const['AM', 'PM'];
+  final periods = const ['AM', 'PM'];
 
-  final days = const[
-      'Sunday', 'Monday', 'Tuesday',
-      'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-  final shortDays = const['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  final days = const [
+    'Sunday',
+    'Monday',
+    'Tuesday',
+    'Wednesday',
+    'Thursday',
+    'Friday',
+    'Saturday'
+  ];
+  final shortDays = const ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
-  final months = const[
-      'January', 'February', 'March', 'April', 'May', 'June',
-      'July', 'August', 'September', 'October', 'November', 'December'];
-  final shortMonths = const[
-      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul',
-      'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  final months = const [
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December'
+  ];
+  final shortMonths = const [
+    'Jan',
+    'Feb',
+    'Mar',
+    'Apr',
+    'May',
+    'Jun',
+    'Jul',
+    'Aug',
+    'Sep',
+    'Oct',
+    'Nov',
+    'Dec'
+  ];
 }

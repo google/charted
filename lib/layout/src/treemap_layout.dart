@@ -20,7 +20,7 @@ class TreeMapLayout extends HierarchyLayout {
   static const TREEMAP_LAYOUT_SQUARIFY = 0;
 
   /// Horizontal subdivision.
-  static const TREEMAP_LAYOUT_SLICE= 1;
+  static const TREEMAP_LAYOUT_SLICE = 1;
 
   /// Vertical subdivision.
   static const TREEMAP_LAYOUT_DICE = 2;
@@ -49,14 +49,14 @@ class TreeMapLayout extends HierarchyLayout {
 
   /// TODO(midoringo): Implement sticky related feature.
   get sticky => _sticky;
-  set sticky (bool sticky) {
+  set sticky(bool sticky) {
     _sticky = sticky;
   }
 
   // TODO (midoringo): handle the sticky case.
   @override
-  List<TreeMapNode> layout(List rows, int parentColumn, int labelColumn,
-      int valueColumn) {
+  List<TreeMapNode> layout(
+      List rows, int parentColumn, int labelColumn, int valueColumn) {
     var nodes = super.layout(rows, parentColumn, labelColumn, valueColumn);
     var root = nodes[0];
     root.x = 0;
@@ -71,9 +71,9 @@ class TreeMapLayout extends HierarchyLayout {
   @override
   TreeMapNode createNode(label, value, depth) {
     return new TreeMapNode()
-        ..label = label
-        ..value = value
-        ..depth = depth;
+      ..label = label
+      ..value = value
+      ..depth = depth;
   }
 
   void _position(List<TreeMapNode> nodes, num length, MutableRect rect,
@@ -87,8 +87,8 @@ class TreeMapLayout extends HierarchyLayout {
         node.x = x;
         node.y = y;
         node.dy = v;
-        x += node.dx = math.min(rect.x + rect.width - x, v > 0 ?
-            (node.area / v).round() : 0);
+        x += node.dx = math.min(
+            rect.x + rect.width - x, v > 0 ? (node.area / v).round() : 0);
       }
       nodes.last.sticky = true;
       nodes.last.dx += rect.x + rect.width - x;
@@ -100,8 +100,8 @@ class TreeMapLayout extends HierarchyLayout {
         node.x = x;
         node.y = y;
         node.dx = v;
-        y += node.dy = math.min(rect.y + rect.height - y, v > 0 ?
-            (node.area / v).round() : 0);
+        y += node.dy = math.min(
+            rect.y + rect.height - y, v > 0 ? (node.area / v).round() : 0);
       }
       nodes.last.sticky = false;
       nodes.last.dy += rect.y + rect.height - y;
@@ -149,8 +149,10 @@ class TreeMapLayout extends HierarchyLayout {
     }
     pArea *= pArea;
     length *= length;
-    return (pArea > 0) ? math.max(length * rmax * ratio / pArea,
-        pArea / (length * rmin * ratio)) : double.INFINITY;
+    return (pArea > 0)
+        ? math.max(
+            length * rmax * ratio / pArea, pArea / (length * rmin * ratio))
+        : double.INFINITY;
   }
 
   /// Recursively compute each nodes (and its children nodes) position and size
@@ -162,12 +164,16 @@ class TreeMapLayout extends HierarchyLayout {
       List<TreeMapNode> nodes = [];
       var area = 0;
       var remaining = new List.from(children);
-      var score, n,
-      best = double.INFINITY,
-      length = (mode == TREEMAP_LAYOUT_SLICE) ? rect.width :
-          (mode == TREEMAP_LAYOUT_DICE) ? rect.height :
-          (mode == TREEMAP_LAYOUT_SLICE_DICE) ? (node.depth & 1 == 1) ?
-              rect.height : rect.width : math.min(rect.width, rect.height);
+      var score,
+          n,
+          best = double.INFINITY,
+          length = (mode == TREEMAP_LAYOUT_SLICE)
+              ? rect.width
+              : (mode == TREEMAP_LAYOUT_DICE)
+                  ? rect.height
+                  : (mode == TREEMAP_LAYOUT_SLICE_DICE)
+                      ? (node.depth & 1 == 1) ? rect.height : rect.width
+                      : math.min(rect.width, rect.height);
       _scale(remaining, rect.width * rect.height / node.value);
       while ((n = remaining.length) > 0) {
         var child = remaining[n - 1];

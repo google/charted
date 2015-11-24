@@ -58,8 +58,14 @@ class Hovercard implements ChartBehavior {
   bool _showDimensionTitle;
   Iterable<int> _columnsToShow;
 
-  Iterable placementOrder =
-      const['orientation', 'top', 'right', 'bottom', 'left', 'orientation'];
+  Iterable placementOrder = const [
+    'orientation',
+    'top',
+    'right',
+    'bottom',
+    'left',
+    'orientation'
+  ];
   int offset = 20;
 
   ChartArea _area;
@@ -68,8 +74,8 @@ class Hovercard implements ChartBehavior {
 
   Element _hovercardRoot;
 
-  Hovercard({
-      bool isMouseTracking,
+  Hovercard(
+      {bool isMouseTracking,
       bool isMultiValue: false,
       bool showDimensionTitle: false,
       List columnsToShow: const [],
@@ -91,8 +97,8 @@ class Hovercard implements ChartBehavior {
     // Subscribe to events.
     if (_isMouseTracking) {
       _disposer.addAll([
-          _area.onValueMouseOver.listen(_handleMouseOver),
-          _area.onValueMouseOut.listen(_handleMouseOut)
+        _area.onValueMouseOver.listen(_handleMouseOver),
+        _area.onValueMouseOut.listen(_handleMouseOut)
       ]);
     } else {
       _disposer.add(_state.changes.listen(_handleStateChange));
@@ -206,12 +212,12 @@ class Hovercard implements ChartBehavior {
     var rowData = area.data.rows.elementAt(row),
         measurePosition = 0,
         isNegative = false,
-        dimensionPosition = dimensionScale.scale(
-            rowData.elementAt(dimensionCol)) + dimensionCenterOffset;
+        dimensionPosition = dimensionScale
+                .scale(rowData.elementAt(dimensionCol)) +
+            dimensionCenterOffset;
 
     if (_isMultiValue) {
-      var max = SMALL_INT_MIN,
-          min = SMALL_INT_MAX;
+      var max = SMALL_INT_MIN, min = SMALL_INT_MAX;
       area.config.series.forEach((ChartSeries series) {
         CartesianRenderer renderer = series.renderer;
         Extent extent = renderer.extentForRow(rowData);
@@ -227,24 +233,26 @@ class Hovercard implements ChartBehavior {
     }
 
     if (area.config.isLeftAxisPrimary) {
-      _positionAtPoint(measurePosition, dimensionPosition,
-          0, dimensionOffset, isNegative, true);
+      _positionAtPoint(measurePosition, dimensionPosition, 0, dimensionOffset,
+          isNegative, true);
     } else {
-      _positionAtPoint(dimensionPosition, measurePosition,
-          dimensionOffset, 0, isNegative, false);
+      _positionAtPoint(dimensionPosition, measurePosition, dimensionOffset, 0,
+          isNegative, false);
     }
   }
 
-  void _positionAtPoint(num x, num y,
-      num xBand, num yBand, bool negative, [bool isLeftPrimary = false]) {
+  void _positionAtPoint(num x, num y, num xBand, num yBand, bool negative,
+      [bool isLeftPrimary = false]) {
     var rect = _hovercardRoot.getBoundingClientRect(),
         width = rect.width,
         height = rect.height,
-        scaleToHostY =
-            (_area.theme.padding != null ? _area.theme.padding.top : 0) +
+        scaleToHostY = (_area.theme.padding != null
+                ? _area.theme.padding.top
+                : 0) +
             (_area.layout.renderArea.y),
-        scaleToHostX =
-            (_area.theme.padding != null ? _area.theme.padding.start: 0) +
+        scaleToHostX = (_area.theme.padding != null
+                ? _area.theme.padding.start
+                : 0) +
             (_area.layout.renderArea.x),
         renderAreaHeight = _area.layout.renderArea.height,
         renderAreaWidth = _area.layout.renderArea.width;
@@ -280,8 +288,10 @@ class Hovercard implements ChartBehavior {
 
       // Check if the popup is contained in the RenderArea.
       // If not, try other placements.
-      if (top > 0 && left > 0 &&
-          top + height < renderAreaHeight && left + width < renderAreaWidth) {
+      if (top > 0 &&
+          left > 0 &&
+          top + height < renderAreaHeight &&
+          left + width < renderAreaWidth) {
         break;
       }
     }
@@ -300,7 +310,7 @@ class Hovercard implements ChartBehavior {
       element.append(titleElement);
     }
 
-    var measureVals =  _getMeasuresData(column, row);
+    var measureVals = _getMeasuresData(column, row);
     measureVals.forEach((ChartLegendItem item) {
       var labelElement = new Element.div()
             ..className = 'hovercard-measure-label'
@@ -349,7 +359,7 @@ class Hovercard implements ChartBehavior {
 
   ChartLegendItem _createHovercardItem(int column, int row) {
     var rowData = _area.data.rows.elementAt(row),
-        columns =  _area.data.columns,
+        columns = _area.data.columns,
         spec = columns.elementAt(column),
         colorKey = _area.useRowColoring ? row : column,
         formatter = _getFormatterForColumn(column),
@@ -370,16 +380,17 @@ class Hovercard implements ChartBehavior {
     } else {
       var count = (_area as CartesianArea).useTwoDimensionAxes ? 2 : 1,
           dimensions = _area.config.dimensions.take(count);
-      return dimensions.map(
-          (int c) =>
-              _getFormatterForColumn(c)(rowData.elementAt(c))).join(', ');
+      return dimensions
+          .map((int c) => _getFormatterForColumn(c)(rowData.elementAt(c)))
+          .join(', ');
     }
   }
 
   // TODO: Move this to a common place?
   Scale _getScaleForColumn(int column) {
     var series = _area.config.series.firstWhere(
-        (ChartSeries x) => x.measures.contains(column), orElse: () => null);
+        (ChartSeries x) => x.measures.contains(column),
+        orElse: () => null);
     return series != null
         ? (_area as CartesianArea).measureScales(series).first
         : null;

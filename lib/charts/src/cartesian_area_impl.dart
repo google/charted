@@ -13,22 +13,22 @@ part of charted.charts;
 /// which contain two dimension axes.
 class DefaultCartesianAreaImpl implements CartesianArea {
   /// Default identifiers used by the measure axes
-  static const MEASURE_AXIS_IDS = const['_default'];
+  static const MEASURE_AXIS_IDS = const ['_default'];
 
   /// Orientations used by measure axes. First, when "x" axis is the primary
   /// and the only dimension. Second, when "y" axis is the primary and the only
   /// dimension.
-  static const MEASURE_AXIS_ORIENTATIONS = const[
-    const[ORIENTATION_LEFT, ORIENTATION_RIGHT],
-    const[ORIENTATION_BOTTOM, ORIENTATION_TOP]
+  static const MEASURE_AXIS_ORIENTATIONS = const [
+    const [ORIENTATION_LEFT, ORIENTATION_RIGHT],
+    const [ORIENTATION_BOTTOM, ORIENTATION_TOP]
   ];
 
   /// Orientations used by the dimension axes. First, when "x" is the
   /// primary dimension and the last one for cases where "y" axis is primary
   /// dimension.
-  static const DIMENSION_AXIS_ORIENTATIONS = const[
-    const[ORIENTATION_BOTTOM, ORIENTATION_LEFT],
-    const[ORIENTATION_LEFT, ORIENTATION_BOTTOM]
+  static const DIMENSION_AXIS_ORIENTATIONS = const [
+    const [ORIENTATION_BOTTOM, ORIENTATION_LEFT],
+    const [ORIENTATION_LEFT, ORIENTATION_BOTTOM]
   ];
 
   /// Mapping of measure axis Id to it's axis.
@@ -99,7 +99,8 @@ class DefaultCartesianAreaImpl implements CartesianArea {
       bool autoUpdate,
       this.useTwoDimensionAxes,
       this.useRowColoring,
-      this.state) : _autoUpdate = autoUpdate {
+      this.state)
+      : _autoUpdate = autoUpdate {
     assert(host != null);
     assert(isNotInline(host));
 
@@ -194,9 +195,9 @@ class DefaultCartesianAreaImpl implements CartesianArea {
   DefaultChartAxisImpl _getMeasureAxis(String axisId) {
     _measureAxes.putIfAbsent(axisId, () {
       var axisConf = config.getMeasureAxis(axisId),
-          axis = axisConf != null ?
-              new DefaultChartAxisImpl.withAxisConfig(this, axisConf) :
-                  new DefaultChartAxisImpl(this);
+          axis = axisConf != null
+              ? new DefaultChartAxisImpl.withAxisConfig(this, axisConf)
+              : new DefaultChartAxisImpl(this);
       return axis;
     });
     return _measureAxes[axisId];
@@ -207,9 +208,9 @@ class DefaultCartesianAreaImpl implements CartesianArea {
   DefaultChartAxisImpl _getDimensionAxis(int column) {
     _dimensionAxes.putIfAbsent(column, () {
       var axisConf = config.getDimensionAxis(column),
-          axis = axisConf != null ?
-              new DefaultChartAxisImpl.withAxisConfig(this, axisConf) :
-                  new DefaultChartAxisImpl(this);
+          axis = axisConf != null
+              ? new DefaultChartAxisImpl.withAxisConfig(this, axisConf)
+              : new DefaultChartAxisImpl(this);
       return axis;
     });
     return _dimensionAxes[column];
@@ -237,8 +238,7 @@ class DefaultCartesianAreaImpl implements CartesianArea {
   /// Computes the size of chart and if changed from the previous time
   /// size was computed, sets attributes on svg element
   Rect _computeChartSize() {
-    int width = host.clientWidth,
-        height = host.clientHeight;
+    int width = host.clientWidth, height = host.clientHeight;
 
     if (config.minimumSize != null) {
       width = max([width, config.minimumSize.width]);
@@ -247,7 +247,9 @@ class DefaultCartesianAreaImpl implements CartesianArea {
 
     AbsoluteRect padding = theme.padding;
     num paddingLeft = config.isRTL ? padding.end : padding.start;
-    Rect current = new Rect(paddingLeft, padding.top,
+    Rect current = new Rect(
+        paddingLeft,
+        padding.top,
         width - (padding.start + padding.end),
         height - (padding.top + padding.bottom));
     if (layout.chartArea == null || layout.chartArea != current) {
@@ -264,7 +266,7 @@ class DefaultCartesianAreaImpl implements CartesianArea {
   }
 
   @override
-  draw({bool preRender:false, Future schedulePostRender}) {
+  draw({bool preRender: false, Future schedulePostRender}) {
     assert(data != null && config != null);
     assert(config.series != null && config.series.isNotEmpty);
 
@@ -275,9 +277,9 @@ class DefaultCartesianAreaImpl implements CartesianArea {
       _svg = _scope.append('svg:svg')..classed('chart-canvas');
       if (!isNullOrEmpty(theme.filters)) {
         var element = _svg.first,
-        defs = Namespace.createChildElement('defs', element)
-          ..append(new SvgElement.svg(
-              theme.filters, treeSanitizer: new NullTreeSanitizer()));
+            defs = Namespace.createChildElement('defs', element)
+              ..append(new SvgElement.svg(theme.filters,
+                  treeSanitizer: new NullTreeSanitizer()));
         _svg.first.append(defs);
       }
 
@@ -286,17 +288,18 @@ class DefaultCartesianAreaImpl implements CartesianArea {
       upperBehaviorPane = _svg.append('g')..classed('upper-render-pane');
 
       if (_behaviors.isNotEmpty) {
-        _behaviors.forEach(
-            (b) => b.init(this, upperBehaviorPane, lowerBehaviorPane));
+        _behaviors
+            .forEach((b) => b.init(this, upperBehaviorPane, lowerBehaviorPane));
       }
     }
 
     // Compute chart sizes and filter out unsupported series
     _computeChartSize();
-    var series = config.series.where((s) =>
-            _isSeriesValid(s) && s.renderer.prepare(this, s)),
-        selection = visualization.selectAll('.series-group').
-            data(series, (x) => x.hashCode),
+    var series = config.series
+            .where((s) => _isSeriesValid(s) && s.renderer.prepare(this, s)),
+        selection = visualization
+            .selectAll('.series-group')
+            .data(series, (x) => x.hashCode),
         axesDomainCompleter = new Completer();
 
     // Wait till the axes are rendered before rendering series.
@@ -314,7 +317,7 @@ class DefaultCartesianAreaImpl implements CartesianArea {
         info.check();
         group.attributes['transform'] = transform;
         (s.renderer as CartesianRenderer)
-            .draw(group, schedulePostRender:schedulePostRender);
+            .draw(group, schedulePostRender: schedulePostRender);
       });
 
       // A series that was rendered earlier isn't there anymore, remove it
@@ -350,16 +353,15 @@ class DefaultCartesianAreaImpl implements CartesianArea {
 
   /// Initialize the axes - required even if the axes are not being displayed.
   _initAxes({bool preRender: false}) {
-    Map measureAxisUsers = <String,Iterable<ChartSeries>>{};
+    Map measureAxisUsers = <String, Iterable<ChartSeries>>{};
 
     // Create necessary measures axes.
     // If measure axes were not configured on the series, default is used.
     _series.forEach((ChartSeries s) {
-      var measureAxisIds = isNullOrEmpty(s.measureAxisIds)
-          ? MEASURE_AXIS_IDS
-          : s.measureAxisIds;
+      var measureAxisIds =
+          isNullOrEmpty(s.measureAxisIds) ? MEASURE_AXIS_IDS : s.measureAxisIds;
       measureAxisIds.forEach((axisId) {
-        _getMeasureAxis(axisId);  // Creates axis if required
+        _getMeasureAxis(axisId); // Creates axis if required
         var users = measureAxisUsers[axisId];
         if (users == null) {
           measureAxisUsers[axisId] = [s];
@@ -402,18 +404,18 @@ class DefaultCartesianAreaImpl implements CartesianArea {
     // Configure dimension axes.
     int dimensionAxesCount = useTwoDimensionAxes ? 2 : 1;
     config.dimensions.take(dimensionAxesCount).forEach((int column) {
-       var axis = _getDimensionAxis(column),
-           sampleColumnSpec = data.columns.elementAt(column),
-           values = data.rows.map((row) => row.elementAt(column)),
-           domain;
+      var axis = _getDimensionAxis(column),
+          sampleColumnSpec = data.columns.elementAt(column),
+          values = data.rows.map((row) => row.elementAt(column)),
+          domain;
 
-       if (sampleColumnSpec.useOrdinalScale) {
-         domain = values.map((e) => e.toString()).toList();
-       } else {
-         var extent = new Extent.items(values);
-         domain = [extent.min, extent.max];
-       }
-       axis.initAxisDomain(column, true, domain);
+      if (sampleColumnSpec.useOrdinalScale) {
+        domain = values.map((e) => e.toString()).toList();
+      } else {
+        var extent = new Extent.items(values);
+        domain = [extent.min, extent.max];
+      }
+      axis.initAxisDomain(column, true, domain);
     });
 
     // See if any dimensions need "band" on the axis.
@@ -421,23 +423,22 @@ class DefaultCartesianAreaImpl implements CartesianArea {
     List<bool> usingBands = [false, false];
     _series.forEach((ChartSeries s) =>
         (s.renderer as CartesianRenderer).dimensionsUsingBand.forEach((x) {
-      if (x <= 1 && !(usingBands[x])) {
-        usingBands[x] = true;
-        dimensionsUsingBands.add(config.dimensions.elementAt(x));
-      }
-    }));
+          if (x <= 1 && !(usingBands[x])) {
+            usingBands[x] = true;
+            dimensionsUsingBands.add(config.dimensions.elementAt(x));
+          }
+        }));
 
     // List of measure and dimension axes that are displayed
-    assert(
-        isNullOrEmpty(config.displayedMeasureAxes) ||
+    assert(isNullOrEmpty(config.displayedMeasureAxes) ||
         config.displayedMeasureAxes.length < 2);
     var measureAxesCount = dimensionAxesCount == 1 ? 2 : 0,
         displayedMeasureAxes = (isNullOrEmpty(config.displayedMeasureAxes)
-            ? _measureAxes.keys.take(measureAxesCount)
-            : config.displayedMeasureAxes.take(measureAxesCount)).
-                toList(growable: false),
+                ? _measureAxes.keys.take(measureAxesCount)
+                : config.displayedMeasureAxes.take(measureAxesCount))
+            .toList(growable: false),
         displayedDimensionAxes =
-            config.dimensions.take(dimensionAxesCount).toList(growable: false);
+        config.dimensions.take(dimensionAxesCount).toList(growable: false);
 
     // Compute size of the dimension axes
     if (config.renderDimensionAxes != false) {
@@ -481,8 +482,9 @@ class DefaultCartesianAreaImpl implements CartesianArea {
 
     // Draw the visible measure axes, if any.
     if (displayedMeasureAxes.isNotEmpty) {
-      var axisGroups = visualization.
-          selectAll('.measure-axis-group').data(displayedMeasureAxes);
+      var axisGroups = visualization
+          .selectAll('.measure-axis-group')
+          .data(displayedMeasureAxes);
       // Update measure axis (add/remove/update)
       axisGroups.enter.append('svg:g');
       axisGroups.each((axisId, index, group) {
@@ -494,8 +496,9 @@ class DefaultCartesianAreaImpl implements CartesianArea {
 
     // Draw the dimension axes, unless asked not to.
     if (config.renderDimensionAxes != false) {
-      var dimAxisGroups = visualization.
-          selectAll('.dimension-axis-group').data(displayedDimensionAxes);
+      var dimAxisGroups = visualization
+          .selectAll('.dimension-axis-group')
+          .data(displayedDimensionAxes);
       // Update dimension axes (add/remove/update)
       dimAxisGroups.enter.append('svg:g');
       dimAxisGroups.each((column, index, group) {
@@ -505,15 +508,18 @@ class DefaultCartesianAreaImpl implements CartesianArea {
       dimAxisGroups.exit.remove();
     } else {
       // Initialize scale on invisible axis
-      var dimensionAxisOrientations = config.isLeftAxisPrimary ?
-          DIMENSION_AXIS_ORIENTATIONS.last : DIMENSION_AXIS_ORIENTATIONS.first;
+      var dimensionAxisOrientations = config.isLeftAxisPrimary
+          ? DIMENSION_AXIS_ORIENTATIONS.last
+          : DIMENSION_AXIS_ORIENTATIONS.first;
       for (int i = 0; i < dimensionAxesCount; ++i) {
         var column = config.dimensions.elementAt(i),
             axis = _dimensionAxes[column],
             orientation = dimensionAxisOrientations[i];
-        axis.initAxisScale(orientation == ORIENTATION_LEFT ?
-            [layout.renderArea.height, 0] : [0, layout.renderArea.width]);
-      };
+        axis.initAxisScale(orientation == ORIENTATION_LEFT
+            ? [layout.renderArea.height, 0]
+            : [0, layout.renderArea.width]);
+      }
+      ;
     }
   }
 
@@ -535,21 +541,17 @@ class DefaultCartesianAreaImpl implements CartesianArea {
         renderAreaWidth = layout.chartArea.width -
             (left.width + layout.axes[ORIENTATION_RIGHT].width);
 
-    layout.renderArea = new Rect(
-        left.width, top.height, renderAreaWidth, renderAreaHeight);
+    layout.renderArea =
+        new Rect(left.width, top.height, renderAreaWidth, renderAreaHeight);
 
     layout._axes
-      ..[ORIENTATION_TOP] =
-          new Rect(left.width, 0, renderAreaWidth, top.height)
-      ..[ORIENTATION_RIGHT] =
-          new Rect(left.width + renderAreaWidth, top.y,
-              right.width, renderAreaHeight)
-      ..[ORIENTATION_BOTTOM] =
-          new Rect(left.width, top.height + renderAreaHeight,
-              renderAreaWidth, bottom.height)
+      ..[ORIENTATION_TOP] = new Rect(left.width, 0, renderAreaWidth, top.height)
+      ..[ORIENTATION_RIGHT] = new Rect(
+          left.width + renderAreaWidth, top.y, right.width, renderAreaHeight)
+      ..[ORIENTATION_BOTTOM] = new Rect(left.width,
+          top.height + renderAreaHeight, renderAreaWidth, bottom.height)
       ..[ORIENTATION_LEFT] =
-          new Rect(
-              left.width, top.height, left.width, renderAreaHeight);
+          new Rect(left.width, top.height, left.width, renderAreaHeight);
   }
 
   // Updates the legend, if configuration changed since the last
@@ -562,14 +564,15 @@ class DefaultCartesianAreaImpl implements CartesianArea {
     List seriesByColumn =
         new List.generate(data.columns.length, (_) => new List());
 
-    _series.forEach((s) =>
-        s.measures.forEach((m) => seriesByColumn[m].add(s)));
+    _series.forEach((s) => s.measures.forEach((m) => seriesByColumn[m].add(s)));
 
     seriesByColumn.asMap().forEach((int i, List s) {
       if (s.length == 0) return;
       legend.add(new ChartLegendItem(
-          index:i, label:data.columns.elementAt(i).label, series:s,
-          color:theme.getColorForKey(i)));
+          index: i,
+          label: data.columns.elementAt(i).label,
+          series: s,
+          color: theme.getColorForKey(i)));
     });
 
     _config.legend.update(legend, this);
@@ -578,28 +581,23 @@ class DefaultCartesianAreaImpl implements CartesianArea {
 
   @override
   Stream<ChartEvent> get onMouseUp =>
-      host.onMouseUp
-          .map((MouseEvent e) => new DefaultChartEventImpl(e, this));
+      host.onMouseUp.map((MouseEvent e) => new DefaultChartEventImpl(e, this));
 
   @override
-  Stream<ChartEvent> get onMouseDown =>
-      host.onMouseDown
-          .map((MouseEvent e) => new DefaultChartEventImpl(e, this));
+  Stream<ChartEvent> get onMouseDown => host.onMouseDown
+      .map((MouseEvent e) => new DefaultChartEventImpl(e, this));
 
   @override
-  Stream<ChartEvent> get onMouseOver =>
-      host.onMouseOver
-          .map((MouseEvent e) => new DefaultChartEventImpl(e, this));
+  Stream<ChartEvent> get onMouseOver => host.onMouseOver
+      .map((MouseEvent e) => new DefaultChartEventImpl(e, this));
 
   @override
   Stream<ChartEvent> get onMouseOut =>
-      host.onMouseOut
-          .map((MouseEvent e) => new DefaultChartEventImpl(e, this));
+      host.onMouseOut.map((MouseEvent e) => new DefaultChartEventImpl(e, this));
 
   @override
-  Stream<ChartEvent> get onMouseMove =>
-      host.onMouseMove
-          .map((MouseEvent e) => new DefaultChartEventImpl(e, this));
+  Stream<ChartEvent> get onMouseMove => host.onMouseMove
+      .map((MouseEvent e) => new DefaultChartEventImpl(e, this));
 
   @override
   Stream<ChartEvent> get onValueClick {
@@ -654,11 +652,11 @@ class DefaultCartesianAreaImpl implements CartesianArea {
 
 class _ChartAreaLayout implements ChartAreaLayout {
   final _axes = <String, Rect>{
-      ORIENTATION_LEFT: const Rect(),
-      ORIENTATION_RIGHT: const Rect(),
-      ORIENTATION_TOP: const Rect(),
-      ORIENTATION_BOTTOM: const Rect()
-    };
+    ORIENTATION_LEFT: const Rect(),
+    ORIENTATION_RIGHT: const Rect(),
+    ORIENTATION_TOP: const Rect(),
+    ORIENTATION_BOTTOM: const Rect()
+  };
 
   UnmodifiableMapView<String, Rect> _axesView;
 
@@ -713,7 +711,8 @@ class _ChartSeriesInfo {
     if (state != null) {
       var current = state.hovered;
       if (current != null &&
-          current.first == e.column && current.last == e.row) {
+          current.first == e.column &&
+          current.last == e.row) {
         state.hovered = null;
       }
     }
@@ -725,7 +724,7 @@ class _ChartSeriesInfo {
   check() {
     if (_renderer != _series.renderer) {
       dispose();
-      if (_series.renderer is ChartRendererBehaviorSource){
+      if (_series.renderer is ChartRendererBehaviorSource) {
         _disposer.addAll([
           _series.renderer.onValueClick.listen(_click),
           _series.renderer.onValueMouseOver.listen(_mouseOver),
