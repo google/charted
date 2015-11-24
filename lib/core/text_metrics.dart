@@ -79,7 +79,7 @@ class TextMetrics {
   /// Truncates given [text] to fit in [width]. Adds an ellipsis to the
   /// returned string, if it needed to be truncated.
   /// Optionally, uses [fontStyle] instead of using the default style.
-  String ellipsizeText(String text, double width, {String fontStyle}) {
+  String ellipsizeText(String text, num width, {String fontStyle}) {
     assert(text.length <= MAX_STRING_LENGTH);
     setFontStyle(fontStyle);
     double computedWidth = context.measureText(text).width;
