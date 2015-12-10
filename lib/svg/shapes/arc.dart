@@ -36,12 +36,11 @@ class SvgArc implements SvgShape {
   /// and element in the context.
   final SelectionCallback<num> endAngleCallback;
 
-  SvgArc({
-      this.innerRadiusCallback : defaultInnerRadiusCallback,
+  SvgArc(
+      {this.innerRadiusCallback: defaultInnerRadiusCallback,
       this.outerRadiusCallback: defaultOuterRadiusCallback,
       this.startAngleCallback: defaultStartAngleCallback,
-      this.endAngleCallback: defaultEndAngleCallback
-  });
+      this.endAngleCallback: defaultEndAngleCallback});
 
   String path(d, int i, Element e) {
     var ir = innerRadiusCallback(d, i, e),
@@ -54,8 +53,13 @@ class SvgArc implements SvgShape {
 
     if (delta > _MAX) {
       return ir > 0
-          ? "M0,$or" "A$or,$or 0 1,1 0,-$or" "A$or,$or 0 1,1 0,$or"
-            "M0,$ir" "A$ir,$ir 0 1,0 0,-$ir" "A$ir,$ir 0 1,0 0,$ir" "Z"
+          ? "M0,$or"
+              "A$or,$or 0 1,1 0,-$or"
+              "A$or,$or 0 1,1 0,$or"
+              "M0,$ir"
+              "A$ir,$ir 0 1,0 0,-$ir"
+              "A$ir,$ir 0 1,0 0,$ir"
+              "Z"
           : "M0,$or" "A$or,$or 0 1,1 0,-$or" "A$or,$or 0 1,1 0,$or" "Z";
     }
 
@@ -66,11 +70,15 @@ class SvgArc implements SvgShape {
         df = delta < PI ? 0 : 1;
 
     return ir > 0
-        ? "M${or * cs},${or * ss}" "A$or,$or 0 $df,1 ${or * ce},${or * se}"
-          "L${ir * ce},${ir * se}" "A$ir,$ir 0 $df,0 ${ir * cs},${ir * ss}"
-          "Z"
-        : "M${or * cs},${or * ss}" "A$or,$or 0 $df,1 ${or * ce},${or * se}"
-          "L0,0" "Z";
+        ? "M${or * cs},${or * ss}"
+            "A$or,$or 0 $df,1 ${or * ce},${or * se}"
+            "L${ir * ce},${ir * se}"
+            "A$ir,$ir 0 $df,0 ${ir * cs},${ir * ss}"
+            "Z"
+        : "M${or * cs},${or * ss}"
+        "A$or,$or 0 $df,1 ${or * ce},${or * se}"
+        "L0,0"
+        "Z";
   }
 
   List centroid(d, int i, Element e) {
@@ -106,11 +114,9 @@ class SvgArcData {
   num startAngle;
   num endAngle;
 
-  SvgArcData(this.data, this.value,
-      this.startAngle, this.endAngle, [
-      this.innerRadius = 0, this.outerRadius = 100 ]);
+  SvgArcData(this.data, this.value, this.startAngle, this.endAngle,
+      [this.innerRadius = 0, this.outerRadius = 100]);
 }
-
 
 /// Returns the interpolator between two [SvgArcData] [a] and [b].
 ///
@@ -126,6 +132,6 @@ Interpolator interpolateSvgArcData(SvgArcData a, SvgArcData b) {
       bi = b.innerRadius - ai,
       bo = b.outerRadius - ao;
 
-  return (t) => new SvgArcData(b.data, b.value,
-    (ast + bst * t), (aen + ben * t), (ai + bi * t), (ao + bo * t));
+  return (t) => new SvgArcData(b.data, b.value, (ast + bst * t),
+      (aen + ben * t), (ai + bi * t), (ao + bo * t));
 }

@@ -35,14 +35,30 @@ FormatFunction format(String specifier, [Locale locale = null]) {
   return locale.numberFormat.format(specifier);
 }
 
-
 /*
  * Class for computing the SI format prefix for the given value.
  */
 class FormatPrefix {
   // SI scale units in increments of 1000.
-  static const List unitPrefixes = const
-      ["y","z","a","f","p","n","µ","m","","k","M","G","T","P","E","Z","Y"];
+  static const List unitPrefixes = const [
+    "y",
+    "z",
+    "a",
+    "f",
+    "p",
+    "n",
+    "µ",
+    "m",
+    "",
+    "k",
+    "M",
+    "G",
+    "T",
+    "P",
+    "E",
+    "Z",
+    "Y"
+  ];
 
   Function _scale;
   String _symbol;
@@ -58,8 +74,7 @@ class FormatPrefix {
 
     // Determining SI scale of the value in increment of 1000.
     i = 1 + (1e-12 + math.log(value) / math.LN10).floor();
-    i = math.max(-24, math.min(24,
-        ((i - 1) / 3).floor() * 3));
+    i = math.max(-24, math.min(24, ((i - 1) / 3).floor() * 3));
     i = 8 + (i / 3).floor();
 
     // Sets the scale and symbol of the value.
@@ -74,8 +89,7 @@ class FormatPrefix {
 
   /** Returns the value of x rounded to the nth digit. */
   _roundToPrecision(num x, num n) {
-    return n != 0 ?
-        (x * (n = math.pow(10, n))).round() / n : x.round();
+    return n != 0 ? (x * (n = math.pow(10, n))).round() / n : x.round();
   }
 
   /** Returns the SI prefix for the value. */

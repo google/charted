@@ -9,33 +9,32 @@
 part of charted.charts;
 
 class QuantumChartTheme extends ChartTheme {
-  static const List OTHER_COLORS =
-      const['#EEEEEE', '#BDBDBD', '#9E9E9E'];
+  static const List OTHER_COLORS = const ['#EEEEEE', '#BDBDBD', '#9E9E9E'];
 
-  static const List<List<String>> COLORS = const[
-    const [ '#C5D9FB', '#4184F3', '#2955C5' ],
-    const [ '#F3C6C2', '#DB4437', '#A52714' ],
-    const [ '#FBE7B1', '#F4B400', '#EF9200' ],
-    const [ '#B6E0CC', '#0F9D58', '#0A7F42' ],
-    const [ '#E0BDE6', '#AA46BB', '#691A99' ],
-    const [ '#B1EAF1', '#00ABC0', '#00828E' ],
-    const [ '#FFCBBB', '#FF6F42', '#E54918' ],
-    const [ '#EFF3C2', '#9D9C23', '#817616' ],
-    const [ '#C4C9E8', '#5B6ABF', '#3848AA' ],
-    const [ '#F7BACF', '#EF6191', '#E81D62' ],
-    const [ '#B1DEDA', '#00786A', '#004C3F' ],
-    const [ '#F38EB0', '#C1175A', '#870D4E' ],
+  static const List<List<String>> COLORS = const [
+    const ['#C5D9FB', '#4184F3', '#2955C5'],
+    const ['#F3C6C2', '#DB4437', '#A52714'],
+    const ['#FBE7B1', '#F4B400', '#EF9200'],
+    const ['#B6E0CC', '#0F9D58', '#0A7F42'],
+    const ['#E0BDE6', '#AA46BB', '#691A99'],
+    const ['#B1EAF1', '#00ABC0', '#00828E'],
+    const ['#FFCBBB', '#FF6F42', '#E54918'],
+    const ['#EFF3C2', '#9D9C23', '#817616'],
+    const ['#C4C9E8', '#5B6ABF', '#3848AA'],
+    const ['#F7BACF', '#EF6191', '#E81D62'],
+    const ['#B1DEDA', '#00786A', '#004C3F'],
+    const ['#F38EB0', '#C1175A', '#870D4E'],
   ];
 
-  static const List<List<String>> COLORS_ASSIST = const[
-    const [ '#C5D9FB', '#4184F3', '#2955C5' ],
-    const [ '#F3C6C2', '#DB4437', '#A52714' ],
-    const [ '#FBE7B1', '#F4B400', '#EF9200' ],
-    const [ '#B6E0CC', '#0F9D58', '#0A7F42' ],
-    const [ '#E0BDE6', '#AA46BB', '#691A99' ],
-    const [ '#B1EAF1', '#00ABC0', '#00828E' ],
-    const [ '#FFCBBB', '#FF6F42', '#E54918' ],
-    const [ '#EFF3C2', '#9D9C23', '#817616' ]
+  static const List<List<String>> COLORS_ASSIST = const [
+    const ['#C5D9FB', '#4184F3', '#2955C5'],
+    const ['#F3C6C2', '#DB4437', '#A52714'],
+    const ['#FBE7B1', '#F4B400', '#EF9200'],
+    const ['#B6E0CC', '#0F9D58', '#0A7F42'],
+    const ['#E0BDE6', '#AA46BB', '#691A99'],
+    const ['#B1EAF1', '#00ABC0', '#00828E'],
+    const ['#FFCBBB', '#FF6F42', '#E54918'],
+    const ['#EFF3C2', '#9D9C23', '#817616']
   ];
 
   final OrdinalScale _scale = new OrdinalScale()..range = COLORS;
@@ -64,19 +63,15 @@ class QuantumChartTheme extends ChartTheme {
   }
 
   @override
-  String getFilterForState(int state) =>
-      state & ChartState.COL_PREVIEW != 0 ||
+  String getFilterForState(int state) => state & ChartState.COL_PREVIEW != 0 ||
       state & ChartState.VAL_HOVERED != 0 ||
       state & ChartState.COL_SELECTED != 0 ||
-      state & ChartState.VAL_HIGHLIGHTED != 0
-          ? 'url(#drop-shadow)'
-          : '';
+      state & ChartState.VAL_HIGHLIGHTED != 0 ? 'url(#drop-shadow)' : '';
 
   @override
-  String getOtherColor([int state = 0]) =>
-      OTHER_COLORS is Iterable
-          ? colorForState(OTHER_COLORS, state)
-          : OTHER_COLORS;
+  String getOtherColor([int state = 0]) => OTHER_COLORS is Iterable
+      ? colorForState(OTHER_COLORS, state)
+      : OTHER_COLORS;
 
   @override
   ChartAxisTheme getMeasureAxisTheme([Scale _]) =>

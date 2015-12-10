@@ -16,11 +16,12 @@ class Rect {
   final num height;
 
   const Rect([this.x = 0, this.y = 0, this.width = 0, this.height = 0]);
-  const Rect.size(this.width, this.height) : x = 0, y = 0;
-  const Rect.position(this.x, this.y) : width = 0, height = 0;
-
-  bool operator==(other) =>
-      other is Rect && isSameSizeAs(other) && isSamePositionAs(other);
+  const Rect.size(this.width, this.height)
+      : x = 0,
+        y = 0;
+  const Rect.position(this.x, this.y)
+      : width = 0,
+        height = 0;
 
   bool isSameSizeAs(Rect other) =>
       other != null && width == other.width && height == other.height;
@@ -29,10 +30,16 @@ class Rect {
       other != null && x == other.x && y == other.y;
 
   bool contains(num otherX, num otherY) =>
-      otherX >= x && otherX <= x + width &&
-      otherY >= y && otherY <= y + height;
+      otherX >= x && otherX <= x + width && otherY >= y && otherY <= y + height;
 
   String toString() => '$x, $y, $width, $height';
+
+  @override
+  bool operator ==(other) =>
+      other is Rect && isSameSizeAs(other) && isSamePositionAs(other);
+
+  @override
+  int get hashCode => hash4(x, y, width, height);
 }
 
 /// Mutable version of [Rect] class.
@@ -55,8 +62,13 @@ class AbsoluteRect {
 
   const AbsoluteRect(this.top, this.end, this.bottom, this.start);
 
-  bool operator==(other) =>
-      other is AbsoluteRect &&
-      start == other.start && end == other.end &&
-      top == other.top && bottom == other.bottom;
+  @override
+  bool operator ==(other) => other is AbsoluteRect &&
+      start == other.start &&
+      end == other.end &&
+      top == other.top &&
+      bottom == other.bottom;
+
+  @override
+  int get hashCode => hash4(start, end, top, bottom);
 }

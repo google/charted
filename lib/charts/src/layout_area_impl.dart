@@ -60,12 +60,8 @@ class DefaultLayoutAreaImpl implements LayoutArea {
   StreamController<ChartEvent> _valueMouseOutController;
   StreamController<ChartEvent> _valueMouseClickController;
 
-  DefaultLayoutAreaImpl(
-      this.host,
-      ChartData data,
-      ChartConfig config,
-      this._autoUpdate,
-      this.state) {
+  DefaultLayoutAreaImpl(this.host, ChartData data, ChartConfig config,
+      this._autoUpdate, this.state) {
     assert(host != null);
     assert(isNotInline(host));
 
@@ -139,8 +135,7 @@ class DefaultLayoutAreaImpl implements LayoutArea {
   /// Computes the size of chart and if changed from the previous time
   /// size was computed, sets attributes on svg element
   Rect _computeChartSize() {
-    int width = host.clientWidth,
-        height = host.clientHeight;
+    int width = host.clientWidth, height = host.clientHeight;
 
     if (config.minimumSize != null) {
       width = max([width, config.minimumSize.width]);
@@ -149,7 +144,9 @@ class DefaultLayoutAreaImpl implements LayoutArea {
 
     AbsoluteRect padding = theme.padding;
     num paddingLeft = config.isRTL ? padding.end : padding.start;
-    Rect current = new Rect(paddingLeft, padding.top,
+    Rect current = new Rect(
+        paddingLeft,
+        padding.top,
         width - (padding.start + padding.end),
         height - (padding.top + padding.bottom));
     if (layout.chartArea == null || layout.chartArea != current) {
@@ -170,7 +167,7 @@ class DefaultLayoutAreaImpl implements LayoutArea {
   }
 
   @override
-  draw({bool preRender:false, Future schedulePostRender}) {
+  draw({bool preRender: false, Future schedulePostRender}) {
     assert(data != null && config != null);
     assert(config.series != null && config.series.isNotEmpty);
 
@@ -185,15 +182,15 @@ class DefaultLayoutAreaImpl implements LayoutArea {
       upperBehaviorPane = _svg.append('g')..classed('upper-render-pane');
 
       if (_behaviors.isNotEmpty) {
-        _behaviors.forEach(
-            (b) => b.init(this, upperBehaviorPane, lowerBehaviorPane));
+        _behaviors
+            .forEach((b) => b.init(this, upperBehaviorPane, lowerBehaviorPane));
       }
     }
 
     // Compute chart sizes and filter out unsupported series
     _computeChartSize();
-    var series = config.series.firstWhere(
-            (s) => s.renderer.prepare(this, s), orElse: () => null),
+    var series = config.series
+            .firstWhere((s) => s.renderer.prepare(this, s), orElse: () => null),
         group = visualization.first.querySelector('.series-group');
 
     // We need atleast one matching series.
@@ -202,7 +199,7 @@ class DefaultLayoutAreaImpl implements LayoutArea {
     // Create a group for rendering, if it was not already done.
     if (group == null) {
       group = Namespace.createChildElement('g', visualization.first)
-          ..classes.add('series-group');
+        ..classes.add('series-group');
       visualization.first.append(group);
     }
 
@@ -250,7 +247,7 @@ class DefaultLayoutAreaImpl implements LayoutArea {
     }
 
     Iterable<ChartLegendItem> legend =
-        _renderer.layout(group, schedulePostRender:schedulePostRender);
+        _renderer.layout(group, schedulePostRender: schedulePostRender);
 
     // Notify on the stream that the chart has been updated.
     isReady = true;
@@ -266,28 +263,23 @@ class DefaultLayoutAreaImpl implements LayoutArea {
 
   @override
   Stream<ChartEvent> get onMouseUp =>
-      host.onMouseUp
-          .map((MouseEvent e) => new DefaultChartEventImpl(e, this));
+      host.onMouseUp.map((MouseEvent e) => new DefaultChartEventImpl(e, this));
 
   @override
-  Stream<ChartEvent> get onMouseDown =>
-      host.onMouseDown
-          .map((MouseEvent e) => new DefaultChartEventImpl(e, this));
+  Stream<ChartEvent> get onMouseDown => host.onMouseDown
+      .map((MouseEvent e) => new DefaultChartEventImpl(e, this));
 
   @override
-  Stream<ChartEvent> get onMouseOver =>
-      host.onMouseOver
-          .map((MouseEvent e) => new DefaultChartEventImpl(e, this));
+  Stream<ChartEvent> get onMouseOver => host.onMouseOver
+      .map((MouseEvent e) => new DefaultChartEventImpl(e, this));
 
   @override
   Stream<ChartEvent> get onMouseOut =>
-      host.onMouseOut
-          .map((MouseEvent e) => new DefaultChartEventImpl(e, this));
+      host.onMouseOut.map((MouseEvent e) => new DefaultChartEventImpl(e, this));
 
   @override
-  Stream<ChartEvent> get onMouseMove =>
-      host.onMouseMove
-          .map((MouseEvent e) => new DefaultChartEventImpl(e, this));
+  Stream<ChartEvent> get onMouseMove => host.onMouseMove
+      .map((MouseEvent e) => new DefaultChartEventImpl(e, this));
 
   @override
   Stream<ChartEvent> get onValueClick {

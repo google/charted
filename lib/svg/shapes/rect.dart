@@ -11,17 +11,17 @@ part of charted.svg.shapes;
 /// Draw a rectangle at [x], [y] which is [width] pixels wide and
 /// [height] pixels height.  [topLeft], [topRight], [bottomRight] and
 /// [bottomLeft] are the corner radius at each of the four corners.
-String roundedRect(int x, int y, int width, int height,
-    int topLeft, int topRight, int bottomRight, int bottomLeft) =>
-        'M${x+topLeft},${y} '
-        'L${x+width-topRight},${y} '
-            'Q${x+width},${y} ${x+width},${y+topRight}'
-        'L${x+width},${y+height-bottomRight} '
-            'Q${x+width},${y+height} ${x+width-bottomRight},${y+height}'
-        'L${x+bottomLeft},${y+height} '
-            'Q${x},${y+height} ${x},${y+height-bottomLeft}'
-        'L${x},${y+topLeft} '
-            'Q${x},${y} ${x+topLeft},${y} Z';
+String roundedRect(int x, int y, int width, int height, int topLeft,
+        int topRight, int bottomRight, int bottomLeft) =>
+    'M${x+topLeft},${y} '
+    'L${x+width-topRight},${y} '
+    'Q${x+width},${y} ${x+width},${y+topRight}'
+    'L${x+width},${y+height-bottomRight} '
+    'Q${x+width},${y+height} ${x+width-bottomRight},${y+height}'
+    'L${x+bottomLeft},${y+height} '
+    'Q${x},${y+height} ${x},${y+height-bottomLeft}'
+    'L${x},${y+topLeft} '
+    'Q${x},${y} ${x+topLeft},${y} Z';
 
 /// Draw a rectangle with rounded corners on both corners on the right.
 String rightRoundedRect(int x, int y, int width, int height, int radius) {

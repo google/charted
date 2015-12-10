@@ -26,9 +26,9 @@ part 'utils/object_factory.dart';
 part 'utils/rect.dart';
 part 'utils/bidi_formatter.dart';
 
-const String ORIENTATION_LEFT   = 'left';
-const String ORIENTATION_RIGHT  = 'right';
-const String ORIENTATION_TOP    = 'top';
+const String ORIENTATION_LEFT = 'left';
+const String ORIENTATION_RIGHT = 'right';
+const String ORIENTATION_TOP = 'top';
 const String ORIENTATION_BOTTOM = 'bottom';
 
 /// Identity function that returns the value passed as it's parameter.

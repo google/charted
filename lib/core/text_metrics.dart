@@ -64,7 +64,7 @@ class TextMetrics {
   /// Optionally, uses [fontStyle] instead of using the default style.
   double getLongestTextWidth(Iterable<String> strings, {String fontStyle}) {
     setFontStyle(fontStyle);
-    double maxWidth = 0.0;
+    num maxWidth = 0.0;
     for (int i = 0; i < strings.length; ++i) {
       assert(strings.elementAt(i).length <= MAX_STRING_LENGTH);
       double width = context.measureText(strings.elementAt(i)).width.toDouble();
@@ -79,14 +79,16 @@ class TextMetrics {
   /// Truncates given [text] to fit in [width]. Adds an ellipsis to the
   /// returned string, if it needed to be truncated.
   /// Optionally, uses [fontStyle] instead of using the default style.
-  String ellipsizeText(String text, double width, {String fontStyle}) {
+  String ellipsizeText(String text, num width, {String fontStyle}) {
     assert(text.length <= MAX_STRING_LENGTH);
     setFontStyle(fontStyle);
     double computedWidth = context.measureText(text).width.toDouble();
     if (computedWidth > width) {
       var indices = graphemeBreakIndices(text);
       var position = 0,
-          min = 0, max = indices.length - 1, mid,
+          min = 0,
+          max = indices.length - 1,
+          mid,
           ellipsis = context.measureText('…').width;
       width = width - ellipsis;
       while (max >= min) {
@@ -108,6 +110,5 @@ class TextMetrics {
   /// if it had to be truncated.
   /// Calling this method may force a layout on the document. For better
   /// performance, use [TextMetrics.ellipsizeText].
-  static ellipsizeTextElement() {
-  }
+  static ellipsizeTextElement() {}
 }

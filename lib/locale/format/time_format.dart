@@ -19,8 +19,8 @@ class TimeFormat {
   TimeFormat([String template = null, String identifier = 'en_US']) {
     _template = template;
     _locale = identifier;
-    if (_template != null)
-      _dateFormat = new DateFormat(_wrapStrptime2ICU(_template), _locale);
+    if (_template != null) _dateFormat =
+        new DateFormat(_wrapStrptime2ICU(_template), _locale);
   }
 
   TimeFormat _getInstance(String template) {
@@ -40,16 +40,13 @@ class TimeFormat {
   }
 
   TimeFormatFunction multi(List<List> formats) {
-    var n = formats.length,
-        i = -1;
-    while (++i < n)
-      formats[i][0] = _getInstance(formats[i][0] as String);
+    var n = formats.length, i = -1;
+    while (++i < n) formats[i][0] = _getInstance(formats[i][0] as String);
     return (var date) {
       if (date is num) {
         date = new DateTime.fromMillisecondsSinceEpoch(date.toInt());
       }
-      var i = 0,
-          f = formats[i];
+      var i = 0, f = formats[i];
       while (f.length < 2 || f[1](date) == false) {
         i++;
         if (i < n) f = formats[i];
@@ -60,8 +57,8 @@ class TimeFormat {
   }
 
   UTCTimeFormat utc([String specifier = null]) {
-    return new UTCTimeFormat(specifier == null ?
-        _template : specifier, _locale);
+    return new UTCTimeFormat(
+        specifier == null ? _template : specifier, _locale);
   }
 
   static UTCTimeFormat iso() {
@@ -77,7 +74,7 @@ class TimeFormat {
     'B': 'MMMM',
     'c': 'EEE MMM d HH:mm:ss yyyy',
     'd': 'dd',
-    'e': 'd',         // TODO(songrenchu): zero padding not supported
+    'e': 'd', // TODO(songrenchu): zero padding not supported
     'H': 'HH',
     'I': 'hh',
     'j': 'DDD',
@@ -86,11 +83,11 @@ class TimeFormat {
     'L': 'SSS',
     'p': 'a',
     'S': 'ss',
-    'U': 'ww',        // TODO(songrenchu): ICU doesn't distinguish 'U' and 'W',
-                      // and not supported by Dart: DateFormat
-    'w': 'ee',        // TODO(songrenchu): e not supported by Dart: DateFormat
-    'W': 'ww',        // TODO(songrenchu): ICU doesn't distinguish 'U' and 'W',
-                      // and not supported by Dart: DateFormat
+    'U': 'ww', // TODO(songrenchu): ICU doesn't distinguish 'U' and 'W',
+    // and not supported by Dart: DateFormat
+    'w': 'ee', // TODO(songrenchu): e not supported by Dart: DateFormat
+    'W': 'ww', // TODO(songrenchu): ICU doesn't distinguish 'U' and 'W',
+    // and not supported by Dart: DateFormat
     'x': 'MM/dd/yyyy',
     'X': 'HH:mm:ss',
     'y': 'yy',
@@ -100,30 +97,25 @@ class TimeFormat {
   };
 
   String _wrapStrptime2ICU(String template) {
-    var string = [],
-        i = -1,
-        j = 0,
-        n = template.length,
-        tempChar;
+    var string = [], i = -1, j = 0, n = template.length, tempChar;
     while (++i < n) {
       if (template[i] == '%') {
         string.add(template.substring(j, i));
-        if ((timeFormatPads[tempChar = template[++i]]) != null)
-          tempChar = template[++i];
-        if (timeFormatsTransform[tempChar] != null)
-          string.add(timeFormatsTransform[tempChar]);
+        if ((timeFormatPads[tempChar = template[++i]]) != null) tempChar =
+            template[++i];
+        if (timeFormatsTransform[tempChar] != null) string
+            .add(timeFormatsTransform[tempChar]);
         j = i + 1;
       }
     }
-    if (j < i)
-      string.add("'" + template.substring(j, i) + "'");
+    if (j < i) string.add("'" + template.substring(j, i) + "'");
     return string.join("");
   }
 }
 
 class UTCTimeFormat extends TimeFormat {
-  UTCTimeFormat(String template, [String identifier = 'en_US']):
-    super(template, identifier);
+  UTCTimeFormat(String template, [String identifier = 'en_US'])
+      : super(template, identifier);
 
   UTCTimeFormat _getInstance(String template) {
     return new UTCTimeFormat(template, _locale);

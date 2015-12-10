@@ -11,7 +11,7 @@ part of charted.charts;
 class StackedBarChartRenderer extends CartesianRendererBase {
   static const RADIUS = 2;
 
-  final Iterable<int> dimensionsUsingBand = const[0];
+  final Iterable<int> dimensionsUsingBand = const [0];
   final bool alwaysAnimate;
 
   @override
@@ -41,28 +41,32 @@ class StackedBarChartRenderer extends CartesianRendererBase {
         dimensionScale = area.dimensionScales.first;
 
     var rows = new List()
-      ..addAll(area.data.rows.map((e) =>
-          new List.generate(measuresCount,
-              (i) => e.elementAt(series.measures.elementAt(_reverseIdx(i))))));
+      ..addAll(area.data.rows.map((e) => new List.generate(measuresCount,
+          (i) => e.elementAt(series.measures.elementAt(_reverseIdx(i))))));
 
-    var dimensionVals = area.data.rows.map(
-        (row) => row.elementAt(area.config.dimensions.first)).toList();
+    var dimensionVals = area.data.rows
+        .map((row) => row.elementAt(area.config.dimensions.first))
+        .toList();
 
     var groups = root.selectAll('.stack-rdr-rowgroup').data(rows);
     var animateBarGroups = alwaysAnimate || !groups.isEmpty;
     groups.enter.append('g')
       ..classed('stack-rdr-rowgroup')
-      ..attrWithCallback('transform', (d, i, c) => verticalBars ?
-          'translate(${dimensionScale.scale(dimensionVals[i])}, 0)' :
-          'translate(0, ${dimensionScale.scale(dimensionVals[i])})');
+      ..attrWithCallback(
+          'transform',
+          (d, i, c) => verticalBars
+              ? 'translate(${dimensionScale.scale(dimensionVals[i])}, 0)'
+              : 'translate(0, ${dimensionScale.scale(dimensionVals[i])})');
     groups.attrWithCallback('data-row', (d, i, e) => i);
     groups.exit.remove();
 
     if (animateBarGroups) {
       groups.transition()
-        ..attrWithCallback('transform', (d, i, c) => verticalBars ?
-            'translate(${dimensionScale.scale(dimensionVals[i])}, 0)' :
-            'translate(0, ${dimensionScale.scale(dimensionVals[i])})')
+        ..attrWithCallback(
+            'transform',
+            (d, i, c) => verticalBars
+                ? 'translate(${dimensionScale.scale(dimensionVals[i])}, 0)'
+                : 'translate(0, ${dimensionScale.scale(dimensionVals[i])})')
         ..duration(theme.transitionDurationMilliseconds);
     }
 
@@ -83,15 +87,13 @@ class StackedBarChartRenderer extends CartesianRendererBase {
           prevOffsetVal[prevOffsetVal.length - 1] = offsetVal;
         }
       });
-     }
-
+    }
 
     var barWidth = dimensionScale.rangeBand - theme.defaultStrokeWidth;
 
     // Calculate height of each segment in the bar.
     // Uses prevAllZeroHeight and prevOffset to track previous segments
-    var prevAllZeroHeight = true,
-        prevOffset = 0;
+    var prevAllZeroHeight = true, prevOffset = 0;
     var getBarLength = (d, i) {
       if (!verticalBars) return measureScale.scale(d).round();
       var retval = rect.height - measureScale.scale(d).round();
@@ -121,8 +123,7 @@ class StackedBarChartRenderer extends CartesianRendererBase {
 
     // Initial "y" position of a bar that is being created.
     // Only used when animateBarGroups is set to true.
-    var ic = 10000000,
-        order = 0;
+    var ic = 10000000, order = 0;
     var getInitialBarPos = (i) {
       var tempY;
       if (i <= ic && i > 0) {
@@ -163,14 +164,15 @@ class StackedBarChartRenderer extends CartesianRendererBase {
     var buildPath = (d, int i, Element e, bool animate, int roundIdx) {
       var position = animate ? getInitialBarPos(i) : getBarPos(d, i),
           length = animate ? 0 : getBarLength(d, i),
-          radius = series.measures.elementAt(_reverseIdx(i)) == roundIdx ? RADIUS : 0,
+          radius =
+          series.measures.elementAt(_reverseIdx(i)) == roundIdx ? RADIUS : 0,
           path = (length != 0)
               ? verticalBars
                   ? topRoundedRect(0, position, barWidth, length, radius)
                   : rightRoundedRect(position, 0, length, barWidth, radius)
               : '';
-      e.attributes['data-offset'] = verticalBars ?
-          position.toString() : (position + length).toString();
+      e.attributes['data-offset'] =
+          verticalBars ? position.toString() : (position + length).toString();
       return path;
     };
 
@@ -189,8 +191,8 @@ class StackedBarChartRenderer extends CartesianRendererBase {
       rect.classes.add('stack-rdr-bar');
 
       rect.attributes
-        ..['d'] = buildPath (d == null ? 0 : d, i, rect, animateBarGroups,
-            roundIndex)
+        ..['d'] =
+            buildPath(d == null ? 0 : d, i, rect, animateBarGroups, roundIndex)
         ..['stroke-width'] = '${theme.defaultStrokeWidth}px'
         ..['fill'] = color
         ..['stroke'] = color;
@@ -235,7 +237,7 @@ class StackedBarChartRenderer extends CartesianRendererBase {
           var row = int.parse(e.parent.dataset['row']),
               roundIndex = _lastMeasureWithData[row];
           return buildPath(d == null ? 0 : d, i, e, false, roundIndex);
-      });
+        });
     }
 
     bar.exit.remove();
@@ -285,12 +287,12 @@ class StackedBarChartRenderer extends CartesianRendererBase {
     var groups = host.querySelectorAll('.stack-rdr-rowgroup');
     if (groups == null || groups.isEmpty) return;
 
-    for(int i = 0, len = groups.length; i < len; ++i) {
+    for (int i = 0, len = groups.length; i < len; ++i) {
       var group = groups.elementAt(i),
           bars = group.querySelectorAll('.stack-rdr-bar'),
           row = int.parse(group.dataset['row']);
 
-      for(int j = 0, barsCount = bars.length; j < barsCount; ++j) {
+      for (int j = 0, barsCount = bars.length; j < barsCount; ++j) {
         var bar = bars.elementAt(j),
             column = int.parse(bar.dataset['column']),
             color = colorForValue(column, row),
@@ -314,8 +316,7 @@ class StackedBarChartRenderer extends CartesianRendererBase {
     if (controller == null) return;
     var rowStr = e.parent.dataset['row'];
     var row = rowStr != null ? int.parse(rowStr) : null;
-    controller.add(new DefaultChartEventImpl(
-        scope.event, area, series, row,
+    controller.add(new DefaultChartEventImpl(scope.event, area, series, row,
         series.measures.elementAt(_reverseIdx(index)), data));
   }
 

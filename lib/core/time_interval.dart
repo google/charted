@@ -22,14 +22,13 @@ class TimeInterval {
   DateTime floor(dynamic date) {
     assert(date is int || date is DateTime);
     if (date is int) {
-      date = new DateTime.fromMillisecondsSinceEpoch(date) ;
+      date = new DateTime.fromMillisecondsSinceEpoch(date);
     }
     return _floor(date);
   }
 
   DateTime round(dynamic date) {
-    DateTime d0 = floor(date),
-             d1 = offset(d0, 1);
+    DateTime d0 = floor(date), d1 = offset(d0, 1);
     int ms = date is int ? date : date.millisecondsSinceEpoch;
     return (ms - d0.millisecondsSinceEpoch < d1.millisecondsSinceEpoch - ms)
         ? d0
@@ -53,18 +52,15 @@ class TimeInterval {
     if (dt > 1) {
       while (time.isBefore(t1)) {
         if ((_number(time) % dt) == 0) {
-          values.add(
-              new DateTime.fromMillisecondsSinceEpoch(
-                  time.millisecondsSinceEpoch));
+          values.add(new DateTime.fromMillisecondsSinceEpoch(
+              time.millisecondsSinceEpoch));
         }
         time = _step(time, 1);
       }
-    }
-    else {
+    } else {
       while (time.isBefore(t1)) {
-        values.add(
-            new DateTime.fromMillisecondsSinceEpoch(
-                time.millisecondsSinceEpoch));
+        values.add(new DateTime.fromMillisecondsSinceEpoch(
+            time.millisecondsSinceEpoch));
         time = _step(time, 1);
       }
     }
@@ -72,63 +68,78 @@ class TimeInterval {
   }
 
   static TimeInterval second = new TimeInterval(
-      (DateTime date) =>
-          new DateTime.fromMillisecondsSinceEpoch(
-              (date.millisecondsSinceEpoch ~/ 1000) * 1000),
+      (DateTime date) => new DateTime.fromMillisecondsSinceEpoch(
+          (date.millisecondsSinceEpoch ~/ 1000) * 1000),
       (DateTime date, int offset) =>
           date = new DateTime.fromMillisecondsSinceEpoch(
               date.millisecondsSinceEpoch + offset * 1000),
       (DateTime date) => date.second);
 
   static TimeInterval minute = new TimeInterval(
-      (DateTime date) =>
-          new DateTime.fromMillisecondsSinceEpoch(
-              (date.millisecondsSinceEpoch ~/ 60000) * 60000),
+      (DateTime date) => new DateTime.fromMillisecondsSinceEpoch(
+          (date.millisecondsSinceEpoch ~/ 60000) * 60000),
       (DateTime date, int offset) =>
           date = new DateTime.fromMillisecondsSinceEpoch(
               date.millisecondsSinceEpoch + offset * 60000),
       (DateTime date) => date.minute);
 
   static TimeInterval hour = new TimeInterval(
-      (DateTime date) =>
-          new DateTime.fromMillisecondsSinceEpoch(
-              (date.millisecondsSinceEpoch ~/ 3600000) * 3600000),
+      (DateTime date) => new DateTime.fromMillisecondsSinceEpoch(
+          (date.millisecondsSinceEpoch ~/ 3600000) * 3600000),
       (DateTime date, int offset) =>
           date = new DateTime.fromMillisecondsSinceEpoch(
               date.millisecondsSinceEpoch + offset * 3600000),
       (DateTime date) => date.hour);
 
   static TimeInterval day = new TimeInterval(
-      (DateTime date) =>
-          new DateTime(date.year, date.month, date.day),
-      (DateTime date, int offset) =>
-          new DateTime(date.year, date.month, date.day + offset,
-              date.hour, date.minute, date.second, date.millisecond),
+      (DateTime date) => new DateTime(date.year, date.month, date.day),
+      (DateTime date, int offset) => new DateTime(
+          date.year,
+          date.month,
+          date.day + offset,
+          date.hour,
+          date.minute,
+          date.second,
+          date.millisecond),
       (DateTime date) => date.day - 1);
 
   static TimeInterval week = new TimeInterval(
       (DateTime date) =>
           new DateTime(date.year, date.month, date.day - (date.weekday % 7)),
-      (DateTime date, int offset) =>
-          new DateTime(date.year, date.month, date.day + offset * 7,
-              date.hour, date.minute, date.second, date.millisecond ),
-      (DateTime date) {
-        var day = year.floor(date).day;
-        return (dayOfYear(date) +  day % 7) ~/ 7;
-      });
+      (DateTime date, int offset) => new DateTime(
+          date.year,
+          date.month,
+          date.day + offset * 7,
+          date.hour,
+          date.minute,
+          date.second,
+          date.millisecond), (DateTime date) {
+    var day = year.floor(date).day;
+    return (dayOfYear(date) + day % 7) ~/ 7;
+  });
 
   static TimeInterval month = new TimeInterval(
       (DateTime date) => new DateTime(date.year, date.month, 1),
-      (DateTime date, num offset) =>
-          new DateTime(date.year, date.month + offset, date.day,
-              date.hour, date.minute, date.second, date.millisecond),
+      (DateTime date, num offset) => new DateTime(
+          date.year,
+          date.month + offset,
+          date.day,
+          date.hour,
+          date.minute,
+          date.second,
+          date.millisecond),
       (DateTime date) => date.month - 1);
 
   static TimeInterval year = new TimeInterval(
       (DateTime date) => new DateTime(date.year),
-      (DateTime date, num offset) =>
-          new DateTime(date.year + offset, date.month, date.day,
-              date.hour, date.minute, date.second, date.millisecond),
+      (DateTime date, num offset) => new DateTime(
+          date.year + offset,
+          date.month,
+          date.day,
+          date.hour,
+          date.minute,
+          date.second,
+          date.millisecond),
       (DateTime date) => date.year);
 
   static int dayOfYear(DateTime date) =>

@@ -10,7 +10,7 @@ library charted.core.text_metrics.segmentation_utils;
 
 const CODE_CATEGORY_OTHER = 0;
 
-const CodeUnitCategory = const{
+const CodeUnitCategory = const {
   'Other': CODE_CATEGORY_OTHER,
   'CR': 1,
   'LF': 2,

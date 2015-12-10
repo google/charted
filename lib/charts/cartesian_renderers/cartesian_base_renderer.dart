@@ -1,10 +1,10 @@
-/**
- * Copyright 2014 Google Inc. All rights reserved.
- *
- * Use of this source code is governed by a BSD-style
- * license that can be found in the LICENSE file or at
- * https://developers.google.com/open-source/licenses/bsd
- */
+//
+// Copyright 2014 Google Inc. All rights reserved.
+//
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file or at
+// https://developers.google.com/open-source/licenses/bsd
+//
 
 part of charted.charts;
 
@@ -20,9 +20,9 @@ abstract class CartesianRendererBase implements CartesianRenderer {
   List<int> _columnStateCache;
   List<Iterable<String>> _columnStylesCache;
 
-  final _valueColorCache = new Map<int,String>();
-  final _valueFilterCache = new Map<int,String>();
-  final _valueStylesCache = new Map<int,Iterable<String>>();
+  final _valueColorCache = new Map<int, String>();
+  final _valueFilterCache = new Map<int, String>();
+  final _valueStylesCache = new Map<int, Iterable<String>>();
 
   Element host;
   Selection root;
@@ -103,13 +103,10 @@ abstract class CartesianRendererBase implements CartesianRenderer {
   @override
   Extent extentForRow(Iterable row) {
     assert(series != null && area != null);
-    var measures = series.measures,
-        max = SMALL_INT_MIN,
-        min = SMALL_INT_MAX;
+    var measures = series.measures, max = SMALL_INT_MIN, min = SMALL_INT_MAX;
 
-    for (int i = 0, len = measures.length;  i < len; ++i) {
-      var measure = measures.elementAt(i),
-          value = row.elementAt(measure);
+    for (int i = 0, len = measures.length; i < len; ++i) {
+      var measure = measures.elementAt(i), value = row.elementAt(measure);
       if (value != null && value.isFinite) {
         if (value > max) {
           max = value;
@@ -183,14 +180,13 @@ abstract class CartesianRendererBase implements CartesianRenderer {
   Iterable<String> stylesForColumn(int column) {
     if (_columnStylesCache[column] == null) {
       if (state == null || area.useRowColoring) {
-        _columnStylesCache[column] = const[];
+        _columnStylesCache[column] = const [];
       } else {
-        var styles = [],
-            flags = _columnStateCache[column];
+        var styles = [], flags = _columnStateCache[column];
 
         if (flags & ChartState.COL_SELECTED != 0) {
           styles.add(ChartState.COL_SELECTED_CLASS);
-        } else if (flags & ChartState.COL_UNSELECTED != 0){
+        } else if (flags & ChartState.COL_UNSELECTED != 0) {
           styles.add(ChartState.COL_UNSELECTED_CLASS);
         }
 
@@ -226,7 +222,7 @@ abstract class CartesianRendererBase implements CartesianRenderer {
     var hash = hash2(column, row);
     if (_valueStylesCache[hash] == null) {
       if (state == null) {
-        _valueStylesCache[hash] = const[];
+        _valueStylesCache[hash] = const [];
       } else {
         var styles = stylesForColumn(column).toList();
         if (state.highlights.isNotEmpty) {
@@ -268,8 +264,8 @@ abstract class CartesianRendererBase implements CartesianRenderer {
       var flags = _columnStateCache[column];
       if (state.highlights.isNotEmpty) {
         flags |= (state.highlights.any((x) => x.last == row)
-        ? ChartState.VAL_HIGHLIGHTED
-        : ChartState.VAL_UNHIGHLIGHTED);
+            ? ChartState.VAL_HIGHLIGHTED
+            : ChartState.VAL_UNHIGHLIGHTED);
       }
       if (state.hovered != null && state.hovered.last == row) {
         flags |= ChartState.VAL_HOVERED;

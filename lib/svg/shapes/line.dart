@@ -18,9 +18,7 @@ typedef String LineInterpolator(Iterable<math.Point> points, int tension);
 class SvgLine implements SvgShape {
   static const LINE_INTERPOLATOR_LINEAR = 'linear';
 
-  static final LINE_INTERPOLATORS = {
-    LINE_INTERPOLATOR_LINEAR: _linear
-  };
+  static final LINE_INTERPOLATORS = {LINE_INTERPOLATOR_LINEAR: _linear};
 
   /// Callback to access/convert datum to x coordinate value.
   final SelectionValueAccessor<num> xValueAccessor;
@@ -39,12 +37,12 @@ class SvgLine implements SvgShape {
   /// Tension of the line, as used by a few interpolators.
   final int tension;
 
-  SvgLine({
-      this.xValueAccessor: defaultDataToX,
+  SvgLine(
+      {this.xValueAccessor: defaultDataToX,
       this.yValueAccessor: defaultDataToY,
       this.isDefined: defaultIsDefined,
       this.tension: 0,
-      String interpolate: LINE_INTERPOLATOR_LINEAR })
+      String interpolate: LINE_INTERPOLATOR_LINEAR})
       : interpolator = LINE_INTERPOLATORS[interpolate] {
     assert(interpolator != null);
   }
@@ -53,13 +51,12 @@ class SvgLine implements SvgShape {
   @override
   String path(data, int index, Element e) {
     assert(data is Iterable);
-    var segments = new StringBuffer(),
-        points = [];
+    var segments = new StringBuffer(), points = [];
     for (int i = 0, len = data.length; i < len; ++i) {
       final d = data.elementAt(i);
       if (isDefined(d, i, e)) {
         points.add(new math.Point(xValueAccessor(d, i), yValueAccessor(d, i)));
-      } else if (points.isNotEmpty){
+      } else if (points.isNotEmpty) {
         segments.write('M${interpolator(points, tension)}');
         points.clear();
       }

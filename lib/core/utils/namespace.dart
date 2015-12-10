@@ -13,7 +13,7 @@ part of charted.core.utils;
 /// namespace.
 class Namespace {
   /// Supported namespace prefixes mapped to their URIs.
-  static const Map<String,String> NS_PREFIXES = const {
+  static const Map<String, String> NS_PREFIXES = const {
     "svg": "http://www.w3.org/2000/svg",
     "xhtml": "http://www.w3.org/1999/xhtml",
     "xlink": "http://www.w3.org/1999/xlink",
@@ -30,10 +30,10 @@ class Namespace {
       return parent.ownerDocument.createElementNS(parent.namespaceUri, tag);
     }
     Namespace parsed = new Namespace._internal(tag, separatorIndex);
-    return parsed.namespaceUri == null ?
-        parent.ownerDocument.createElementNS(parent.namespaceUri, tag) :
-        parent.ownerDocument.createElementNS(parsed.namespaceUri,
-            parsed.localName);
+    return parsed.namespaceUri == null
+        ? parent.ownerDocument.createElementNS(parent.namespaceUri, tag)
+        : parent.ownerDocument
+            .createElementNS(parsed.namespaceUri, parsed.localName);
   }
 
   /// Local part of the Element's tag name.

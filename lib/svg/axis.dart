@@ -43,17 +43,17 @@ class SvgAxis {
   /// Formatter for the tick labels
   FormatFunction _tickFormat;
 
-  SvgAxis({
-      this.orientation: ORIENTATION_BOTTOM,
+  SvgAxis(
+      {this.orientation: ORIENTATION_BOTTOM,
       this.innerTickSize: 6,
       this.outerTickSize: 6,
       this.tickPadding: 3,
       Iterable tickValues,
       FormatFunction tickFormat,
-      Scale scale }) : scale = scale == null ? new LinearScale() : scale {
-    _tickFormat = tickFormat == null
-        ? this.scale.createTickFormatter()
-        : tickFormat;
+      Scale scale})
+      : scale = scale == null ? new LinearScale() : scale {
+    _tickFormat =
+        tickFormat == null ? this.scale.createTickFormatter() : tickFormat;
     _tickValues = isNullOrEmpty(tickValues) ? this.scale.ticks : tickValues;
   }
 
@@ -63,13 +63,12 @@ class SvgAxis {
 
   /// Draw an axis on each non-null element in selection
   draw(Selection g, {SvgAxisTicks axisTicksBuilder, bool isRTL: false}) =>
-      g.each((d, i, e) => create(
-          e, g.scope, axisTicksBuilder: axisTicksBuilder, isRTL: isRTL));
+      g.each((d, i, e) =>
+          create(e, g.scope, axisTicksBuilder: axisTicksBuilder, isRTL: isRTL));
 
   /// Create an axis on [element].
-  create(Element element, SelectionScope scope, {
-      SvgAxisTicks axisTicksBuilder, bool isRTL: false}) {
-
+  create(Element element, SelectionScope scope,
+      {SvgAxisTicks axisTicksBuilder, bool isRTL: false}) {
     var group = scope.selectElements([element]),
         older = _scales[element],
         current = _scales[element] = scale.clone(),
@@ -101,10 +100,10 @@ class SvgAxis {
     var enter = ticks.enter.appendWithCallback((d, i, e) {
       var group = Namespace.createChildElement('g', e)
         ..attributes['class'] = 'tick'
-        ..append(Namespace.createChildElement('line',  e))
+        ..append(Namespace.createChildElement('line', e))
         ..append(Namespace.createChildElement('text', e)
-            ..attributes['dy'] =
-                isVertical ? '0.32em' : (isBottom ? '0.71em' : '0'));
+          ..attributes['dy'] =
+              isVertical ? '0.32em' : (isBottom ? '0.71em' : '0'));
       if (!isInitialRender) {
         group.style.setProperty('opacity', EPSILON.toString());
       }
@@ -183,7 +182,7 @@ class SvgAxis {
         range = current.rangeExtent;
     if (path == null) {
       path = Namespace.createChildElement('path', element)
-          ..setAttribute('class', 'domain');
+        ..setAttribute('class', 'domain');
     }
     path.attributes['d'] = isLeft || isRight
         ? 'M${tickSize},${range.min}H0V${range.max}H${tickSize}'

@@ -152,8 +152,8 @@ abstract class Selection {
    * selection (with data associated to the element, index of the element in
    * it's group and the element itself) to get the value of the property.
    */
-  void styleWithCallback(String property,
-      SelectionCallback<String> fn, {String priority});
+  void styleWithCallback(String property, SelectionCallback<String> fn,
+      {String priority});
 
   /**
    * Sets textContent of all elements in the selection to [val]. A side-effect
@@ -262,8 +262,8 @@ abstract class Selection {
    * it's group and the element itself) to get the data to be set on the
    * current element.
    */
-  DataSelection dataWithCallback(
-      SelectionCallback<Iterable> fn, [SelectionKeyFunction keyFn]);
+  DataSelection dataWithCallback(SelectionCallback<Iterable> fn,
+      [SelectionKeyFunction keyFn]);
 
   /**
    * Associates data with all the elements - no join is performed. Unlike
@@ -287,7 +287,6 @@ abstract class Selection {
   Transition transition();
 }
 
-
 /*
  * Group of elements in the selection.
  * Each selection may contain more than one group of elements.
@@ -296,7 +295,6 @@ abstract class SelectionGroup {
   Iterable<Element> elements;
   Element parent;
 }
-
 
 /**
  * [EnterSelection] is a sub-selection that represents missing elements of a

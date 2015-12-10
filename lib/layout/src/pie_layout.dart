@@ -43,8 +43,8 @@ class PieLayout {
    * arcs in a pie-chart or donut-chart.
    */
   List layout(List data, [int ei, Element e]) {
-    var values = new List.generate(data.length,
-            (int i) => accessor(data[i], i)),
+    var values =
+        new List.generate(data.length, (int i) => accessor(data[i], i)),
         startAngle = startAngleCallback(data, ei, e),
         endAngle = endAngleCallback(data, ei, e),
         total = sum(values),
@@ -67,12 +67,10 @@ class PieLayout {
   }
 
   /** Sets a constant value to start angle of the layout */
-  set startAngle(num value) =>
-      startAngleCallback = toCallback(value);
+  set startAngle(num value) => startAngleCallback = toCallback(value);
 
   /** Sets a constant value to end angle of the layout */
-  set endAngle(num value) =>
-      endAngleCallback = toCallback(value);
+  set endAngle(num value) => endAngleCallback = toCallback(value);
 
   /** Default value accessor */
   static num defaultValueAccessor(num d, i) => d;

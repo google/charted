@@ -13,7 +13,7 @@ class PieChartRenderer extends LayoutRendererBase {
   static const STATS_VALUE = 'value-only';
   static const STATS_VALUE_PERCENTAGE = 'value-percentage';
 
-  final Iterable<int> dimensionsUsingBand = const[];
+  final Iterable<int> dimensionsUsingBand = const [];
   final String statsMode;
   final num innerRadiusRatio;
   final int maxSliceCount;
@@ -29,8 +29,8 @@ class PieChartRenderer extends LayoutRendererBase {
 
   Iterable otherRow;
 
-  PieChartRenderer({
-      num innerRadiusRatio: 0,
+  PieChartRenderer(
+      {num innerRadiusRatio: 0,
       bool showLabels,
       this.sortDataByValue: true,
       this.statsMode: STATS_PERCENTAGE,
@@ -49,8 +49,8 @@ class PieChartRenderer extends LayoutRendererBase {
   }
 
   @override
-  Iterable<ChartLegendItem> layout(
-      Element element, {Future schedulePostRender}) {
+  Iterable<ChartLegendItem> layout(Element element,
+      {Future schedulePostRender}) {
     _ensureReadyToDraw(element);
 
     var radius = math.min(rect.width, rect.height) / 2;
@@ -81,8 +81,7 @@ class PieChartRenderer extends LayoutRendererBase {
       var displayed = indices.take(maxSliceCount).toList();
       var otherItemsValue = 0;
       for (int i = displayed.length; i < indices.length; ++i) {
-        var index = indices.elementAt(i),
-            row = area.data.rows.elementAt(index);
+        var index = indices.elementAt(i), row = area.data.rows.elementAt(index);
         otherItemsValue += row == null || row.elementAt(measure) == null
             ? 0
             : row.elementAt(measure);
@@ -126,8 +125,7 @@ class PieChartRenderer extends LayoutRendererBase {
           ..['stroke'] = '#ffffff';
 
         e.append(
-            Namespace.createChildElement('text', e)
-              ..classes.add('pie-label'));
+            Namespace.createChildElement('text', e)..classes.add('pie-label'));
       })
       ..on('click', (d, i, e) => _event(mouseClickController, d, i, e))
       ..on('mouseover', (d, i, e) => _event(mouseOverController, d, i, e))
@@ -138,13 +136,16 @@ class PieChartRenderer extends LayoutRendererBase {
     _legend.clear();
     var items = new List.generate(data.length, (i) {
       SvgArcData d = data.elementAt(i);
-      Iterable row = d.data == SMALL_INT_MAX
-          ? otherRow
-          : area.data.rows.elementAt(d.data);
+      Iterable row =
+          d.data == SMALL_INT_MAX ? otherRow : area.data.rows.elementAt(d.data);
 
-      return new ChartLegendItem(index: d.data, color: colorForData(d.data, i),
-          label: row.elementAt(dimension), series: [series],
-          value: '${(((d.endAngle - d.startAngle) * 50) / math.PI).toStringAsFixed(2)}%');
+      return new ChartLegendItem(
+          index: d.data,
+          color: colorForData(d.data, i),
+          label: row.elementAt(dimension),
+          series: [series],
+          value:
+              '${(((d.endAngle - d.startAngle) * 50) / math.PI).toStringAsFixed(2)}%');
     });
     return _legend..addAll(area.config.isRTL ? items.reversed : items);
   }
@@ -176,7 +177,7 @@ class PieChartRenderer extends LayoutRendererBase {
   void _event(StreamController controller, data, int index, Element e) {
     // Currently, events are not supported on "Other" pie
     if (controller == null || data.data == SMALL_INT_MAX) return;
-    controller.add(new DefaultChartEventImpl(
-         scope.event, area, series, data.data, series.measures.first, data.value));
+    controller.add(new DefaultChartEventImpl(scope.event, area, series,
+        data.data, series.measures.first, data.value));
   }
 }

@@ -38,10 +38,10 @@ class AnimationTimer extends LinkedListEntry {
 
   /// Schedule a new [callback] to be called [delay] micro-seconds after
   /// [then] micro-seconds since epoch.
-  AnimationTimer(this.callback, { int delay: 0, int then: null })
+  AnimationTimer(this.callback, {int delay: 0, int then: null})
       : time = then == null
-          ? new DateTime.now().millisecondsSinceEpoch + delay
-          : then + delay {
+            ? new DateTime.now().millisecondsSinceEpoch + delay
+            : then + delay {
     _queue.add(this);
     if (!_animationFrameRequested) {
       if (_timerScheduled != null) {
@@ -59,7 +59,7 @@ class AnimationTimer extends LinkedListEntry {
     int earliest = null;
     AnimationTimer timer = _queue.isEmpty ? null : _queue.first;
 
-    while(timer != null) {
+    while (timer != null) {
       bool finished = false;
       AnimationTimer ref = timer;
 
@@ -83,15 +83,13 @@ class AnimationTimer extends LinkedListEntry {
 
     if (delay == null) {
       _animationFrameRequested = false;
-    }
-    else if (delay > 24) {
+    } else if (delay > 24) {
       if (_timerScheduled != null) {
         _timerScheduled.cancel();
       }
       _timerScheduled = new Timer(new Duration(milliseconds: delay), _step);
       _animationFrameRequested = false;
-    }
-    else {
+    } else {
       _animationFrameRequested = true;
       window.animationFrame.then(_step);
     }

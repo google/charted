@@ -24,7 +24,7 @@ class SelectionScope {
    * [selector] as the root.
    */
   SelectionScope.selector(String selector) {
-    if (selector == null || selector.isEmpty ){
+    if (selector == null || selector.isEmpty) {
       throw new ArgumentError('Selector cannot be empty');
     }
     _root = document.querySelector(selector);
@@ -74,7 +74,7 @@ class SelectionScope {
    * elements in it.
    */
   Selection selectAll(String selector) =>
-      new _SelectionImpl.all(selector:selector, scope:this);
+      new _SelectionImpl.all(selector: selector, scope: this);
 
   /**
    * Creates a new [Selection] containing [elements].  Assumes that

@@ -50,7 +50,7 @@ abstract class ChartTheme {
   String get defaultFont;
 
   /// Easing function for the transition
-  EasingFunction  get transitionEasingType => Transition.defaultEasingType;
+  EasingFunction get transitionEasingType => Transition.defaultEasingType;
 
   /// Easing mode for the transition
   EasingModeFunction get transitionEasingMode => Transition.defaultEasingMode;

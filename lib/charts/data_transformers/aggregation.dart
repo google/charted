@@ -1,35 +1,31 @@
-/*
- * Copyright 2014 Google Inc. All rights reserved.
- *
- * Use of this source code is governed by a BSD-style
- * license that can be found in the LICENSE file or at
- * https://developers.google.com/open-source/licenses/bsd
- */
+//
+// Copyright 2014 Google Inc. All rights reserved.
+//
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file or at
+// https://developers.google.com/open-source/licenses/bsd
+//
 
 part of charted.charts;
 
-/**
- * Function callback to filter items in the input
- */
+///Function callback to filter items in the input
 typedef bool AggregationFilterFunc(var item);
 
 typedef dynamic FieldAccessor(dynamic item, dynamic key);
 
-
-// TODO(midoringo, prsd): Consider splitting each aggregation type into its own
-// strategy object for readability, maintainability, and scalability.
-/**
- * Given list of items, dimensions and facts, compute
- * aggregates (COUNT, SUM, MIN, MAX) for facts at each dimension level.
- */
+/// Given list of items, dimensions and facts, compute
+/// aggregates (COUNT, SUM, MIN, MAX) for facts at each dimension level.
 class AggregationModel {
-
   // Number of aggregations we collect on each fact
   int _aggregationTypesCount = 0;
 
   // Currently supported list of aggregations.
-  static final List<String> supportedAggregationTypes =
-      ['sum', 'min', 'max', 'valid'];
+  static final List<String> supportedAggregationTypes = [
+    'sum',
+    'min',
+    'max',
+    'valid'
+  ];
 
   // Computed aggregation types.
   List<String> computedAggregationTypes;
@@ -103,18 +99,15 @@ class AggregationModel {
   FieldAccessor dimensionAccessor;
   FieldAccessor factsAccessor;
 
-  /**
-   * Create a new [AggregationModel] from a [collection] of items,
-   * list of [dimensions] on which the items are grouped and a list of [facts]
-   * on which aggregations are computed.
-   */
-  AggregationModel(List collection, List dimensions,
-                   List facts,
-                   { List<String> aggregationTypes,
-                     this.walkThroughMap: false,
-                     this.comparators,
-                     this.dimensionAccessor,
-                     this.factsAccessor}) {
+  /// Create a new [AggregationModel] from a [collection] of items,
+  /// list of [dimensions] on which the items are grouped and a list of [facts]
+  /// on which aggregations are computed.
+  AggregationModel(List collection, List dimensions, List facts,
+      {List<String> aggregationTypes,
+      this.walkThroughMap: false,
+      this.comparators,
+      this.dimensionAccessor,
+      this.factsAccessor}) {
     _init(collection, dimensions, facts, aggregationTypes);
   }
 
@@ -127,17 +120,15 @@ class AggregationModel {
   void _timeItEnd() {
     _timeItWatch.stop();
     _logger.info('[aggregations/$_timeItName] '
-                 '${_timeItWatch.elapsed.inMilliseconds}ms/${_rows.length}r');
+        '${_timeItWatch.elapsed.inMilliseconds}ms/${_rows.length}r');
   }
 
   List get factFields => _factFields;
   List get dimensionFields => _dimFields;
 
-  /**
-   * Initialize the view
-   */
-  void _init(List collection, List dimensions,
-             List facts, List<String> aggregationTypes) {
+  /// Initialize the view
+  void _init(List collection, List dimensions, List facts,
+      List<String> aggregationTypes) {
     if (collection == null) {
       throw new ArgumentError('Data cannot be empty or null');
     }
@@ -183,7 +174,7 @@ class AggregationModel {
 
     _aggregationTypesCount = aggregationTypes.length;
     for (int i = 0; i < _aggregationTypesCount; i++) {
-      switch(aggregationTypes[i]) {
+      switch (aggregationTypes[i]) {
         case 'sum':
           _offsetSum = i;
           break;
@@ -204,9 +195,7 @@ class AggregationModel {
     _preprocess();
   }
 
-  /**
-   * Re-calculate aggregations based on new dimensions.
-   */
+  /// Re-calculate aggregations based on new dimensions.
   void groupBy(List dimensions, [AggregationFilterFunc filter = null]) {
     if (dimensions == null) {
       dimensions = [];
@@ -217,13 +206,13 @@ class AggregationModel {
 
     _dimPrefixLength = 0;
     while (_dimPrefixLength < _dimFields.length &&
-           _dimPrefixLength < savedDimFields.length &&
-           savedDimFields[_dimPrefixLength] == _dimFields[_dimPrefixLength]) {
+        _dimPrefixLength < savedDimFields.length &&
+        savedDimFields[_dimPrefixLength] == _dimFields[_dimPrefixLength]) {
       ++_dimPrefixLength;
     }
 
     _createBuffers();
-    _preprocess(groupBy:true);
+    _preprocess(groupBy: true);
 
     // For groupBy, compute immediately.
     compute(filter);
@@ -232,12 +221,11 @@ class AggregationModel {
     _updateCachedEntities();
   }
 
-  /**
-   * Create buffers.
-   * This method is called when the object is being created and when
-   * a groupBy is called to change the dimensions on which
-   * aggregations are computed.
-   */
+  /// Create buffers.
+  ///
+  /// This method is called when the object is being created and when
+  /// a groupBy is called to change the dimensions on which
+  /// aggregations are computed.
   void _createBuffers() {
     // Create both when object is created and groupBy is called
     _dimEnumCache = new Int32List(_dimFields.length * _rows.length);
@@ -259,13 +247,11 @@ class AggregationModel {
         (i) => i < _dimPrefixLength ? oldDimToInt[i] : new Map<dynamic, int>());
   }
 
-  /**
-   * Check cache entries
-   * When data is grouped by a new dimensions, entities that were
-   * created prior to the groupBy should be cleared and removed from cache
-   * if they aren't valid anymore.
-   * Update the entities that are valid after the groupBy.
-   */
+  /// Check cache entries
+  /// When data is grouped by a new dimensions, entities that were
+  /// created prior to the groupBy should be cleared and removed from cache
+  /// if they aren't valid anymore.
+  /// Update the entities that are valid after the groupBy.
   void _updateCachedEntities() {
     List keys = new List.from(_entityCache.keys, growable: false);
     keys.forEach((key) {
@@ -284,9 +270,7 @@ class AggregationModel {
   }
 
   final Map<String, List> _parsedKeys = {};
-  /**
-   * Get value from a map-like object
-   */
+  /// Get value from a map-like object
   dynamic _fetch(var item, String key) {
     if (walkThroughMap && key.contains('.')) {
       return walk(item, key, _parsedKeys);
@@ -295,14 +279,11 @@ class AggregationModel {
     }
   }
 
-  /*
-   * Preprocess Data
-   *  - Enumerate dimension values
-   *  - Create sort orders for dimension values
-   *  - Cache facts in lists
-   */
+  /// Preprocess Data
+  ///  - Enumerate dimension values
+  ///  - Create sort orders for dimension values
+  ///  - Cache facts in lists
   void _preprocess({bool groupBy: false}) {
-
     _timeItStart('preprocess');
 
     // Enumerate dimensions...
@@ -316,8 +297,8 @@ class AggregationModel {
     int rowCount = _rows.length;
 
     for (int ri = 0, factsDataOffset = 0, dimDataOffset = 0;
-         ri < rowCount; ++ri, factsDataOffset += factsCount,
-         dimDataOffset += dimensionsCount) {
+        ri < rowCount;
+        ++ri, factsDataOffset += factsCount, dimDataOffset += dimensionsCount) {
       var item = _rows[ri];
 
       // Cache the fact values in the big buffer, but only
@@ -325,7 +306,7 @@ class AggregationModel {
       // after initialization)
       if (!groupBy) {
         for (int fi = 0; fi < factsCount; fi++) {
-          var value = factsAccessor(item,_factFields[fi]);
+          var value = factsAccessor(item, _factFields[fi]);
           _factsCache[factsDataOffset + fi] =
               (value == null) ? double.NAN : value.toDouble();
         }
@@ -358,8 +339,9 @@ class AggregationModel {
       // When a comparator is not specified, our implementation of the
       // comparator tries to gracefully handle null values.
       dimensionVals.sort(
-          comparators != null && comparators.containsKey(_dimFields[i]) ?
-              comparators[_dimFields[i]] : _defaultDimComparator);
+          comparators != null && comparators.containsKey(_dimFields[i])
+              ? comparators[_dimFields[i]]
+              : _defaultDimComparator);
 
       for (int si = 0; si < retval.length; ++si) {
         retval[_dimToIntMap[i][dimensionVals[si]]] = si;
@@ -383,14 +365,12 @@ class AggregationModel {
 
   // Ensures that null dimension values don't cause an issue with sorting
   _defaultDimComparator(Comparable left, Comparable right) =>
-      (left == null && right == null) ? 0 :
-          (left == null) ? -1 :
-              (right == null) ? 1 : left.compareTo(right);
+      (left == null && right == null)
+          ? 0
+          : (left == null) ? -1 : (right == null) ? 1 : left.compareTo(right);
 
-  /*
-   * Given item indices in rows, compare them based
-   * on the sort orders created while preprocessing data.
-   */
+  /// Given item indices in rows, compare them based
+  /// on the sort orders created while pre-processing data.
   _comparator(int one, int two) {
     if (one == two) {
       return 0;
@@ -401,7 +381,7 @@ class AggregationModel {
 
     for (int i = 0; i < _dimFields.length; ++i) {
       int diff = _dimSortOrders[i][_dimEnumCache[offsetOne + i]] -
-                 _dimSortOrders[i][_dimEnumCache[offsetTwo + i]];
+          _dimSortOrders[i][_dimEnumCache[offsetTwo + i]];
       if (diff != 0) {
         return diff;
       }
@@ -409,18 +389,17 @@ class AggregationModel {
     return 0;
   }
 
-  /**
-   * Compute aggregations
-   * If [filter] is not null, it would be used to filter out items that
-   * should not be included in the aggregates.
-   */
+  /// Compute aggregations
+  /// If [filter] is not null, it would be used to filter out items that
+  /// should not be included in the aggregates.
   void compute([AggregationFilterFunc filter = null]) {
     _timeItStart('compute');
 
     _dimToAggrMap = new Map<String, int>();
     _aggregations = new Float64List(AGGREGATIONS_BUFFER_LENGTH);
-    _filterResults = filter == null ?
-        null : new List<int>.filled((_rows.length ~/ SMI_BITS) + 1, 0);
+    _filterResults = filter == null
+        ? null
+        : new List<int>.filled((_rows.length ~/ SMI_BITS) + 1, 0);
 
     int rowCount = _rows.length;
     int dimensionCount = _dimFields.length;
@@ -439,10 +418,9 @@ class AggregationModel {
     _dimToAggrMap[''] = 0;
     _aggregations[_offsetSortedIndex] = 0.0;
 
-
     for (int ri = 0, index = 0, dimensionDataOffset = 0, factsDataOffset = 0;
-         ri < rowCount; ++ri, reset = false) {
-
+        ri < rowCount;
+        ++ri, reset = false) {
       // If filter is not null, check if this row must be included in
       // the aggregations and mark it accordingly.
       index = _sorted[ri];
@@ -472,8 +450,8 @@ class AggregationModel {
           currentDim[ci + 1] = currentBufferPos;
 
           // Save location to aggregations position in the buffer
-          _dimToAggrMap[new List.generate(di + 1,
-              (i) => currentDim[2 * i]).join(':')] = currentBufferPos;
+          _dimToAggrMap[new List.generate(di + 1, (i) => currentDim[2 * i])
+              .join(':')] = currentBufferPos;
 
           // Store items start position
           _aggregations[currentBufferPos + _offsetSortedIndex] = ri.toDouble();
@@ -485,8 +463,8 @@ class AggregationModel {
           isNewDimension = true;
         }
 
-        _updateAggregationsAt(currentDim[ci + 1],
-            factsDataOffset, isNewDimension);
+        _updateAggregationsAt(
+            currentDim[ci + 1], factsDataOffset, isNewDimension);
         isNewDimension = false;
       }
     }
@@ -494,20 +472,17 @@ class AggregationModel {
     _timeItEnd();
   }
 
-  /**
-   * Helper function that does the actual aggregations.
-   * This function is called once per row per dimension.
-   */
-  _updateAggregationsAt(int aggrDataOffset,
-                        int factsDataOffset, bool isNewDimension) {
+  /// Helper function that does the actual aggregations.
+  /// This function is called once per row per dimension.
+  _updateAggregationsAt(
+      int aggrDataOffset, int factsDataOffset, bool isNewDimension) {
     // Update count.
     _aggregations[aggrDataOffset + _offsetFilteredCount] += 1;
 
     // Update aggregation for each of the facts.
     for (int fi = 0, bufferFactOffset = aggrDataOffset;
-         fi < _factFields.length;
-         bufferFactOffset += _aggregationTypesCount, ++fi) {
-
+        fi < _factFields.length;
+        bufferFactOffset += _aggregationTypesCount, ++fi) {
       double factValue = _factsCache[factsDataOffset + fi];
       if (factValue.isNaN) {
         continue;
@@ -519,14 +494,16 @@ class AggregationModel {
       }
 
       // Min
-      if (_offsetMin != null && (isNewDimension || factValue <
-          _aggregations[bufferFactOffset + _offsetMin])) {
+      if (_offsetMin != null &&
+          (isNewDimension ||
+              factValue < _aggregations[bufferFactOffset + _offsetMin])) {
         _aggregations[bufferFactOffset + _offsetMin] = factValue;
       }
 
       // Max
-      if (_offsetMax != null && (isNewDimension || factValue >
-          _aggregations[bufferFactOffset + _offsetMax])) {
+      if (_offsetMax != null &&
+          (isNewDimension ||
+              factValue > _aggregations[bufferFactOffset + _offsetMax])) {
         _aggregations[bufferFactOffset + _offsetMax] = factValue;
       }
 
@@ -537,51 +514,41 @@ class AggregationModel {
     }
   }
 
-  /*
-   * TODO(prsd):
-   * 1. Implementation of updates and posting updates to entities.
-   *    patchEntity and addToEntity must add listeners on AggregationItems
-   *    and any changes must be propagated to entities.
-   * 2. Updates (add/remove/update) should do their best to update the
-   *    aggregations and then maybe do a delayed recomputation (sort etc;)
-   */
+  // TODO(prsd):
+  // 1. Implementation of updates and posting updates to entities.
+  //    patchEntity and addToEntity must add listeners on AggregationItems
+  //    and any changes must be propagated to entities.
+  // 2. Updates (add/remove/update) should do their best to update the
+  //    aggregations and then maybe do a delayed recomputation (sort etc;)
 
-  /**
-   * Update an item.
-   * If aggregates were already computed, they are updated to reflect the
-   * new value and any observers are notified.
-   */
+  /// Update an item.
+  /// If aggregates were already computed, they are updated to reflect the
+  /// new value and any observers are notified.
   void updateItem(dynamic item, String field) {
     throw new UnimplementedError();
   }
 
-  /**
-   * Add a new item.
-   * If aggregates were already computed, they are updated to reflect
-   * values on the new item.
-   */
+  /// Add a new item.
+  /// If aggregates were already computed, they are updated to reflect
+  /// values on the new item.
   void addItem(dynamic item) {
     throw new UnimplementedError();
   }
 
-  /**
-   * Remove an existing item.
-   * If aggregates were already computed, they are updated to reflect
-   * facts on the removed item.
-   */
+  /// Remove an existing item.
+  /// If aggregates were already computed, they are updated to reflect
+  /// facts on the removed item.
   void removeItem(dynamic item) {
     throw new UnimplementedError();
   }
 
-  /**
-   * Return an [AggregationItem] that represents facts for dimension
-   * represented by [dimension] Only one instance of an entity is created
-   * per dimension (even if this function is called multiple times)
-   *
-   * Callers of this method can observe the returned entity for updates to
-   * aggregations caused by changes to filter or done through add, remove
-   * or modify of items in the collection.
-   */
+  /// Return an [AggregationItem] that represents facts for dimension
+  /// represented by [dimension] Only one instance of an entity is created
+  /// per dimension (even if this function is called multiple times)
+  ///
+  /// Callers of this method can observe the returned entity for updates to
+  /// aggregations caused by changes to filter or done through add, remove
+  /// or modify of items in the collection.
   AggregationItem facts(List dimension) {
     List<int> enumeratedList = new List<int>();
     for (int i = 0; i < dimension.length; ++i) {
@@ -599,9 +566,7 @@ class AggregationModel {
     return item;
   }
 
-  /**
-   * Return a list of values that are present for a dimension field.
-   */
+  /// Return a list of values that are present for a dimension field.
   List valuesForDimension(dynamic dimensionFieldName) {
     int di = _dimFields.indexOf(dimensionFieldName);
     if (di < 0) {
@@ -609,22 +574,21 @@ class AggregationModel {
     }
     List values = new List.from(_dimToIntMap[di].keys);
     values.sort(
-        comparators != null && comparators.containsKey(dimensionFieldName) ?
-            comparators[dimensionFieldName] : _defaultDimComparator);
+        comparators != null && comparators.containsKey(dimensionFieldName)
+            ? comparators[dimensionFieldName]
+            : _defaultDimComparator);
     return values;
   }
 }
 
-/**
- * Parse a path for nested map-like objects.
- * Caches the parsed key in the passed map.
- *
- * Takes map keys of the format:
- *     "list(key=val;val=m).another(state=good).state"
- * and outputs:
- *     ["list", {"key": "val", "val": "m"},
- *      "another", {"state": "good"}, "state"]
- */
+/// Parse a path for nested map-like objects.
+/// Caches the parsed key in the passed map.
+///
+/// Takes map keys of the format:
+///     "list(key=val;val=m).another(state=good).state"
+/// and outputs:
+///     ["list", {"key": "val", "val": "m"},
+///      "another", {"state": "good"}, "state"]
 List _parseKey(String key, Map parsedKeysCache) {
   List parts = parsedKeysCache == null ? null : parsedKeysCache[key];
   if (parts == null && key != null) {
@@ -678,30 +642,28 @@ List _parseKey(String key, Map parsedKeysCache) {
   return parts;
 }
 
-/**
- * Walk a map-like structure that could have list in the path.
- *
- * Example:
- *     Map testMap = {
- *       "first": "firstval",
- *       "list": [
- *         { "val": "m",
- *           "key": "val",
- *           "another": [
- *             { 'state': 'good' },
- *             { 'state': 'bad' }
- *           ]
- *         },
- *         { "val": "m", "key": "invalid" },
- *         { "val": "o" }
- *       ]
- *     };
- *
- *  For the above map:
- *     walk(testMap, "list(key=val;val=m).another(state=good).state");
- *  outputs:
- *     good
- */
+/// Walk a map-like structure that could have list in the path.
+///
+/// Example:
+///     Map testMap = {
+///       "first": "firstval",
+///       "list": [
+///         { "val": "m",
+///           "key": "val",
+///           "another": [
+///             { 'state': 'good' },
+///             { 'state': 'bad' }
+///           ]
+///         },
+///         { "val": "m", "key": "invalid" },
+///         { "val": "o" }
+///       ]
+///     };
+///
+///  For the above map:
+///     walk(testMap, "list(key=val;val=m).another(state=good).state");
+///  outputs:
+///     good
 dynamic walk(initial, String key, Map parsedKeyCache) {
   List parts = _parseKey(key, parsedKeyCache);
   return parts.fold(initial, (current, part) {
@@ -712,7 +674,7 @@ dynamic walk(initial, String key, Map parsedKeyCache) {
         bool match = true;
         part.forEach((key, val) {
           if ((key.contains('.') &&
-               walk(part, key, parsedKeyCache).toString() != val) ||
+                  walk(part, key, parsedKeyCache).toString() != val) ||
               part[key] != val) {
             match = false;
           }

@@ -27,8 +27,8 @@ class ChartTooltip implements ChartBehavior {
   /// Constructs the tooltip.
   /// If [showDimensionValue] is set, displays the dimension value as title.
   /// If [showMeasureTotal] is set, displays the total value.
-  ChartTooltip({
-      this.showSelectedMeasure: false,
+  ChartTooltip(
+      {this.showSelectedMeasure: false,
       this.showDimensionValue: false,
       this.showMeasureTotal: false,
       this.orientation: ORIENTATION_RIGHT});
@@ -38,8 +38,8 @@ class ChartTooltip implements ChartBehavior {
     _area = area;
     _state = area.state;
     _disposer.addAll([
-        area.onValueMouseOver.listen(show),
-        area.onValueMouseOut.listen(hide)
+      area.onValueMouseOver.listen(show),
+      area.onValueMouseOut.listen(hide)
     ]);
 
     // Tooltip requires host to be position: relative.
@@ -92,8 +92,8 @@ class ChartTooltip implements ChartBehavior {
     var activeMeasures = [];
     if (showSelectedMeasure) {
       activeMeasures.addAll(_state.selection);
-      activeMeasures.add(_state.preview != null ? _state.preview :
-          _state.hovered.first);
+      activeMeasures
+          .add(_state.preview != null ? _state.preview : _state.hovered.first);
       if (activeMeasures.isEmpty) {
         for (var series in _area.config.series) {
           activeMeasures.addAll(series.measures);
@@ -105,35 +105,33 @@ class ChartTooltip implements ChartBehavior {
     var data = (showSelectedMeasure) ? activeMeasures : e.series.measures;
 
     // Create the tooltip items base on the number of measures in the series.
-    var items = _tooltipRoot.selectAll('.tooltip-item').
-        data(data);
+    var items = _tooltipRoot.selectAll('.tooltip-item').data(data);
     items.enter.append('div')
-        ..classed('tooltip-item')
-        ..classedWithCallback('active', (d, i, c) =>
-            !showSelectedMeasure && (d == e.column));
+      ..classed('tooltip-item')
+      ..classedWithCallback(
+          'active', (d, i, c) => !showSelectedMeasure && (d == e.column));
 
     // Display the label for the currently active series.
     var tooltipItems = _tooltipRoot.selectAll('.tooltip-item');
     tooltipItems.append('div')
-        ..classed('tooltip-item-label')
-        ..textWithCallback((d, i, c) => _area.data.columns.
-            elementAt((showSelectedMeasure) ? d :
-            e.series.measures.elementAt(i)).label);
+      ..classed('tooltip-item-label')
+      ..textWithCallback((d, i, c) => _area.data.columns
+          .elementAt((showSelectedMeasure) ? d : e.series.measures.elementAt(i))
+          .label);
 
     // Display the value of the currently active series
     tooltipItems.append('div')
       ..classed('tooltip-item-value')
-      ..styleWithCallback('color', (d, i, c) =>
-          _area.theme.getColorForKey(d))
+      ..styleWithCallback('color', (d, i, c) => _area.theme.getColorForKey(d))
       ..textWithCallback((d, i, c) {
-      var formatter = _getFormatterForColumn(d),
-          value = _area.data.rows.elementAt(e.row).elementAt(d);
-      return (formatter != null) ? formatter(value) : value.toString();
-    });
+        var formatter = _getFormatterForColumn(d),
+            value = _area.data.rows.elementAt(e.row).elementAt(d);
+        return (formatter != null) ? formatter(value) : value.toString();
+      });
 
     math.Point position = computeTooltipPosition(
         new math.Point(e.chartX, e.chartY),
-            _tooltipRoot.first.getBoundingClientRect());
+        _tooltipRoot.first.getBoundingClientRect());
 
     // Set position of the tooltip and display it.
     _tooltipRoot
@@ -143,13 +141,10 @@ class ChartTooltip implements ChartBehavior {
   }
 
   static String switchPositionDirection(String direction) =>
-      direction == ORIENTATION_LEFT
-          ? ORIENTATION_RIGHT
-          : ORIENTATION_LEFT;
+      direction == ORIENTATION_LEFT ? ORIENTATION_RIGHT : ORIENTATION_LEFT;
 
   /// Computes the ideal tooltip position based on orientation.
-  math.Point computeTooltipPosition(
-      math.Point coord, math.Rectangle rect) {
+  math.Point computeTooltipPosition(math.Point coord, math.Rectangle rect) {
     var x, y, direction;
     direction = _area.config.isRTL && _area.config.switchAxesForRTL
         ? switchPositionDirection(orientation)
@@ -198,4 +193,3 @@ class ChartTooltip implements ChartBehavior {
     _tooltipRoot.style('opacity', '0');
   }
 }
-

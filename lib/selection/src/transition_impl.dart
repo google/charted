@@ -13,8 +13,8 @@ Map<Element, int> _transitionMap = {};
 
 class _TransitionImpl implements Transition {
   SelectionCallback _delay = (d, i, c) => 0;
-  SelectionCallback _duration =
-      (d, i, c) => Transition.defaultDurationMilliseconds;
+  SelectionCallback _duration = (d, i, c) =>
+      Transition.defaultDurationMilliseconds;
   Selection _selection;
   Map _attrs = {};
   Map _styles = {};
@@ -32,8 +32,8 @@ class _TransitionImpl implements Transition {
     _timerDelay = delay;
   }
 
-  Interpolator ease = clampEasingFn(
-          Transition.defaultEasingMode(Transition.defaultEasingType));
+  Interpolator ease =
+      clampEasingFn(Transition.defaultEasingMode(Transition.defaultEasingType));
 
   void delay(int millisecond) {
     delayWithCallback(toCallback(millisecond));
@@ -84,27 +84,29 @@ class _TransitionImpl implements Transition {
       _selection.each((d, i, c) {
         var tweenList = [];
         _attrs.forEach((key, value) {
-            tweenList.add(_getAttrInterpolator(c, key, value(d, i, c)));
+          tweenList.add(_getAttrInterpolator(c, key, value(d, i, c)));
         });
         _attrTweens.forEach((key, value) {
-          tweenList.add((t) => c.setAttribute(key,
-              value(d, i, c.getAttribute(key))(t)));
+          tweenList.add(
+              (t) => c.setAttribute(key, value(d, i, c.getAttribute(key))(t)));
         });
         _styles.forEach((key, value) {
-            tweenList.add(_getStyleInterpolator(c, key,
-                value['callback'](d, i, c), value['priority']));
+          tweenList.add(_getStyleInterpolator(
+              c, key, value['callback'](d, i, c), value['priority']));
         });
         _styleTweens.forEach((key, value) {
-          tweenList.add((t) => c.style.setProperty(key,
-              value['callback'](d, i,
-              c.style.getPropertyValue(key))(t).toString(), value['priority']));
+          tweenList.add((t) => c.style.setProperty(
+              key,
+              value['callback'](d, i, c.style.getPropertyValue(key))(t)
+                  .toString(),
+              value['priority']));
         });
 
         _attrMap[c] = tweenList;
         _durationMap[c] = _duration(d, i, c);
         _timerMap[new AnimationTimer(_tick, delay: _delay(d, i, c))] = c;
 
-        if(!_transitionMap.containsKey(c)) {
+        if (!_transitionMap.containsKey(c)) {
           _transitionMap[c] = 1;
         } else {
           _transitionMap[c]++;
@@ -127,8 +129,8 @@ class _TransitionImpl implements Transition {
 
     var interpolator = createStringInterpolator(style, newValue.toString());
 
-    return (t) => element.style.setProperty(styleName,
-        interpolator(t).toString(), priority);
+    return (t) => element.style
+        .setProperty(styleName, interpolator(t).toString(), priority);
   }
 
   // Ticks of the transition, this is the callback registered to the
@@ -149,7 +151,7 @@ class _TransitionImpl implements Transition {
         activeNode.remove();
       }
 
-      if(_transitionMap[activeNode] > 1) {
+      if (_transitionMap[activeNode] > 1) {
         _transitionMap[activeNode]--;
       } else {
         _transitionMap.remove(activeNode);
@@ -185,7 +187,8 @@ class _TransitionImpl implements Transition {
   Transition transition() {
     var e = _selection.first;
     var delay = _delay(_selection.scope.datum(e), 0, e) +
-        _duration(_selection.scope.datum(e), 0, e) + _timerDelay;
+        _duration(_selection.scope.datum(e), 0, e) +
+        _timerDelay;
     var t = new _TransitionImpl(_selection, delay);
     t.ease = ease;
     t.durationWithCallback(_duration);

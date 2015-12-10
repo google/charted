@@ -7,7 +7,7 @@
  */
 library charted.selection.transition;
 
-import "dart:html" show Element,document;
+import "dart:html" show Element, document;
 import "package:charted/core/timer.dart";
 import "package:charted/selection/selection.dart";
 import "package:charted/core/interpolators.dart";
@@ -25,7 +25,6 @@ typedef Interpolator StyleTweenCallback(datum, int ei, String style);
  * Transitions have a default duration of 250ms.
  */
 abstract class Transition {
-
   /** A settable default easing type */
   static EasingFunction defaultEasingType = easeCubic();
 
@@ -108,8 +107,8 @@ abstract class Transition {
    * The function's return value is then used to transition each element's
    * style property.
    */
-  void styleWithCallback(String property,
-      SelectionCallback<String> fn, [String priority]);
+  void styleWithCallback(String property, SelectionCallback<String> fn,
+      [String priority]);
 
   /**
    * Transitions the value of the CSS style property with the specified name
