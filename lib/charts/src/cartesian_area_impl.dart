@@ -735,5 +735,8 @@ class _ChartSeriesInfo {
     _renderer = _series.renderer;
   }
 
-  dispose() => _disposer.dispose();
+  dispose() {
+    _renderer.dispose();
+    _disposer.dispose();
+  }
 }

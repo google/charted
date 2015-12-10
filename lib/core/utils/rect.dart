@@ -23,9 +23,6 @@ class Rect {
       : width = 0,
         height = 0;
 
-  bool operator ==(other) =>
-      other is Rect && isSameSizeAs(other) && isSamePositionAs(other);
-
   bool isSameSizeAs(Rect other) =>
       other != null && width == other.width && height == other.height;
 
@@ -36,6 +33,13 @@ class Rect {
       otherX >= x && otherX <= x + width && otherY >= y && otherY <= y + height;
 
   String toString() => '$x, $y, $width, $height';
+
+  @override
+  bool operator ==(other) =>
+      other is Rect && isSameSizeAs(other) && isSamePositionAs(other);
+
+  @override
+  int get hashCode => hash4(x, y, width, height);
 }
 
 /// Mutable version of [Rect] class.
@@ -58,9 +62,13 @@ class AbsoluteRect {
 
   const AbsoluteRect(this.top, this.end, this.bottom, this.start);
 
+  @override
   bool operator ==(other) => other is AbsoluteRect &&
       start == other.start &&
       end == other.end &&
       top == other.top &&
       bottom == other.bottom;
+
+  @override
+  int get hashCode => hash4(start, end, top, bottom);
 }
