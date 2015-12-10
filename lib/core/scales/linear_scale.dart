@@ -135,9 +135,12 @@ class LinearScale implements Scale {
     if (extent == null) {
       extent = ScaleUtils.extent(_domain);
     }
-    var span = extent.max - extent.min,
-        step = math.pow(10, (math.log(span / _ticksCount) / math.LN10).floor()),
-        err = _ticksCount / span * step;
+    var span = extent.max - extent.min;
+    if (span == 0) {
+      span = 1.0; // [span / _ticksCount] should never be equal zero.
+    }
+    var step = math.pow(10, (math.log(span / _ticksCount) / math.LN10).floor());
+    var err = _ticksCount / span * step;
 
     // Filter ticks to get closer to the desired count.
     if (err <= .15) {

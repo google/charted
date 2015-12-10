@@ -256,7 +256,9 @@ class DefaultLayoutAreaImpl implements LayoutArea {
     _series = series;
 
     // Updates the legend if required.
-    _config.legend.update(legend, this);
+    if (_config.legend != null) {
+      _config.legend.update(legend, this);
+    }
   }
 
   @override

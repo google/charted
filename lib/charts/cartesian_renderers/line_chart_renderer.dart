@@ -206,7 +206,7 @@ class LineChartRenderer extends CartesianRendererBase {
       ..style('visibility', 'hidden');
   }
 
-  int _getNearestRowIndex(double x) {
+  int _getNearestRowIndex(num x) {
     var lastSmallerValue = 0;
     var chartX = x - area.layout.renderArea.x;
     for (var i = 0; i < _xPositions.length; i++) {
