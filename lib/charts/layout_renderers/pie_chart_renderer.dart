@@ -104,32 +104,45 @@ class PieChartRenderer extends LayoutRendererBase {
           ? 0
           : row.elementAt(measure);
     };
-    var data = (new PieLayout()..accessor = accessor).layout(indices),
-        arc = new SvgArc(
-            innerRadiusCallback: (d, i, e) => innerRadiusRatio * radius,
-            outerRadiusCallback: (d, i, e) => radius),
-        pie = root.selectAll('.pie-path').data(data);
+    var data = (new PieLayout()..accessor = accessor).layout(indices);
+    var arc = new SvgArc(
+        innerRadiusCallback: (d, i, e) => innerRadiusRatio * radius,
+        outerRadiusCallback: (d, i, e) => radius);
+    var pie = root.selectAll('.pie-path').data(data);
 
-    pie.enter.append('path').classed('pie-path');
-    pie
-      ..each((d, i, e) {
-        var styles = stylesForData(d.data, i);
-        e.classes.removeAll(ChartState.VALUE_CLASS_NAMES);
-        if (!isNullOrEmpty(styles)) {
-          e.classes.addAll(styles);
-        }
-        e.attributes
-          ..['fill'] = colorForData(d.data, i)
-          ..['d'] = arc.path(d, i, host)
-          ..['stroke-width'] = '1px'
-          ..['stroke'] = '#ffffff';
+    pie.enter.appendWithCallback((d, i, e) {
+      var pieSector = Namespace.createChildElement('path', e)
+        ..classes.add('pie-path');
+      var styles = stylesForData(d.data, i);
+      if (!isNullOrEmpty(styles)) {
+        pieSector.classes.addAll(styles);
+      }
+      pieSector.attributes
+        ..['fill'] = colorForData(d.data, i)
+        ..['d'] = arc.path(d, i, host)
+        ..['stroke-width'] = '1px'
+        ..['stroke'] = '#ffffff';
 
-        e.append(
-            Namespace.createChildElement('text', e)..classes.add('pie-label'));
-      })
+      pieSector.append(Namespace.createChildElement('text', pieSector)
+        ..classes.add('pie-label'));
+      return pieSector;
+    })
       ..on('click', (d, i, e) => _event(mouseClickController, d, i, e))
       ..on('mouseover', (d, i, e) => _event(mouseOverController, d, i, e))
       ..on('mouseout', (d, i, e) => _event(mouseOutController, d, i, e));
+
+    pie.each((d, i, e) {
+      var styles = stylesForData(d.data, i);
+      e.classes.removeAll(ChartState.VALUE_CLASS_NAMES);
+      if (!isNullOrEmpty(styles)) {
+        e.classes.addAll(styles);
+      }
+      e.attributes
+        ..['fill'] = colorForData(d.data, i)
+        ..['d'] = arc.path(d, i, host)
+        ..['stroke-width'] = '1px'
+        ..['stroke'] = '#ffffff';
+    });
 
     pie.exit.remove();
 
