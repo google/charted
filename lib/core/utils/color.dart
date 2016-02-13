@@ -281,7 +281,7 @@ class Color {
         rgb = (rgb * 16 + val) * 16 + val;
       }
     } else if (hex.length == 6) {
-      rgb = int.parse(in hex, radix: 16);
+      rgb = int.parse(hex, radix: 16);
     }
 
     return new Color.fromRgba(
