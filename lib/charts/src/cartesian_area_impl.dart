@@ -117,7 +117,7 @@ class DefaultCartesianAreaImpl implements CartesianArea {
   void dispose() {
     _configEventsDisposer.dispose();
     _dataEventsDisposer.dispose();
-    _config.legend.dispose();
+    _config?.legend?.dispose();
 
     if (_valueMouseOverController != null) {
       _valueMouseOverController.close();
