@@ -276,8 +276,8 @@ class Color {
 
     hex = hex.substring(1);
     if (hex.length == 3) {
-      for (final char in hex) {
-        final val = int.parse(char, radix: 16);
+      for (int i = 0; i < hex.length; i++) {
+        final val = int.parse(hex[i], radix: 16);
         rgb = (rgb * 16 + val) * 16 + val;
       }
     } else if (hex.length == 6) {
