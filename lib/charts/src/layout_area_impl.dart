@@ -78,7 +78,7 @@ class DefaultLayoutAreaImpl implements LayoutArea {
   void dispose() {
     _configEventsDisposer.dispose();
     _dataEventsDisposer.dispose();
-    _config.legend.dispose();
+    _config.legend?.dispose();
   }
 
   static bool isNotInline(Element e) =>
@@ -205,45 +205,45 @@ class DefaultLayoutAreaImpl implements LayoutArea {
 
     // If we previously displayed a series, verify that we are
     // still using the same renderer.  Otherwise, dispose the older one.
-    if (_renderer != null && series.renderer != _renderer) {
-      _rendererDisposer.dispose();
-    }
+    if (_renderer != series.renderer) {
+      if (_renderer != null) _rendererDisposer.dispose();
 
-    // Save and subscribe to events on the the current renderer.
-    _renderer = series.renderer;
-    if (_renderer is ChartRendererBehaviorSource) {
-      _rendererDisposer.addAll([
-        _renderer.onValueClick.listen((ChartEvent e) {
-          if (state != null) {
-            if (state.isSelected(e.row)) {
-              state.unselect(e.row);
-            } else {
-              state.select(e.row);
+      // Save and subscribe to events on the the current renderer.
+      _renderer = series.renderer;
+      if (_renderer is ChartRendererBehaviorSource) {
+        _rendererDisposer.addAll([
+          _renderer.onValueClick.listen((ChartEvent e) {
+            if (state != null) {
+              if (state.isSelected(e.row)) {
+                state.unselect(e.row);
+              } else {
+                state.select(e.row);
+              }
             }
-          }
-          if (_valueMouseClickController != null) {
-            _valueMouseClickController.add(e);
-          }
-        }),
-        _renderer.onValueMouseOver.listen((ChartEvent e) {
-          if (state != null) {
-            state.preview = e.row;
-          }
-          if (_valueMouseOverController != null) {
-            _valueMouseOverController.add(e);
-          }
-        }),
-        _renderer.onValueMouseOut.listen((ChartEvent e) {
-          if (state != null) {
-            if (e.row == state.preview) {
-              state.hovered = null;
+            if (_valueMouseClickController != null) {
+              _valueMouseClickController.add(e);
             }
-          }
-          if (_valueMouseOutController != null) {
-            _valueMouseOutController.add(e);
-          }
-        })
-      ]);
+          }),
+          _renderer.onValueMouseOver.listen((ChartEvent e) {
+            if (state != null) {
+              state.preview = e.row;
+            }
+            if (_valueMouseOverController != null) {
+              _valueMouseOverController.add(e);
+            }
+          }),
+          _renderer.onValueMouseOut.listen((ChartEvent e) {
+            if (state != null) {
+              if (e.row == state.preview) {
+                state.hovered = null;
+              }
+            }
+            if (_valueMouseOutController != null) {
+              _valueMouseOutController.add(e);
+            }
+          })
+        ]);
+      }
     }
 
     Iterable<ChartLegendItem> legend =
