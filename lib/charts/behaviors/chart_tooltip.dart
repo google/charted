@@ -91,9 +91,18 @@ class ChartTooltip implements ChartBehavior {
     // tooltip for them, if none is selected/hovered, show all.
     var activeMeasures = [];
     if (showSelectedMeasure) {
-      activeMeasures.addAll(_state.selection);
-      activeMeasures
-          .add(_state.preview != null ? _state.preview : _state.hovered.first);
+      if(_state != null) {
+        activeMeasures.addAll(_state.selection);
+        activeMeasures
+            .add(_state.preview != null
+                ? _state.preview
+                : _state.hovered.first);
+      } else {
+
+        // If state is null, chart tooltip will not capture selection, but only
+        // display for the currently hovered measure column.
+        activeMeasures.add(e.column);
+      }
       if (activeMeasures.isEmpty) {
         for (var series in _area.config.series) {
           activeMeasures.addAll(series.measures);
