@@ -106,9 +106,13 @@ class BarChartRenderer extends CartesianRendererBase {
       // If bar would be scaled to 0 height but data is not 0, reserve 1 pixel
       // height plus strokeWidthOffset to position the bar.
       if (scaledVal == scaled0) {
-        return d > 0
-            ? scaled0 - 1 - strokeWidthOffset
-            : scaled0 + strokeWidthOffset;
+        return verticalBars
+            ? d > 0
+                ? scaled0 - 1 - strokeWidthOffset
+                : scaled0 + strokeWidthOffset
+            : d > 0
+                ? scaled0 + strokeWidthOffset
+                : scaled0 - 1 - strokeWidthOffset;
       }
       return verticalBars
           ? (d >= 0 ? scaledVal : scaled0) + strokeWidthOffset
