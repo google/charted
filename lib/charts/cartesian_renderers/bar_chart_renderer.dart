@@ -115,8 +115,6 @@ class BarChartRenderer extends CartesianRendererBase {
           : (d >= 0 ? scaled0 : scaledVal) + strokeWidthOffset;
     };
     var buildPath = (d, int i, bool animate) {
-      var barLength = measureScale.scale(d).round();
-
       // If data is null or 0, an empty path for the bar is returned directly.
       if (d == null || d == 0) return '';
       if (verticalBars) {
