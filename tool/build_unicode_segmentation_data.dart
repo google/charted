@@ -53,7 +53,7 @@ void _dumpPropertiesData(String data) {
   buffer.write(HEADER);
   buffer.writeln('const CODE_POINT_BLOCKS = const[');
 
-  List<Iterable> items = [];
+  List<List> items = [];
   data.split('\n').forEach((String line) {
     Match match = lineRegExp.matchAsPrefix(line);
     if (match == null) return;

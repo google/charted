@@ -113,8 +113,9 @@ class RoundingFunctions extends Pair<RoundFunction, RoundFunction> {
   factory RoundingFunctions.defaults() =>
       new RoundingFunctions((x) => x.floor(), (x) => x.ceil());
 
-  factory RoundingFunctions.identity() =>
-      new RoundingFunctions(identityFunction, identityFunction);
+  factory RoundingFunctions.identity() => new RoundingFunctions(
+      (num n) => identityFunction/*<num>*/(n),
+      (num n) => identityFunction/*<num>*/(n));
 
   RoundFunction get floor => super.first;
   RoundFunction get ceil => super.last;

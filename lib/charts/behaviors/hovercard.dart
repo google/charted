@@ -78,7 +78,7 @@ class Hovercard implements ChartBehavior {
       {bool isMouseTracking,
       bool isMultiValue: false,
       bool showDimensionTitle: false,
-      List columnsToShow: const [],
+      List<int> columnsToShow: const <int>[],
       this.builder}) {
     _isMouseTracking = isMouseTracking;
     _isMultiValue = isMultiValue;
@@ -205,7 +205,7 @@ class Hovercard implements ChartBehavior {
     // update position and offset accordingly.
     if (area.dimensionsUsingBands.contains(dimensionCol)) {
       assert(dimensionScale is OrdinalScale);
-      dimensionOffset = (dimensionScale as OrdinalScale).rangeBand / 2;
+      dimensionOffset = (dimensionScale as OrdinalScale).rangeBand ~/ 2;
       dimensionCenterOffset = dimensionOffset;
     }
 

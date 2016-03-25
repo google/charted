@@ -14,7 +14,7 @@ import 'package:charted/charts/charts.dart';
 
 import 'demo_charts.dart';
 
-const List DIMENSION_COLUMNS =  const[0, 4];
+const List<int> DIMENSION_COLUMNS =  const <int>[0, 4];
 
 int customSeriesCounter = 0;
 
@@ -40,14 +40,14 @@ String getTypeForRenderer(CartesianRenderer renderer) {
 }
 
 main() {
-  List DATA_SOURCE = ORDINAL_DATA;
+  List<List> DATA_SOURCE = ORDINAL_DATA;
   ChartSeries activeSeries,
       defaultSeries = new ChartSeries("Default series",
           new ObservableList.from([ 2, 3 ]), new BarChartRenderer());
 
-  ObservableList rows = new ObservableList.from(DATA_SOURCE.sublist(0, 10)),
-      columns = new ObservableList.from(ORDINAL_DATA_COLUMNS),
-      seriesList = new ObservableList.from([ defaultSeries ]);
+  var rows = new ObservableList<List>.from(DATA_SOURCE.sublist(0, 10));
+  var columns = new ObservableList<ChartColumnSpec>.from(ORDINAL_DATA_COLUMNS);
+  var seriesList = new ObservableList<ChartSeries>.from([ defaultSeries ]);
 
   ChartData data = new ChartData(columns, rows);
   ChartConfig config = new ChartConfig(seriesList, DIMENSION_COLUMNS);
@@ -71,7 +71,6 @@ main() {
       removeSeriesButton = querySelector('#remove-series');
 
   InputElement useRTLScriptCheckBox = querySelector('#rtl-use-script'),
-      switchAxesForRTLCheckBox = querySelector('#rtl-switch-axes'),
       useRTLLayoutCheckBox = querySelector('#rtl-use-layout');
 
   SelectElement seriesSelect = querySelector('#select-series'),
@@ -192,7 +191,9 @@ main() {
     int index = buttons.indexOf(e.target) + 1;
     if ((e.target as InputElement).checked) {
       measures.add(index);
-      buttons.forEach((InputElement b) => b.disabled = false);
+      buttons.forEach((Element b) {
+        (b as InputElement).disabled = false;
+      });
     } else {
       measures.remove(index);
       if (measures.length <= 1) firstChecked.disabled = true;

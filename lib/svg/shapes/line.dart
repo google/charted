@@ -18,7 +18,9 @@ typedef String LineInterpolator(Iterable<math.Point> points, int tension);
 class SvgLine implements SvgShape {
   static const LINE_INTERPOLATOR_LINEAR = 'linear';
 
-  static final LINE_INTERPOLATORS = {LINE_INTERPOLATOR_LINEAR: _linear};
+  static final LINE_INTERPOLATORS = <String, LineInterpolator>{
+    LINE_INTERPOLATOR_LINEAR: _linear
+  };
 
   /// Callback to access/convert datum to x coordinate value.
   final SelectionValueAccessor<num> xValueAccessor;
@@ -51,7 +53,7 @@ class SvgLine implements SvgShape {
   @override
   String path(data, int index, Element e) {
     assert(data is Iterable);
-    var segments = new StringBuffer(), points = [];
+    var segments = new StringBuffer(), points = <math.Point<num>>[];
     for (int i = 0, len = data.length; i < len; ++i) {
       final d = data.elementAt(i);
       if (isDefined(d, i, e)) {
@@ -80,6 +82,6 @@ class SvgLine implements SvgShape {
   static bool defaultIsDefined(d, i, e) => d != null;
 
   /// Linear interpolator.
-  static String _linear(Iterable points, _) =>
+  static String _linear(Iterable points, int _) =>
       points.map((pt) => '${pt.x},${pt.y}').join('L');
 }

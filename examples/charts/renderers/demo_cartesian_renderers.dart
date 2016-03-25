@@ -188,7 +188,6 @@ main() {
 
   Element chartsContainer = querySelector('.demos-container');
   InputElement useRTLScriptCheckBox = querySelector('#rtl-use-script'),
-      switchAxesForRTLCheckBox = querySelector('#rtl-switch-axes'),
       useRTLLayoutCheckBox = querySelector('#rtl-use-layout');
 
   useRTLLayoutCheckBox.onChange.listen((_) {
@@ -199,7 +198,7 @@ main() {
 
   useRTLScriptCheckBox.onChange.listen((_) {
     bool isRTL = useRTLScriptCheckBox.checked;
-    Iterable DATA_SOURCE = isRTL
+    List<List> DATA_SOURCE = isRTL
         ? ORDINAL_DATA_RTL
         : ORDINAL_DATA;
     charts.forEach((ChartDemo x) {

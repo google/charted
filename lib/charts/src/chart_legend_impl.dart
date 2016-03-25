@@ -114,7 +114,7 @@ class DefaultChartLegendImpl implements ChartLegend {
         _root.selectAll('.chart-legend-row').data(_items, (x) => x.hashCode),
         isFirstRender = rows.length == 0;
 
-    var enter = rows.enter.appendWithCallback((d, i, e) {
+    var enter = rows.enter.appendWithCallback((ChartLegendItem d, i, e) {
       var row = Namespace.createChildElement('div', e),
           color = Namespace.createChildElement('div', e)
             ..className = 'chart-legend-color',
@@ -125,7 +125,7 @@ class DefaultChartLegendImpl implements ChartLegend {
                 ..className = 'chart-legend-value')
               : null;
 
-      var rowStyles = ['chart-legend-row'].toList();
+      var rowStyles = <String>['chart-legend-row'];
 
       // If this is the first time we are adding rows,
       // Update elements before adding them to the DOM.
@@ -205,5 +205,5 @@ class DefaultChartLegendImpl implements ChartLegend {
   }
 
   /// Update legend to show chart's selection and visibility.
-  void _handleStateChanges(_) => _createLegendItems();
+  void _handleStateChanges(List<ChangeRecord> _) => _createLegendItems();
 }

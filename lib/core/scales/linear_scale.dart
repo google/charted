@@ -45,8 +45,12 @@ class LinearScale implements Scale {
         : ScaleUtils.bilinearScale;
 
     Function uninterpolator = clamp ? uninterpolateClamp : uninterpolateNumber;
-    InterpolatorGenerator interpolator =
-        _rounded ? createRoundedNumberInterpolator : createNumberInterpolator;
+    InterpolatorGenerator interpolator;
+    if (rounded) {
+      interpolator = createRoundedNumberInterpolator;
+    } else {
+      interpolator = createNumberInterpolator;
+    }
 
     _invert = linear(_range, _domain, uninterpolator, createNumberInterpolator);
     _scale = linear(_domain, _range, uninterpolator, interpolator);

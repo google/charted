@@ -38,8 +38,8 @@ class AxisLabelTooltip implements ChartBehavior {
   void _subscribe() {
     var elements = _area.host.querySelectorAll(_AXIS_SELECTOR);
     _disposer.dispose();
-    _disposer
-        .addAll(elements.map((x) => x.onMouseOver.listen(_handleMouseOver)));
+    _disposer.addAll(
+        elements.map((Element x) => x.onMouseOver.listen(_handleMouseOver)));
     _disposer.addAll(elements.map((x) => x.onMouseOut.listen(_handleMouseOut)));
   }
 
@@ -88,7 +88,7 @@ class AxisLabelTooltip implements ChartBehavior {
   void ensureRenderAreaRect() {
     var layout = _area.layout;
     _hostAreaRect = _area.host.getBoundingClientRect();
-    _renderAreaRect = new math.Rectangle(
+    _renderAreaRect = new math.Rectangle<num>(
         _hostAreaRect.left + layout.chartArea.x + layout.renderArea.x,
         _hostAreaRect.top + layout.chartArea.y + layout.renderArea.y,
         layout.renderArea.width,

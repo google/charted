@@ -47,7 +47,7 @@ class BarChartRenderer extends CartesianRendererBase {
 
     var bars = new OrdinalScale()
       ..domain = new Range(series.measures.length).toList()
-      ..rangeRoundBands([0, dimensionScale.rangeBand]);
+      ..rangeRoundBands([0, (dimensionScale as OrdinalScale).rangeBand]);
 
     // Create and update the bar groups.
 

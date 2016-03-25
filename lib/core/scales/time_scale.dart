@@ -67,7 +67,7 @@ class TimeScale extends LinearScale {
   TimeScale._clone(TimeScale source) : super._clone(source);
 
   @override
-  scale(dynamic val) =>
+  scale(Object val) =>
       super.scale(val is DateTime ? val.millisecondsSinceEpoch : val);
 
   @override
@@ -116,13 +116,15 @@ class TimeScale extends LinearScale {
     if (skip > 1) {
       domain = ScaleUtils.nice(
           domain,
-          new RoundingFunctions((date) {
+          new RoundingFunctions((dateMillis) {
+            var date = new DateTime.fromMillisecondsSinceEpoch(dateMillis);
             while (skipped(date = (interval as TimeInterval).floor(date))) {
               date = new DateTime.fromMillisecondsSinceEpoch(
                   date.millisecondsSinceEpoch - 1);
             }
             return date.millisecondsSinceEpoch;
-          }, (date) {
+          }, (dateMillis) {
+            var date = new DateTime.fromMillisecondsSinceEpoch(dateMillis);
             while (skipped(date = (interval as TimeInterval).ceil(date))) {
               date = new DateTime.fromMillisecondsSinceEpoch(
                   date.millisecondsSinceEpoch + 1);
@@ -173,13 +175,13 @@ class ScaleMilliSeconds implements TimeInterval {
   DateTime ceil(dynamic val) => _toDateTime(val);
   DateTime round(dynamic val) => _toDateTime(val);
 
-  DateTime offset(dynamic val, num dt) {
+  DateTime offset(Object val, num dt) {
     assert(val is int || val is DateTime);
     return new DateTime.fromMillisecondsSinceEpoch(
         val is int ? val + dt : (val as DateTime).millisecondsSinceEpoch + dt);
   }
 
-  List range(var t0, var t1, int step) {
+  List<DateTime> range(var t0, var t1, int step) {
     int start = t0 is DateTime ? t0.millisecondsSinceEpoch : t0,
         stop = t1 is DateTime ? t1.millisecondsSinceEpoch : t1;
     return new Range((start / step).ceil() * step, stop, step)

@@ -21,7 +21,7 @@ class TransposeTransformer extends ChangeNotifier
     implements ChartDataTransform, ChartData {
   final SubscriptionsDisposer _dataSubscriptions = new SubscriptionsDisposer();
   ObservableList<ChartColumnSpec> columns = new ObservableList();
-  ObservableList<Iterable> rows = new ObservableList();
+  ObservableList<List> rows = new ObservableList();
 
   // If specified, this values of this column in the input chart data will be
   // used as labels of the transposed column label.  Defaults to first column.
@@ -64,7 +64,7 @@ class TransposeTransformer extends ChangeNotifier
     // Assert all columns are of the same type and formatter, excluding the
     // label column.
     var type;
-    var formatter;
+    FormatFunction formatter;
     for (var i = 0; i < _data.columns.length; i++) {
       if (i != _labelColumn) {
         if (type == null) {
@@ -82,8 +82,7 @@ class TransposeTransformer extends ChangeNotifier
 
     columns.clear();
     rows.clear();
-    rows.addAll(
-        new List<Iterable>.generate(_data.columns.length - 1, (i) => []));
+    rows.addAll(new List<List>.generate(_data.columns.length - 1, (i) => []));
 
     // Populate the transposed rows' data, excluding the label column, visit
     // each value in the original data once.
@@ -92,7 +91,7 @@ class TransposeTransformer extends ChangeNotifier
       for (var i = 0; i < row.length; i++) {
         var columnOffset = (i < _labelColumn) ? 0 : 1;
         if (i != _labelColumn) {
-          (rows.elementAt(i - columnOffset) as List).add(row.elementAt(i));
+          rows.elementAt(i - columnOffset).add(row.elementAt(i));
         } else {
           columnLabels.add(row.elementAt(i));
         }
@@ -103,7 +102,7 @@ class TransposeTransformer extends ChangeNotifier
     // column that is used as the new label.
     for (var i = 0; i < rows.length; i++) {
       var columnOffset = (i < _labelColumn) ? 0 : 1;
-      (rows.elementAt(i) as List).insert(
+      rows.elementAt(i).insert(
           _labelColumn, _data.columns.elementAt(i + columnOffset).label);
     }
 

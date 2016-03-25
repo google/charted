@@ -10,7 +10,7 @@
  */
 library charted.selection;
 
-import "dart:html" show Element, Event, document;
+import "dart:html" show Element, Event, EventListener, document;
 import "dart:math" as math;
 import "package:charted/core/utils.dart";
 import "package:charted/selection/transition.dart";
@@ -37,7 +37,7 @@ typedef E SelectionCallback<E>(datum, int index, Element element);
 typedef E SelectionValueAccessor<E>(datum, int index);
 
 /** Create a ChartedCallback that always returns [val] */
-SelectionCallback toCallback(val) => (datum, index, element) => val;
+SelectionCallback/*<T>*/ toCallback/*<T>*/(/*=T*/ val) => (datum, index, element) => val;
 
 /** Create a ChartedValueAccessor that always returns [val] */
 SelectionValueAccessor toValueAccessor(val) => (datum, index) => val;
@@ -57,7 +57,7 @@ abstract class Selection {
    * Collection of groups - A selection when created by calling [selectAll]
    * on an existing [Selection], could contain more than one group.
    */
-  Iterable<SelectionGroup> groups;
+  List<SelectionGroup> groups;
 
   /**
    * Scope of this selection that manages the element, data associations for
@@ -292,7 +292,7 @@ abstract class Selection {
  * Each selection may contain more than one group of elements.
  */
 abstract class SelectionGroup {
-  Iterable<Element> elements;
+  List<Element> elements;
   Element parent;
 }
 

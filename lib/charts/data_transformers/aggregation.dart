@@ -11,6 +11,8 @@ part of charted.charts;
 ///Function callback to filter items in the input
 typedef bool AggregationFilterFunc(var item);
 
+typedef int CompareFunc(dynamic a, dynamic b);
+
 typedef dynamic FieldAccessor(dynamic item, dynamic key);
 
 /// Given list of items, dimensions and facts, compute
@@ -89,7 +91,7 @@ class AggregationModel {
   final bool walkThroughMap;
 
   // Map of fieldName to comparator function.
-  final Map<String, Function> comparators;
+  final Map<String, CompareFunc> comparators;
 
   // Timing operations
   static final Logger _logger = new Logger('aggregations');
@@ -102,10 +104,10 @@ class AggregationModel {
   /// Create a new [AggregationModel] from a [collection] of items,
   /// list of [dimensions] on which the items are grouped and a list of [facts]
   /// on which aggregations are computed.
-  AggregationModel(List collection, List dimensions, List facts,
+  AggregationModel(Iterable collection, List dimensions, List facts,
       {List<String> aggregationTypes,
       this.walkThroughMap: false,
-      this.comparators,
+      this.comparators: const <String, CompareFunc>{},
       this.dimensionAccessor,
       this.factsAccessor}) {
     _init(collection, dimensions, facts, aggregationTypes);
@@ -127,7 +129,7 @@ class AggregationModel {
   List get dimensionFields => _dimFields;
 
   /// Initialize the view
-  void _init(List collection, List dimensions, List facts,
+  void _init(Iterable collection, List dimensions, List facts,
       List<String> aggregationTypes) {
     if (collection == null) {
       throw new ArgumentError('Data cannot be empty or null');
@@ -165,7 +167,7 @@ class AggregationModel {
       aggregationTypes.add('valid');
     }
 
-    _rows = collection;
+    _rows = new List.from(collection, growable: false);
     _dimFields = new List.from(dimensions, growable: false);
     _factFields = new List.from(facts, growable: false);
     _entityCache = new Map<String, AggregationItem>();
@@ -270,6 +272,7 @@ class AggregationModel {
   }
 
   final Map<String, List> _parsedKeys = {};
+
   /// Get value from a map-like object
   dynamic _fetch(var item, String key) {
     if (walkThroughMap && key.contains('.')) {
@@ -327,21 +330,22 @@ class AggregationModel {
     // Sort all dimensions internally
     // The resulting arrays would be used to sort the entire data
 
-    List oldSortOrders = _dimSortOrders;
+    List<List<int>> oldSortOrders = _dimSortOrders;
     _dimSortOrders = new List.generate(dimensionsCount, (i) {
       if (groupBy && i < _dimPrefixLength) {
         return oldSortOrders[i];
       }
 
       List dimensionVals = new List.from(_dimToIntMap[i].keys);
-      List retval = new List(_dimToIntMap[i].length);
+      List<int> retval = new List<int>(_dimToIntMap[i].length);
 
       // When a comparator is not specified, our implementation of the
       // comparator tries to gracefully handle null values.
-      dimensionVals.sort(
-          comparators != null && comparators.containsKey(_dimFields[i])
-              ? comparators[_dimFields[i]]
-              : _defaultDimComparator);
+      if (comparators.containsKey(_dimFields[i])) {
+        dimensionVals.sort(comparators[_dimFields[i]]);
+      } else {
+        dimensionVals.sort(_defaultDimComparator);
+      }
 
       for (int si = 0; si < retval.length; ++si) {
         retval[_dimToIntMap[i][dimensionVals[si]]] = si;
@@ -364,14 +368,14 @@ class AggregationModel {
   }
 
   // Ensures that null dimension values don't cause an issue with sorting
-  _defaultDimComparator(Comparable left, Comparable right) =>
+  int _defaultDimComparator(Comparable left, Comparable right) =>
       (left == null && right == null)
           ? 0
           : (left == null) ? -1 : (right == null) ? 1 : left.compareTo(right);
 
   /// Given item indices in rows, compare them based
   /// on the sort orders created while pre-processing data.
-  _comparator(int one, int two) {
+  int _comparator(int one, int two) {
     if (one == two) {
       return 0;
     }
@@ -549,7 +553,7 @@ class AggregationModel {
   /// Callers of this method can observe the returned entity for updates to
   /// aggregations caused by changes to filter or done through add, remove
   /// or modify of items in the collection.
-  AggregationItem facts(List dimension) {
+  AggregationItem facts(List<String> dimension) {
     List<int> enumeratedList = new List<int>();
     for (int i = 0; i < dimension.length; ++i) {
       enumeratedList.add(_dimToIntMap[i][dimension[i]]);
@@ -573,10 +577,11 @@ class AggregationModel {
       return null;
     }
     List values = new List.from(_dimToIntMap[di].keys);
-    values.sort(
-        comparators != null && comparators.containsKey(dimensionFieldName)
-            ? comparators[dimensionFieldName]
-            : _defaultDimComparator);
+    if (comparators.containsKey(dimensionFieldName)) {
+      values.sort(comparators[dimensionFieldName]);
+    } else {
+      values.sort(_defaultDimComparator);
+    }
     return values;
   }
 }

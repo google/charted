@@ -26,7 +26,11 @@ class StackedBarChartRenderer extends CartesianRendererBase {
   /// Returns false if the number of dimension axes on the area is 0.
   /// Otherwise, the first dimension scale is used to render the chart.
   @override
-  bool prepare(CartesianArea area, ChartSeries series) {
+  bool prepare(ChartArea area, ChartSeries series) {
+    if (area is! CartesianArea) {
+      throw new ArgumentError.value(area, 'area',
+          "ChartArea for StackedBarChartRenderer must be a CartesianArea");
+    }
     _ensureAreaAndSeries(area, series);
     return true;
   }
@@ -89,7 +93,8 @@ class StackedBarChartRenderer extends CartesianRendererBase {
       });
     }
 
-    var barWidth = dimensionScale.rangeBand - theme.defaultStrokeWidth;
+    var barWidth =
+        (dimensionScale as OrdinalScale).rangeBand - theme.defaultStrokeWidth;
 
     // Calculate height of each segment in the bar.
     // Uses prevAllZeroHeight and prevOffset to track previous segments

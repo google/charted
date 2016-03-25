@@ -16,7 +16,7 @@ import 'dart:collection';
 
 typedef bool TimerCallback(int time);
 
-class AnimationTimer extends LinkedListEntry {
+class AnimationTimer extends LinkedListEntry<AnimationTimer> {
   static LinkedList<AnimationTimer> _queue = new LinkedList<AnimationTimer>();
 
   /// true if we are already waiting for window.animationFrame. At any given
@@ -78,7 +78,7 @@ class AnimationTimer extends LinkedListEntry {
   }
 
   /// Internal timer and animation frame handler.
-  _step([_]) {
+  _step([num _]) {
     int delay = flush();
 
     if (delay == null) {

@@ -15,7 +15,7 @@ typedef List PaddingFunction(TreeMapNode node);
  * Utility layout class which recursively subdivides area into rectangles which
  * can be used to quickly visualize the size of any node in the tree.
  */
-class TreeMapLayout extends HierarchyLayout {
+class TreeMapLayout extends HierarchyLayout<TreeMapNode> {
   /// Rectangular subdivision; squareness controlled via the target ratio.
   static const TREEMAP_LAYOUT_SQUARIFY = 0;
 
@@ -163,7 +163,7 @@ class TreeMapLayout extends HierarchyLayout {
       var rect = _treeMapPad(node, paddingFunction(node));
       List<TreeMapNode> nodes = [];
       var area = 0;
-      var remaining = new List.from(children);
+      var remaining = new List<TreeMapNode>.from(children);
       var score,
           n,
           best = double.INFINITY,
@@ -203,6 +203,8 @@ class TreeMapLayout extends HierarchyLayout {
 }
 
 class TreeMapNode extends HierarchyNode {
+  final List<TreeMapNode> children = <TreeMapNode>[];
+
   /// The minimum x-coordinate of the node position.
   num x = 0;
 

@@ -25,7 +25,8 @@ List<InterpolatorGenerator> _interpolators = [createInterpolatorByType];
 /// more interpolators are added, one of the internal implementations are
 /// selected by the type of [a] and [b].
 Interpolator createInterpolatorFromRegistry(a, b) {
-  var fn, i = _interpolators.length;
+  Interpolator fn;
+  int i = _interpolators.length;
   while (--i >= 0 && fn == null) {
     fn = _interpolators[i](a, b);
   }
@@ -37,17 +38,21 @@ Interpolator createInterpolatorFromRegistry(a, b) {
 /// Usage note: Use this method only when type of [a] and [b] are not known.
 ///     When used, this function will prevent tree shaking of all built-in
 ///     interpolators.
-Interpolator createInterpolatorByType(a, b) => (a is List && b is List)
-    ? createListInterpolator(a, b)
-    : (a is Map && b is Map)
-        ? createMapInterpolator(a, b)
-        : (a is String && b is String)
-            ? createStringInterpolator(a, b)
-            : (a is num && b is num)
-                ? createNumberInterpolator(a, b)
-                : (a is Color && b is Color)
-                    ? createRgbColorInterpolator(a, b)
-                    : (t) => (t <= 0.5) ? a : b;
+Interpolator createInterpolatorByType(a, b) {
+  if (a is List && b is List) {
+    return createListInterpolator(a, b);
+  } else if (a is Map && b is Map) {
+    return createMapInterpolator(a, b);
+  } else if (a is String && b is String) {
+    return createStringInterpolator(a, b);
+  } else if (a is num && b is num) {
+    return createNumberInterpolator(a, b);
+  } else if (a is Color && b is Color) {
+    return createRgbColorInterpolator(a, b);
+  } else {
+    return (t) => (t <= 0.5) ? a : b;
+  }
+}
 
 //
 // Implementations of InterpolatorGenerator

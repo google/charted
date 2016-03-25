@@ -10,7 +10,6 @@ part of charted.charts;
 
 class LineChartRenderer extends CartesianRendererBase {
   final Iterable<int> dimensionsUsingBand = const [];
-  final SubscriptionsDisposer _disposer = new SubscriptionsDisposer();
 
   final bool alwaysAnimate;
   final bool trackDataPoints;
@@ -249,7 +248,7 @@ class LineChartRenderer extends CartesianRendererBase {
     }
   }
 
-  void _mouseOverHandler(d, i, e) {
+  void _mouseOverHandler(d, int i, Element e) {
     if (area.state != null) {
       area.state.preview = int.parse(e.dataset['column']);
     }
@@ -261,7 +260,7 @@ class LineChartRenderer extends CartesianRendererBase {
     }
   }
 
-  void _mouseOutHandler(d, i, e) {
+  void _mouseOutHandler(d, int i, Element e) {
     if (area.state != null &&
         area.state.preview == int.parse(e.dataset['column'])) {
       area.state.preview = null;

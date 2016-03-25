@@ -30,7 +30,7 @@ abstract class ChartTheme {
 
   /// Markup for filters that is added to all chart elements. These filters
   /// can be referenced using url() in values returned by [getFilterForState].
-  String filters;
+  String get filters;
 
   /// Returns any filters that must be applied based on the element's state
   String getFilterForState(int state);
