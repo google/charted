@@ -95,15 +95,31 @@ class BarChartRenderer extends CartesianRendererBase {
               ? (d >= 0 ? scaled0 - scaledVal : scaledVal - scaled0)
               : (d >= 0 ? scaledVal - scaled0 : scaled0 - scaledVal);
       ht = ht - strokeWidth;
-      return (ht < 0) ? 0 : ht;
+
+      // If bar would be scaled to 0 height but data is not 0, render bar
+      // at 1 pixel so user can see and hover over to see the data.
+      return (ht < 0) ? 1 : ht;
     };
     var getBarPos = (d) {
       var scaledVal = measureScale.scale(d).round();
+
+      // If bar would be scaled to 0 height but data is not 0, reserve 1 pixel
+      // height plus strokeWidthOffset to position the bar.
+      if (scaledVal == scaled0) {
+        return verticalBars
+            ? d > 0
+                ? scaled0 - 1 - strokeWidthOffset
+                : scaled0 + strokeWidthOffset
+            : d > 0
+                ? scaled0 + strokeWidthOffset
+                : scaled0 - 1 - strokeWidthOffset;
+      }
       return verticalBars
           ? (d >= 0 ? scaledVal : scaled0) + strokeWidthOffset
           : (d >= 0 ? scaled0 : scaledVal) + strokeWidthOffset;
     };
     var buildPath = (d, int i, bool animate) {
+      // If data is null or 0, an empty path for the bar is returned directly.
       if (d == null || d == 0) return '';
       if (verticalBars) {
         var fn = d > 0 ? topRoundedRect : bottomRoundedRect;
