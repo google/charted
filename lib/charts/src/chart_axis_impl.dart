@@ -83,16 +83,16 @@ class DefaultChartAxisImpl {
         : new MutableRect.size(layout.height, _theme.horizontalAxisHeight);
 
     // Handle auto re-sizing of horizontal axis.
+    var ticks = (_config != null && !isNullOrEmpty(_config.tickValues))
+        ? _config.tickValues
+        : scale.ticks,
+    formatter = _columnSpec.formatter == null
+        ? scale.createTickFormatter()
+        : _columnSpec.formatter,
+    textMetrics = new TextMetrics(fontStyle: _theme.ticksFont),
+    formattedTicks = ticks.map((x) => formatter(x)).toList(),
+    shortenedTicks = formattedTicks;
     if (_isVertical) {
-      var ticks = (_config != null && !isNullOrEmpty(_config.tickValues))
-              ? _config.tickValues
-              : scale.ticks,
-          formatter = _columnSpec.formatter == null
-              ? scale.createTickFormatter()
-              : _columnSpec.formatter,
-          textMetrics = new TextMetrics(fontStyle: _theme.ticksFont),
-          formattedTicks = ticks.map((x) => formatter(x)).toList(),
-          shortenedTicks = formattedTicks;
 
       var width = textMetrics.getLongestTextWidth(formattedTicks).ceil();
       if (width > _theme.verticalAxisWidth) {
@@ -105,8 +105,20 @@ class DefaultChartAxisImpl {
         size.width =
             width + _theme.axisTickPadding + math.max(_theme.axisTickSize, 0);
       }
+
       _axisTicksPlacement =
           new PrecomputedAxisTicks(ticks, formattedTicks, shortenedTicks);
+    } else {
+      // Precompute if extra room is needed for rotated label.
+      var width = layout.width -
+          _area.layout.axes[ORIENTATION_LEFT].width -
+          _area.layout.axes[ORIENTATION_RIGHT].width;
+      var allowedWidth = width ~/ ticks.length,
+          maxLabelWidth = textMetrics.getLongestTextWidth(formattedTicks);
+      if (!RotateHorizontalAxisTicks.needsLabelRotation(
+          allowedWidth, maxLabelWidth)) {
+        size.height = textMetrics.fontSize * 2;
+      }
     }
   }
 
@@ -176,6 +188,9 @@ class RotateHorizontalAxisTicks implements SvgAxisTicks {
 
   RotateHorizontalAxisTicks(this.rect, this.ticksFont, this.tickLineLength);
 
+  static bool needsLabelRotation(num allowedWidth, num maxLabelWidth) =>
+      0.90 * allowedWidth < maxLabelWidth;
+
   void init(SvgAxis axis) {
     assert(axis.orientation == ORIENTATION_BOTTOM ||
         axis.orientation == ORIENTATION_TOP);
@@ -190,7 +205,7 @@ class RotateHorizontalAxisTicks implements SvgAxisTicks {
         maxLabelWidth = textMetrics.getLongestTextWidth(formattedTicks);
 
     // Check if we need rotation
-    if (0.90 * allowedWidth < maxLabelWidth) {
+    if (needsLabelRotation(allowedWidth, maxLabelWidth)) {
       var rectHeight =
           tickLineLength > 0 ? rect.height - tickLineLength : rect.height;
       rotation = 45;
