@@ -337,8 +337,8 @@ class _SelectionImpl implements Selection {
         exitGroups = <SelectionGroup>[];
 
     // Create a dummy node to be used with enter() selection.
-    Object dummy(val) {
-      var element = new Object();
+    Element dummy(val) {
+      var element = new Element.div();
       scope.associate(element, val);
       return element;
     }
@@ -352,9 +352,9 @@ class _SelectionImpl implements Selection {
       // Nodes exiting, entering and updating in this group.
       // We maintain the nodes at the same index as they currently
       // are (for exiting) or where they should be (for entering and updating)
-      var update = new List<Element>(valuesLength),
-          enter = new List<Element>(valuesLength),
-          exit = new List<Element>(elementsLength);
+      var update = new List<Element>(valuesLength);
+      var enter = new List<Element>(valuesLength);
+      var exit = new List<Element>(elementsLength);
 
       // Use key function to determine DOMElement to data associations.
       if (keyFn != null) {

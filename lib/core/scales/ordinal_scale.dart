@@ -39,7 +39,7 @@ class _OrdinalScale implements OrdinalScale {
   }
 
   @override
-  dynamic invert(num value) {
+  dynamic invert(value) {
     int position = _range.indexOf(value);
     return position > -1 && position < _domain.length
         ? _domain[position]

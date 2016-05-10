@@ -130,10 +130,10 @@ class LinearScale implements Scale {
   Extent get rangeExtent => ScaleUtils.extent(_range);
 
   @override
-  num scale(num value) => _scale(value);
+  scale(value) => _scale(value);
 
   @override
-  num invert(num value) => _invert(value);
+  invert(value) => _invert(value);
 
   Range _linearTickRange([Extent extent]) {
     if (extent == null) {
