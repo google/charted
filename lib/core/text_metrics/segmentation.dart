@@ -185,7 +185,7 @@ int _typeForRune(int rune) {
   return CODE_CATEGORY_OTHER; // Defaults to OTHER.
 }
 
-Iterable<int> graphemeBreakIndices(String s) {
+List<int> graphemeBreakIndices(String s) {
   List<int> indices = [];
   int previousType = 0;
   for (var iter = s.runes.iterator; iter.moveNext();) {

@@ -44,7 +44,7 @@ class TimeFormat {
     while (++i < n) formats[i][0] = _getInstance(formats[i][0] as String);
     return (var date) {
       if (date is num) {
-        date = new DateTime.fromMillisecondsSinceEpoch(date.toInt());
+        date = new DateTime.fromMillisecondsSinceEpoch((date as num).toInt());
       }
       var i = 0, f = formats[i];
       while (f.length < 2 || f[1](date) == false) {

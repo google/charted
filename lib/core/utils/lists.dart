@@ -99,7 +99,7 @@ class Range extends DelegatingList<num> {
     return new Range._internal(start, stop, step, values);
   }
 
-  Range._internal(this.start, this.stop, this.step, List values)
+  Range._internal(this.start, this.stop, this.step, List<num> values)
       : super(values);
 
   static int _integerConversionFactor(num val) {

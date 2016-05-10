@@ -16,7 +16,7 @@ class DefaultChartEventImpl implements ChartEvent {
   final ChartSeries series;
 
   @override
-  final MouseEvent source;
+  final Event source;
 
   @override
   final int column;
@@ -38,9 +38,10 @@ class DefaultChartEventImpl implements ChartEvent {
     var hostRect = area.host.getBoundingClientRect(),
         left =
         area.config.isRTL ? area.theme.padding.end : area.theme.padding.start;
-    if (source != null) {
-      chartX = source.client.x - hostRect.left - left;
-      chartY = source.client.y - hostRect.top - area.theme.padding.top;
+    if (source is MouseEvent) {
+      MouseEvent mouseSource = source;
+      chartX = mouseSource.client.x - hostRect.left - left;
+      chartY = mouseSource.client.y - hostRect.top - area.theme.padding.top;
     }
   }
 }

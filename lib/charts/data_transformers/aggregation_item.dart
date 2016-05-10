@@ -28,6 +28,9 @@ abstract class AggregationItem extends ChangeNotifier {
   /// are supported as the operators.
   operator [](String key);
 
+  /// List of lower aggregations.
+  List<AggregationItem> lowerAggregations();
+
   /// Check if we support a given key.
   bool containsKey(String key);
 
@@ -132,13 +135,10 @@ class _AggregationItemImpl extends ChangeNotifier implements AggregationItem {
     if (key == 'items') {
       return new _AggregationItemsIterator(model, dimensions, _key);
     }
-    if (key == 'aggregations') {
-      return _lowerAggregations();
-    }
     return null;
   }
 
-  List<AggregationItem> _lowerAggregations() {
+  List<AggregationItem> lowerAggregations() {
     List<AggregationItem> aggregations = new List<AggregationItem>();
     if (dimensions.length == model._dimFields.length) {
       return aggregations;
@@ -148,7 +148,7 @@ class _AggregationItemImpl extends ChangeNotifier implements AggregationItem {
     List lowerVals = model.valuesForDimension(lowerDimensionField);
 
     lowerVals.forEach((name) {
-      List lowerDims = new List.from(dimensions)..add(name);
+      List<String> lowerDims = new List.from(dimensions)..add(name);
       AggregationItem entity = model.facts(lowerDims);
       if (entity != null) {
         aggregations.add(entity);

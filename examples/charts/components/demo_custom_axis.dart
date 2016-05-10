@@ -12,7 +12,7 @@ import 'dart:html';
 import 'package:charted/charts/charts.dart';
 import 'package:charted/core/scales.dart';
 
-List COLUMNS = [
+List<ChartColumnSpec> COLUMNS = <ChartColumnSpec>[
     new ChartColumnSpec(label:'Month', type:ChartColumnSpec.TYPE_STRING),
     new ChartColumnSpec(label:'Precipitation'),
     new ChartColumnSpec(label:'High Temperature'),
@@ -23,7 +23,7 @@ List COLUMNS = [
     new ChartColumnSpec(label:'Extra3'),
   ];
 
-List DATA = [
+List<List> DATA = <List>[
     ['January',  4.50, 27, 46, 1,   20, 23, 1],
     ['February', 4.61, 60, 28, 10,  15, 45, 23],
     ['March',    3.26, 32, 49, 100, 4,  34, 1],

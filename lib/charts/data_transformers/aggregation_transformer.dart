@@ -26,8 +26,8 @@ class AggregationTransformer extends ChangeNotifier
   static const String AGGREGATION_TYPE_VALID = 'valid';
   final SubscriptionsDisposer _dataSubscriptions = new SubscriptionsDisposer();
   final Set<List> _expandedSet = new Set();
-  Iterable<ChartColumnSpec> columns;
-  ObservableList<Iterable> rows = new ObservableList();
+  List<ChartColumnSpec> columns;
+  ObservableList<List> rows = new ObservableList<List>();
   List<int> _dimensionColumnIndices;
   List<int> _factsColumnIndices;
   String _aggregationType;
@@ -91,7 +91,7 @@ class AggregationTransformer extends ChangeNotifier
 
     // Process rows.
     rows.clear();
-    var transformedRows = <Iterable>[];
+    var transformedRows = <List>[];
     for (var value in _model.valuesForDimension(_dimensionColumnIndices[0])) {
       _generateAggregatedRow(transformedRows, [value]);
     }
@@ -107,7 +107,8 @@ class AggregationTransformer extends ChangeNotifier
   /// generated for its children but not for itself.  If we want to change the
   /// logic to include itself, just move the expand check around the else clause
   /// and always write a row of data whether it's expanded or not.
-  _generateAggregatedRow(List<Iterable> aggregatedRows, List dimensionValues) {
+  _generateAggregatedRow(
+      List<List> aggregatedRows, List<String> dimensionValues) {
     var entity = _model.facts(dimensionValues);
     var dimensionLevel = dimensionValues.length - 1;
 
@@ -136,7 +137,7 @@ class AggregationTransformer extends ChangeNotifier
     } else {
       // Dimension is expanded, process each child dimension in the expanded
       // dimension.
-      for (AggregationItem childAggregation in entity['aggregations']) {
+      for (AggregationItem childAggregation in entity.lowerAggregations()) {
         _generateAggregatedRow(aggregatedRows, childAggregation.dimensions);
       }
     }
@@ -187,10 +188,10 @@ class AggregationTransformer extends ChangeNotifier
     }
   }
 
-  void _expandAll(value) {
+  void _expandAll(List<String> value) {
     var entity = _model.facts(value);
     _expandedSet.add(value);
-    for (AggregationItem childAggregation in entity['aggregations']) {
+    for (AggregationItem childAggregation in entity.lowerAggregations()) {
       _expandAll(childAggregation.dimensions);
     }
   }

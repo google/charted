@@ -71,7 +71,7 @@ class BubbleChartRenderer extends CartesianRendererBase {
     group.enter.append('g')..classed('measure-group');
     group.each((d, i, e) {
       e.style.setProperty('fill', color(i));
-      e.attributes['data-column'] = series.measures.elementAt(i);
+      e.attributes['data-column'] = series.measures.elementAt(i).toString();
     });
     group.exit.remove();
 
@@ -85,7 +85,7 @@ class BubbleChartRenderer extends CartesianRendererBase {
             '${xDimensionScale.scale(xDimensionVals[i])},'
             '${yDimensionScale.scale(yDimensionVals[i])})'
         ..['r'] = '${bubbleRadiusScale.scale(d) * bubbleRadiusFactor}'
-        ..['data-row'] = i;
+        ..['data-row'] = i.toString();
     });
     measures.exit.remove();
     handleStateChanges([]);
@@ -107,7 +107,9 @@ class BubbleChartRenderer extends CartesianRendererBase {
   @override
   Extent get extent {
     assert(series != null && area != null);
-    var rows = area.data.rows, max = rows[0][series.measures.first], min = max;
+    var rows = area.data.rows,
+        max = rows.first[series.measures.first],
+        min = max;
 
     rows.forEach((row) {
       series.measures.forEach((idx) {

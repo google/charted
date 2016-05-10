@@ -10,18 +10,23 @@ part of charted.core.utils;
 
 /// Interface representing size and position of an element
 class Rect {
-  final num x;
-  final num y;
-  final num width;
-  final num height;
+  final num _x;
+  final num _y;
+  final num _width;
+  final num _height;
 
-  const Rect([this.x = 0, this.y = 0, this.width = 0, this.height = 0]);
-  const Rect.size(this.width, this.height)
-      : x = 0,
-        y = 0;
-  const Rect.position(this.x, this.y)
-      : width = 0,
-        height = 0;
+  num get x => _x;
+  num get y => _y;
+  num get width => _width;
+  num get height => _height;
+
+  const Rect([this._x = 0, this._y = 0, this._width = 0, this._height = 0]);
+  const Rect.size(this._width, this._height)
+      : _x = 0,
+        _y = 0;
+  const Rect.position(this._x, this._y)
+      : _width = 0,
+        _height = 0;
 
   bool isSameSizeAs(Rect other) =>
       other != null && width == other.width && height == other.height;

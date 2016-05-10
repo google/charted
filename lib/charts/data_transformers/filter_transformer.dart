@@ -17,8 +17,8 @@ typedef bool FilterFunction(dynamic value);
 class FilterTransformer extends ChangeNotifier
     implements ChartDataTransform, ChartData {
   final SubscriptionsDisposer _dataSubscriptions = new SubscriptionsDisposer();
-  Iterable<ChartColumnSpec> columns;
-  ObservableList<Iterable> rows = new ObservableList();
+  List<ChartColumnSpec> columns;
+  ObservableList<List> rows = new ObservableList();
   List<FilterDefinition> filterFunctions;
   ChartData _data;
 

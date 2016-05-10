@@ -93,7 +93,6 @@ class DefaultChartAxisImpl {
     formattedTicks = ticks.map((x) => formatter(x)).toList(),
     shortenedTicks = formattedTicks;
     if (_isVertical) {
-
       var width = textMetrics.getLongestTextWidth(formattedTicks).ceil();
       if (width > _theme.verticalAxisWidth) {
         width = _theme.verticalAxisWidth;
@@ -163,7 +162,9 @@ class DefaultChartAxisImpl {
   Scale get scale =>
       (_config != null && _config.scale != null) ? _config.scale : _scale;
 
-  set scale(Scale value) => _scale = value;
+  set scale(Scale value) {
+    _scale = value;
+  }
 }
 
 class PrecomputedAxisTicks implements SvgAxisTicks {
@@ -183,7 +184,7 @@ class RotateHorizontalAxisTicks implements SvgAxisTicks {
 
   int rotation = 0;
   Iterable ticks;
-  Iterable formattedTicks;
+  Iterable<String> formattedTicks;
   Iterable shortenedTicks;
 
   RotateHorizontalAxisTicks(this.rect, this.ticksFont, this.tickLineLength);

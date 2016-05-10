@@ -32,46 +32,6 @@ typedef num EasingFunction(num t);
 /// altered [EasingFunction].
 typedef EasingFunction EasingModeFunction(EasingFunction fn);
 
-/// Creates an easing function based on type and mode.
-EasingFunction easingFunctionByName(String type,
-    [String mode = EASE_MODE_IN, List params]) {
-  const Map easingTypes = const {
-    EASE_TYPE_LINEAR: identityFunction,
-    EASE_TYPE_POLY: easePoly,
-    EASE_TYPE_QUAD: easeQuad,
-    EASE_TYPE_CUBIC: easeCubic,
-    EASE_TYPE_SIN: easeSin,
-    EASE_TYPE_EXP: easeExp,
-    EASE_TYPE_CIRCLE: easeCircle,
-    EASE_TYPE_ELASTIC: easeElastic,
-    EASE_TYPE_BACK: easeBack,
-    EASE_TYPE_BOUNCE: easeBounce
-  };
-
-  const Map easingModes = const {
-    EASE_MODE_IN: identityFunction,
-    EASE_MODE_OUT: reverseEasingFn,
-    EASE_MODE_IN_OUT: reflectEasingFn,
-    EASE_MODE_OUT_IN: reflectReverseEasingFn
-  };
-
-  const Map customEasingFunctions = const {
-    '$EASE_TYPE_CUBIC-$EASE_MODE_IN_OUT': easeCubicInOut
-  };
-
-  assert(easingTypes.containsKey(type));
-  assert(easingModes.containsKey(mode));
-
-  EasingFunction fn;
-  if (customEasingFunctions.containsKey('$type-$mode')) {
-    fn = Function.apply(customEasingFunctions['$type-$mode'], params);
-  } else {
-    fn = Function.apply(easingTypes[type], params);
-    fn = easingModes[mode](fn);
-  }
-  return clampEasingFn(fn);
-}
-
 /// Clamps transition progress to stay between 0.0 and 1.0
 EasingFunction clampEasingFn(EasingFunction f) =>
     (t) => t <= 0 ? 0 : t >= 1 ? 1 : f(t);

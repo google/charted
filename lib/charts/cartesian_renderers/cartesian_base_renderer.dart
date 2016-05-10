@@ -182,7 +182,7 @@ abstract class CartesianRendererBase implements CartesianRenderer {
       if (state == null || area.useRowColoring) {
         _columnStylesCache[column] = const [];
       } else {
-        var styles = [], flags = _columnStateCache[column];
+        var styles = <String>[], flags = _columnStateCache[column];
 
         if (flags & ChartState.COL_SELECTED != 0) {
           styles.add(ChartState.COL_SELECTED_CLASS);

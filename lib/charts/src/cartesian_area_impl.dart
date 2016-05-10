@@ -13,7 +13,7 @@ part of charted.charts;
 /// which contain two dimension axes.
 class DefaultCartesianAreaImpl implements CartesianArea {
   /// Default identifiers used by the measure axes
-  static const MEASURE_AXIS_IDS = const ['_default'];
+  static const MEASURE_AXIS_IDS = const <String>['_default'];
 
   /// Orientations used by measure axes. First, when "x" axis is the primary
   /// and the only dimension. Second, when "y" axis is the primary and the only
@@ -349,7 +349,6 @@ class DefaultCartesianAreaImpl implements CartesianArea {
   }
 
   String _orientRTL(String orientation) => orientation;
-  Scale _scaleRTL(Scale scale) => scale;
 
   /// Initialize the axes - required even if the axes are not being displayed.
   _initAxes({bool preRender: false}) {
@@ -376,8 +375,8 @@ class DefaultCartesianAreaImpl implements CartesianArea {
     measureAxisUsers.forEach((id, listOfSeries) {
       var sampleCol = listOfSeries.first.measures.first,
           sampleColSpec = data.columns.elementAt(sampleCol),
-          axis = _getMeasureAxis(id),
-          domain;
+          axis = _getMeasureAxis(id);
+      List domain;
 
       if (sampleColSpec.useOrdinalScale) {
         throw new UnsupportedError(
@@ -561,12 +560,13 @@ class DefaultCartesianAreaImpl implements CartesianArea {
     if (_config == null || _config.legend == null || _series.isEmpty) return;
 
     var legend = <ChartLegendItem>[];
-    List seriesByColumn =
-        new List.generate(data.columns.length, (_) => new List());
+    List<List<ChartSeries>> seriesByColumn =
+        new List<List<ChartSeries>>.generate(
+            data.columns.length, (_) => <ChartSeries>[]);
 
     _series.forEach((s) => s.measures.forEach((m) => seriesByColumn[m].add(s)));
 
-    seriesByColumn.asMap().forEach((int i, List s) {
+    seriesByColumn.asMap().forEach((int i, List<ChartSeries> s) {
       if (s.length == 0) return;
       legend.add(new ChartLegendItem(
           index: i,
@@ -664,10 +664,10 @@ class _ChartAreaLayout implements ChartAreaLayout {
   get axes => _axesView;
 
   @override
-  Rect renderArea;
+  Rect renderArea = const Rect();
 
   @override
-  Rect chartArea;
+  Rect chartArea = const Rect();
 
   _ChartAreaLayout() {
     _axesView = new UnmodifiableMapView(_axes);

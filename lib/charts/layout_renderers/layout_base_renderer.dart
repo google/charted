@@ -123,7 +123,7 @@ abstract class LayoutRendererBase implements LayoutRenderer {
       if (state == null) {
         _valueStylesCache[row] = const [];
       } else {
-        var styles = [], flags = _valueStateCache[row];
+        var styles = <String>[], flags = _valueStateCache[row];
 
         if (flags & ChartState.VAL_HIGHLIGHTED != 0) {
           styles.add(ChartState.VAL_HIGHLIGHTED_CLASS);

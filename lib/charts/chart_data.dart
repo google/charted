@@ -17,7 +17,7 @@ abstract class ChartData {
   Iterable<ChartColumnSpec> get columns;
 
   /// Read-only access to rows
-  Iterable<Iterable> get rows;
+  Iterable<List> get rows;
 
   /// Create a new instance of [ChartData]'s internal implementation
   factory ChartData(Iterable<ChartColumnSpec> columns,

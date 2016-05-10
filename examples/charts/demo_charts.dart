@@ -3,18 +3,18 @@ library charted.demo.charts;
 import "package:charted/charts/charts.dart";
 
 /// Helper method to create default behaviors for cartesian chart demos.
-Iterable<ChartBehavior> createDefaultCartesianBehaviors() =>
+List<ChartBehavior> createDefaultCartesianBehaviors() =>
     new List.from([
         new Hovercard(isMultiValue: true),
         new AxisLabelTooltip()
     ]);
 
 /// Helper method to create default behaviors for layout chart demos.
-Iterable<ChartBehavior> createDefaultLayoutBehaviors() =>
+List<ChartBehavior> createDefaultLayoutBehaviors() =>
     new List.from([new ChartTooltip()]);
 
 /// Sample columns used by demos with quantitative dimension scale
-Iterable ORDINAL_DATA_COLUMNS = [
+List<ChartColumnSpec> ORDINAL_DATA_COLUMNS = <ChartColumnSpec>[
     new ChartColumnSpec(label: 'Month', type: ChartColumnSpec.TYPE_STRING),
     new ChartColumnSpec(label: 'Grains'),
     new ChartColumnSpec(label: 'Fruits'),
@@ -22,7 +22,7 @@ Iterable ORDINAL_DATA_COLUMNS = [
 ];
 
 /// Sample values used by demos with quantitative dimension scale
-Iterable ORDINAL_DATA = const [
+List<List> ORDINAL_DATA = const <List>[
     const ['January',   4.50,  7,  6],
     const ['February',  5.61, 16,  8],
     const ['March',     8.26, 36,  9],
@@ -38,7 +38,7 @@ Iterable ORDINAL_DATA = const [
 ];
 
 /// Sample values used by RTL demos with quantitative dimension scale
-Iterable ORDINAL_DATA_RTL = const [
+List<List> ORDINAL_DATA_RTL = const <List>[
     const ['كانون الثاني',   4.50,  7,  6],
     const ['شباط',  5.61, 16,  8],
     const ['آذار',     8.26, 36,  9],
@@ -53,7 +53,7 @@ Iterable ORDINAL_DATA_RTL = const [
     const ['كانون الأول',  8.46, 19,  3]
 ];
 
-Iterable ORDINAL_DATA_WITH_NEGATIVE = const [
+List<List> ORDINAL_DATA_WITH_NEGATIVE = const <List>[
     const ['January',   4.50,  -7,   6],
     const ['February',  5.61, -16,   8],
     const ['March',     8.26,  36,   9],
@@ -68,7 +68,7 @@ Iterable ORDINAL_DATA_WITH_NEGATIVE = const [
     const ['December',  8.46,  19,   3]
 ];
 
-Iterable ORDINAL_DATA_WITH_BREAKS = const [
+List<List> ORDINAL_DATA_WITH_BREAKS = const <List>[
     const ['January',   4.50,  -7,   6],
     const ['February',  5.61, -16,   8],
     const ['March',     8.26,  36,   9],
@@ -84,14 +84,14 @@ Iterable ORDINAL_DATA_WITH_BREAKS = const [
 ];
 
 /// Sample columns used by demos with quantitative dimension scale
-Iterable TIMESERIES_DATA_COLUMNS = [
+List<ChartColumnSpec> TIMESERIES_DATA_COLUMNS = <ChartColumnSpec>[
     new ChartColumnSpec(label: 'Time', type: ChartColumnSpec.TYPE_TIMESTAMP),
     new ChartColumnSpec(label: 'New York'),
     new ChartColumnSpec(label: 'San Fransisco'),
     new ChartColumnSpec(label: 'Austin')
 ];
 
-Iterable TIMESERIES_DATA = const [
+List<List<num>> TIMESERIES_DATA = const <List<num>>[
     const [1317452400000, 63.4, 62.7, 72.2],
     const [1317538800000, 58.0, 59.9, 67.7],
     const [1317625200000, 53.3, 59.1, 69.4],

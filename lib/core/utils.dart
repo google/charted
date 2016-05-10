@@ -32,7 +32,7 @@ const String ORIENTATION_TOP = 'top';
 const String ORIENTATION_BOTTOM = 'bottom';
 
 /// Identity function that returns the value passed as it's parameter.
-identityFunction(x) => x;
+/*=T*/ identityFunction/*<T>*/(/*=T*/x) => x;
 
 /// Function that formats a value to String.
 typedef String FormatFunction(value);

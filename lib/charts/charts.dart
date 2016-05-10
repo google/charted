@@ -10,7 +10,7 @@ library charted.charts;
 
 import 'dart:async';
 import 'dart:collection';
-import 'dart:html' show Element, document, window, Event, MouseEvent;
+import 'dart:html' show Element, window, Event, MouseEvent;
 import 'dart:math' as math;
 import 'dart:svg' hide Rect;
 import 'dart:typed_data';

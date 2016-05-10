@@ -9,16 +9,18 @@
 part of charted.charts;
 
 class DefaultChartDataImpl extends ChangeNotifier implements ChartData {
-  Iterable<ChartColumnSpec> _columns;
-  Iterable<Iterable> _rows;
+  List<ChartColumnSpec> _columns;
+  List<List> _rows;
 
   bool _hasObservableRows = false;
   SubscriptionsDisposer _disposer = new SubscriptionsDisposer();
 
   DefaultChartDataImpl(
       Iterable<ChartColumnSpec> columns, Iterable<Iterable> rows) {
-    this.columns = columns;
-    this.rows = rows;
+    this.columns = new List<ChartColumnSpec>.from(columns);
+    var rowsList = new List.from(rows);
+    this.rows = new List<List>.generate(
+        rowsList.length, (i) => new List.from(rowsList[i]));
   }
 
   set columns(Iterable<ChartColumnSpec> value) {
@@ -30,9 +32,9 @@ class DefaultChartDataImpl extends ChangeNotifier implements ChartData {
     this._columns = new List<ChartColumnSpec>.from(value);
   }
 
-  Iterable<ChartColumnSpec> get columns => _columns;
+  List<ChartColumnSpec> get columns => _columns;
 
-  set rows(Iterable<Iterable> value) {
+  set rows(List<List> value) {
     assert(value != null);
 
     _rows = value;
@@ -45,7 +47,9 @@ class DefaultChartDataImpl extends ChangeNotifier implements ChartData {
       for (int i = 0; i < _rows.length; i++) {
         var row = _rows.elementAt(i);
         _disposer.add(
-            row.listChanges.listen((changes) => _valuesChanged(i, changes)),
+            (row as ObservableList)
+                .listChanges
+                .listen((changes) => _valuesChanged(i, changes)),
             row);
       }
       ;
@@ -54,7 +58,7 @@ class DefaultChartDataImpl extends ChangeNotifier implements ChartData {
     }
   }
 
-  Iterable<Iterable> get rows => _rows;
+  List<List> get rows => _rows;
 
   rowsChanged(List<ListChangeRecord> changes) {
     if (_rows is! ObservableList) return;
@@ -72,7 +76,7 @@ class DefaultChartDataImpl extends ChangeNotifier implements ChartData {
               'Changes on this row will not be monitored');
         } else {
           _disposer.add(
-              row.listChanges
+              (row as ObservableList).listChanges
                   .listen((changes) => _valuesChanged(index, changes)),
               row);
         }

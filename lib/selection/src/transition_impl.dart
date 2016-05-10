@@ -13,15 +13,15 @@ Map<Element, int> _transitionMap = {};
 
 class _TransitionImpl implements Transition {
   SelectionCallback _delay = (d, i, c) => 0;
-  SelectionCallback _duration = (d, i, c) =>
-      Transition.defaultDurationMilliseconds;
+  SelectionCallback _duration =
+      (d, i, c) => Transition.defaultDurationMilliseconds;
   Selection _selection;
   Map _attrs = {};
   Map _styles = {};
   Map _attrTweens = {};
   Map _styleTweens = {};
   Map<AnimationTimer, Element> _timerMap = {};
-  Map<Element, List<Map>> _attrMap = {};
+  Map<Element, List<Interpolator>> _attrMap = {};
   Map<Element, int> _durationMap = {};
   bool _interrupted = false;
   bool _remove = false;
@@ -82,7 +82,7 @@ class _TransitionImpl implements Transition {
   _transitionNode(num delay) {
     new AnimationTimer((elapsed) {
       _selection.each((d, i, c) {
-        var tweenList = [];
+        var tweenList = <Interpolator>[];
         _attrs.forEach((key, value) {
           tweenList.add(_getAttrInterpolator(c, key, value(d, i, c)));
         });
@@ -117,14 +117,16 @@ class _TransitionImpl implements Transition {
   }
 
   // Returns the correct interpolator function for the old and new attribute.
-  _getAttrInterpolator(Element element, String attrName, newValue) {
+  Interpolator _getAttrInterpolator(
+      Element element, String attrName, newValue) {
     var attr = element.attributes[attrName];
     var interpolator = createStringInterpolator(attr, newValue.toString());
     return (t) => element.setAttribute(attrName, interpolator(t).toString());
   }
 
   // Returns the correct interpolator function for the old and new style.
-  _getStyleInterpolator(Element element, String styleName, newValue, priority) {
+  Interpolator _getStyleInterpolator(
+      Element element, String styleName, newValue, priority) {
     var style = element.style.getPropertyValue(styleName);
 
     var interpolator = createStringInterpolator(style, newValue.toString());
@@ -136,7 +138,7 @@ class _TransitionImpl implements Transition {
   // Ticks of the transition, this is the callback registered to the
   // ChartedTimer, called on each animation frame until the transition duration
   // has been reached.
-  bool _tick(elapsed) {
+  bool _tick(int elapsed) {
     if (_interrupted) {
       return true;
     }

@@ -94,7 +94,8 @@ class _OrdinalScale implements OrdinalScale {
   num get rangeBand => _rangeBand;
 
   @override
-  FormatFunction createTickFormatter([String format]) => identityFunction;
+  FormatFunction createTickFormatter([String format]) =>
+      (String s) => identityFunction/*<String>*/(s);
 
   @override
   Iterable get ticks => _domain;
@@ -153,8 +154,9 @@ class _OrdinalScale implements OrdinalScale {
     scale._reset = (_OrdinalScale s) {
       var start = range.first,
           stop = range.last,
-          step = ((stop - start) /
-              (s.domain.length - padding + 2 * outerPadding)).floor(),
+          step =
+          ((stop - start) / (s.domain.length - padding + 2 * outerPadding))
+              .floor(),
           error = stop - start - (s.domain.length - padding) * step;
 
       s._range = s._steps(start + (error / 2).round(), step);

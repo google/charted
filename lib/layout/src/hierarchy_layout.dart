@@ -28,7 +28,7 @@ abstract class HierarchyLayout<T extends HierarchyNode> {
   /// first element its children in depth first order.
   List<T> layout(
       List rows, int parentColumn, int labelColumn, int valueColumn) {
-    List<HierarchyNode> nodeList = [];
+    List<T> nodeList = [];
     for (var row in rows) {
       nodeList.add(createNode(row[labelColumn], row[valueColumn], 0));
     }
@@ -38,9 +38,7 @@ abstract class HierarchyLayout<T extends HierarchyNode> {
       if (parentRow == ROOT_ROW_INDEX) continue;
       var currentNode = nodeList[i];
       var parentNode = nodeList[parentRow];
-      (parentNode.children.isEmpty)
-          ? parentNode.children = [currentNode]
-          : parentNode.children.add(currentNode);
+      parentNode.children.add(currentNode);
       currentNode.parent = parentNode;
       currentNode.depth = parentNode.depth + 1;
       for (var child in currentNode.children) {
@@ -50,9 +48,9 @@ abstract class HierarchyLayout<T extends HierarchyNode> {
 
     // Reorder the list so that root is the first element and the list contains
     // the hierarchy of nodes in depth first order.
-    var hierarchyNodeList = [];
+    var hierarchyNodeList = <HierarchyNode>[];
     var root = nodeList.where((e) => e.depth == 0).elementAt(0);
-    var children = [root];
+    var children = <HierarchyNode>[root];
     while (children.length > 0) {
       var node = children.removeLast();
       children.addAll(node.children);
@@ -80,7 +78,7 @@ abstract class HierarchyNode {
   HierarchyNode parent = null;
 
   /// The list of children nodes, or null for leaf nodes.
-  List children = [];
+  List<HierarchyNode> get children;
 
   /// The label to show for each block of hierarchy
   String label = '';

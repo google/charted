@@ -57,7 +57,8 @@ class DefaultChartConfigImpl extends ChangeNotifier implements ChartConfig {
     values.forEach((item) {
       if (item is Observable) {
         _disposer.add(
-            item.changes
+            (item as Observable)
+                .changes
                 .listen((_) => notifyChange(const ChartConfigChangeRecord())),
             item);
       }

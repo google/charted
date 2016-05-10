@@ -26,8 +26,7 @@ class DefaultChartStateImpl extends ChangeNotifier implements ChartState {
   LinkedHashSet<int> hidden = new LinkedHashSet<int>();
 
   LinkedHashSet<int> selection = new LinkedHashSet<int>();
-  LinkedHashSet<Pair<int, int>> highlights =
-      new LinkedHashSet<Pair<int, int>>();
+  LinkedHashSet<Pair<int, int>> highlights = new LinkedHashSet<Pair<int, int>>();
 
   Pair<int, int> _hovered;
   int _preview;
@@ -47,7 +46,6 @@ class DefaultChartStateImpl extends ChangeNotifier implements ChartState {
       _hovered = value;
       notifyChange(new ChartHoverChangeRecord(_hovered));
     }
-    return value;
   }
 
   Pair<int, int> get hovered => _hovered;
@@ -58,7 +56,6 @@ class DefaultChartStateImpl extends ChangeNotifier implements ChartState {
       _preview = value;
       notifyChange(new ChartPreviewChangeRecord(_preview));
     }
-    return value;
   }
 
   int get preview => _preview;
@@ -115,7 +112,7 @@ class DefaultChartStateImpl extends ChangeNotifier implements ChartState {
       if (isSelectOrHighlight) {
         selection.clear();
       }
-      var item = new Pair(column, row);
+      var item = new Pair<int, int>(column, row);
       highlights.add(item);
       notifyChange(new ChartHighlightChangeRecord(add: item));
     }
@@ -124,7 +121,7 @@ class DefaultChartStateImpl extends ChangeNotifier implements ChartState {
 
   bool unhighlight(int column, int row) {
     if (isHighlighted(column, row)) {
-      var item = new Pair(column, row);
+      var item = new Pair<int, int>(column, row);
       highlights.remove(item);
       notifyChange(new ChartHighlightChangeRecord(remove: item));
     }
