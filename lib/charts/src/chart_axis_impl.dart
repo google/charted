@@ -9,8 +9,10 @@
 part of charted.charts;
 
 class DefaultChartAxisImpl {
+  static const int _AXIS_TITLE_HEIGHT = 20;
+
   CartesianArea _area;
-  ChartAxisConfig _config;
+  ChartAxisConfig config;
   ChartAxisTheme _theme;
   SvgAxisTicks _axisTicksPlacement;
 
@@ -22,10 +24,11 @@ class DefaultChartAxisImpl {
   String _orientation;
   Scale _scale;
   SelectionScope _scope;
+  String _title;
 
   MutableRect size;
 
-  DefaultChartAxisImpl.withAxisConfig(this._area, this._config);
+  DefaultChartAxisImpl.withAxisConfig(this._area, this.config);
   DefaultChartAxisImpl(this._area);
 
   void initAxisDomain(int column, bool isDimension, Iterable domain) {
@@ -44,10 +47,12 @@ class DefaultChartAxisImpl {
         : _area.theme.getMeasureAxisTheme(scale);
 
     // Sets the domain if not using a custom scale.
-    if (_config == null || (_config != null && _config.scale == null)) {
+    if (config == null || (config != null && config.scale == null)) {
       scale.domain = domain;
       scale.nice = !_isDimension;
     }
+
+    _title = config?.title;
   }
 
   void initAxisScale(Iterable range) {
@@ -66,7 +71,13 @@ class DefaultChartAxisImpl {
       (scale as OrdinalScale)
           .rangeRoundBands(range, innerPadding, outerPadding);
     } else {
-      scale.range = range;
+      if (_title != null) {
+        var modifiedRange = range.take(range.length - 1).toList();
+        modifiedRange.add(range.last + _AXIS_TITLE_HEIGHT);
+        scale.range = modifiedRange;
+      } else {
+        scale.range = range;
+      }
       scale.ticksCount = _theme.axisTickCount;
     }
   }
@@ -83,8 +94,8 @@ class DefaultChartAxisImpl {
         : new MutableRect.size(layout.height, _theme.horizontalAxisHeight);
 
     // Handle auto re-sizing of horizontal axis.
-    var ticks = (_config != null && !isNullOrEmpty(_config.tickValues))
-        ? _config.tickValues
+    var ticks = (config != null && !isNullOrEmpty(config.tickValues))
+        ? config.tickValues
         : scale.ticks,
     formatter = _columnSpec.formatter == null
         ? scale.createTickFormatter()
@@ -131,8 +142,8 @@ class DefaultChartAxisImpl {
         innerTickSize = _theme.axisTickSize <= ChartAxisTheme.FILL_RENDER_AREA
             ? 0 - (_isVertical ? renderAreaRect.width : renderAreaRect.height)
             : _theme.axisTickSize,
-        tickValues = _config != null && !isNullOrEmpty(_config.tickValues)
-            ? _config.tickValues
+        tickValues = config != null && !isNullOrEmpty(config.tickValues)
+            ? config.tickValues
             : null;
 
     element.attributes['transform'] = 'translate(${rect.x}, ${rect.y})';
@@ -141,8 +152,21 @@ class DefaultChartAxisImpl {
       _axisTicksPlacement = new RotateHorizontalAxisTicks(
           rect, _theme.ticksFont, _theme.axisTickSize + _theme.axisTickPadding);
     }
-
     initAxisScale(range);
+
+    if (_title != null) {
+      var label = element.querySelector('.chart-axis-label');
+      if (label != null) {
+        label.text = _title;
+      } else {
+        var title = Namespace.createChildElement('text', element);
+        title.attributes['text-anchor'] = 'middle';
+        title.text = _title;
+        title.classes.add('chart-axis-label');
+        element.append(title);
+      }
+    }
+
     var axis = new SvgAxis(
         orientation: _orientation,
         innerTickSize: innerTickSize,
@@ -160,11 +184,12 @@ class DefaultChartAxisImpl {
 
   // Scale passed through configuration takes precedence
   Scale get scale =>
-      (_config != null && _config.scale != null) ? _config.scale : _scale;
+      (config != null && config.scale != null) ? config.scale : _scale;
 
   set scale(Scale value) {
     _scale = value;
   }
+
 }
 
 class PrecomputedAxisTicks implements SvgAxisTicks {
