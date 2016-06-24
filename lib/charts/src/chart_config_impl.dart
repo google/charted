@@ -110,6 +110,7 @@ class DefaultChartConfigImpl extends ChangeNotifier implements ChartConfig {
   void registerMeasureAxis(String id, ChartAxisConfig config) {
     assert(config != null);
     _measureAxisRegistry[id] = config;
+    notifyChange(const ChartConfigChangeRecord());
   }
 
   @override
@@ -120,6 +121,7 @@ class DefaultChartConfigImpl extends ChangeNotifier implements ChartConfig {
     assert(config != null);
     assert(dimensions.contains(column));
     _dimensionAxisRegistry[column] = config;
+    notifyChange(const ChartConfigChangeRecord());
   }
 
   @override
