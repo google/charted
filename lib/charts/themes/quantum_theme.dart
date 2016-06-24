@@ -107,13 +107,13 @@ class QuantumChartTheme extends ChartTheme {
 
 class QuantumChartAxisTheme implements ChartAxisTheme {
   @override
-  final axisOuterPadding = 0.1;
+  final axisOuterPadding;
 
   @override
-  final axisBandInnerPadding = 0.35;
+  final axisBandInnerPadding;
 
   @override
-  final axisBandOuterPadding = 0.175;
+  final axisBandOuterPadding;
 
   @override
   final axisTickPadding = 6;
@@ -125,19 +125,29 @@ class QuantumChartAxisTheme implements ChartAxisTheme {
   final axisTickCount;
 
   @override
-  final verticalAxisAutoResize = true;
+  final verticalAxisAutoResize;
 
   @override
-  final verticalAxisWidth = 75;
+  final verticalAxisWidth;
 
   @override
-  final horizontalAxisAutoResize = false;
+  final horizontalAxisAutoResize;
 
   @override
-  final horizontalAxisHeight = 50;
+  final horizontalAxisHeight;
 
   @override
-  final ticksFont = '12px Roboto';
+  final ticksFont;
 
-  const QuantumChartAxisTheme(this.axisTickSize, this.axisTickCount);
+  QuantumChartAxisTheme(this.axisTickSize, this.axisTickCount, {
+  this.axisOuterPadding: 0.1,
+  this.axisBandInnerPadding: 0.35,
+  this.axisBandOuterPadding: 0.175,
+  this.axisTickPadding: 6,
+  this.verticalAxisAutoResize: true,
+  this.verticalAxisWidth: 75,
+  this.horizontalAxisAutoResize: false,
+  this.horizontalAxisHeight: 50,
+  this.ticksFont: '12px Roboto'
+  });
 }
