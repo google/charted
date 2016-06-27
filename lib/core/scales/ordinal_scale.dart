@@ -19,8 +19,8 @@ class _OrdinalScale implements OrdinalScale {
   _OrdinalScale();
 
   _OrdinalScale._clone(_OrdinalScale source)
-      : _domain = source._domain,
-        _range = source._range,
+      : _domain = new List.from(source._domain),
+        _range = new List.from(source._range),
         _reset = source._reset,
         _rangeExtent = source._rangeExtent,
         _rangeBand = source._rangeBand {
