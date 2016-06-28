@@ -107,37 +107,37 @@ class QuantumChartTheme extends ChartTheme {
 
 class QuantumChartAxisTheme implements ChartAxisTheme {
   @override
-  final axisOuterPadding;
+  final double axisOuterPadding;
 
   @override
-  final axisBandInnerPadding;
+  final double axisBandInnerPadding;
 
   @override
-  final axisBandOuterPadding;
+  final double axisBandOuterPadding;
 
   @override
-  final axisTickPadding;
+  final int axisTickPadding;
 
   @override
-  final axisTickSize;
+  final int axisTickSize;
 
   @override
-  final axisTickCount;
+  final int axisTickCount;
 
   @override
-  final verticalAxisAutoResize;
+  final bool verticalAxisAutoResize;
 
   @override
-  final verticalAxisWidth;
+  final int verticalAxisWidth;
 
   @override
-  final horizontalAxisAutoResize;
+  final bool horizontalAxisAutoResize;
 
   @override
-  final horizontalAxisHeight;
+  final int horizontalAxisHeight;
 
   @override
-  final ticksFont;
+  final String ticksFont;
 
   QuantumChartAxisTheme(this.axisTickSize, this.axisTickCount, {
   this.axisOuterPadding: 0.1,
