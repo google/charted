@@ -65,6 +65,12 @@ abstract class Scale {
   /// Note: This property is only valid on quantitative scales.
   int ticksCount;
 
+  /// Forces the number of ticks on this scale to be the forcedTicksCount.
+  /// The tick values on the scale does not guarantee to be niced numbers, but
+  /// domain of the scale does.
+  /// Note: This property is only valid on quantitative scales.
+  int forcedTicksCount;
+
   /// Indicates if the current scale is using niced values for ticks.
   /// Note: This property is only valid on quantitative scales.
   bool nice;

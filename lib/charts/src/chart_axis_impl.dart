@@ -93,11 +93,16 @@ class DefaultChartAxisImpl {
         ? new MutableRect.size(_theme.verticalAxisWidth, layout.width)
         : new MutableRect.size(layout.height, _theme.horizontalAxisHeight);
 
+    if (config?.forcedTicksCount != null && config.forcedTicksCount > 0) {
+      scale.forcedTicksCount = config.forcedTicksCount;
+    }
+
     // Handle auto re-sizing of horizontal axis.
     var ticks = (config != null && !isNullOrEmpty(config.tickValues))
         ? config.tickValues
-        : scale.ticks,
-    formatter = _columnSpec.formatter == null
+        : scale.ticks;
+
+    var formatter = _columnSpec.formatter == null
         ? scale.createTickFormatter()
         : _columnSpec.formatter,
     textMetrics = new TextMetrics(fontStyle: _theme.ticksFont),

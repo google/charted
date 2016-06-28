@@ -171,9 +171,9 @@ class _OrdinalScale implements OrdinalScale {
   //
   // Properties that are valid only on quantitative scales.
   //
-
   bool clamp;
   bool nice;
   bool rounded;
   int ticksCount;
+  int forcedTicksCount;
 }
