@@ -164,11 +164,12 @@ class LinearScale implements Scale {
       // when forcing the ticks count at least the two ends of the scale would
       // look nice and has a high chance of having the intermediate tick values
       // to be nice.
-      var maxFactor = math.pow(10, (math.log(extent.max / _ticksCount)
-          / math.LN10).floor());
+      var maxFactor = extent.max == 0 ? 1
+          : math.pow(10, (math.log((extent.max as num).abs() / forcedTicksCount)
+              / math.LN10).floor());
       var max = (extent.max / maxFactor).ceil() * maxFactor;
       var minFactor = extent.min == 0 ? 1
-          : math.pow(10, (math.log((extent.min as num).abs() / _ticksCount)
+          : math.pow(10, (math.log((extent.min as num).abs() / forcedTicksCount)
               / math.LN10).floor());
       var min = (extent.min / minFactor).floor() * minFactor;
       step = (max - min) / forcedTicksCount;
