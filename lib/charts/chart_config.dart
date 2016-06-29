@@ -91,4 +91,9 @@ class ChartAxisConfig {
   /// For a quantitative scale, values at which ticks should be displayed.
   /// When not specified, the ticks are based on the type of [scale] used.
   Iterable tickValues;
+
+  /// Forces the ticks count of a scale to be of the forcedTicksCount.
+  /// The tick values on the scale does not guarantee to be niced numbers, but
+  /// domain of the scale does.  Only valid for quantitative scale.
+  int forcedTicksCount;
 }

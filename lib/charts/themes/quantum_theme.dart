@@ -75,13 +75,13 @@ class QuantumChartTheme extends ChartTheme {
 
   @override
   ChartAxisTheme getMeasureAxisTheme([Scale _]) =>
-      const QuantumChartAxisTheme(ChartAxisTheme.FILL_RENDER_AREA, 5);
+      new QuantumChartAxisTheme(ChartAxisTheme.FILL_RENDER_AREA, 5);
 
   @override
   ChartAxisTheme getDimensionAxisTheme([Scale scale]) =>
       scale == null || scale is OrdinalScale
-          ? const QuantumChartAxisTheme(0, 10)
-          : const QuantumChartAxisTheme(4, 10);
+          ? new QuantumChartAxisTheme(0, 10)
+          : new QuantumChartAxisTheme(4, 10);
 
   @override
   AbsoluteRect get padding => const AbsoluteRect(10, 40, 0, 0);
@@ -116,7 +116,7 @@ class QuantumChartAxisTheme implements ChartAxisTheme {
   final double axisBandOuterPadding;
 
   @override
-  final int axisTickPadding = 6;
+  final int axisTickPadding;
 
   @override
   final int axisTickSize;
