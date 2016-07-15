@@ -99,7 +99,7 @@ class SvgAxis {
 
     var enter = ticks.enter.appendWithCallback((d, i, e) {
       var group = Namespace.createChildElement('g', e)
-        ..attributes['class'] = 'tick'
+        ..attributes['class'] = 'tick tick-$i'
         ..append(Namespace.createChildElement('line', e))
         ..append(Namespace.createChildElement('text', e)
           ..attributes['dy'] =
