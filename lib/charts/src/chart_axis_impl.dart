@@ -49,7 +49,8 @@ class DefaultChartAxisImpl {
     // Sets the domain if not using a custom scale.
     if (config == null || (config != null && config.scale == null)) {
       scale.domain = domain;
-      scale.nice = !_isDimension;
+      scale.nice = !_isDimension &&
+          !(config?.forcedTicksCount != null && config.forcedTicksCount > 0);
     }
 
     _title = config?.title;
@@ -100,9 +101,9 @@ class DefaultChartAxisImpl {
     // Handle auto re-sizing of horizontal axis.
     var ticks = (config != null && !isNullOrEmpty(config.tickValues))
         ? config.tickValues
-        : scale.ticks;
+        : scale.ticks,
 
-    var formatter = _columnSpec.formatter == null
+    formatter = _columnSpec.formatter == null
         ? scale.createTickFormatter()
         : _columnSpec.formatter,
     textMetrics = new TextMetrics(fontStyle: _theme.ticksFont),
