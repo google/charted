@@ -99,7 +99,6 @@ class SvgAxis {
 
     var enter = ticks.enter.appendWithCallback((d, i, e) {
       var group = Namespace.createChildElement('g', e)
-        ..attributes['class'] = 'tick tick-$i'
         ..append(Namespace.createChildElement('line', e))
         ..append(Namespace.createChildElement('text', e)
           ..attributes['dy'] =
@@ -113,6 +112,7 @@ class SvgAxis {
     // All attributes/styles/classes that may change due to theme and scale.
     // TODO(prsd): Order elements before updating ticks.
     ticks.each((d, i, e) {
+      e.attributes['class'] = 'tick tick-$i';
       Element line = e.firstChild;
       Element text = e.lastChild;
       bool isRTLText = false; // FIXME(prsd)
