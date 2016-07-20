@@ -17,6 +17,7 @@ class LinearScale implements Scale {
 
   int _ticksCount = 5;
   int _forcedTicksCount = -1;
+
   bool _clamp = false;
   bool _nice = false;
   Function _invert;
@@ -36,12 +37,12 @@ class LinearScale implements Scale {
 
   void _reset({bool nice: false}) {
     if (nice) {
+      _domain = ScaleUtils.nice(
+          _domain, ScaleUtils.niceStep(_linearTickRange().step));
+    } else {
       if (_forcedTicksCount > 0) {
         var tickRange = _linearTickRange();
         _domain = [tickRange.first, tickRange.last];
-      } else {
-        _domain = ScaleUtils.nice(
-            _domain, ScaleUtils.niceStep(_linearTickRange().step));
       }
     }
 
@@ -106,7 +107,7 @@ class LinearScale implements Scale {
 
   set forcedTicksCount(int value) {
     _forcedTicksCount = value;
-    _reset(nice: true);
+    _reset(nice: false);
   }
 
   get forcedTicksCount => _forcedTicksCount;
