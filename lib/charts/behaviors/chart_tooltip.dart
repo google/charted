@@ -91,14 +91,11 @@ class ChartTooltip implements ChartBehavior {
     // tooltip for them, if none is selected/hovered, show all.
     var activeMeasures = [];
     if (showSelectedMeasure) {
-      if(_state != null) {
+      if (_state != null) {
         activeMeasures.addAll(_state.selection);
-        activeMeasures
-            .add(_state.preview != null
-                ? _state.preview
-                : _state.hovered.first);
+        activeMeasures.add(
+            _state.preview != null ? _state.preview : _state.hovered.first);
       } else {
-
         // If state is null, chart tooltip will not capture selection, but only
         // display for the currently hovered measure column.
         activeMeasures.add(e.column);
@@ -167,7 +164,7 @@ class ChartTooltip implements ChartBehavior {
       y = coord.y + _TOOLTIP_OFFSET;
     }
     return boundTooltipPosition(
-        new math.Rectangle(x, y, rect.width, rect.height));
+        new math.Rectangle(x as num, y as num, rect.width, rect.height));
   }
 
   /// Positions the tooltip to be inside of the chart boundary.

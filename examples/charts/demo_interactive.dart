@@ -9,7 +9,7 @@
 library charted.demo.interactive;
 
 import 'dart:html';
-import 'package:observe/observe.dart';
+import 'package:observable/observable.dart';
 import 'package:charted/charts/charts.dart';
 
 import 'demo_charts.dart';

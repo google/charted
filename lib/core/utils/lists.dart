@@ -16,12 +16,12 @@ num sum(List values) => values == null || values.isEmpty
 /// Returns the smallest number in the given list of values
 num min(Iterable values) => values == null || values.isEmpty
     ? null
-    : values.fold(values.elementAt(0), math.min);
+    : values.fold(values.elementAt(0) as num, math.min);
 
 /// Returns the largest number in the given list of values
 num max(Iterable values) => values == null || values.isEmpty
     ? null
-    : values.fold(values.elementAt(0), math.max);
+    : values.fold(values.elementAt(0) as num, math.max);
 
 /// Represents a constant pair of values
 class Pair<T1, T2> {

@@ -37,6 +37,13 @@ class QuantumChartTheme extends ChartTheme {
     const ['#EFF3C2', '#9D9C23', '#817616']
   ];
 
+  static final _MEASURE_AXIS_THEME =
+      new QuantumChartAxisTheme(ChartAxisTheme.FILL_RENDER_AREA, 5);
+  static final _ORDINAL_DIMENSION_AXIS_THEME =
+  new QuantumChartAxisTheme(0, 10);
+  static final _DEFAULT_DIMENSION_AXIS_THEME =
+  new QuantumChartAxisTheme(4, 10);
+
   final OrdinalScale _scale = new OrdinalScale()..range = COLORS;
 
   @override
@@ -74,14 +81,13 @@ class QuantumChartTheme extends ChartTheme {
       : OTHER_COLORS;
 
   @override
-  ChartAxisTheme getMeasureAxisTheme([Scale _]) =>
-      new QuantumChartAxisTheme(ChartAxisTheme.FILL_RENDER_AREA, 5);
+  ChartAxisTheme getMeasureAxisTheme([Scale _]) => _MEASURE_AXIS_THEME;
 
   @override
   ChartAxisTheme getDimensionAxisTheme([Scale scale]) =>
       scale == null || scale is OrdinalScale
-          ? new QuantumChartAxisTheme(0, 10)
-          : new QuantumChartAxisTheme(4, 10);
+          ? _ORDINAL_DIMENSION_AXIS_THEME
+          : _DEFAULT_DIMENSION_AXIS_THEME;
 
   @override
   AbsoluteRect get padding => const AbsoluteRect(10, 40, 0, 0);
@@ -139,15 +145,14 @@ class QuantumChartAxisTheme implements ChartAxisTheme {
   @override
   final String ticksFont;
 
-  QuantumChartAxisTheme(this.axisTickSize, this.axisTickCount, {
-  this.axisOuterPadding: 0.1,
-  this.axisBandInnerPadding: 0.35,
-  this.axisBandOuterPadding: 0.175,
-  this.axisTickPadding: 6,
-  this.verticalAxisAutoResize: true,
-  this.verticalAxisWidth: 75,
-  this.horizontalAxisAutoResize: false,
-  this.horizontalAxisHeight: 50,
-  this.ticksFont: '12px Roboto'
-  });
+  QuantumChartAxisTheme(this.axisTickSize, this.axisTickCount,
+      {this.axisOuterPadding: 0.1,
+      this.axisBandInnerPadding: 0.35,
+      this.axisBandOuterPadding: 0.175,
+      this.axisTickPadding: 6,
+      this.verticalAxisAutoResize: true,
+      this.verticalAxisWidth: 75,
+      this.horizontalAxisAutoResize: false,
+      this.horizontalAxisHeight: 50,
+      this.ticksFont: '12px Roboto'});
 }

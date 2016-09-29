@@ -10,7 +10,7 @@ library charted.test.aggregationtransformer;
 import 'package:charted/charts/charts.dart';
 import 'package:charted/core/utils.dart';
 import 'package:unittest/unittest.dart';
-import 'package:observe/observe.dart';
+import 'package:observable/observable.dart';
 
 main() {
   List COLUMNS = [
