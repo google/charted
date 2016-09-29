@@ -1,5 +1,5 @@
 name: charted
-version: 0.4.0+1
+version: 0.4.0+2
 authors:
 - Prasad Sunkari <prsd@google.com>
 - Michael Cheng <midoringo@google.com>
@@ -10,7 +10,7 @@ dependencies:
   browser: any
   intl: any
   logging: any
-  observable: any
+  observable: '^0.14.0'
   quiver: any
 dev_dependencies:
   hop: '>=0.27.0'
