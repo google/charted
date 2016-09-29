@@ -10,7 +10,7 @@ dependencies:
   browser: any
   intl: any
   logging: any
-  observe: any
+  observable: any
   quiver: any
 dev_dependencies:
   hop: '>=0.27.0'
