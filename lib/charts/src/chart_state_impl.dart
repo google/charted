@@ -14,7 +14,7 @@ part of charted.charts;
 /// - In [CartesianArea] it is always a column.
 /// - In [LayoutArea] renders choose either columns or rows.
 ///
-class DefaultChartStateImpl extends ChangeNotifier implements ChartState {
+class DefaultChartStateImpl extends Observable implements ChartState {
   final bool isMultiSelect;
   final bool isMultiHighlight;
   final bool isSelectOrHighlight;

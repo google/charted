@@ -8,7 +8,7 @@
 
 part of charted.charts;
 
-class DefaultChartDataImpl extends ChangeNotifier implements ChartData {
+class DefaultChartDataImpl extends Observable implements ChartData {
   List<ChartColumnSpec> _columns;
   List<List> _rows;
 
