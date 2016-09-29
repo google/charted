@@ -11,7 +11,7 @@ part of charted.charts;
 /// AggregationItem is created by [AggregationModel] to make access to facts
 /// observable. Users must use AggregationItem.isValid before trying to access
 /// the aggregations.
-abstract class AggregationItem extends ChangeNotifier {
+abstract class AggregationItem extends Observable {
   /// List of dimension fields in effect
   List<String> dimensions;
 
@@ -42,7 +42,7 @@ abstract class AggregationItem extends ChangeNotifier {
 
 /// Implementation of AggregationItem
 /// Instances of _AggregationItemImpl are created only by AggregationModel
-class _AggregationItemImpl extends ChangeNotifier implements AggregationItem {
+class _AggregationItemImpl extends Observable implements AggregationItem {
   static final List<String> derivedAggregationTypes = ['count', 'avg'];
 
   AggregationModel model;

@@ -12,7 +12,7 @@ part of charted.charts;
 /// Model to provide highlight, selection and visibility in a ChartArea.
 /// Selection and visibility
 ///
-abstract class ChartState implements ChangeNotifier {
+abstract class ChartState implements Observable {
   static int COL_SELECTED = 0x001;
   static int COL_UNSELECTED = 0x002;
   static int COL_PREVIEW = 0x004;

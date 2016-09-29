@@ -8,7 +8,7 @@
 
 part of charted.charts;
 
-class DefaultChartConfigImpl extends ChangeNotifier implements ChartConfig {
+class DefaultChartConfigImpl extends Observable implements ChartConfig {
   final Map<String, ChartAxisConfig> _measureAxisRegistry = {};
   final Map<int, ChartAxisConfig> _dimensionAxisRegistry = {};
   final SubscriptionsDisposer _disposer = new SubscriptionsDisposer();

@@ -17,7 +17,7 @@ part of charted.charts;
 /// All values in the data except for the data in the label column must have the
 /// same type; All columns except for the label column must have the same
 /// formatter if a formatter exist for columns.
-class TransposeTransformer extends ChangeNotifier
+class TransposeTransformer extends Observable
     implements ChartDataTransform, ChartData {
   final SubscriptionsDisposer _dataSubscriptions = new SubscriptionsDisposer();
   ObservableList<ChartColumnSpec> columns = new ObservableList();

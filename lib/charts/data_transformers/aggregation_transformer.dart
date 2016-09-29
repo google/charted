@@ -18,7 +18,7 @@ part of charted.charts;
 /// The output column will be re-ordered first by the indices specified in the
 /// dimension column indices then by the facts column indices.  The data in the
 /// cells of each row will also follow this rule.
-class AggregationTransformer extends ChangeNotifier
+class AggregationTransformer extends Observable
     implements ChartDataTransform, ChartData {
   static const String AGGREGATION_TYPE_SUM = 'sum';
   static const String AGGREGATION_TYPE_MIN = 'min';
