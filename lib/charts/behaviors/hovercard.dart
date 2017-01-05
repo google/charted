@@ -51,6 +51,7 @@ typedef Element HovercardBuilder(int column, int row);
 ///     single row.  Eg: Would not work with a water-fall chart.
 ///
 class Hovercard implements ChartBehavior {
+  static const _HOVERCARD_OFFSET = 20;
   final HovercardBuilder builder;
 
   bool _isMouseTracking;
@@ -66,7 +67,6 @@ class Hovercard implements ChartBehavior {
     'left',
     'orientation'
   ];
-  int offset = 20;
 
   ChartArea _area;
   ChartState _state;
@@ -181,7 +181,7 @@ class Hovercard implements ChartBehavior {
   }
 
   void _positionAtMousePointer(ChartEvent e) =>
-      _positionAtPoint(e.chartX, e.chartY, offset, offset, false, false);
+      _positionAtPoint(e.chartX, e.chartY, _HOVERCARD_OFFSET, _HOVERCARD_OFFSET, false, false);
 
   void _positionOnLayout(column, row) {
     // Currently for layouts, when hovercard is triggered due to change
@@ -198,7 +198,7 @@ class Hovercard implements ChartBehavior {
     var dimensionCol = area.config.dimensions.first,
         dimensionScale = area.dimensionScales.first,
         measureScale = _getScaleForColumn(column),
-        dimensionOffset = this.offset,
+        dimensionOffset = _HOVERCARD_OFFSET,
         dimensionCenterOffset = 0;
 
     // If we are using bands on the one axis that is shown
@@ -233,11 +233,11 @@ class Hovercard implements ChartBehavior {
     }
 
     if (area.config.isLeftAxisPrimary) {
-      _positionAtPoint(measurePosition, dimensionPosition, 0, dimensionOffset,
-          isNegative, true);
+      _positionAtPoint(measurePosition, dimensionPosition, _HOVERCARD_OFFSET,
+          dimensionOffset, isNegative, true);
     } else {
-      _positionAtPoint(dimensionPosition, measurePosition, dimensionOffset, 0,
-          isNegative, false);
+      _positionAtPoint(dimensionPosition, measurePosition, dimensionOffset,
+          _HOVERCARD_OFFSET, isNegative, false);
     }
   }
 
@@ -288,8 +288,8 @@ class Hovercard implements ChartBehavior {
 
       // Check if the popup is contained in the RenderArea.
       // If not, try other placements.
-      if (top > 0 &&
-          left > 0 &&
+      if (top >= 0 &&
+          left >= 0 &&
           top + height < renderAreaHeight &&
           left + width < renderAreaWidth) {
         break;

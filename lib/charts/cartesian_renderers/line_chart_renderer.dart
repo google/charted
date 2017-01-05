@@ -1,4 +1,4 @@
-//
+
 // Copyright 2014 Google Inc. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
@@ -12,6 +12,7 @@ class LineChartRenderer extends CartesianRendererBase {
   final Iterable<int> dimensionsUsingBand = const [];
 
   final bool alwaysAnimate;
+  final bool showHoverCardOnTrackedDataPoints;
   final bool trackDataPoints;
   final bool trackOnDimensionAxis;
   final int quantitativeScaleProximity;
@@ -30,6 +31,7 @@ class LineChartRenderer extends CartesianRendererBase {
 
   LineChartRenderer(
       {this.alwaysAnimate: false,
+      this.showHoverCardOnTrackedDataPoints: true,
       this.trackDataPoints: true,
       this.trackOnDimensionAxis: false,
       this.quantitativeScaleProximity: 5});
@@ -166,7 +168,7 @@ class LineChartRenderer extends CartesianRendererBase {
     _trackingPointsCreated = true;
   }
 
-  void _showTrackingCircles(int row) {
+  void _showTrackingCircles(ChartEvent event, int row) {
     if (_trackingPointsCreated == false) {
       _createTrackingCircles();
     }
@@ -197,12 +199,23 @@ class LineChartRenderer extends CartesianRendererBase {
           ..setProperty('visibility', 'hidden');
       }
     });
+
+    if (showHoverCardOnTrackedDataPoints) {
+      mouseOverController.add(new DefaultChartEventImpl(
+          event.source, area, series, row, 1, 0));
+      _savedOverRow = row;
+      _savedOverColumn = 1;
+    }
   }
 
-  void _hideTrackingCircles() {
+  void _hideTrackingCircles(ChartEvent event) {
     root.selectAll('.line-rdr-point')
       ..style('opacity', '0.0')
       ..style('visibility', 'hidden');
+    if (showHoverCardOnTrackedDataPoints) {
+      mouseOutController.add(new DefaultChartEventImpl(
+          event.source, area, series, _savedOverRow, _savedOverColumn, 0));
+    }
   }
 
   int _getNearestRowIndex(num x) {
@@ -226,25 +239,24 @@ class LineChartRenderer extends CartesianRendererBase {
     _disposer.add(area.onMouseMove.listen((ChartEvent event) {
       if (area.layout.renderArea.contains(event.chartX, event.chartY)) {
         var row = _getNearestRowIndex(event.chartX);
-        window.animationFrame.then((_) => _showTrackingCircles(row));
+        window.animationFrame.then((_) {
+          _showTrackingCircles(event, row);
+        });
       } else {
-        _hideTrackingCircles();
+        _hideTrackingCircles(event);
       }
     }));
     _disposer.add(area.onMouseOut.listen((ChartEvent event) {
-      _hideTrackingCircles();
+      _hideTrackingCircles(event);
     }));
   }
 
   void _mouseClickHandler(d, int i, Element e) {
     if (area.state != null) {
-      area.state.select(int.parse(e.dataset['column']));
-    }
-    if (mouseClickController != null && e.tagName == 'circle') {
-      var row = int.parse(e.dataset['row']),
-          column = int.parse(e.dataset['column']);
-      mouseClickController.add(
-          new DefaultChartEventImpl(scope.event, area, series, row, column, d));
+      var selectedColumn = int.parse(e.dataset['column']);
+      area.state.isSelected(selectedColumn)
+          ? area.state.unselect(selectedColumn)
+          : area.state.select(selectedColumn);
     }
   }
 
