@@ -1,4 +1,3 @@
-
 // Copyright 2014 Google Inc. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
@@ -31,7 +30,7 @@ class LineChartRenderer extends CartesianRendererBase {
 
   LineChartRenderer(
       {this.alwaysAnimate: false,
-      this.showHoverCardOnTrackedDataPoints: true,
+      this.showHoverCardOnTrackedDataPoints: false,
       this.trackDataPoints: true,
       this.trackOnDimensionAxis: false,
       this.quantitativeScaleProximity: 5});
@@ -201,8 +200,8 @@ class LineChartRenderer extends CartesianRendererBase {
     });
 
     if (showHoverCardOnTrackedDataPoints) {
-      mouseOverController.add(new DefaultChartEventImpl(
-          event.source, area, series, row, 1, 0));
+      mouseOverController.add(
+          new DefaultChartEventImpl(event.source, area, series, row, 1, 0));
       _savedOverRow = row;
       _savedOverColumn = 1;
     }
