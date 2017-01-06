@@ -200,10 +200,12 @@ class LineChartRenderer extends CartesianRendererBase {
     });
 
     if (showHoverCardOnTrackedDataPoints) {
+      var firstMeasureColumn = series.measures.first;
       mouseOverController.add(
-          new DefaultChartEventImpl(event.source, area, series, row, 1, 0));
+          new DefaultChartEventImpl(event.source, area, series, row,
+          firstMeasureColumn, 0));
       _savedOverRow = row;
-      _savedOverColumn = 1;
+      _savedOverColumn = firstMeasureColumn;
     }
   }
 
@@ -256,6 +258,12 @@ class LineChartRenderer extends CartesianRendererBase {
       area.state.isSelected(selectedColumn)
           ? area.state.unselect(selectedColumn)
           : area.state.select(selectedColumn);
+    }
+    if (mouseClickController != null && e.tagName == 'circle') {
+      var row = int.parse(e.dataset['row']),
+          column = int.parse(e.dataset['column']);
+      mouseClickController.add(
+          new DefaultChartEventImpl(scope.event, area, series, row, column, d));
     }
   }
 
