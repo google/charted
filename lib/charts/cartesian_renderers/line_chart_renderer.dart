@@ -115,10 +115,10 @@ class LineChartRenderer extends CartesianRendererBase {
 
   @override
   void dispose() {
+    _disposer.dispose();
     if (root == null) return;
     root.selectAll('.line-rdr-line').remove();
     root.selectAll('.line-rdr-point').remove();
-    _disposer.dispose();
   }
 
   @override
@@ -201,9 +201,8 @@ class LineChartRenderer extends CartesianRendererBase {
 
     if (showHoverCardOnTrackedDataPoints) {
       var firstMeasureColumn = series.measures.first;
-      mouseOverController.add(
-          new DefaultChartEventImpl(event.source, area, series, row,
-          firstMeasureColumn, 0));
+      mouseOverController.add(new DefaultChartEventImpl(
+          event.source, area, series, row, firstMeasureColumn, 0));
       _savedOverRow = row;
       _savedOverColumn = firstMeasureColumn;
     }
