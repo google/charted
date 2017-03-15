@@ -321,7 +321,7 @@ class DefaultCartesianAreaImpl implements CartesianArea {
         info.check();
         group.attributes['transform'] = transform;
         (s.renderer as CartesianRenderer)
-            .draw(group, schedulePostRender: schedulePostRender);
+            ?.draw(group, schedulePostRender: schedulePostRender);
       });
 
       // A series that was rendered earlier isn't there anymore, remove it
