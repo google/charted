@@ -228,8 +228,10 @@ class Hovercard implements ChartBehavior {
       });
     } else {
       var value = rowData.elementAt(column);
-      isNegative = value < 0;
-      measurePosition = measureScale.scale(rowData.elementAt(column));
+      if (value != null) {
+        isNegative = value < 0;
+        measurePosition = measureScale.scale(rowData.elementAt(value));
+      }
     }
 
     if (area.config.isLeftAxisPrimary) {
