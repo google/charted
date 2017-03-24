@@ -59,8 +59,8 @@ main() {
     node.enter.append("div")
       ..styleWithCallback('left', (d, i, e) => '${d.x}px')
       ..styleWithCallback('top', (d, i, e) => '${d.y}px')
-      ..styleWithCallback('width', (d, i, e) => '${max(0, d.dx - 1)}px')
-      ..styleWithCallback('height', (d, i, e) => '${max(0, d.dy - 1)}px')
+      ..styleWithCallback('width', (d, i, e) => '${max(0, (d.dx as int) - 1)}px')
+      ..styleWithCallback('height', (d, i, e) => '${max(0, (d.dy as int) - 1)}px')
       ..styleWithCallback('background', (d, i, e) => d.children.isNotEmpty ?
           theme.getColorForKey(d.label, ChartTheme.STATE_NORMAL) : null)
       ..textWithCallback((d, i, e) => d.children.isNotEmpty ? null : d.label)
