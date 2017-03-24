@@ -21,7 +21,7 @@ num min(Iterable values) => values == null || values.isEmpty
 /// Returns the largest number in the given list of values
 num max(Iterable values) => values == null || values.isEmpty
     ? null
-    : values.fold(values.elementAt(0) as num, (x, y) => math.min(x, y));
+    : values.fold(values.elementAt(0) as num, (x, y) => math.max(x, y));
 
 /// Represents a constant pair of values
 class Pair<T1, T2> {
