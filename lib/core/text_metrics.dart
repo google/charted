@@ -100,6 +100,7 @@ class TextMetrics {
           min = mid + 1;
         }
       }
+      if (max < 0) max = 0;
       text = text.substring(0, indices[max]) + '…';
     }
     return text;
