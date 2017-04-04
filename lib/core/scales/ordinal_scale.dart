@@ -120,11 +120,10 @@ class _OrdinalScale implements OrdinalScale {
     scale._reset = (_OrdinalScale s) {
       var start = range.first,
           stop = range.last,
-          step = (stop - start) / (s.domain.length - 1 + padding);
+          step = (stop - start - 2 * padding) / (s.domain.length);
 
       s._range = s._steps(
-          s.domain.length < 2 ? (start + stop) / 2 : start + step * padding / 2,
-          step);
+          s.domain.length < 2 ? (start + stop) / 2 : start + padding, step);
       s._rangeBand = 0;
       s._rangeExtent = new Extent(start, stop);
     };
@@ -138,7 +137,7 @@ class _OrdinalScale implements OrdinalScale {
     scale._reset = (_OrdinalScale s) {
       var start = range.first,
           stop = range.last,
-          step = (stop - start) / s.domain.length - padding + 2 * outerPadding;
+          step = (stop - start - 2 * outerPadding) / (s.domain.length - padding);
 
       s._range = s._steps(start + step * outerPadding, step);
       s._rangeBand = step * (1 - padding);
@@ -155,11 +154,10 @@ class _OrdinalScale implements OrdinalScale {
       var start = range.first,
           stop = range.last,
           step =
-          ((stop - start) / (s.domain.length - padding + 2 * outerPadding))
-              .floor(),
-          error = stop - start - (s.domain.length - padding) * step;
+          ((stop - start - 2 * outerPadding) / (s.domain.length - padding))
+              .floor();
 
-      s._range = s._steps(start + (error / 2).round(), step);
+      s._range = s._steps(start + outerPadding, step);
       s._rangeBand = (step * (1 - padding)).round();
       s._rangeExtent = new Extent(start, stop);
     };
