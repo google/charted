@@ -136,6 +136,9 @@ class DefaultCartesianAreaImpl implements CartesianArea {
       _chartAxesUpdatedController.close();
       _chartAxesUpdatedController = null;
     }
+    if (_behaviors.isNotEmpty) {
+      _behaviors.forEach((behavior) => behavior.dispose());
+    }
   }
 
   static bool isNotInline(Element e) =>

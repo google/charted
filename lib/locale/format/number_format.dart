@@ -141,6 +141,7 @@ class NumberFormat {
     var zcomma = (zfill != null) && comma;
 
     return (value) {
+      if (value == null) return '-';
       var fullSuffix = suffix;
 
       // Return the empty string for floats formatted as ints.
