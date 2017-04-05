@@ -146,9 +146,9 @@ class QuantumChartAxisTheme implements ChartAxisTheme {
   final String ticksFont;
 
   QuantumChartAxisTheme(this.axisTickSize, this.axisTickCount,
-      {this.axisOuterPadding: 0.1,
+      {this.axisOuterPadding: 12.0,
       this.axisBandInnerPadding: 0.35,
-      this.axisBandOuterPadding: 0.175,
+      this.axisBandOuterPadding: 12.0,
       this.axisTickPadding: 6,
       this.verticalAxisAutoResize: true,
       this.verticalAxisWidth: 75,

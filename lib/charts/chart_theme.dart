@@ -84,12 +84,9 @@ abstract class ChartAxisTheme {
   /// Space between axis and label for dimension axes
   int get axisTickPadding;
 
-  /// Space between the first tick and the measure axes.
+  /// Space between the first tick and the measure axes in pixels.
   /// Only used on charts that don't have renderers that use "bands" of space
   /// on the dimension axes
-  ///
-  /// Represented as a percentage of space between two consecutive ticks. The
-  /// space between two consecutive ticks is also known as the segment size.
   double get axisOuterPadding;
 
   /// Space between the two bands in the chart.
@@ -100,12 +97,9 @@ abstract class ChartAxisTheme {
   /// space between two consecutive ticks is also known as the segment size.
   double get axisBandInnerPadding;
 
-  /// Space between the first band and the measure axis.
+  /// Space between the first band and the measure axis in pixels.
   /// Only used on charts that have renderers that use "bands" of space on the
   /// dimension axes.
-  ///
-  /// Represented as a percentage of space between two consecutive ticks. The
-  /// space between two consecutive ticks is also known as the segment size.
   double get axisBandOuterPadding;
 
   /// When set to true, the vertical axes resize to fit the labels.
