@@ -230,7 +230,7 @@ class Hovercard implements ChartBehavior {
       var value = rowData.elementAt(column);
       if (value != null) {
         isNegative = value < 0;
-        measurePosition = measureScale.scale(rowData.elementAt(value));
+        measurePosition = measureScale.scale(value);
       }
     }
 
