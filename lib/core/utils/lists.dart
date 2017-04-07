@@ -14,14 +14,14 @@ num sum(List values) => values == null || values.isEmpty
     : values.fold(0.0, (old, next) => old + next);
 
 /// Returns the smallest number in the given list of values
-num min(Iterable values) => values == null || values.isEmpty
+num min(Iterable<num> values) => values == null || values.isEmpty
     ? null
-    : values.fold(values.elementAt(0) as num, (x, y) => math.min(x, y));
+    : values.fold(values.elementAt(0), (x, y) => math.min(x, y));
 
 /// Returns the largest number in the given list of values
-num max(Iterable values) => values == null || values.isEmpty
+num max(Iterable<num> values) => values == null || values.isEmpty
     ? null
-    : values.fold(values.elementAt(0) as num, (x, y) => math.max(x, y));
+    : values.fold(values.elementAt(0), (x, y) => math.max(x, y));
 
 /// Represents a constant pair of values
 class Pair<T1, T2> {
