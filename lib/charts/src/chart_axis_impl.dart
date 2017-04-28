@@ -69,8 +69,12 @@ class DefaultChartAxisImpl {
       if (_area.config.isLeftAxisPrimary) {
         range = range.toList().reversed;
       }
-      (scale as OrdinalScale)
-          .rangeRoundBands(range, innerPadding, outerPadding);
+      if (usingBands) {
+        (scale as OrdinalScale)
+            .rangeRoundBands(range, innerPadding, outerPadding);
+      } else {
+        (scale as OrdinalScale).rangePoints(range, outerPadding);
+      }
     } else {
       if (_title != null) {
         var modifiedRange = range.take(range.length - 1).toList();
