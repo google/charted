@@ -97,6 +97,12 @@ abstract class CartesianRendererBase implements CartesianRenderer {
         }
       }
     }
+
+    // If all values are null or non finite, set the extent to be 0.
+    if (max == SMALL_INT_MIN && min == SMALL_INT_MAX) {
+      max = 0;
+      min = 0;
+    }
     return new Extent(min, max);
   }
 
