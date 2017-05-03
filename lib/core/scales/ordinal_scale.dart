@@ -120,7 +120,9 @@ class _OrdinalScale implements OrdinalScale {
     scale._reset = (_OrdinalScale s) {
       var start = range.first,
           stop = range.last,
-          step = (stop - start - 2 * padding) / (s.domain.length - 1);
+          step = s.domain.length > 1
+              ? (stop - start - 2 * padding) / (s.domain.length - 1)
+              : 0;
 
       s._range = s._steps(
           s.domain.length < 2 ? (start + stop) / 2 : start + padding, step);
