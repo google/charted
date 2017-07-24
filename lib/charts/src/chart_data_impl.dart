@@ -16,11 +16,9 @@ class DefaultChartDataImpl extends Observable implements ChartData {
   SubscriptionsDisposer _disposer = new SubscriptionsDisposer();
 
   DefaultChartDataImpl(
-      Iterable<ChartColumnSpec> columns, Iterable<Iterable> rows) {
-    this.columns = new List<ChartColumnSpec>.from(columns);
-    var rowsList = new List.from(rows);
-    this.rows = new List<List>.generate(
-        rowsList.length, (i) => new List.from(rowsList[i]));
+      Iterable<ChartColumnSpec> columns, List<List> rows) {
+    this.columns = columns;
+    this.rows = rows;
   }
 
   set columns(Iterable<ChartColumnSpec> value) {

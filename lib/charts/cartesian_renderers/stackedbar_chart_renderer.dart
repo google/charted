@@ -169,8 +169,9 @@ class StackedBarChartRenderer extends CartesianRendererBase {
     var buildPath = (d, int i, Element e, bool animate, int roundIdx) {
       var position = animate ? getInitialBarPos(i) : getBarPos(d, i),
           length = animate ? 0 : getBarLength(d, i),
-          radius =
-          series.measures.elementAt(_reverseIdx(i)) == roundIdx ? RADIUS : 0,
+          radius = series.measures.elementAt(_reverseIdx(i)) == roundIdx
+              ? RADIUS
+              : 0,
           path = (length != 0)
               ? verticalBars
                   ? topRoundedRect(0, position, barWidth, length, radius)
@@ -261,14 +262,13 @@ class StackedBarChartRenderer extends CartesianRendererBase {
   @override
   Extent get extent {
     assert(area != null && series != null);
-    var rows = area.data.rows,
-        max = SMALL_INT_MIN,
-        min = SMALL_INT_MAX,
-        rowIndex = 0;
+    var rows = area.data.rows, rowIndex = 0;
+    num max = SMALL_INT_MIN;
+    num min = SMALL_INT_MAX;
     _lastMeasureWithData = new List.generate(rows.length, (i) => -1);
 
     rows.forEach((row) {
-      var bar = null;
+      num bar = null;
       series.measures.forEach((idx) {
         var value = row.elementAt(idx);
         if (value != null && value.isFinite) {

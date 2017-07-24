@@ -219,10 +219,10 @@ class LineChartRenderer extends CartesianRendererBase {
   }
 
   int _getNearestRowIndex(num x) {
-    var lastSmallerValue = 0;
+    double lastSmallerValue = 0.0;
     var chartX = x - area.layout.renderArea.x;
     for (var i = 0; i < _xPositions.length; i++) {
-      var pos = _xPositions[i];
+      double pos = _xPositions[i].toDouble();
       if (pos < chartX) {
         lastSmallerValue = pos;
       } else {
