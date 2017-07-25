@@ -40,7 +40,7 @@ class StackedLineChartRenderer extends CartesianRendererBase {
   @override
   bool prepare(ChartArea area, ChartSeries series) {
     _ensureAreaAndSeries(area, series);
-    if (trackDataPoints != false) {
+    if (trackDataPoints) {
       _trackPointerInArea();
     }
     return area is CartesianArea;
@@ -59,16 +59,17 @@ class StackedLineChartRenderer extends CartesianRendererBase {
         .map((row) => row.elementAt(area.config.dimensions.first))
         .toList();
 
-    var acculumated = new List.filled(x.length, 0);
+    var accumulated = new List.filled(x.length, 0.0);
 
+    var reversedMeasures = series.measures.toList().reversed.toList();
     // Create lists of values used for drawing.
     // First Half: previous values reversed (need for drawing)
     // Second Half: current accumulated values (need for drawing)
-    var lines = series.measures.map((column) {
+    var lines = reversedMeasures.map((column) {
       var row = area.data.rows.map((values) => values[column]).toList();
-      return acculumated.reversed.toList()..addAll(
-          new List.generate(x.length, (i) => acculumated[i] += row[i]));
-    }).toList().reversed;
+      return accumulated.reversed.toList()..addAll(
+          new List.generate(x.length, (i) => accumulated[i] += row[i]));
+    });
 
     var rangeBandOffset =
         dimensionScale is OrdinalScale ? dimensionScale.rangeBand / 2 : 0;
@@ -98,14 +99,14 @@ class StackedLineChartRenderer extends CartesianRendererBase {
     svgLines.enter.append('g');
 
     svgLines.each((d, i, e) {
-      var column = series.measures.elementAt(series.measures.length - 1 - i),
+      var column = reversedMeasures.elementAt(i),
           color = colorForColumn(column),
           filter = filterForColumn(column),
           styles = stylesForColumn(column),
           fill = new SvgElement.tag('path'),
           stroke = new SvgElement.tag('path'),
           fillData = d,
-          // Second alf contains the accumulated data for this measure
+          // Second half contains the accumulated data for this measure
           strokeData = d.sublist(x.length, d.length);
       e.attributes
         ..['stroke'] = color
@@ -155,16 +156,16 @@ class StackedLineChartRenderer extends CartesianRendererBase {
         rowIndex = 0;
 
     rows.forEach((row) {
-      var bar = null;
+      var line = null;
       series.measures.forEach((idx) {
         var value = row.elementAt(idx);
         if (value != null && value.isFinite) {
-          if (bar == null) bar = 0;
-          bar += value;
+          if (line == null) line = 0.0;
+          line += value;
         }
       });
-      if (bar > max) max = bar;
-      if (bar < min) min = bar;
+      if (line > max) max = line;
+      if (line < min) min = line;
       rowIndex++;
     });
 
@@ -195,7 +196,7 @@ class StackedLineChartRenderer extends CartesianRendererBase {
 
   void _createTrackingCircles() {
     var linePoints = root.selectAll('.stacked-line-rdr-point')
-        .data(series.measures);
+        .data(series.measures.toList().reversed);
     linePoints.enter.append('circle').each((d, i, e) {
       e.classes.add('stacked-line-rdr-point');
       e.attributes['r'] = '4';
@@ -224,7 +225,7 @@ class StackedLineChartRenderer extends CartesianRendererBase {
       _createTrackingCircles();
     }
 
-    var cumulated = 0;
+    double cumulated =  0.0;
     var yScale = area.measureScales(series).first;
     root.selectAll('.stacked-line-rdr-point').each((d, i, e) {
       var x = _xPositions[row],
@@ -272,7 +273,7 @@ class StackedLineChartRenderer extends CartesianRendererBase {
   }
 
   int _getNearestRowIndex(num x) {
-    var lastSmallerValue = 0;
+    double lastSmallerValue = 0.0;
     var chartX = x - area.layout.renderArea.x;
     for (var i = 0; i < _xPositions.length; i++) {
       var pos = _xPositions[i];
