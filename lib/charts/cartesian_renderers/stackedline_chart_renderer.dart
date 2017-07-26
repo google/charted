@@ -69,7 +69,7 @@ class StackedLineChartRenderer extends CartesianRendererBase {
       var row = area.data.rows.map((values) => values[column]).toList();
       return accumulated.reversed.toList()..addAll(
           new List.generate(x.length, (i) => accumulated[i] += row[i]));
-    });
+    }).toList();
 
     var rangeBandOffset =
         dimensionScale is OrdinalScale ? dimensionScale.rangeBand / 2 : 0;
@@ -95,11 +95,11 @@ class StackedLineChartRenderer extends CartesianRendererBase {
         yValueAccessor: (d, i) => measureScale.scale(d));
 
     // Add lines and hook up hover and selection events.
-    var svgLines = root.selectAll('.stacked-line-rdr-line').data(lines);
+    var svgLines = root.selectAll('.stacked-line-rdr-line').data(lines.reversed);
     svgLines.enter.append('g');
 
     svgLines.each((d, i, e) {
-      var column = reversedMeasures.elementAt(i),
+      var column = series.measures.elementAt(i),
           color = colorForColumn(column),
           filter = filterForColumn(column),
           styles = stylesForColumn(column),
