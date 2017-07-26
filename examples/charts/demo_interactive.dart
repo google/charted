@@ -22,6 +22,7 @@ Map RENDERERS = {
   'bar-chart': 'Bar chart',
   'line-chart': 'Line chart',
   'stacked-bar-chart': 'Stacked bar chart',
+  'stacked-line-chart': 'Stacked line chart',
   'waterfall-chart': 'Waterfall chart',
 };
 
@@ -29,6 +30,7 @@ CartesianRenderer getRendererForType(String name) {
   if (name == 'bar-chart') return new BarChartRenderer();
   if (name == 'line-chart') return new LineChartRenderer();
   if (name == 'stacked-bar-chart') return new StackedBarChartRenderer();
+  if (name == 'stacked-line-chart') return new StackedLineChartRenderer();
   return new BarChartRenderer();
 }
 
@@ -36,6 +38,7 @@ String getTypeForRenderer(CartesianRenderer renderer) {
   if (renderer is BarChartRenderer) return 'bar-chart';
   if (renderer is LineChartRenderer) return 'line-chart';
   if (renderer is StackedBarChartRenderer) return 'stacked-bar-chart';
+  if (renderer is StackedLineChartRenderer) return 'stacked-line-chart';
   return 'bar-chart';
 }
 
