@@ -137,9 +137,6 @@ class QuantumChartAxisTheme implements ChartAxisTheme {
   final int verticalAxisWidth;
 
   @override
-  final bool horizontalAxisAutoResize;
-
-  @override
   final int horizontalAxisHeight;
 
   @override
@@ -152,7 +149,6 @@ class QuantumChartAxisTheme implements ChartAxisTheme {
       this.axisTickPadding: 6,
       this.verticalAxisAutoResize: true,
       this.verticalAxisWidth: 75,
-      this.horizontalAxisAutoResize: false,
       this.horizontalAxisHeight: 50,
       this.ticksFont: '12px Roboto'});
 }

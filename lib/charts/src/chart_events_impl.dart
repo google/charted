@@ -9,7 +9,6 @@
 part of charted.charts;
 
 class DefaultChartEventImpl implements ChartEvent {
-  @override
   final ChartArea area;
 
   @override
