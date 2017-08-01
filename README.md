@@ -1,7 +1,5 @@
 # Visualization toolkit for Dart
 
-[![Build Status](https://drone.io/github.com/google/charted/status.png)](https://drone.io/github.com/google/charted/latest)
-
 Charted provides
 
 *   A selection API similar to D3.js
