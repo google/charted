@@ -40,7 +40,7 @@ typedef String FormatFunction(value);
 /// Test if the given String or Iterable, [val] is null or empty
 bool isNullOrEmpty(val) {
   assert(val == null || val is String || val is Iterable);
-  return val == null || val.isEmpty;
+  return val == null || val.isEmpty as bool;
 }
 
 /// An empty tree sanitizer for use with Element.html

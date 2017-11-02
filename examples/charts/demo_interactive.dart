@@ -18,7 +18,7 @@ const List<int> DIMENSION_COLUMNS =  const <int>[0, 4];
 
 int customSeriesCounter = 0;
 
-Map RENDERERS = {
+Map<String, String> RENDERERS = {
   'bar-chart': 'Bar chart',
   'line-chart': 'Line chart',
   'stacked-bar-chart': 'Stacked bar chart',
@@ -34,7 +34,7 @@ CartesianRenderer getRendererForType(String name) {
   return new BarChartRenderer();
 }
 
-String getTypeForRenderer(CartesianRenderer renderer) {
+String getTypeForRenderer(ChartRenderer renderer) {
   if (renderer is BarChartRenderer) return 'bar-chart';
   if (renderer is LineChartRenderer) return 'line-chart';
   if (renderer is StackedBarChartRenderer) return 'stacked-bar-chart';
@@ -187,11 +187,12 @@ main() {
     List<Element> buttons = querySelectorAll('.column-button');
     InputElement firstChecked;
     for (int i = 0; i < buttons.length && firstChecked == null; i++) {
-      if ((buttons[i] as InputElement).checked) firstChecked = buttons[i];
+      if ((buttons[i] as InputElement).checked) firstChecked =
+          buttons[i] as InputElement;
     }
 
     List measures = activeSeries.measures as List;
-    int index = buttons.indexOf(e.target) + 1;
+    int index = buttons.indexOf(e.target as Element) + 1;
     if ((e.target as InputElement).checked) {
       measures.add(index);
       buttons.forEach((Element b) {

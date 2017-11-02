@@ -78,9 +78,9 @@ class ChartTooltip implements ChartBehavior {
       var measures = e.series.measures,
           formatter = _getFormatterForColumn(measures.elementAt(0)),
           row = _area.data.rows.elementAt(e.row),
-          total = 0;
+          total = 0.0;
       for (int i = 0, len = measures.length; i < len; i++) {
-        total += row.elementAt(measures.elementAt(i));
+        total += row.elementAt(measures.elementAt(i)) as num;
       }
       _tooltipRoot.append('div')
         ..classed('tooltip-total')
@@ -108,7 +108,7 @@ class ChartTooltip implements ChartBehavior {
       activeMeasures.sort();
     }
 
-    var data = (showSelectedMeasure) ? activeMeasures : e.series.measures;
+    Iterable data = (showSelectedMeasure) ? activeMeasures : e.series.measures;
 
     // Create the tooltip items base on the number of measures in the series.
     var items = _tooltipRoot.selectAll('.tooltip-item').data(data);
@@ -121,7 +121,7 @@ class ChartTooltip implements ChartBehavior {
     var tooltipItems = _tooltipRoot.selectAll('.tooltip-item');
     tooltipItems.append('div')
       ..classed('tooltip-item-label')
-      ..textWithCallback((d, i, c) => _area.data.columns
+      ..textWithCallback((int d, i, c) => _area.data.columns
           .elementAt((showSelectedMeasure) ? d : e.series.measures.elementAt(i))
           .label);
 
@@ -129,7 +129,7 @@ class ChartTooltip implements ChartBehavior {
     tooltipItems.append('div')
       ..classed('tooltip-item-value')
       ..styleWithCallback('color', (d, i, c) => _area.theme.getColorForKey(d))
-      ..textWithCallback((d, i, c) {
+      ..textWithCallback((int d, i, c) {
         var formatter = _getFormatterForColumn(d),
             value = _area.data.rows.elementAt(e.row).elementAt(d);
         return (formatter != null) ? formatter(value) : value.toString();

@@ -90,19 +90,24 @@ class SvgArc implements SvgShape {
 
   /// Default [innerRadiusCallback] returns data.innerRadius
   static num defaultInnerRadiusCallback(d, i, e) =>
-      d is! SvgArcData || d.innerRadius == null ? 0 : d.innerRadius;
+      d is! SvgArcData || d.innerRadius == null
+          ? 0 : (d as SvgArcData).innerRadius;
 
   /// Default [outerRadiusCallback] returns data.outerRadius
   static num defaultOuterRadiusCallback(d, i, e) =>
-      d is! SvgArcData || d.outerRadius == null ? 0 : d.outerRadius;
+      d is! SvgArcData || d.outerRadius == null
+         ? 0 : (d as SvgArcData).outerRadius;
 
   /// Default [startAngleCallback] returns data.startAngle
   static num defaultStartAngleCallback(d, i, e) =>
-      d is! SvgArcData || d.startAngle == null ? 0 : d.startAngle;
+      d is! SvgArcData || d.startAngle == null
+          ? 0
+          : (d as SvgArcData).startAngle;
 
   /// Default [endAngleCallback] that returns data.endAngle
   static num defaultEndAngleCallback(d, i, e) =>
-      d is! SvgArcData || d.endAngle == null ? 0 : d.endAngle;
+      d is! SvgArcData || d.endAngle == null
+          ? 0 : (d as SvgArcData).endAngle;
 }
 
 /// Value type for SvgArc as used by default property accessors in SvgArc

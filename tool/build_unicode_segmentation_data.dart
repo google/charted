@@ -63,7 +63,7 @@ void _dumpPropertiesData(String data) {
         match.group(2) == null ? start : int.parse(match.group(2), radix:16);
 
     items.add([start, end, CodeUnitCategory[match.group(3)]]);
-    items.sort((a, b) => a.first.compareTo(b.first));
+    items.sort((a, b) => (a.first as Comparable).compareTo(b.first));
   });
 
   buffer.write(items.map((List range) => range.join(', ')).join(',\n  '));

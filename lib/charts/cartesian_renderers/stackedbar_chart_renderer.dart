@@ -31,7 +31,7 @@ class StackedBarChartRenderer extends CartesianRendererBase {
       throw new ArgumentError.value(area, 'area',
           "ChartArea for StackedBarChartRenderer must be a CartesianArea");
     }
-    _ensureAreaAndSeries(area, series);
+    _ensureAreaAndSeries(area as CartesianArea, series);
     return true;
   }
 
@@ -75,7 +75,8 @@ class StackedBarChartRenderer extends CartesianRendererBase {
     }
 
     var bar =
-        groups.selectAll('.stack-rdr-bar').dataWithCallback((d, i, c) => d);
+        groups.selectAll('.stack-rdr-bar').dataWithCallback((d, i, c) =>
+            d as Iterable);
 
     var prevOffsetVal = new List();
 
@@ -93,15 +94,16 @@ class StackedBarChartRenderer extends CartesianRendererBase {
       });
     }
 
-    var barWidth =
-        (dimensionScale as OrdinalScale).rangeBand - theme.defaultStrokeWidth;
+    var barWidth = (dimensionScale as OrdinalScale).rangeBand.toInt() -
+        theme.defaultStrokeWidth;
 
     // Calculate height of each segment in the bar.
     // Uses prevAllZeroHeight and prevOffset to track previous segments
-    var prevAllZeroHeight = true, prevOffset = 0;
+    var prevAllZeroHeight = true;
+    num prevOffset = 0;
     var getBarLength = (d, i) {
       if (!verticalBars) return measureScale.scale(d).round();
-      var retval = rect.height - measureScale.scale(d).round();
+      var retval = rect.height - (measureScale.scale(d) as num).round();
       if (i != 0) {
         // If previous bars has 0 height, don't offset for spacing
         // If any of the previous bar has non 0 height, do the offset.
@@ -129,7 +131,7 @@ class StackedBarChartRenderer extends CartesianRendererBase {
     // Initial "y" position of a bar that is being created.
     // Only used when animateBarGroups is set to true.
     var ic = 10000000, order = 0;
-    var getInitialBarPos = (i) {
+    var getInitialBarPos = (int i) {
       var tempY;
       if (i <= ic && i > 0) {
         tempY = prevOffsetVal[order];
@@ -143,20 +145,20 @@ class StackedBarChartRenderer extends CartesianRendererBase {
 
     // Position of a bar in the stack. yPos is used to keep track of the
     // offset based on previous calls to getBarY
-    var yPos = 0;
+    num yPos = 0;
     var getBarPos = (d, i) {
       if (verticalBars) {
         if (i == 0) {
-          yPos = measureScale.scale(0).round();
+          yPos = (measureScale.scale(0) as num).round();
         }
-        return yPos -= (rect.height - measureScale.scale(d).round());
+        return yPos -= (rect.height - (measureScale.scale(d) as num).round());
       } else {
         if (i == 0) {
           // 1 to not overlap the axis line.
           yPos = 1;
         }
         var pos = yPos;
-        yPos += measureScale.scale(d).round();
+        yPos += (measureScale.scale(d) as num).round();
         // Check if after adding the height of the bar, if y has changed, if
         // changed, we offset for space between the bars.
         if (yPos != pos) {
@@ -167,12 +169,12 @@ class StackedBarChartRenderer extends CartesianRendererBase {
     };
 
     var buildPath = (d, int i, Element e, bool animate, int roundIdx) {
-      var position = animate ? getInitialBarPos(i) : getBarPos(d, i),
+      int position = animate ? getInitialBarPos(i) : getBarPos(d, i),
           length = animate ? 0 : getBarLength(d, i),
           radius = series.measures.elementAt(_reverseIdx(i)) == roundIdx
               ? RADIUS
-              : 0,
-          path = (length != 0)
+              : 0;
+      var path = (length != 0)
               ? verticalBars
                   ? topRoundedRect(0, position, barWidth, length, radius)
                   : rightRoundedRect(position, 0, length, barWidth, radius)
@@ -270,7 +272,7 @@ class StackedBarChartRenderer extends CartesianRendererBase {
     rows.forEach((row) {
       num bar = null;
       series.measures.forEach((idx) {
-        var value = row.elementAt(idx);
+        num value = row.elementAt(idx);
         if (value != null && value.isFinite) {
           if (bar == null) bar = 0;
           bar += value;
@@ -322,7 +324,7 @@ class StackedBarChartRenderer extends CartesianRendererBase {
     var rowStr = e.parent.dataset['row'];
     var row = rowStr != null ? int.parse(rowStr) : null;
     controller.add(new DefaultChartEventImpl(scope.event, area, series, row,
-        series.measures.elementAt(_reverseIdx(index)), data));
+        series.measures.elementAt(_reverseIdx(index)), data as num));
   }
 
   // Stacked bar chart renders items from bottom to top (first measure is at

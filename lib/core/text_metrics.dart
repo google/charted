@@ -29,8 +29,8 @@ class TextMetrics {
 
   factory TextMetrics({String fontStyle}) {
     if (canvas == null || context == null) {
-      canvas = document.createElement('canvas');
-      context = canvas.getContext('2d');
+      canvas = document.createElement('canvas') as CanvasElement;
+      context = canvas.getContext('2d') as CanvasRenderingContext2D;
     }
     if (instance == null) {
       instance = new TextMetrics._internal(fontStyle);
@@ -64,7 +64,7 @@ class TextMetrics {
   /// Optionally, uses [fontStyle] instead of using the default style.
   double getLongestTextWidth(Iterable<String> strings, {String fontStyle}) {
     setFontStyle(fontStyle);
-    num maxWidth = 0.0;
+    double maxWidth = 0.0;
     for (int i = 0; i < strings.length; ++i) {
       assert(strings.elementAt(i).length <= MAX_STRING_LENGTH);
       double width = context.measureText(strings.elementAt(i)).width.toDouble();
@@ -88,8 +88,8 @@ class TextMetrics {
       var position = 0,
           min = 0,
           max = indices.length - 1,
-          mid,
           ellipsis = context.measureText('…').width;
+      int mid;
       width = width - ellipsis;
       while (max >= min) {
         mid = (min + max) ~/ 2;

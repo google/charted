@@ -25,7 +25,7 @@ class BubbleChartRenderer extends CartesianRendererBase {
   /// BubbleChart needs two dimension axes.
   @override
   bool prepare(ChartArea area, ChartSeries series) {
-    _ensureAreaAndSeries(area, series);
+    _ensureAreaAndSeries(area as CartesianArea, series);
     return area is CartesianArea && area.useTwoDimensionAxes == true;
   }
 
@@ -48,10 +48,10 @@ class BubbleChartRenderer extends CartesianRendererBase {
         bubbleRadiusFactor =
         maxBubbleRadius / min([geometry.width, geometry.height]);
 
-    String color(i) => theme.getColorForKey(series.measures.elementAt(i));
+    String color(int i) => theme.getColorForKey(series.measures.elementAt(i));
 
     // Measure values used to set size of the bubble.
-    var columns = [];
+    List<List> columns = [];
     for (int m in series.measures) {
       columns.add(new List.from(
           area.data.rows.map((Iterable row) => row.elementAt(m))));
@@ -107,12 +107,12 @@ class BubbleChartRenderer extends CartesianRendererBase {
   @override
   Extent get extent {
     assert(series != null && area != null);
-    var rows = area.data.rows,
-        max = rows.first[series.measures.first],
+    List<List<num>> rows = area.data.rows;
+    num max = rows.first[series.measures.first],
         min = max;
 
     rows.forEach((row) {
-      series.measures.forEach((idx) {
+      series.measures.forEach((int idx) {
         if (row[idx] > max) max = row[idx];
         if (row[idx] < min) min = row[idx];
       });
@@ -142,7 +142,7 @@ class BubbleChartRenderer extends CartesianRendererBase {
     }
   }
 
-  void _event(StreamController controller, data, int index, Element e) {
+  void _event(StreamController controller, num data, int index, Element e) {
     if (controller == null) return;
     var rowStr = e.parent.dataset['row'];
     var row = rowStr != null ? int.parse(rowStr) : null;

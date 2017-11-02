@@ -52,15 +52,16 @@ EasingFunction reflectReverseEasingFn(EasingFunction f) =>
 // Implementation of easing function generators.
 //
 
-EasingFunction easePoly([e = 1]) => (t) => math.pow(t, e);
+EasingFunction easePoly([num e = 1]) => (t) => math.pow(t, e);
 
-EasingFunction easeElastic([a = 1, p = 0.45]) {
-  var s = p / 2 * math.PI * math.asin(1 / a);
+EasingFunction easeElastic([num a = 1, num p = 0.45]) {
+  num s = p / 2 * math.PI * math.asin(1 / a);
   return (t) =>
       1 + a * math.pow(2, -10 * t) * math.sin((t - s) * 2 * math.PI / p);
 }
 
-EasingFunction easeBack([s = 1.70158]) => (num t) => t * t * ((s + 1) * t - s);
+EasingFunction easeBack([num s = 1.70158]) =>
+    (num t) => t * t * ((s + 1) * t - s);
 
 EasingFunction easeQuad() => (num t) => t * t;
 

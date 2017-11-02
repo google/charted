@@ -22,8 +22,8 @@ class NumberFormat {
 
   String localeDecimal;
   String localeThousands;
-  List localeGrouping;
-  List localeCurrency;
+  List<int> localeGrouping;
+  List<String> localeCurrency;
   Function formatGroup;
 
   NumberFormat(Locale locale) {
@@ -32,8 +32,9 @@ class NumberFormat {
     localeGrouping = locale.grouping;
     localeCurrency = locale.currency;
     formatGroup = (localeGrouping != null)
-        ? (value) {
-            var i = value.length, t = [], j = 0, g = localeGrouping[0];
+        ? (String value) {
+            int i = value.length, j = 0, g = localeGrouping[0];
+            var t = [];
             while (i > 0 && g > 0) {
               if (i - g >= 0) {
                 i = i - g;
@@ -140,7 +141,7 @@ class NumberFormat {
 
     var zcomma = (zfill != null) && comma;
 
-    return (value) {
+    return (num value) {
       if (value == null) return '-';
       var fullSuffix = suffix;
 
@@ -148,7 +149,7 @@ class NumberFormat {
       if (integer && (value % 1) > 0) return '';
 
       // Convert negative to positive, and record the sign prefix.
-      var negative;
+      String negative;
       if (value < 0 || value == 0 && 1 / value < 0) {
         value = -value;
         negative = '-';
@@ -162,29 +163,31 @@ class NumberFormat {
       if (scale < 0) {
         FormatPrefix unit =
             new FormatPrefix(value, (precision != null) ? precision : 0);
-        value = unit.scale(value);
+        value = unit.scale(value) as num;
         fullSuffix = unit.symbol + suffix;
       } else {
         value *= scale;
       }
 
       // Convert to the desired precision.
+      String stringValue;
       if (precision != null) {
-        value = formatFunction(value, precision);
+        stringValue = formatFunction(value, precision);
       } else {
-        value = formatFunction(value);
+        stringValue = formatFunction(value);
       }
 
       // Break the value into the integer part (before) and decimal part
       // (after).
-      var i = value.lastIndexOf('.'),
-          before = i < 0 ? value : value.substring(0, i),
-          after = i < 0 ? '' : localeDecimal + value.substring(i + 1);
+      int i = stringValue.lastIndexOf('.');
+      String before = i < 0 ? stringValue : stringValue.substring(0, i),
+          after = i < 0 ? '' : localeDecimal + stringValue.substring(i + 1);
+
 
       // If the fill character is not '0', grouping is applied before
       //padding.
       if (zfill == null && comma) {
-        before = formatGroup(before);
+        before = formatGroup(before) as String;
       }
 
       int length = prefix.length +
@@ -197,27 +200,28 @@ class NumberFormat {
 
       // If the fill character is '0', grouping is applied after padding.
       if (zcomma) {
-        before = formatGroup(padding + before);
+        before = formatGroup(padding + before) as String;
       }
 
       // Apply prefix.
       negative += prefix;
 
       // Rejoin integer and decimal parts.
-      value = before + after;
+      stringValue = before + after;
 
       // Apply any padding and alignment attributes before returning the string.
       return (align == '<'
-              ? negative + value + padding
+              ? negative + stringValue + padding
               : align == '>'
-                  ? padding + negative + value
+                  ? padding + negative + stringValue
                   : align == '^'
                       ? padding.substring(0, length >>= 1) +
                           negative +
-                          value +
+                          stringValue +
                           padding.substring(length)
-                      : negative + (zcomma ? value : padding + value)) +
-          fullSuffix;
+                      : negative + (zcomma
+                          ? stringValue
+                          : padding + stringValue)) + fullSuffix;
     };
   }
 
@@ -227,7 +231,7 @@ class NumberFormat {
       case 'b':
         return (num x, [int p = 0]) => x.toInt().toRadixString(2);
       case 'c':
-        return (num x, [int p = 0]) => new String.fromCharCodes([x]);
+        return (num x, [int p = 0]) => new String.fromCharCodes([x.toInt()]);
       case 'o':
         return (num x, [int p = 0]) => x.toInt().toRadixString(8);
       case 'x':

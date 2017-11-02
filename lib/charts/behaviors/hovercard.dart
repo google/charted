@@ -210,27 +210,27 @@ class Hovercard implements ChartBehavior {
     }
 
     var rowData = area.data.rows.elementAt(row),
-        measurePosition = 0,
-        isNegative = false,
+        isNegative = false;
+    num measurePosition = 0,
         dimensionPosition = dimensionScale
                 .scale(rowData.elementAt(dimensionCol)) +
             dimensionCenterOffset;
 
     if (_isMultiValue) {
-      var max = SMALL_INT_MIN, min = SMALL_INT_MAX;
+      num max = SMALL_INT_MIN, min = SMALL_INT_MAX;
       area.config.series.forEach((ChartSeries series) {
         CartesianRenderer renderer = series.renderer;
-        Extent extent = renderer.extentForRow(rowData);
+        Extent<num> extent = renderer.extentForRow(rowData);
         if (extent.min < min) min = extent.min;
         if (extent.max > max) max = extent.max;
-        measurePosition = measureScale.scale(max);
-        isNegative = max < 0;
+        measurePosition = measureScale.scale(max) as num;
+        isNegative = max < 0.0;
       });
     } else {
-      var value = rowData.elementAt(column);
+      num value = rowData.elementAt(column);
       if (value != null) {
-        isNegative = value < 0;
-        measurePosition = measureScale.scale(value);
+        isNegative = value < 0.0;
+        measurePosition = measureScale.scale(value) as num;
       }
     }
 
@@ -366,7 +366,7 @@ class Hovercard implements ChartBehavior {
         colorKey = _area.useRowColoring ? row : column,
         formatter = _getFormatterForColumn(column),
         label = _area.useRowColoring
-            ? rowData.elementAt(_area.config.dimensions.first)
+            ? rowData.elementAt(_area.config.dimensions.first) as String
             : spec.label;
     return new ChartLegendItem(
         label: label,

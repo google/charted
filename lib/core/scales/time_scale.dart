@@ -83,8 +83,8 @@ class TimeScale extends LinearScale {
   TimeScale clone() => new TimeScale._clone(this);
 
   List _getTickMethod(Extent extent, int count) {
-    var target = (extent.max - extent.min) / count,
-        i = ScaleUtils.bisect(_scaleSteps, target);
+    num target = (extent.max - extent.min) / count;
+    int i = ScaleUtils.bisect(_scaleSteps, target);
 
     return i == _scaleSteps.length
         ? [
@@ -99,13 +99,13 @@ class TimeScale extends LinearScale {
   }
 
   List niceInterval(int ticksCount, [int skip = 1]) {
-    var extent = ScaleUtils.extent(domain),
+    var extent = ScaleUtils.extent(domain as Iterable<num>),
         method = _getTickMethod(extent, ticksCount),
         interval;
 
     if (method != null) {
       interval = method[0];
-      skip = method[1];
+      skip = method[1] as int;
     }
 
     bool skipped(var date) {
@@ -115,16 +115,16 @@ class TimeScale extends LinearScale {
 
     if (skip > 1) {
       domain = ScaleUtils.nice(
-          domain,
+          domain as List<num>,
           new RoundingFunctions((dateMillis) {
-            var date = new DateTime.fromMillisecondsSinceEpoch(dateMillis);
+            var date = new DateTime.fromMillisecondsSinceEpoch(dateMillis.round());
             while (skipped(date = (interval as TimeInterval).floor(date))) {
               date = new DateTime.fromMillisecondsSinceEpoch(
                   date.millisecondsSinceEpoch - 1);
             }
             return date.millisecondsSinceEpoch;
           }, (dateMillis) {
-            var date = new DateTime.fromMillisecondsSinceEpoch(dateMillis);
+            var date = new DateTime.fromMillisecondsSinceEpoch(dateMillis.round());
             while (skipped(date = (interval as TimeInterval).ceil(date))) {
               date = new DateTime.fromMillisecondsSinceEpoch(
                   date.millisecondsSinceEpoch + 1);
@@ -133,12 +133,14 @@ class TimeScale extends LinearScale {
           }));
     } else {
       domain = ScaleUtils.nice(
-          domain,
+          domain as List<num>,
           new RoundingFunctions(
-              (date) => interval.floor(date).millisecondsSinceEpoch,
-              (date) => interval.ceil(date).millisecondsSinceEpoch));
+              (date) => (interval as TimeInterval).
+                  floor(date).millisecondsSinceEpoch,
+              (date) => (interval as TimeInterval).
+                  ceil(date).millisecondsSinceEpoch));
     }
-    return domain;
+    return domain as List;
   }
 
   @override
@@ -151,14 +153,15 @@ class TimeScale extends LinearScale {
   }
 
   List ticksInterval(int ticksCount, [int skip]) {
-    var extent = ScaleUtils.extent(domain),
+    var extent = ScaleUtils.extent(domain as Iterable<num>),
         method = _getTickMethod(extent, ticksCount),
         interval;
     if (method != null) {
       interval = method[0];
-      skip = method[1];
+      skip = method[1] as int;
     }
-    return interval.range(extent.min, extent.max + 1, skip < 1 ? 1 : skip);
+    return (interval as TimeInterval).range(extent.min, extent.max + 1,
+        skip < 1 ? 1 : skip).toList();
   }
 
   @override
@@ -168,14 +171,15 @@ class TimeScale extends LinearScale {
 class ScaleMilliSeconds implements TimeInterval {
   DateTime _toDateTime(x) {
     assert(x is int || x is DateTime);
-    return x is num ? new DateTime.fromMillisecondsSinceEpoch(x) : x;
+    return x is int ?
+        new DateTime.fromMillisecondsSinceEpoch(x as int) : x as DateTime;
   }
 
   DateTime floor(dynamic val) => _toDateTime(val);
   DateTime ceil(dynamic val) => _toDateTime(val);
   DateTime round(dynamic val) => _toDateTime(val);
 
-  DateTime offset(Object val, num dt) {
+  DateTime offset(Object val, int dt) {
     assert(val is int || val is DateTime);
     return new DateTime.fromMillisecondsSinceEpoch(
         val is int ? val + dt : (val as DateTime).millisecondsSinceEpoch + dt);
@@ -185,7 +189,7 @@ class ScaleMilliSeconds implements TimeInterval {
     int start = t0 is DateTime ? t0.millisecondsSinceEpoch : t0,
         stop = t1 is DateTime ? t1.millisecondsSinceEpoch : t1;
     return new Range((start / step).ceil() * step, stop, step)
-        .map((d) => new DateTime.fromMillisecondsSinceEpoch(d))
+        .map((d) => new DateTime.fromMillisecondsSinceEpoch(d as int))
         .toList();
   }
 }

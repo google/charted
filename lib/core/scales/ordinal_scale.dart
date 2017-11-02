@@ -108,7 +108,7 @@ class _OrdinalScale implements OrdinalScale {
 
   static void _setRange(_OrdinalScale scale, Iterable values) {
     scale._reset = (_OrdinalScale s) {
-      s._range = values;
+      s._range = new List.from(values);
       s._rangeBand = 0;
       s._rangeExtent = null;
     };
@@ -137,7 +137,7 @@ class _OrdinalScale implements OrdinalScale {
   static void _setRangeBands(_OrdinalScale scale, Iterable range,
       double padding, double outerPadding) {
     scale._reset = (_OrdinalScale s) {
-      var start = range.first,
+      num start = range.first,
           stop = range.last,
           step = (stop - start - 2 * outerPadding) /
               (s.domain.length > 1
@@ -156,7 +156,7 @@ class _OrdinalScale implements OrdinalScale {
   static void _setRangeRoundBands(_OrdinalScale scale, Iterable range,
       double padding, double outerPadding) {
     scale._reset = (_OrdinalScale s) {
-      var start = range.first,
+      num start = range.first,
           stop = range.last,
           step =
           ((stop - start - 2 * outerPadding) /

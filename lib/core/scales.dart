@@ -130,7 +130,7 @@ class RoundingFunctions extends Pair<RoundFunction, RoundFunction> {
 /// Namespacing container for utilities used by scales.
 abstract class ScaleUtils {
   /// Utility to return extent of sorted [values].
-  static Extent extent(Iterable values) => values.first < values.last
+  static Extent extent(Iterable<num> values) => values.first < values.last
       ? new Extent(values.first, values.last)
       : new Extent(values.last, values.first);
 
@@ -138,7 +138,7 @@ abstract class ScaleUtils {
   /// floor and ceil functions.  [functions] is a pair of rounding function
   /// among which the first is used to compute floor of a number and the
   /// second for ceil of the number.
-  static List nice(List values, RoundingFunctions functions) {
+  static List nice(List<num> values, RoundingFunctions functions) {
     if (values.last >= values.first) {
       values[0] = functions.floor(values.first);
       values[values.length - 1] = functions.ceil(values.last);
@@ -177,7 +177,7 @@ abstract class ScaleUtils {
   /// @param uninterpolator The uninterpolator for domain values.
   /// @param interpolator   The interpolator for range values.
   static Function polylinearScale(
-      List domain, List range, Function uninterpolator, Function interpolator) {
+      List<num> domain, List range, Function uninterpolator, Function interpolator) {
     var u = [], i = [], j = 0, k = math.min(domain.length, range.length) - 1;
 
     // Handle descending domains.
@@ -200,7 +200,7 @@ abstract class ScaleUtils {
   /// Returns the insertion point i for value x such that all values in a[lo:i]
   /// will be less than x and all values in a[i:hi] will be equal to or greater
   /// than x.
-  static int bisectLeft(List a, num x, [int lo = 0, int hi = -1]) {
+  static int bisectLeft(List<num> a, num x, [int lo = 0, int hi = -1]) {
     if (hi == -1) {
       hi = a.length;
     }
@@ -218,7 +218,7 @@ abstract class ScaleUtils {
   /// Returns the insertion point i for value x such that all values in a[lo:i]
   /// will be less than or equalto x and all values in a[i:hi] will be greater
   /// than x.
-  static int bisectRight(List a, num x, [int lo = 0, int hi = -1]) {
+  static int bisectRight(List<num> a, num x, [int lo = 0, int hi = -1]) {
     if (hi == -1) {
       hi = a.length;
     }

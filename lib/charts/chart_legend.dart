@@ -24,7 +24,7 @@ abstract class ChartLegend {
 
   /// Factory to create an instance of the default implementation.
   factory ChartLegend(Element host,
-          {maxItems: 0, title: '', showValues: false}) =>
+          {int maxItems: 0, String title: '', bool showValues: false}) =>
       new DefaultChartLegendImpl(host, maxItems, showValues, title);
 }
 

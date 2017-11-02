@@ -20,7 +20,7 @@ class PieChartRenderer extends LayoutRendererBase {
   final String otherItemsLabel;
   final String otherItemsColor;
   final showLabels;
-  final sortDataByValue;
+  final bool sortDataByValue;
 
   @override
   final String name = "pie-rdr";
@@ -65,8 +65,8 @@ class PieChartRenderer extends LayoutRendererBase {
     if (sortDataByValue) {
       indices.sort((int a, int b) {
         var aRow = area.data.rows.elementAt(a),
-            bRow = area.data.rows.elementAt(b),
-            aVal = (aRow == null || aRow.elementAt(measure) == null)
+            bRow = area.data.rows.elementAt(b);
+        num aVal = (aRow == null || aRow.elementAt(measure) == null)
                 ? 0
                 : aRow.elementAt(measure),
             bVal = (bRow == null || bRow.elementAt(measure) == null)
@@ -79,14 +79,14 @@ class PieChartRenderer extends LayoutRendererBase {
     // Limit items to the passed maxSliceCount
     if (indices.length > maxSliceCount) {
       var displayed = indices.take(maxSliceCount).toList();
-      var otherItemsValue = 0;
+      num otherItemsValue = 0;
       for (int i = displayed.length; i < indices.length; ++i) {
         var index = indices.elementAt(i), row = area.data.rows.elementAt(index);
         otherItemsValue += row == null || row.elementAt(measure) == null
             ? 0
-            : row.elementAt(measure);
+            : row.elementAt(measure) as num;
       }
-      otherRow = new List(max([dimension, measure]) + 1)
+      otherRow = new List(max([dimension, measure]).toInt() + 1)
         ..[dimension] = otherItemsLabel
         ..[measure] = otherItemsValue;
       indices = displayed..add(SMALL_INT_MAX);
@@ -98,7 +98,7 @@ class PieChartRenderer extends LayoutRendererBase {
       indices = indices.reversed.toList();
     }
 
-    num accessor(d, int i) {
+    num accessor(int d, int i) {
       var row = d == SMALL_INT_MAX ? otherRow : area.data.rows.elementAt(d);
       return row == null || row.elementAt(measure) == null
           ? 0
@@ -113,12 +113,12 @@ class PieChartRenderer extends LayoutRendererBase {
     pie.enter.appendWithCallback((d, i, e) {
       var pieSector = Namespace.createChildElement('path', e)
         ..classes.add('pie-path');
-      var styles = stylesForData(d.data, i);
+      var styles = stylesForData(d.data as int, i);
       if (!isNullOrEmpty(styles)) {
         pieSector.classes.addAll(styles);
       }
       pieSector.attributes
-        ..['fill'] = colorForData(d.data, i)
+        ..['fill'] = colorForData(d.data as int, i)
         ..['d'] = arc.path(d, i, host)
         ..['stroke-width'] = '1px'
         ..['stroke'] = '#ffffff';
@@ -132,13 +132,13 @@ class PieChartRenderer extends LayoutRendererBase {
       ..on('mouseout', (d, i, e) => _event(mouseOutController, d, i, e));
 
     pie.each((d, i, e) {
-      var styles = stylesForData(d.data, i);
+      var styles = stylesForData(d.data as int, i);
       e.classes.removeAll(ChartState.VALUE_CLASS_NAMES);
       if (!isNullOrEmpty(styles)) {
         e.classes.addAll(styles);
       }
       e.attributes
-        ..['fill'] = colorForData(d.data, i)
+        ..['fill'] = colorForData(d.data as int, i)
         ..['d'] = arc.path(d, i, host)
         ..['stroke-width'] = '1px'
         ..['stroke'] = '#ffffff';
@@ -150,12 +150,13 @@ class PieChartRenderer extends LayoutRendererBase {
     var items = new List<ChartLegendItem>.generate(data.length, (i) {
       SvgArcData d = data.elementAt(i);
       Iterable row =
-          d.data == SMALL_INT_MAX ? otherRow : area.data.rows.elementAt(d.data);
+          d.data == SMALL_INT_MAX ? otherRow : area.data.rows.elementAt(
+              d.data as int);
 
       return new ChartLegendItem(
-          index: d.data,
-          color: colorForData(d.data, i),
-          label: row.elementAt(dimension),
+          index: d.data as int,
+          color: colorForData(d.data as int, i),
+          label: row.elementAt(dimension) as String,
           series: [series],
           value:
               '${(((d.endAngle - d.startAngle) * 50) / math.PI).toStringAsFixed(2)}%');
@@ -172,12 +173,12 @@ class PieChartRenderer extends LayoutRendererBase {
   @override
   handleStateChanges(List<ChangeRecord> changes) {
     root.selectAll('.pie-path').each((d, i, e) {
-      var styles = stylesForData(d.data, i);
+      var styles = stylesForData(d.data as int, i);
       e.classes.removeAll(ChartState.VALUE_CLASS_NAMES);
       if (!isNullOrEmpty(styles)) {
         e.classes.addAll(styles);
       }
-      e.attributes['fill'] = colorForData(d.data, i);
+      e.attributes['fill'] = colorForData(d.data as int, i);
     });
   }
 
@@ -191,6 +192,6 @@ class PieChartRenderer extends LayoutRendererBase {
     // Currently, events are not supported on "Other" pie
     if (controller == null || data.data == SMALL_INT_MAX) return;
     controller.add(new DefaultChartEventImpl(scope.event, area, series,
-        data.data, series.measures.first, data.value));
+        data.data as int, series.measures.first, data.value as num));
   }
 }
