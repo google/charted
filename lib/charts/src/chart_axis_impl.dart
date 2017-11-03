@@ -183,7 +183,7 @@ class DefaultChartAxisImpl {
         outerTickSize: 0,
         tickPadding: _theme.axisTickPadding,
         tickFormat: _columnSpec.formatter,
-        tickValues: tickValues,
+        tickValues: tickValues.toList(),
         scale: scale);
 
     axis.create(element, scope,
