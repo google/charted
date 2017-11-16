@@ -6,7 +6,7 @@ this should be kept up-to-date when a version update happens in the future.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
-## 0.5.0 - 2017-11-16
+## [0.5.0] - 2017-11-16
 ### Added
 - Stacked line renderer for rendering stacked line.
 ### Changed
