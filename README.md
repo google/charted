@@ -21,5 +21,6 @@ package. Follow these instructions and get it running locally on your machine
 ```bash
 git clone git@github.com:google/charted.git
 cd charted
+pub get
 pub serve examples
 ```
