@@ -12,8 +12,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 ### Changed
 - Add type and explicit casting to enable strong mode.
 
-## 0.0.1 - 2014-05-31
+## 0.0.10 - 2015-03-28
 ### Added
-- First version of charted.
+- First release of charted.
 
-[0.5.0]: https://github.com/google/charted/compare/v0.5.0...v0.0.1
+[0.5.0]: https://github.com/google/charted/compare/v0.0.10...v0.5.0
