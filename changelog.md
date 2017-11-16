@@ -16,4 +16,4 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 ### Added
 - First release of charted.
 
-[0.5.0]: https://github.com/google/charted/compare/v0.0.10...v0.5.0
+[0.5.0]: https://github.com/google/charted/compare/0.0.10...0.5.0
