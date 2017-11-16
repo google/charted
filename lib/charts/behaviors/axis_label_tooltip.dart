@@ -22,7 +22,7 @@ class AxisLabelTooltip implements ChartBehavior {
 
   void init(ChartArea area, Selection upper, Selection lower) {
     if (area is! CartesianArea) return;
-    _area = area;
+    _area = area as CartesianArea;
     _axesChangeSubscription =
         _area.onChartAxesUpdated.listen((_) => _subscribe());
 

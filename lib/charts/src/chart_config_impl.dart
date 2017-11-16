@@ -72,7 +72,7 @@ class DefaultChartConfigImpl extends Observable implements ChartConfig {
         records.forEach((record) {
           record.removed.forEach((value) => _disposer.unsubscribe(value));
           for (int i = 0; i < record.addedCount; i++) {
-            var added = observable[i + record.index];
+            Observable added = observable[i + record.index];
             _disposer.add(added.changes
                 .listen((_) => notifyChange(const ChartConfigChangeRecord())));
           }

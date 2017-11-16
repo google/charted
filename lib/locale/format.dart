@@ -40,7 +40,7 @@ FormatFunction format(String specifier, [Locale locale = null]) {
  */
 class FormatPrefix {
   // SI scale units in increments of 1000.
-  static const List unitPrefixes = const [
+  static const List<String> unitPrefixes = const [
     "y",
     "z",
     "a",
@@ -83,12 +83,12 @@ class FormatPrefix {
     _symbol = unitPrefixes[i];
   }
 
-  _formatPrecision(num x, num p) {
+  num _formatPrecision(num x, num p) {
     return p - (x != 0 ? (math.log(x) / math.LN10).ceil() : 1);
   }
 
   /** Returns the value of x rounded to the nth digit. */
-  _roundToPrecision(num x, num n) {
+  num _roundToPrecision(num x, num n) {
     return n != 0 ? (x * (n = math.pow(10, n))).round() / n : x.round();
   }
 

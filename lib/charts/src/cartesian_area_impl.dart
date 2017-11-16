@@ -248,8 +248,8 @@ class DefaultCartesianAreaImpl implements CartesianArea {
     int width = host.clientWidth, height = host.clientHeight;
 
     if (config.minimumSize != null) {
-      width = max([width, config.minimumSize.width]);
-      height = max([height, config.minimumSize.height]);
+      width = max([width, config.minimumSize.width]).toInt();
+      height = max([height, config.minimumSize.height]).toInt();
     }
 
     AbsoluteRect padding = theme.padding;
@@ -388,7 +388,7 @@ class DefaultCartesianAreaImpl implements CartesianArea {
 
     // Now that we know a list of series using each measure axis, configure
     // the input domain of each axis.
-    measureAxisUsers.forEach((id, listOfSeries) {
+    measureAxisUsers.forEach((String id, List<ChartSeries> listOfSeries) {
       var sampleCol = listOfSeries.first.measures.first,
           sampleColSpec = data.columns.elementAt(sampleCol),
           axis = _getMeasureAxis(id);
@@ -400,9 +400,10 @@ class DefaultCartesianAreaImpl implements CartesianArea {
       } else {
         // Extent is available because [ChartRenderer.prepare] was already
         // called (when checking for valid series in [draw].
-        Iterable extents = listOfSeries.map((s) => s.renderer.extent).toList();
-        var lowest = min(extents.map((e) => e.min)),
-            highest = max(extents.map((e) => e.max));
+        Iterable extents = listOfSeries.map((s) =>
+           (s.renderer as CartesianRenderer).extent).toList();
+        var lowest = min(extents.map((e) => e.min as num)),
+            highest = max(extents.map((e) => e.max as num));
 
         // Use default domain if lowest and highest are the same, right now
         // lowest is always 0 unless it is less than 0 - change to lowest when
@@ -421,8 +422,8 @@ class DefaultCartesianAreaImpl implements CartesianArea {
     config.dimensions.take(dimensionAxesCount).forEach((int column) {
       var axis = _getDimensionAxis(column),
           sampleColumnSpec = data.columns.elementAt(column),
-          values = data.rows.map((row) => row.elementAt(column)),
-          domain;
+          values = data.rows.map((row) => row.elementAt(column));
+      List domain;
 
       if (sampleColumnSpec.useOrdinalScale) {
         domain = values.map((e) => e.toString()).toList();
@@ -502,7 +503,7 @@ class DefaultCartesianAreaImpl implements CartesianArea {
           .data(displayedMeasureAxes);
       // Update measure axis (add/remove/update)
       axisGroups.enter.append('svg:g');
-      axisGroups.each((axisId, index, group) {
+      axisGroups.each((String axisId, index, group) {
         _getMeasureAxis(axisId).draw(group, _scope, preRender: preRender);
         group.attributes['class'] = 'measure-axis-group measure-${index}';
       });
@@ -516,7 +517,7 @@ class DefaultCartesianAreaImpl implements CartesianArea {
           .data(displayedDimensionAxes);
       // Update dimension axes (add/remove/update)
       dimAxisGroups.enter.append('svg:g');
-      dimAxisGroups.each((column, index, group) {
+      dimAxisGroups.each((int column, index, group) {
         _getDimensionAxis(column).draw(group, _scope, preRender: preRender);
         group.attributes['class'] = 'dimension-axis-group dim-${index}';
       });
@@ -716,7 +717,7 @@ class _ChartSeriesInfo {
   CartesianRenderer _renderer;
   SubscriptionsDisposer _disposer = new SubscriptionsDisposer();
 
-  DefaultChartSeriesImpl _series;
+  ChartSeries _series;
   DefaultCartesianAreaImpl _area;
   _ChartSeriesInfo(this._area, this._series);
 
@@ -770,7 +771,7 @@ class _ChartSeriesInfo {
         ]);
       }
     }
-    _renderer = _series.renderer;
+    _renderer = _series.renderer as CartesianRenderer;
   }
 
   dispose() {

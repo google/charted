@@ -23,7 +23,7 @@ class BarChartRenderer extends CartesianRendererBase {
   /// Otherwise, the first dimension scale is used to render the chart.
   @override
   bool prepare(ChartArea area, ChartSeries series) {
-    _ensureAreaAndSeries(area, series);
+    _ensureAreaAndSeries(area as CartesianArea, series);
     return area is CartesianArea;
   }
 
@@ -37,7 +37,7 @@ class BarChartRenderer extends CartesianRendererBase {
         measureScale = area.measureScales(series).first,
         dimensionScale = area.dimensionScales.first;
 
-    var rows = new List()
+    var rows = new List<List>()
       ..addAll(area.data.rows.map((e) => new List.generate(
           measuresCount, (i) => e[series.measures.elementAt(i)])));
 
@@ -89,9 +89,9 @@ class BarChartRenderer extends CartesianRendererBase {
         groups.selectAll('.bar-rdr-bar').dataWithCallback((d, i, c) => rows[i]),
         scaled0 = measureScale.scale(0).round();
 
-    var getBarLength = (d) {
-      var scaledVal = measureScale.scale(d).round(),
-          ht = verticalBars
+    var getBarLength = (num d) {
+      var scaledVal = measureScale.scale(d).round();
+      num ht = verticalBars
               ? (d >= 0 ? scaled0 - scaledVal : scaledVal - scaled0)
               : (d >= 0 ? scaledVal - scaled0 : scaled0 - scaledVal);
       ht = ht - strokeWidth;
@@ -100,7 +100,7 @@ class BarChartRenderer extends CartesianRendererBase {
       // at 1 pixel so user can see and hover over to see the data.
       return (ht < 0) ? 1 : ht;
     };
-    var getBarPos = (d) {
+    var getBarPos = (num d) {
       var scaledVal = measureScale.scale(d).round();
 
       // If bar would be scaled to 0 height but data is not 0, reserve 1 pixel
@@ -118,25 +118,26 @@ class BarChartRenderer extends CartesianRendererBase {
           ? (d >= 0 ? scaledVal : scaled0) + strokeWidthOffset
           : (d >= 0 ? scaled0 : scaledVal) + strokeWidthOffset;
     };
-    var buildPath = (d, int i, bool animate) {
+    var buildPath = (num d, int i, bool animate) {
       // If data is null or 0, an empty path for the bar is returned directly.
       if (d == null || d == 0) return '';
       if (verticalBars) {
         var fn = d > 0 ? topRoundedRect : bottomRoundedRect;
         return fn(
-            bars.scale(i).toInt() + strokeWidthOffset,
-            animate ? rect.height : getBarPos(d),
-            barWidth,
-            animate ? 0 : getBarLength(d),
+            (bars.scale(i) as num).toInt() + strokeWidthOffset,
+            animate ? rect.height as int : getBarPos(d) as int,
+            barWidth as int,
+            animate ? 0 : getBarLength(d) as int,
             RADIUS);
       } else {
         var fn = d > 0 ? rightRoundedRect : leftRoundedRect;
-        return fn(getBarPos(d), bars.scale(i).toInt() + strokeWidthOffset,
-            animate ? 0 : getBarLength(d), barWidth, RADIUS);
+        return fn(getBarPos(d) as int, (bars.scale(i) as num).toInt() +
+            strokeWidthOffset,
+            animate ? 0 : getBarLength(d) as int, barWidth as int, RADIUS);
       }
     };
 
-    bar.enter.appendWithCallback((d, i, e) {
+    bar.enter.appendWithCallback((num d, i, e) {
       var rect = Namespace.createChildElement('path', e),
           measure = series.measures.elementAt(i),
           row = int.parse(e.dataset['row']),
@@ -163,9 +164,9 @@ class BarChartRenderer extends CartesianRendererBase {
       }
       return rect;
     })
-      ..on('click', (d, i, e) => _event(mouseClickController, d, i, e))
-      ..on('mouseover', (d, i, e) => _event(mouseOverController, d, i, e))
-      ..on('mouseout', (d, i, e) => _event(mouseOutController, d, i, e));
+      ..on('click', (num d, i, e) => _event(mouseClickController, d, i, e))
+      ..on('mouseover', (num d, i, e) => _event(mouseOverController, d, i, e))
+      ..on('mouseout', (num d, i, e) => _event(mouseOutController, d, i, e));
 
     if (animateBarGroups) {
       bar.each((d, i, e) {
@@ -189,7 +190,7 @@ class BarChartRenderer extends CartesianRendererBase {
       });
 
       bar.transition()
-        ..attrWithCallback('d', (d, i, e) => buildPath(d, i, false));
+        ..attrWithCallback('d', (num d, i, e) => buildPath(d, i, false));
     }
 
     bar.exit.remove();
@@ -246,7 +247,7 @@ class BarChartRenderer extends CartesianRendererBase {
     }
   }
 
-  void _event(StreamController controller, data, int index, Element e) {
+  void _event(StreamController controller, num data, int index, Element e) {
     if (controller == null) return;
     var rowStr = e.parent.dataset['row'];
     var row = rowStr != null ? int.parse(rowStr) : null;

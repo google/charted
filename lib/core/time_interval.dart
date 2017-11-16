@@ -22,9 +22,9 @@ class TimeInterval {
   DateTime floor(dynamic date) {
     assert(date is int || date is DateTime);
     if (date is int) {
-      date = new DateTime.fromMillisecondsSinceEpoch(date);
+      date = new DateTime.fromMillisecondsSinceEpoch(date as int);
     }
-    return _floor(date);
+    return _floor(date as DateTime);
   }
 
   DateTime round(dynamic date) {
@@ -45,12 +45,12 @@ class TimeInterval {
 
     List<DateTime> values = [];
     if (t1 is int) {
-      t1 = new DateTime.fromMillisecondsSinceEpoch(t1);
+      t1 = new DateTime.fromMillisecondsSinceEpoch(t1 as int);
     }
 
     DateTime time = ceil(t0);
     if (dt > 1) {
-      while (time.isBefore(t1)) {
+      while (time.isBefore(t1 as DateTime)) {
         if ((_number(time) % dt) == 0) {
           values.add(new DateTime.fromMillisecondsSinceEpoch(
               time.millisecondsSinceEpoch));
@@ -58,7 +58,7 @@ class TimeInterval {
         time = _step(time, 1);
       }
     } else {
-      while (time.isBefore(t1)) {
+      while (time.isBefore(t1 as DateTime)) {
         values.add(new DateTime.fromMillisecondsSinceEpoch(
             time.millisecondsSinceEpoch));
         time = _step(time, 1);
@@ -120,7 +120,7 @@ class TimeInterval {
 
   static TimeInterval month = new TimeInterval(
       (DateTime date) => new DateTime(date.year, date.month, 1),
-      (DateTime date, num offset) => new DateTime(
+      (DateTime date, int offset) => new DateTime(
           date.year,
           date.month + offset,
           date.day,
@@ -132,7 +132,7 @@ class TimeInterval {
 
   static TimeInterval year = new TimeInterval(
       (DateTime date) => new DateTime(date.year),
-      (DateTime date, num offset) => new DateTime(
+      (DateTime date, int offset) => new DateTime(
           date.year + offset,
           date.month,
           date.day,

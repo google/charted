@@ -33,7 +33,7 @@ class AggregationTransformer extends Observable
   String _aggregationType;
   AggregationModel _model;
   bool _expandAllDimension = false;
-  List _selectedColumns = [];
+  List<int> _selectedColumns = [];
   FieldAccessor _indexFieldAccessor = (List row, int index) => row[index];
   ChartData _data;
 
@@ -92,14 +92,14 @@ class AggregationTransformer extends Observable
     // Process rows.
     rows.clear();
     var transformedRows = <List>[];
-    for (var value in _model.valuesForDimension(_dimensionColumnIndices[0])) {
+    for (String value in _model.valuesForDimension(_dimensionColumnIndices[0])) {
       _generateAggregatedRow(transformedRows, [value]);
     }
     rows.addAll(transformedRows);
 
     // Process columns.
     columns = new List<ChartColumnSpec>.generate(_selectedColumns.length,
-        (index) => _data.columns.elementAt(_selectedColumns[index]));
+        (int index) => _data.columns.elementAt(_selectedColumns[index]));
   }
 
   /// Fills the aggregatedRows List with data base on the set of expanded values
@@ -149,7 +149,7 @@ class AggregationTransformer extends Observable
     _expandAllDimension = false;
     _expandedSet.add(dimension);
     if (expandParent && dimension.length > 1) {
-      Function eq = const ListEquality().equals;
+      var eq = const ListEquality().equals;
       var dim = dimension.take(dimension.length - 1).toList();
       if (!_expandedSet.any((e) => eq(e, dim))) {
         expand(dim);
@@ -162,7 +162,7 @@ class AggregationTransformer extends Observable
   void collapse(List dimension, [bool collapseChildren = true]) {
     _expandAllDimension = false;
     if (collapseChildren) {
-      Function eq = const ListEquality().equals;
+      var eq = const ListEquality().equals;
       // Doing this because _expandedSet.where doesn't work.
       var collapseList = [];
       for (List dim in _expandedSet) {
@@ -179,7 +179,7 @@ class AggregationTransformer extends Observable
   /// Expands all dimensions.
   void expandAll() {
     if (_model != null) {
-      for (var value in _model.valuesForDimension(_dimensionColumnIndices[0])) {
+      for (String value in _model.valuesForDimension(_dimensionColumnIndices[0])) {
         _expandAll([value]);
       }
       _expandAllDimension = false;
@@ -204,7 +204,7 @@ class AggregationTransformer extends Observable
 
   /// Tests if specific dimension is expanded.
   bool _isExpanded(List dimension) {
-    Function eq = const ListEquality().equals;
+    var eq = const ListEquality().equals;
     return _expandedSet.any((e) => eq(e, dimension));
   }
 }

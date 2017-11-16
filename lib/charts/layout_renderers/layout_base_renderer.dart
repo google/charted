@@ -41,7 +41,7 @@ abstract class LayoutRendererBase implements LayoutRenderer {
         }));
       }
     }
-    this.area = area;
+    this.area = area as LayoutArea;
     this.series = series;
   }
 

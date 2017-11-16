@@ -30,7 +30,8 @@ abstract class HierarchyLayout<T extends HierarchyNode> {
       List rows, int parentColumn, int labelColumn, int valueColumn) {
     List<T> nodeList = [];
     for (var row in rows) {
-      nodeList.add(createNode(row[labelColumn], row[valueColumn], 0));
+      nodeList.add(createNode(row[labelColumn] as String,
+          row[valueColumn] as num, 0));
     }
 
     for (var i = 0; i < rows.length; i++) {
@@ -48,19 +49,19 @@ abstract class HierarchyLayout<T extends HierarchyNode> {
 
     // Reorder the list so that root is the first element and the list contains
     // the hierarchy of nodes in depth first order.
-    var hierarchyNodeList = <HierarchyNode>[];
+    var hierarchyNodeList = <T>[];
     var root = nodeList.where((e) => e.depth == 0).elementAt(0);
-    var children = <HierarchyNode>[root];
+    var children = <T>[root];
     while (children.length > 0) {
       var node = children.removeLast();
-      children.addAll(node.children);
+      children.addAll(node.children.map((e) => e as T).toList());
       hierarchyNodeList.add(node);
     }
 
     return hierarchyNodeList;
   }
 
-  T createNode(label, value, depth);
+  T createNode(String label, num value, int depth);
 
   /// Default accessor method for getting the list of children of the node.
   static List hierarchyChildren(HierarchyNode node) => node.children;
@@ -70,7 +71,7 @@ abstract class HierarchyLayout<T extends HierarchyNode> {
 
   /// Default sorting method for comparing node a and b.
   static int hierarchySort(HierarchyNode a, HierarchyNode b) =>
-      b.value - a.value;
+      (b.value - a.value).round();
 }
 
 abstract class HierarchyNode {
@@ -84,7 +85,7 @@ abstract class HierarchyNode {
   String label = '';
 
   /// The node value, as returned by the value accessor.
-  dynamic value;
+  num value;
 
   /// The depth of the node, starting at 0 for the root.
   int depth = 0;

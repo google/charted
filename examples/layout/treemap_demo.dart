@@ -44,11 +44,11 @@ main() {
   var scope = new SelectionScope.element(host);
   var root = scope.selectElements([host]);
 
-  void _createTreeMap(var host, var mode) {
+  void _createTreeMap(String host, int mode) {
     var tree = new TreeMapLayout();
     tree.mode = mode;
     tree.size = [width, height];
-    List nodes = tree.layout(rows, 1, 0, 2);
+    List<TreeMapNode> nodes = tree.layout(rows, 1, 0, 2);
     var treemap = root.select(host);
     var div = treemap.append('div')
       ..style('position', 'relative')
@@ -59,11 +59,15 @@ main() {
     node.enter.append("div")
       ..styleWithCallback('left', (d, i, e) => '${d.x}px')
       ..styleWithCallback('top', (d, i, e) => '${d.y}px')
-      ..styleWithCallback('width', (d, i, e) => '${max(0, (d.dx as int) - 1)}px')
-      ..styleWithCallback('height', (d, i, e) => '${max(0, (d.dy as int) - 1)}px')
-      ..styleWithCallback('background', (d, i, e) => d.children.isNotEmpty ?
+      ..styleWithCallback('width', (d, i, e) =>
+          '${max(0, (d.dx as int) - 1)}px')
+      ..styleWithCallback('height', (d, i, e) =>
+          '${max(0, (d.dy as int) - 1)}px')
+      ..styleWithCallback('background', (TreeMapNode d, i, e) =>
+          d.children.isNotEmpty ?
           theme.getColorForKey(d.label, ChartTheme.STATE_NORMAL) : null)
-      ..textWithCallback((d, i, e) => d.children.isNotEmpty ? null : d.label)
+      ..textWithCallback((TreeMapNode d, i, e) => d.children.isNotEmpty ?
+          null : d.label)
       ..classed('node');
 
    }
@@ -72,5 +76,3 @@ main() {
   _createTreeMap('.dice', TreeMapLayout.TREEMAP_LAYOUT_DICE);
   _createTreeMap('.slicedice', TreeMapLayout.TREEMAP_LAYOUT_SLICE_DICE);
 }
-
-

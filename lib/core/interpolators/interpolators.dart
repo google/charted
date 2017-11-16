@@ -118,12 +118,14 @@ Interpolator createStringInterpolator(String a, String b) {
   int maxLength = math.max(numberPartsInA.length, numberPartsInB.length);
   for (var i = 0; i < numberLength; i++) {
     interpolators.add(createNumberInterpolator(
-        num.parse(numberPartsInA[i]), num.parse(numberPartsInB[i])));
+        num.parse(numberPartsInA[i] as String),
+        num.parse(numberPartsInB[i] as String)));
   }
   if (numberPartsInA.length < numberPartsInB.length) {
     for (var i = numberLength; i < maxLength; i++) {
       interpolators.add(createNumberInterpolator(
-          num.parse(numberPartsInB[i]), num.parse(numberPartsInB[i])));
+          num.parse(numberPartsInB[i] as String),
+          num.parse(numberPartsInB[i] as String)));
     }
   }
 
@@ -164,9 +166,10 @@ Interpolator createListInterpolator(List a, List b) {
   var x = [],
       aLength = a.length,
       numInterpolated = b.length,
-      n0 = math.min(aLength, numInterpolated),
-      output = new List.filled(math.max(aLength, numInterpolated), null),
-      i;
+      output = new List<dynamic>.filled(
+          math.max(aLength, numInterpolated), null);
+  num n0 = math.min(aLength, numInterpolated);
+  int i;
 
   for (i = 0; i < n0; i++) x.add(createInterpolatorFromRegistry(a[i], b[i]));
   for (; i < aLength; ++i) output[i] = a[i];
@@ -226,9 +229,11 @@ Interpolator createTransformInterpolator(String a, String b) {
       translateB = translateRegEx.firstMatch(b),
       scaleB = scaleRegEx.firstMatch(b),
       rotateB = rotateRegEx.firstMatch(b),
-      skewB = skewRegEx.firstMatch(b);
+      skewB = skewRegEx.firstMatch(b),
+      match;
 
-  var numSetA = [], numSetB = [], tempStr, match;
+  List<num> numSetA = [], numSetB = [];
+  String tempStr;
 
   // translate
   if (translateA != null) {
@@ -276,7 +281,7 @@ Interpolator createTransformInterpolator(String a, String b) {
   if (rotateA != null) {
     tempStr = a.substring(rotateA.start, rotateA.end);
     match = numberRegEx.firstMatch(tempStr);
-    numSetA.add(num.parse(match.group(0)));
+    numSetA.add(num.parse((match as Match).group(0)));
   } else {
     numSetA.add(0);
   }
@@ -284,7 +289,7 @@ Interpolator createTransformInterpolator(String a, String b) {
   if (rotateB != null) {
     tempStr = b.substring(rotateB.start, rotateB.end);
     match = numberRegEx.firstMatch(tempStr);
-    numSetB.add(num.parse(match.group(0)));
+    numSetB.add(num.parse((match as Match).group(0)));
   } else {
     numSetB.add(0);
   }
@@ -302,7 +307,7 @@ Interpolator createTransformInterpolator(String a, String b) {
   if (skewA != null) {
     tempStr = a.substring(skewA.start, skewA.end);
     match = numberRegEx.firstMatch(tempStr);
-    numSetA.add(num.parse(match.group(0)));
+    numSetA.add(num.parse((match as Match).group(0)));
   } else {
     numSetA.add(0);
   }
@@ -310,7 +315,7 @@ Interpolator createTransformInterpolator(String a, String b) {
   if (skewB != null) {
     tempStr = b.substring(skewB.start, skewB.end);
     match = numberRegEx.firstMatch(tempStr);
-    numSetB.add(num.parse(match.group(0)));
+    numSetB.add(num.parse((match as Match).group(0)));
   } else {
     numSetB.add(0);
   }
@@ -333,9 +338,9 @@ Interpolator createZoomInterpolator(List a, List b) {
 
   var sqrt2 = math.SQRT2, param2 = 2, param4 = 4;
 
-  var ux0 = a[0], uy0 = a[1], w0 = a[2], ux1 = b[0], uy1 = b[1], w1 = b[2];
+  num ux0 = a[0], uy0 = a[1], w0 = a[2], ux1 = b[0], uy1 = b[1], w1 = b[2];
 
-  var dx = ux1 - ux0,
+  num dx = ux1 - ux0,
       dy = uy1 - uy0,
       d2 = dx * dx + dy * dy,
       d1 = math.sqrt(d2),

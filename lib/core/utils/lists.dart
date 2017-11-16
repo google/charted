@@ -11,7 +11,7 @@ part of charted.core.utils;
 /// Returns a sum of all values in the given list of values
 num sum(List values) => values == null || values.isEmpty
     ? 0
-    : values.fold(0.0, (old, next) => old + next);
+    : values.fold(0.0, (num old, num next) => old + next);
 
 /// Returns the smallest number in the given list of values
 num min(Iterable<num> values) => values == null || values.isEmpty
@@ -80,7 +80,7 @@ class Range extends DelegatingList<num> {
       throw new ArgumentError('Invalid range.');
     }
 
-    var k = _integerConversionFactor(step.abs()), i = -1, j;
+    num k = _integerConversionFactor(step.abs()), i = -1, j;
 
     start *= k;
     stop *= k;

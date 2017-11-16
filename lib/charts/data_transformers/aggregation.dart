@@ -256,7 +256,7 @@ class AggregationModel {
   /// Update the entities that are valid after the groupBy.
   void _updateCachedEntities() {
     List keys = new List.from(_entityCache.keys, growable: false);
-    keys.forEach((key) {
+    keys.forEach((String key) {
       _AggregationItemImpl entity = _entityCache[key];
       if (entity == null) {
         _entityCache.remove(key);
@@ -311,7 +311,7 @@ class AggregationModel {
         for (int fi = 0; fi < factsCount; fi++) {
           var value = factsAccessor(item, _factFields[fi]);
           _factsCache[factsDataOffset + fi] =
-              (value == null) ? double.NAN : value.toDouble();
+              (value == null) ? double.NAN : (value as num).toDouble();
         }
       }
 
@@ -677,7 +677,7 @@ dynamic walk(initial, String key, Map parsedKeyCache) {
     } else if (current is List && part is Map) {
       for (int i = 0; i < current.length; i++) {
         bool match = true;
-        part.forEach((key, val) {
+        part.forEach((String key, val) {
           if ((key.contains('.') &&
                   walk(part, key, parsedKeyCache).toString() != val) ||
               part[key] != val) {

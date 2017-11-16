@@ -31,7 +31,7 @@ class _SelectionImpl implements Selection {
    */
   _SelectionImpl.all(
       {String selector,
-      SelectionCallback<Iterable<Element>> fn,
+      SelectionCallback<List<Element>> fn,
       SelectionScope this.scope,
       Selection source}) {
     assert(selector != null || fn != null);
@@ -146,7 +146,7 @@ class _SelectionImpl implements Selection {
   }
 
   void on(String type, [SelectionCallback listener, bool capture]) {
-    EventListener getEventHandler(i, e) => (Event event) {
+    EventListener getEventHandler(int i, Element e) => (Event event) {
           var previous = scope.event;
           scope.event = event;
           try {
@@ -285,7 +285,7 @@ class _SelectionImpl implements Selection {
     return new _SelectionImpl.single(
         fn: (datum, ei, e) {
           Element child = fn(datum, ei, e);
-          return child == null ? null : e.append(child);
+          return child == null ? null : e.append(child) as Element;
         },
         source: this);
   }
@@ -308,7 +308,8 @@ class _SelectionImpl implements Selection {
         fn: (datum, ei, e) {
           Element child = fn(datum, ei, e);
           Element before = beforeFn(datum, ei, e);
-          return child == null ? null : e.insertBefore(child, before);
+          return child == null ? null : e.insertBefore(child, before)
+              as Element;
         },
         source: this);
   }
@@ -318,7 +319,7 @@ class _SelectionImpl implements Selection {
     return new _SelectionImpl.all(selector: selector, source: this);
   }
 
-  Selection selectAllWithCallback(SelectionCallback<Iterable<Element>> fn) {
+  Selection selectAllWithCallback(SelectionCallback<List<Element>> fn) {
     assert(fn != null);
     return new _SelectionImpl.all(fn: fn, source: this);
   }
@@ -458,8 +459,8 @@ class _DataSelectionImpl extends _SelectionImpl implements DataSelection {
 
   _DataSelectionImpl(
       List<SelectionGroup> updated,
-      Iterable<SelectionGroup> entering,
-      Iterable<SelectionGroup> exiting,
+      List<SelectionGroup> entering,
+      List<SelectionGroup> exiting,
       SelectionScope scope)
       : super.selectionGroups(updated, scope) {
     enter = new _EnterSelectionImpl(entering, this);

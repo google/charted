@@ -48,13 +48,15 @@ class SvgAxis {
       this.innerTickSize: 6,
       this.outerTickSize: 6,
       this.tickPadding: 3,
-      Iterable tickValues,
+      List tickValues,
       FormatFunction tickFormat,
       Scale scale})
       : scale = scale == null ? new LinearScale() : scale {
     _tickFormat =
         tickFormat == null ? this.scale.createTickFormatter() : tickFormat;
-    _tickValues = isNullOrEmpty(tickValues) ? this.scale.ticks : tickValues;
+    _tickValues = isNullOrEmpty(tickValues)
+        ? this.scale.ticks.toList()
+        : tickValues;
   }
 
   Iterable get tickValues => _tickValues;
@@ -141,9 +143,9 @@ class SvgAxis {
               : (isRTLText ? 'end' : 'start');
       }
 
-      text.text = fixSimpleTextDirection(ellipsized.elementAt(i));
+      text.text = fixSimpleTextDirection(ellipsized.elementAt(i) as String);
       if (isEllipsized) {
-        text.attributes['data-detail'] = formatted.elementAt(i);
+        text.attributes['data-detail'] = formatted.elementAt(i) as String;
       } else {
         text.attributes.remove('data-detail');
       }

@@ -25,7 +25,7 @@ class _TransitionImpl implements Transition {
   Map<Element, int> _durationMap = {};
   bool _interrupted = false;
   bool _remove = false;
-  var _timerDelay = 0;
+  num _timerDelay = 0;
 
   _TransitionImpl(this._selection, [num delay = 0]) {
     _transitionNode(delay);
@@ -83,28 +83,29 @@ class _TransitionImpl implements Transition {
     new AnimationTimer((elapsed) {
       _selection.each((d, i, c) {
         var tweenList = <Interpolator>[];
-        _attrs.forEach((key, value) {
+        _attrs.forEach((String key, value) {
           tweenList.add(_getAttrInterpolator(c, key, value(d, i, c)));
         });
-        _attrTweens.forEach((key, value) {
+        _attrTweens.forEach((String key, value) {
           tweenList.add(
-              (t) => c.setAttribute(key, value(d, i, c.getAttribute(key))(t)));
+              (t) => c.setAttribute(key,
+                  value(d, i, c.getAttribute(key))(t) as String));
         });
-        _styles.forEach((key, value) {
+        _styles.forEach((String key, value) {
           tweenList.add(_getStyleInterpolator(
-              c, key, value['callback'](d, i, c), value['priority']));
+              c, key, value['callback'](d, i, c), value['priority'] as String));
         });
-        _styleTweens.forEach((key, value) {
+        _styleTweens.forEach((String key, value) {
           tweenList.add((t) => c.style.setProperty(
               key,
               value['callback'](d, i, c.style.getPropertyValue(key))(t)
                   .toString(),
-              value['priority']));
+              value['priority'] as String));
         });
 
         _attrMap[c] = tweenList;
-        _durationMap[c] = _duration(d, i, c);
-        _timerMap[new AnimationTimer(_tick, delay: _delay(d, i, c))] = c;
+        _durationMap[c] = _duration(d, i, c) as int;
+        _timerMap[new AnimationTimer(_tick, delay: _delay(d, i, c) as int)] = c;
 
         if (!_transitionMap.containsKey(c)) {
           _transitionMap[c] = 1;
@@ -113,7 +114,7 @@ class _TransitionImpl implements Transition {
         }
       });
       return true;
-    }, delay: delay);
+    }, delay: delay as int);
   }
 
   // Returns the correct interpolator function for the old and new attribute.
@@ -126,7 +127,7 @@ class _TransitionImpl implements Transition {
 
   // Returns the correct interpolator function for the old and new style.
   Interpolator _getStyleInterpolator(
-      Element element, String styleName, newValue, priority) {
+      Element element, String styleName, newValue, String priority) {
     var style = element.style.getPropertyValue(styleName);
 
     var interpolator = createStringInterpolator(style, newValue.toString());
@@ -145,7 +146,7 @@ class _TransitionImpl implements Transition {
     var activeNode = _timerMap[AnimationTimer.active];
     var t = elapsed / _durationMap[activeNode];
     for (Interpolator tween in _attrMap[activeNode]) {
-      tween(ease(t));
+      tween(ease(t) as num);
     }
 
     if (t >= 1) {
@@ -191,7 +192,7 @@ class _TransitionImpl implements Transition {
     var delay = _delay(_selection.scope.datum(e), 0, e) +
         _duration(_selection.scope.datum(e), 0, e) +
         _timerDelay;
-    var t = new _TransitionImpl(_selection, delay);
+    var t = new _TransitionImpl(_selection, delay as num);
     t.ease = ease;
     t.durationWithCallback(_duration);
     return t;

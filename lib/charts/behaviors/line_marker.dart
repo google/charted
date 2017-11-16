@@ -34,7 +34,7 @@ class LineMarker implements ChartBehavior {
 
   void init(ChartArea area, Selection upper, Selection lower) {
     if (area is! CartesianArea) return;
-    _area = area;
+    _area = area as CartesianArea;
     _parent = drawAboveSeries ? upper : lower;
     _isLeftAxisPrimary = _area.config.isLeftAxisPrimary;
     _axesChangeSubscription = _area.onChartAxesUpdated.listen((_) => _update());
@@ -61,7 +61,7 @@ class LineMarker implements ChartBehavior {
     var dimensionAtBottom =
         index == 1 && _isLeftAxisPrimary || index == 0 && !_isLeftAxisPrimary,
         scale = _area.dimensionScales.elementAt(index),
-        scaled = scale.scale(positions[column]),
+        scaled = scale.scale(positions[column]) as num,
         theme = _area.theme.getDimensionAxisTheme(),
         renderAreaRect = _area.layout.renderArea,
         left = renderAreaRect.x,
@@ -95,7 +95,7 @@ class LineMarker implements ChartBehavior {
     if (!_area.isReady) return;
     _markers = _parent.selectAll('.line-marker').data(positions.keys);
 
-    _markers.enter.append('path').each((d, i, e) {
+    _markers.enter.append('path').each((int d, i, e) {
       e.classes.add('line-marker');
       e.attributes['d'] = _getMarkerPath(d, animate);
     });
@@ -103,7 +103,7 @@ class LineMarker implements ChartBehavior {
     if (animate) {
       _markers
           .transition()
-          .attrWithCallback('d', (d, i, e) => _getMarkerPath(d, false));
+          .attrWithCallback('d', (int d, i, e) => _getMarkerPath(d, false));
     }
 
     _markers.exit.remove();

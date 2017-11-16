@@ -42,15 +42,15 @@ class PieLayout {
    * Return a list of SvgArcData objects that could be used to create
    * arcs in a pie-chart or donut-chart.
    */
-  List layout(List data, [int ei, Element e]) {
+  List<SvgArcData> layout(List<num> data, [int ei, Element e]) {
     var values =
         new List.generate(data.length, (int i) => accessor(data[i], i)),
         startAngle = startAngleCallback(data, ei, e),
         endAngle = endAngleCallback(data, ei, e),
         total = sum(values),
         scaleFactor = (endAngle - startAngle) / (total > 0 ? total : 1),
-        index = new Range.integers(values.length).toList(),
-        arcs = new List(data.length);
+        arcs = new List<SvgArcData>(data.length);
+    List<int> index = new Range.integers(values.length).toList();
 
     if (compare != null) {
       index.sort((left, right) => compare(data[left], data[right]));

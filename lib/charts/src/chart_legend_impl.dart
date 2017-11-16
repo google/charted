@@ -186,13 +186,13 @@ class DefaultChartLegendImpl implements ChartLegend {
 
     if (state != null) {
       enter
-        ..on('mouseover', (d, i, e) => state.preview = d.index)
+        ..on('mouseover', (ChartLegendItem d, i, e) => state.preview = d.index)
         ..on('mouseout', (d, i, e) {
           if (state.preview == d.index) {
             state.preview = null;
           }
         })
-        ..on('click', (d, i, e) {
+        ..on('click', (ChartLegendItem d, i, e) {
           if (state.isSelected(d.index)) {
             state.unselect(d.index);
           } else {

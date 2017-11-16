@@ -63,7 +63,7 @@ class TransposeTransformer extends Observable
   _transform() {
     // Assert all columns are of the same type and formatter, excluding the
     // label column.
-    var type;
+    String type;
     FormatFunction formatter;
     for (var i = 0; i < _data.columns.length; i++) {
       if (i != _labelColumn) {
@@ -107,7 +107,7 @@ class TransposeTransformer extends Observable
     }
 
     // Construct new ColumnSpaces base on the label column.
-    for (var label in columnLabels) {
+    for (String label in columnLabels) {
       columns.add(
           new ChartColumnSpec(type: type, label: label, formatter: formatter));
     }

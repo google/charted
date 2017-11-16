@@ -135,7 +135,7 @@ class DefaultLayoutAreaImpl implements LayoutArea {
   /// Computes the size of chart and if changed from the previous time
   /// size was computed, sets attributes on svg element
   Rect _computeChartSize() {
-    int width = host.clientWidth, height = host.clientHeight;
+    num width = host.clientWidth, height = host.clientHeight;
 
     if (config.minimumSize != null) {
       width = max([width, config.minimumSize.width]);
@@ -209,7 +209,7 @@ class DefaultLayoutAreaImpl implements LayoutArea {
       if (_renderer != null) _rendererDisposer.dispose();
 
       // Save and subscribe to events on the the current renderer.
-      _renderer = series.renderer;
+      _renderer = series.renderer as LayoutRenderer;
       if (_renderer is ChartRendererBehaviorSource) {
         _rendererDisposer.addAll([
           _renderer.onValueClick.listen((ChartEvent e) {

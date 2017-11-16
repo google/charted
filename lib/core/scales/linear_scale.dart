@@ -38,7 +38,7 @@ class LinearScale implements Scale {
   void _reset({bool nice: false}) {
     if (nice) {
       _domain = ScaleUtils.nice(
-          _domain, ScaleUtils.niceStep(_linearTickRange().step));
+          _domain as List<num>, ScaleUtils.niceStep(_linearTickRange().step));
     } else {
       if (_forcedTicksCount > 0) {
         var tickRange = _linearTickRange();
@@ -58,8 +58,9 @@ class LinearScale implements Scale {
       interpolator = createNumberInterpolator;
     }
 
-    _invert = linear(_range, _domain, uninterpolator, createNumberInterpolator);
-    _scale = linear(_domain, _range, uninterpolator, interpolator);
+    _invert = linear(_range, _domain, uninterpolator, createNumberInterpolator)
+        as Function;
+    _scale = linear(_domain, _range, uninterpolator, interpolator) as Function;
   }
 
   @override
@@ -140,7 +141,7 @@ class LinearScale implements Scale {
   bool get nice => _nice;
 
   @override
-  Extent get rangeExtent => ScaleUtils.extent(_range);
+  Extent get rangeExtent => ScaleUtils.extent(_range as Iterable<num>);
 
   @override
   scale(value) => _scale(value);
@@ -150,14 +151,14 @@ class LinearScale implements Scale {
 
   Range _linearTickRange([Extent extent]) {
     if (extent == null) {
-      extent = ScaleUtils.extent(_domain);
+      extent = ScaleUtils.extent(_domain as Iterable<num>);
     }
-    var span = extent.max - extent.min;
+    num span = extent.max - extent.min;
     if (span == 0) {
       span = 1.0; // [span / _ticksCount] should never be equal zero.
     }
 
-    var step;
+    num step;
     if (_forcedTicksCount > 0) {
       // Find the factor (in power of 10) for the max and min of the extent and
       // round the max up and min down to make sure the domain of the scale is
@@ -168,11 +169,11 @@ class LinearScale implements Scale {
       var maxFactor = extent.max == 0 ? 1
           : math.pow(10, (math.log((extent.max as num).abs() / forcedTicksCount)
               / math.LN10).floor());
-      var max = (extent.max / maxFactor).ceil() * maxFactor;
-      var minFactor = extent.min == 0 ? 1
+      num max = (extent.max / maxFactor).ceil() * maxFactor;
+      num minFactor = extent.min == 0 ? 1
           : math.pow(10, (math.log((extent.min as num).abs() / forcedTicksCount)
               / math.LN10).floor());
-      var min = (extent.min / minFactor).floor() * minFactor;
+      num min = (extent.min / minFactor).floor() * minFactor;
       step = (max - min) / forcedTicksCount;
       return new Range(min, max + step * 0.5, step);
     } else {
@@ -190,13 +191,13 @@ class LinearScale implements Scale {
       }
     }
 
-    return new Range((extent.min / step).ceil() * step,
-        (extent.max / step).floor() * step + step * 0.5, step);
+    return new Range(((extent.min as num) / step).ceil() * step,
+        ((extent.max as num) / step).floor() * step + step * 0.5, step);
   }
 
   @override
   FormatFunction createTickFormatter([String formatStr]) {
-    int precision(value) {
+    int precision(num value) {
       return -(math.log(value) / math.LN10 + .01).floor();
     }
     Range tickRange = _linearTickRange();

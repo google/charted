@@ -16,8 +16,8 @@ abstract class Locale {
   String get identifier;
   String get decimal;
   String get thousands;
-  List get grouping;
-  List get currency;
+  List<int> get grouping;
+  List<String> get currency;
 
   String get dateTime;
   String get date;
@@ -33,6 +33,6 @@ abstract class Locale {
   Locale();
 
   NumberFormat get numberFormat => new NumberFormat(this);
-  TimeFormat timeFormat([specifier = null]) =>
+  TimeFormat timeFormat([String specifier = null]) =>
       new TimeFormat(specifier, this.identifier);
 }

@@ -147,7 +147,7 @@ class _AggregationItemImpl extends Observable implements AggregationItem {
     var lowerDimensionField = model._dimFields[dimensions.length];
     List lowerVals = model.valuesForDimension(lowerDimensionField);
 
-    lowerVals.forEach((name) {
+    lowerVals.forEach((String name) {
       List<String> lowerDims = new List.from(dimensions)..add(name);
       AggregationItem entity = model.facts(lowerDims);
       if (entity != null) {

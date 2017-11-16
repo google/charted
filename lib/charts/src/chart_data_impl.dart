@@ -19,9 +19,9 @@ class DefaultChartDataImpl extends Observable implements ChartData {
       Iterable<ChartColumnSpec> columns, Iterable<Iterable> rows) {
     this.columns = new List<ChartColumnSpec>.from(columns);
     if (rows is List && rows.every((row) => row is List)) {
-      this.rows = rows;
+      this.rows = rows as List<List>;
     } else {
-      var rowsList = new List.from(rows);
+      List<Iterable> rowsList = new List.from(rows);
       this.rows = new List<List>.generate(
           rowsList.length, (i) => new List.from(rowsList[i]));
     }
@@ -92,7 +92,7 @@ class DefaultChartDataImpl extends Observable implements ChartData {
     if (!_hasObservableRows) return;
     notifyChange(new ChartValueChangeRecord(index, changes));
   }
-  
+
   String toString() {
     var cellDataLength = new List.filled(rows.elementAt(0).length, 0);
     for (var i = 0; i < columns.length; i++) {

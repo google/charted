@@ -39,7 +39,7 @@ class LineChartRenderer extends CartesianRendererBase {
   // Otherwise, the first dimension scale is used to render the chart.
   @override
   bool prepare(ChartArea area, ChartSeries series) {
-    _ensureAreaAndSeries(area, series);
+    _ensureAreaAndSeries(area as CartesianArea, series);
     if (trackDataPoints != false) {
       _trackPointerInArea();
     }
@@ -75,8 +75,9 @@ class LineChartRenderer extends CartesianRendererBase {
     }
 
     var line = new SvgLine(
-        xValueAccessor: (d, i) => dimensionScale.scale(x[i]) + rangeBandOffset,
-        yValueAccessor: (d, i) => measureScale.scale(d));
+        xValueAccessor: (d, i) => (dimensionScale.scale(x[i]) as num) +
+            rangeBandOffset,
+        yValueAccessor: (d, i) => measureScale.scale(d) as num);
 
     // Add lines and hook up hover and selection events.
     var svgLines = root.selectAll('.line-rdr-line').data(lines);
@@ -150,7 +151,7 @@ class LineChartRenderer extends CartesianRendererBase {
     });
 
     linePoints
-      ..each((d, i, e) {
+      ..each((int d, i, e) {
         var color = colorForColumn(d);
         e.attributes
           ..['r'] = '4'
@@ -173,8 +174,8 @@ class LineChartRenderer extends CartesianRendererBase {
     }
 
     var yScale = area.measureScales(series).first;
-    root.selectAll('.line-rdr-point').each((d, i, e) {
-      var x = _xPositions[row],
+    root.selectAll('.line-rdr-point').each((int d, i, e) {
+      num x = _xPositions[row],
           measureVal = area.data.rows.elementAt(row).elementAt(d);
       if (measureVal != null && measureVal.isFinite) {
         var color = colorForColumn(d), filter = filterForColumn(d);
@@ -262,7 +263,8 @@ class LineChartRenderer extends CartesianRendererBase {
       var row = int.parse(e.dataset['row']),
           column = int.parse(e.dataset['column']);
       mouseClickController.add(
-          new DefaultChartEventImpl(scope.event, area, series, row, column, d));
+          new DefaultChartEventImpl(scope.event, area, series, row, column,
+              d as num));
     }
   }
 
@@ -274,7 +276,8 @@ class LineChartRenderer extends CartesianRendererBase {
       _savedOverRow = int.parse(e.dataset['row']);
       _savedOverColumn = int.parse(e.dataset['column']);
       mouseOverController.add(new DefaultChartEventImpl(
-          scope.event, area, series, _savedOverRow, _savedOverColumn, d));
+          scope.event, area, series, _savedOverRow, _savedOverColumn,
+          d as num));
     }
   }
 
@@ -285,7 +288,8 @@ class LineChartRenderer extends CartesianRendererBase {
     }
     if (mouseOutController != null && e.tagName == 'circle') {
       mouseOutController.add(new DefaultChartEventImpl(
-          scope.event, area, series, _savedOverRow, _savedOverColumn, d));
+          scope.event, area, series, _savedOverRow, _savedOverColumn,
+          d as num));
     }
   }
 }

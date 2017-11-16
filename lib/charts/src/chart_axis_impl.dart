@@ -183,7 +183,7 @@ class DefaultChartAxisImpl {
         outerTickSize: 0,
         tickPadding: _theme.axisTickPadding,
         tickFormat: _columnSpec.formatter,
-        tickValues: tickValues,
+        tickValues: tickValues.toList(),
         scale: scale);
 
     axis.create(element, scope,
@@ -236,8 +236,8 @@ class RotateHorizontalAxisTicks implements SvgAxisTicks {
     shortenedTicks = formattedTicks;
 
     var range = axis.scale.rangeExtent,
-        textMetrics = new TextMetrics(fontStyle: ticksFont),
-        allowedWidth = (range.max - range.min) ~/ ticks.length,
+        textMetrics = new TextMetrics(fontStyle: ticksFont);
+    num allowedWidth = (range.max - range.min) ~/ ticks.length,
         maxLabelWidth = textMetrics.getLongestTextWidth(formattedTicks);
 
     // Check if we need rotation

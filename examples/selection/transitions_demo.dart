@@ -180,7 +180,7 @@ void main() {
   var t = bars.transition();
   t.duration(1000);
   t.delayWithCallback((d, i, c) => i * 200);
-  t.attrTween('y', (d, i, attr) => createStringInterpolator(
+  t.attrTween('y', (num d, i, attr) => createStringInterpolator(
       attr, (350 - d).toString()));
   t.attrTween('height', (d, i, attr) => createStringInterpolator(attr, d.toString()));
 
@@ -216,4 +216,3 @@ void main() {
           "translate(100,100)rotate(360)skewX(45)scale(3,3)"))
       ..duration(5000);
 }
-

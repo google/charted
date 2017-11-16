@@ -115,7 +115,7 @@ abstract class Selection {
    * it's group and the element itself) to get a collection of selected
    * elements that will be part of the new selection.
    */
-  Selection selectAllWithCallback(SelectionCallback<Iterable<Element>> fn);
+  Selection selectAllWithCallback(SelectionCallback<List<Element>> fn);
 
   /**
    * Sets the attribute [name] on all elements when [val] is not null.

@@ -29,7 +29,7 @@ class LogScale implements Scale {
   int _base = defaultBase;
   int _ticksCount = 10;
   bool _positive = true;
-  List _domain = defaultDomain;
+  List<num> _domain = defaultDomain;
 
   LogScale() : _linear = new LinearScale();
 
@@ -41,11 +41,11 @@ class LogScale implements Scale {
         _nice = source._nice,
         _ticksCount = source._ticksCount;
 
-  num _log(x) =>
+  num _log(num x) =>
       (_positive ? math.log(x < 0 ? 0 : x) : -math.log(x > 0 ? 0 : -x)) /
           math.log(base);
 
-  num _pow(x) => _positive ? math.pow(base, x) : -math.pow(base, -x);
+  num _pow(num x) => _positive ? math.pow(base, x) : -math.pow(base, -x);
 
   set base(int value) {
     if (_base != value) {
@@ -54,18 +54,18 @@ class LogScale implements Scale {
     }
   }
 
-  get base => _base;
+  int get base => _base;
 
   @override
-  num scale(x) => _linear.scale(_log(x));
+  num scale(x) => _linear.scale(_log(x as num)) as num;
 
   @override
-  num invert(x) => _pow(_linear.invert(x));
+  num invert(x) => _pow(_linear.invert(x as num) as num);
 
   @override
   set domain(Iterable values) {
-    _positive = values.first >= 0;
-    _domain = values;
+    _positive = (values.first as num) >= 0;
+    _domain = values as List<num>;
     _reset();
   }
 
@@ -123,7 +123,7 @@ class LogScale implements Scale {
 
   _reset() {
     if (_nice) {
-      var niced = _domain.map((e) => _log(e)).toList();
+      var niced = _domain.map((num e) => _log(e)).toList();
       var roundFunctions = _positive
           ? new RoundingFunctions.defaults()
           : negativeNumbersRoundFunctionsPair;
@@ -131,16 +131,16 @@ class LogScale implements Scale {
       _linear.domain = ScaleUtils.nice(niced, roundFunctions);
       _domain = niced.map((e) => _pow(e)).toList();
     } else {
-      _linear.domain = _domain.map((e) => _log(e)).toList();
+      _linear.domain = _domain.map((num e) => _log(e)).toList();
     }
   }
 
   Iterable get ticks {
     var extent = ScaleUtils.extent(_domain),
-        ticks = [],
-        u = extent.min,
-        v = extent.max,
-        i = (_log(u)).floor(),
+        ticks = <num>[];
+    num u = extent.min,
+        v = extent.max;
+    int i = (_log(u)).floor(),
         j = (_log(v)).ceil(),
         n = (_base % 1 > 0) ? 2 : _base;
 
@@ -165,7 +165,7 @@ class LogScale implements Scale {
         formatter.format(formatStr != null ? formatStr : ".0E");
     var k = math.max(.1, ticksCount / this.ticks.length),
         e = _positive ? 1e-12 : -1e-12;
-    return (d) {
+    return (num d) {
       if (_positive) {
         return d / _pow((_log(d) + e).ceil()) <= k ? logFormatFunction(d) : '';
       } else {
