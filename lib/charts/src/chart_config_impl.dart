@@ -24,7 +24,6 @@ class DefaultChartConfigImpl extends Observable implements ChartConfig {
   @override
   bool isLeftAxisPrimary = false;
 
-  @override
   bool autoResizeAxis = true;
 
   @override

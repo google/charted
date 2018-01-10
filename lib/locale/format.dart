@@ -93,8 +93,8 @@ class FormatPrefix {
   }
 
   /** Returns the SI prefix for the value. */
-  get symbol => _symbol;
+  String get symbol => _symbol;
 
   /** Returns the scale for the value corresponding to the SI prefix. */
-  get scale => _scale;
+  Function get scale => _scale;
 }
