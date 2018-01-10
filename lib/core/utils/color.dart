@@ -223,6 +223,7 @@ class Color {
           ? "0" + math.max(0, v).toInt().toRadixString(16)
           : math.min(255, v).toInt().toRadixString(16);
     }
+
     return '#${_hexify(r)}${_hexify(g)}${_hexify(b)}';
   }
 

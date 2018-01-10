@@ -80,7 +80,8 @@ class DefaultChartDataImpl extends Observable implements ChartData {
               'Changes on this row will not be monitored');
         } else {
           _disposer.add(
-              (row as ObservableList).listChanges
+              (row as ObservableList)
+                  .listChanges
                   .listen((changes) => _valuesChanged(index, changes)),
               row);
         }

@@ -46,7 +46,7 @@ class BubbleChartRenderer extends CartesianRendererBase {
         yDimensionScale = area.dimensionScales.last,
         theme = area.theme,
         bubbleRadiusFactor =
-        maxBubbleRadius / min([geometry.width, geometry.height]);
+            maxBubbleRadius / min([geometry.width, geometry.height]);
 
     String color(int i) => theme.getColorForKey(series.measures.elementAt(i));
 
@@ -108,8 +108,7 @@ class BubbleChartRenderer extends CartesianRendererBase {
   Extent get extent {
     assert(series != null && area != null);
     List<List<num>> rows = area.data.rows;
-    num max = rows.first[series.measures.first],
-        min = max;
+    num max = rows.first[series.measures.first], min = max;
 
     rows.forEach((row) {
       series.measures.forEach((int idx) {

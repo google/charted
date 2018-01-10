@@ -26,7 +26,8 @@ class DefaultChartStateImpl extends Observable implements ChartState {
   LinkedHashSet<int> hidden = new LinkedHashSet<int>();
 
   LinkedHashSet<int> selection = new LinkedHashSet<int>();
-  LinkedHashSet<Pair<int, int>> highlights = new LinkedHashSet<Pair<int, int>>();
+  LinkedHashSet<Pair<int, int>> highlights =
+      new LinkedHashSet<Pair<int, int>>();
 
   Pair<int, int> _hovered;
   int _preview;

@@ -110,8 +110,9 @@ class DefaultChartLegendImpl implements ChartLegend {
   /// Creates legend items starting at the given index.
   void _createLegendItems() {
     var state = _area.state,
-        rows =
-        _root.selectAll('.chart-legend-row').data(_items, (x) => x.hashCode),
+        rows = _root
+            .selectAll('.chart-legend-row')
+            .data(_items, (x) => x.hashCode),
         isFirstRender = rows.length == 0;
 
     var enter = rows.enter.appendWithCallback((ChartLegendItem d, i, e) {

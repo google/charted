@@ -20,8 +20,9 @@ abstract class ChartData {
   Iterable<List> get rows;
 
   /// Create a new instance of [ChartData]'s internal implementation
-  factory ChartData(Iterable<ChartColumnSpec> columns,
-      Iterable<Iterable> rows) = DefaultChartDataImpl;
+  factory ChartData(
+          Iterable<ChartColumnSpec> columns, Iterable<Iterable> rows) =
+      DefaultChartDataImpl;
 }
 
 ///

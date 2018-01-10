@@ -70,24 +70,24 @@ class TimeInterval {
   static TimeInterval second = new TimeInterval(
       (DateTime date) => new DateTime.fromMillisecondsSinceEpoch(
           (date.millisecondsSinceEpoch ~/ 1000) * 1000),
-      (DateTime date, int offset) =>
-          date = new DateTime.fromMillisecondsSinceEpoch(
+      (DateTime date, int offset) => date =
+          new DateTime.fromMillisecondsSinceEpoch(
               date.millisecondsSinceEpoch + offset * 1000),
       (DateTime date) => date.second);
 
   static TimeInterval minute = new TimeInterval(
       (DateTime date) => new DateTime.fromMillisecondsSinceEpoch(
           (date.millisecondsSinceEpoch ~/ 60000) * 60000),
-      (DateTime date, int offset) =>
-          date = new DateTime.fromMillisecondsSinceEpoch(
+      (DateTime date, int offset) => date =
+          new DateTime.fromMillisecondsSinceEpoch(
               date.millisecondsSinceEpoch + offset * 60000),
       (DateTime date) => date.minute);
 
   static TimeInterval hour = new TimeInterval(
       (DateTime date) => new DateTime.fromMillisecondsSinceEpoch(
           (date.millisecondsSinceEpoch ~/ 3600000) * 3600000),
-      (DateTime date, int offset) =>
-          date = new DateTime.fromMillisecondsSinceEpoch(
+      (DateTime date, int offset) => date =
+          new DateTime.fromMillisecondsSinceEpoch(
               date.millisecondsSinceEpoch + offset * 3600000),
       (DateTime date) => date.hour);
 

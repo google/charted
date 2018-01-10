@@ -74,9 +74,9 @@ class StackedBarChartRenderer extends CartesianRendererBase {
         ..duration(theme.transitionDurationMilliseconds);
     }
 
-    var bar =
-        groups.selectAll('.stack-rdr-bar').dataWithCallback((d, i, c) =>
-            d as Iterable);
+    var bar = groups
+        .selectAll('.stack-rdr-bar')
+        .dataWithCallback((d, i, c) => d as Iterable);
 
     var prevOffsetVal = new List();
 
@@ -175,10 +175,10 @@ class StackedBarChartRenderer extends CartesianRendererBase {
               ? RADIUS
               : 0;
       var path = (length != 0)
-              ? verticalBars
-                  ? topRoundedRect(0, position, barWidth, length, radius)
-                  : rightRoundedRect(position, 0, length, barWidth, radius)
-              : '';
+          ? verticalBars
+              ? topRoundedRect(0, position, barWidth, length, radius)
+              : rightRoundedRect(position, 0, length, barWidth, radius)
+          : '';
       e.attributes['data-offset'] =
           verticalBars ? position.toString() : (position + length).toString();
       return path;

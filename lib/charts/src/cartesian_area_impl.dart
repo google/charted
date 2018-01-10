@@ -400,8 +400,9 @@ class DefaultCartesianAreaImpl implements CartesianArea {
       } else {
         // Extent is available because [ChartRenderer.prepare] was already
         // called (when checking for valid series in [draw].
-        Iterable extents = listOfSeries.map((s) =>
-           (s.renderer as CartesianRenderer).extent).toList();
+        Iterable extents = listOfSeries
+            .map((s) => (s.renderer as CartesianRenderer).extent)
+            .toList();
         var lowest = min(extents.map((e) => e.min as num)),
             highest = max(extents.map((e) => e.max as num));
 
@@ -454,7 +455,7 @@ class DefaultCartesianAreaImpl implements CartesianArea {
                 : config.displayedMeasureAxes.take(measureAxesCount))
             .toList(growable: false),
         displayedDimensionAxes =
-        config.dimensions.take(dimensionAxesCount).toList(growable: false);
+            config.dimensions.take(dimensionAxesCount).toList(growable: false);
 
     // Compute size of the dimension axes
     if (config.renderDimensionAxes != false) {

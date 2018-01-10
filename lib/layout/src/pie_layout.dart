@@ -44,7 +44,7 @@ class PieLayout {
    */
   List<SvgArcData> layout(List<num> data, [int ei, Element e]) {
     var values =
-        new List.generate(data.length, (int i) => accessor(data[i], i)),
+            new List.generate(data.length, (int i) => accessor(data[i], i)),
         startAngle = startAngleCallback(data, ei, e),
         endAngle = endAngleCallback(data, ei, e),
         total = sum(values),

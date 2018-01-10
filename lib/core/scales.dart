@@ -176,8 +176,8 @@ abstract class ScaleUtils {
   /// @param range          The range of the scale.
   /// @param uninterpolator The uninterpolator for domain values.
   /// @param interpolator   The interpolator for range values.
-  static Function polylinearScale(
-      List<num> domain, List range, Function uninterpolator, Function interpolator) {
+  static Function polylinearScale(List<num> domain, List range,
+      Function uninterpolator, Function interpolator) {
     var u = [], i = [], j = 0, k = math.min(domain.length, range.length) - 1;
 
     // Handle descending domains.

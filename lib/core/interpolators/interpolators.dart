@@ -147,7 +147,8 @@ Interpolator createRgbColorInterpolator(Color a, Color b) {
   var ar = a.r, ag = a.g, ab = a.b, br = b.r - ar, bg = b.g - ag, bb = b.b - ab;
 
   return (t) => new Color.fromRgba((ar + br * t).round(), (ag + bg * t).round(),
-      (ab + bb * t).round(), 1.0).toRgbaString();
+          (ab + bb * t).round(), 1.0)
+      .toRgbaString();
 }
 
 /// Generate an interpolator using HSL color system converted to Hex string.
@@ -156,7 +157,8 @@ Interpolator createHslColorInterpolator(Color a, Color b) {
   var ah = a.h, as = a.s, al = a.l, bh = b.h - ah, bs = b.s - as, bl = b.l - al;
 
   return (t) => new Color.fromHsla((ah + bh * t).round(), (as + bs * t).round(),
-      (al + bl * t).round(), 1.0).toHslaString();
+          (al + bl * t).round(), 1.0)
+      .toHslaString();
 }
 
 /// Generates an interpolator to interpolate each element between lists
@@ -166,8 +168,8 @@ Interpolator createListInterpolator(List a, List b) {
   var x = [],
       aLength = a.length,
       numInterpolated = b.length,
-      output = new List<dynamic>.filled(
-          math.max(aLength, numInterpolated), null);
+      output =
+          new List<dynamic>.filled(math.max(aLength, numInterpolated), null);
   num n0 = math.min(aLength, numInterpolated);
   int i;
 
@@ -217,9 +219,9 @@ Interpolator createTransformInterpolator(String a, String b) {
   var numRegExStr = r'[-+]?(?:\d+\.?\d*|\.?\d+)(?:[eE][-+]?\d+)?',
       numberRegEx = new RegExp(numRegExStr),
       translateRegEx =
-      new RegExp(r'translate\(' + '$numRegExStr,$numRegExStr' + r'\)'),
+          new RegExp(r'translate\(' + '$numRegExStr,$numRegExStr' + r'\)'),
       scaleRegEx =
-      new RegExp(r'scale\(' + numRegExStr + r',' + numRegExStr + r'\)'),
+          new RegExp(r'scale\(' + numRegExStr + r',' + numRegExStr + r'\)'),
       rotateRegEx = new RegExp(r'rotate\(' + numRegExStr + r'(deg)?\)'),
       skewRegEx = new RegExp(r'skewX\(' + numRegExStr + r'(deg)?\)'),
       translateA = translateRegEx.firstMatch(a),

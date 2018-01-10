@@ -111,7 +111,7 @@ class TreeMapLayout extends HierarchyLayout<TreeMapNode> {
   }
 
   /// Applies padding between each nodes.
-  MutableRect _treeMapPad(TreeMapNode node, List<num>padding) {
+  MutableRect _treeMapPad(TreeMapNode node, List<num> padding) {
     var x = node.x + padding[3];
     var y = node.y + padding.first;
     var dx = node.dx - padding[1] - padding[3];
@@ -138,9 +138,7 @@ class TreeMapLayout extends HierarchyLayout<TreeMapNode> {
 
   /// Computes the most amount of area needed to layout the list of nodes.
   num _worst(List<TreeMapNode> nodes, num length, num pArea) {
-    num area,
-        rmax = 0,
-        rmin = double.INFINITY;
+    num area, rmax = 0, rmin = double.INFINITY;
     for (var node in nodes) {
       area = node.area;
       if (area <= 0) continue;

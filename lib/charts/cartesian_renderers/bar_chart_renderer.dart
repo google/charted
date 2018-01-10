@@ -85,15 +85,16 @@ class BarChartRenderer extends CartesianRendererBase {
     // Create and update the bars
     // Avoids animation on first render unless alwaysAnimate is set to true.
 
-    var bar =
-        groups.selectAll('.bar-rdr-bar').dataWithCallback((d, i, c) => rows[i]),
+    var bar = groups
+            .selectAll('.bar-rdr-bar')
+            .dataWithCallback((d, i, c) => rows[i]),
         scaled0 = measureScale.scale(0).round();
 
     var getBarLength = (num d) {
       var scaledVal = measureScale.scale(d).round();
       num ht = verticalBars
-              ? (d >= 0 ? scaled0 - scaledVal : scaledVal - scaled0)
-              : (d >= 0 ? scaledVal - scaled0 : scaled0 - scaledVal);
+          ? (d >= 0 ? scaled0 - scaledVal : scaledVal - scaled0)
+          : (d >= 0 ? scaledVal - scaled0 : scaled0 - scaledVal);
       ht = ht - strokeWidth;
 
       // If bar would be scaled to 0 height but data is not 0, render bar
@@ -131,9 +132,12 @@ class BarChartRenderer extends CartesianRendererBase {
             RADIUS);
       } else {
         var fn = d > 0 ? rightRoundedRect : leftRoundedRect;
-        return fn(getBarPos(d) as int, (bars.scale(i) as num).toInt() +
-            strokeWidthOffset,
-            animate ? 0 : getBarLength(d) as int, barWidth as int, RADIUS);
+        return fn(
+            getBarPos(d) as int,
+            (bars.scale(i) as num).toInt() + strokeWidthOffset,
+            animate ? 0 : getBarLength(d) as int,
+            barWidth as int,
+            RADIUS);
       }
     };
 
