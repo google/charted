@@ -54,9 +54,8 @@ class SvgAxis {
       : scale = scale == null ? new LinearScale() : scale {
     _tickFormat =
         tickFormat == null ? this.scale.createTickFormatter() : tickFormat;
-    _tickValues = isNullOrEmpty(tickValues)
-        ? this.scale.ticks.toList()
-        : tickValues;
+    _tickValues =
+        isNullOrEmpty(tickValues) ? this.scale.ticks.toList() : tickValues;
   }
 
   Iterable get tickValues => _tickValues;

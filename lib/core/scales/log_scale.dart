@@ -43,7 +43,7 @@ class LogScale implements Scale {
 
   num _log(num x) =>
       (_positive ? math.log(x < 0 ? 0 : x) : -math.log(x > 0 ? 0 : -x)) /
-          math.log(base);
+      math.log(base);
 
   num _pow(num x) => _positive ? math.pow(base, x) : -math.pow(base, -x);
 
@@ -136,10 +136,8 @@ class LogScale implements Scale {
   }
 
   Iterable get ticks {
-    var extent = ScaleUtils.extent(_domain),
-        ticks = <num>[];
-    num u = extent.min,
-        v = extent.max;
+    var extent = ScaleUtils.extent(_domain), ticks = <num>[];
+    num u = extent.min, v = extent.max;
     int i = (_log(u)).floor(),
         j = (_log(v)).ceil(),
         n = (_base % 1 > 0) ? 2 : _base;

@@ -90,12 +90,15 @@ class TimeScale extends LinearScale {
         ? [
             TimeInterval.year,
             _linearTickRange(
-                new Extent(extent.min / 31536e6, extent.max / 31536e6)).step
+                    new Extent(extent.min / 31536e6, extent.max / 31536e6))
+                .step
           ]
         : i == 0
             ? [new ScaleMilliSeconds(), _linearTickRange(extent).step]
-            : _scaleLocalMethods[target / _scaleSteps[i - 1] <
-                _scaleSteps[i] / target ? i - 1 : i];
+            : _scaleLocalMethods[
+                target / _scaleSteps[i - 1] < _scaleSteps[i] / target
+                    ? i - 1
+                    : i];
   }
 
   List niceInterval(int ticksCount, [int skip = 1]) {
@@ -117,14 +120,16 @@ class TimeScale extends LinearScale {
       domain = ScaleUtils.nice(
           domain as List<num>,
           new RoundingFunctions((dateMillis) {
-            var date = new DateTime.fromMillisecondsSinceEpoch(dateMillis.round());
+            var date =
+                new DateTime.fromMillisecondsSinceEpoch(dateMillis.round());
             while (skipped(date = (interval as TimeInterval).floor(date))) {
               date = new DateTime.fromMillisecondsSinceEpoch(
                   date.millisecondsSinceEpoch - 1);
             }
             return date.millisecondsSinceEpoch;
           }, (dateMillis) {
-            var date = new DateTime.fromMillisecondsSinceEpoch(dateMillis.round());
+            var date =
+                new DateTime.fromMillisecondsSinceEpoch(dateMillis.round());
             while (skipped(date = (interval as TimeInterval).ceil(date))) {
               date = new DateTime.fromMillisecondsSinceEpoch(
                   date.millisecondsSinceEpoch + 1);
@@ -135,10 +140,11 @@ class TimeScale extends LinearScale {
       domain = ScaleUtils.nice(
           domain as List<num>,
           new RoundingFunctions(
-              (date) => (interval as TimeInterval).
-                  floor(date).millisecondsSinceEpoch,
-              (date) => (interval as TimeInterval).
-                  ceil(date).millisecondsSinceEpoch));
+              (date) =>
+                  (interval as TimeInterval).floor(date).millisecondsSinceEpoch,
+              (date) => (interval as TimeInterval)
+                  .ceil(date)
+                  .millisecondsSinceEpoch));
     }
     return domain as List;
   }
@@ -160,8 +166,9 @@ class TimeScale extends LinearScale {
       interval = method[0];
       skip = method[1] as int;
     }
-    return (interval as TimeInterval).range(extent.min, extent.max + 1,
-        skip < 1 ? 1 : skip).toList();
+    return (interval as TimeInterval)
+        .range(extent.min, extent.max + 1, skip < 1 ? 1 : skip)
+        .toList();
   }
 
   @override
@@ -171,8 +178,9 @@ class TimeScale extends LinearScale {
 class ScaleMilliSeconds implements TimeInterval {
   DateTime _toDateTime(x) {
     assert(x is int || x is DateTime);
-    return x is int ?
-        new DateTime.fromMillisecondsSinceEpoch(x as int) : x as DateTime;
+    return x is int
+        ? new DateTime.fromMillisecondsSinceEpoch(x as int)
+        : x as DateTime;
   }
 
   DateTime floor(dynamic val) => _toDateTime(val);

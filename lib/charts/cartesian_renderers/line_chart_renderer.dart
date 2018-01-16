@@ -75,8 +75,8 @@ class LineChartRenderer extends CartesianRendererBase {
     }
 
     var line = new SvgLine(
-        xValueAccessor: (d, i) => (dimensionScale.scale(x[i]) as num) +
-            rangeBandOffset,
+        xValueAccessor: (d, i) =>
+            (dimensionScale.scale(x[i]) as num) + rangeBandOffset,
         yValueAccessor: (d, i) => measureScale.scale(d) as num);
 
     // Add lines and hook up hover and selection events.
@@ -262,9 +262,8 @@ class LineChartRenderer extends CartesianRendererBase {
     if (mouseClickController != null && e.tagName == 'circle') {
       var row = int.parse(e.dataset['row']),
           column = int.parse(e.dataset['column']);
-      mouseClickController.add(
-          new DefaultChartEventImpl(scope.event, area, series, row, column,
-              d as num));
+      mouseClickController.add(new DefaultChartEventImpl(
+          scope.event, area, series, row, column, d as num));
     }
   }
 
@@ -275,9 +274,8 @@ class LineChartRenderer extends CartesianRendererBase {
     if (mouseOverController != null && e.tagName == 'circle') {
       _savedOverRow = int.parse(e.dataset['row']);
       _savedOverColumn = int.parse(e.dataset['column']);
-      mouseOverController.add(new DefaultChartEventImpl(
-          scope.event, area, series, _savedOverRow, _savedOverColumn,
-          d as num));
+      mouseOverController.add(new DefaultChartEventImpl(scope.event, area,
+          series, _savedOverRow, _savedOverColumn, d as num));
     }
   }
 
@@ -287,9 +285,8 @@ class LineChartRenderer extends CartesianRendererBase {
       area.state.preview = null;
     }
     if (mouseOutController != null && e.tagName == 'circle') {
-      mouseOutController.add(new DefaultChartEventImpl(
-          scope.event, area, series, _savedOverRow, _savedOverColumn,
-          d as num));
+      mouseOutController.add(new DefaultChartEventImpl(scope.event, area,
+          series, _savedOverRow, _savedOverColumn, d as num));
     }
   }
 }

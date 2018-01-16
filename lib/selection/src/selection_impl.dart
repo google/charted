@@ -308,8 +308,9 @@ class _SelectionImpl implements Selection {
         fn: (datum, ei, e) {
           Element child = fn(datum, ei, e);
           Element before = beforeFn(datum, ei, e);
-          return child == null ? null : e.insertBefore(child, before)
-              as Element;
+          return child == null
+              ? null
+              : e.insertBefore(child, before) as Element;
         },
         source: this);
   }
@@ -343,6 +344,7 @@ class _SelectionImpl implements Selection {
       scope.associate(element, val);
       return element;
     }
+
     ;
 
     // Joins data to all elements in the group.
@@ -431,6 +433,7 @@ class _SelectionImpl implements Selection {
       updateGroups.add(new _SelectionGroupImpl(update, parent: g.parent));
       exitGroups.add(new _SelectionGroupImpl(exit, parent: g.parent));
     }
+
     ;
 
     for (int gi = 0; gi < groups.length; ++gi) {

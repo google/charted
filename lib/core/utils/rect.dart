@@ -68,7 +68,8 @@ class AbsoluteRect {
   const AbsoluteRect(this.top, this.end, this.bottom, this.start);
 
   @override
-  bool operator ==(other) => other is AbsoluteRect &&
+  bool operator ==(other) =>
+      other is AbsoluteRect &&
       start == other.start &&
       end == other.end &&
       top == other.top &&

@@ -75,8 +75,8 @@ class SvgLine implements SvgShape {
 
   /// Default implementation of [yValueAccessor].
   /// Returns the second element if [d] is an iterable, otherwise returns [d].
-  static num defaultDataToY(d, i) => d is Iterable
-      ? d.elementAt(1) as num : d as num;
+  static num defaultDataToY(d, i) =>
+      d is Iterable ? d.elementAt(1) as num : d as num;
 
   /// Default implementation of [isDefined].
   /// Returns true for all non-null values of [d].

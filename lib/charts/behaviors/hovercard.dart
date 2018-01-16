@@ -180,8 +180,8 @@ class Hovercard implements ChartBehavior {
     }
   }
 
-  void _positionAtMousePointer(ChartEvent e) =>
-      _positionAtPoint(e.chartX, e.chartY, _HOVERCARD_OFFSET, _HOVERCARD_OFFSET, false, false);
+  void _positionAtMousePointer(ChartEvent e) => _positionAtPoint(
+      e.chartX, e.chartY, _HOVERCARD_OFFSET, _HOVERCARD_OFFSET, false, false);
 
   void _positionOnLayout(column, row) {
     // Currently for layouts, when hovercard is triggered due to change
@@ -209,12 +209,11 @@ class Hovercard implements ChartBehavior {
       dimensionCenterOffset = dimensionOffset;
     }
 
-    var rowData = area.data.rows.elementAt(row),
-        isNegative = false;
+    var rowData = area.data.rows.elementAt(row), isNegative = false;
     num measurePosition = 0,
-        dimensionPosition = dimensionScale
-                .scale(rowData.elementAt(dimensionCol)) +
-            dimensionCenterOffset;
+        dimensionPosition =
+            dimensionScale.scale(rowData.elementAt(dimensionCol)) +
+                dimensionCenterOffset;
 
     if (_isMultiValue) {
       num max = SMALL_INT_MIN, min = SMALL_INT_MAX;
@@ -248,14 +247,12 @@ class Hovercard implements ChartBehavior {
     var rect = _hovercardRoot.getBoundingClientRect(),
         width = rect.width,
         height = rect.height,
-        scaleToHostY = (_area.theme.padding != null
-                ? _area.theme.padding.top
-                : 0) +
-            (_area.layout.renderArea.y),
-        scaleToHostX = (_area.theme.padding != null
-                ? _area.theme.padding.start
-                : 0) +
-            (_area.layout.renderArea.x),
+        scaleToHostY =
+            (_area.theme.padding != null ? _area.theme.padding.top : 0) +
+                (_area.layout.renderArea.y),
+        scaleToHostX =
+            (_area.theme.padding != null ? _area.theme.padding.start : 0) +
+                (_area.layout.renderArea.x),
         renderAreaHeight = _area.layout.renderArea.height,
         renderAreaWidth = _area.layout.renderArea.width;
 

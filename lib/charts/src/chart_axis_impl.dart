@@ -61,8 +61,9 @@ class DefaultChartAxisImpl {
     if (scale is OrdinalScale) {
       var usingBands = _area.dimensionsUsingBands.contains(_column),
           innerPadding = usingBands ? _theme.axisBandInnerPadding : 1.0,
-          outerPadding =
-          usingBands ? _theme.axisBandOuterPadding : _theme.axisOuterPadding;
+          outerPadding = usingBands
+              ? _theme.axisBandOuterPadding
+              : _theme.axisOuterPadding;
 
       // This is because when left axis is primary the first data row should
       // appear on top of the y-axis instead of on bottom.
@@ -104,15 +105,14 @@ class DefaultChartAxisImpl {
 
     // Handle auto re-sizing of horizontal axis.
     var ticks = (config != null && !isNullOrEmpty(config.tickValues))
-        ? config.tickValues
-        : scale.ticks,
-
-    formatter = _columnSpec.formatter == null
-        ? scale.createTickFormatter()
-        : _columnSpec.formatter,
-    textMetrics = new TextMetrics(fontStyle: _theme.ticksFont),
-    formattedTicks = ticks.map((x) => formatter(x)).toList(),
-    shortenedTicks = formattedTicks;
+            ? config.tickValues
+            : scale.ticks,
+        formatter = _columnSpec.formatter == null
+            ? scale.createTickFormatter()
+            : _columnSpec.formatter,
+        textMetrics = new TextMetrics(fontStyle: _theme.ticksFont),
+        formattedTicks = ticks.map((x) => formatter(x)).toList(),
+        shortenedTicks = formattedTicks;
     if (_isVertical) {
       var width = textMetrics.getLongestTextWidth(formattedTicks).ceil();
       if (width > _theme.verticalAxisWidth) {
@@ -199,7 +199,6 @@ class DefaultChartAxisImpl {
   set scale(Scale value) {
     _scale = value;
   }
-
 }
 
 class PrecomputedAxisTicks implements SvgAxisTicks {

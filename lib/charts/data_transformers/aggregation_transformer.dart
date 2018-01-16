@@ -92,7 +92,8 @@ class AggregationTransformer extends Observable
     // Process rows.
     rows.clear();
     var transformedRows = <List>[];
-    for (String value in _model.valuesForDimension(_dimensionColumnIndices[0])) {
+    for (String value
+        in _model.valuesForDimension(_dimensionColumnIndices[0])) {
       _generateAggregatedRow(transformedRows, [value]);
     }
     rows.addAll(transformedRows);
@@ -179,7 +180,8 @@ class AggregationTransformer extends Observable
   /// Expands all dimensions.
   void expandAll() {
     if (_model != null) {
-      for (String value in _model.valuesForDimension(_dimensionColumnIndices[0])) {
+      for (String value
+          in _model.valuesForDimension(_dimensionColumnIndices[0])) {
         _expandAll([value]);
       }
       _expandAllDimension = false;

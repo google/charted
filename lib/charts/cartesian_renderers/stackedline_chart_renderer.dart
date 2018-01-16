@@ -67,8 +67,9 @@ class StackedLineChartRenderer extends CartesianRendererBase {
     // Second Half: current accumulated values (need for drawing)
     var lines = reversedMeasures.map((column) {
       var row = area.data.rows.map((values) => values[column]).toList();
-      return accumulated.reversed.toList()..addAll(
-          new List.generate(x.length, (i) => accumulated[i] += row[i] as num));
+      return accumulated.reversed.toList()
+        ..addAll(new List.generate(
+            x.length, (i) => accumulated[i] += row[i] as num));
     }).toList();
 
     var rangeBandOffset =
@@ -77,9 +78,9 @@ class StackedLineChartRenderer extends CartesianRendererBase {
     // If tracking data points is enabled, cache location of points that
     // represent data.
     if (trackDataPoints) {
-      _xPositions =
-          x.map((val) =>
-              (dimensionScale.scale(val) + rangeBandOffset) as num).toList();
+      _xPositions = x
+          .map((val) => (dimensionScale.scale(val) + rangeBandOffset) as num)
+          .toList();
     }
 
     var fillLine = new SvgLine(
@@ -92,12 +93,13 @@ class StackedLineChartRenderer extends CartesianRendererBase {
         },
         yValueAccessor: (d, i) => measureScale.scale(d) as num);
     var strokeLine = new SvgLine(
-        xValueAccessor: (d, i) => (dimensionScale.scale(x[i]) as num) +
-            rangeBandOffset,
+        xValueAccessor: (d, i) =>
+            (dimensionScale.scale(x[i]) as num) + rangeBandOffset,
         yValueAccessor: (d, i) => measureScale.scale(d) as num);
 
     // Add lines and hook up hover and selection events.
-    var svgLines = root.selectAll('.stacked-line-rdr-line').data(lines.reversed);
+    var svgLines =
+        root.selectAll('.stacked-line-rdr-line').data(lines.reversed);
     svgLines.enter.append('g');
 
     svgLines.each((d, i, e) {
@@ -114,8 +116,8 @@ class StackedLineChartRenderer extends CartesianRendererBase {
         ..['stroke'] = color
         ..['fill'] = color
         ..['class'] = styles.isEmpty
-          ? 'stacked-line-rdr-line'
-          : 'stacked-line-rdr-line ${styles.join(' ')}'
+            ? 'stacked-line-rdr-line'
+            : 'stacked-line-rdr-line ${styles.join(' ')}'
         ..['data-column'] = '$column';
       fill.attributes
         ..['d'] = fillLine.path(fillData, i, e)
@@ -153,9 +155,7 @@ class StackedLineChartRenderer extends CartesianRendererBase {
   Extent get extent {
     assert(area != null && series != null);
     var rows = area.data.rows;
-    num max = SMALL_INT_MIN,
-        min = SMALL_INT_MAX,
-        rowIndex = 0;
+    num max = SMALL_INT_MIN, min = SMALL_INT_MAX, rowIndex = 0;
 
     rows.forEach((row) {
       num line = null;
@@ -197,7 +197,8 @@ class StackedLineChartRenderer extends CartesianRendererBase {
   }
 
   void _createTrackingCircles() {
-    var linePoints = root.selectAll('.stacked-line-rdr-point')
+    var linePoints = root
+        .selectAll('.stacked-line-rdr-point')
         .data(series.measures.toList().reversed);
     linePoints.enter.append('circle').each((d, i, e) {
       e.classes.add('stacked-line-rdr-point');
@@ -227,12 +228,12 @@ class StackedLineChartRenderer extends CartesianRendererBase {
       _createTrackingCircles();
     }
 
-    double cumulated =  0.0;
+    double cumulated = 0.0;
     var yScale = area.measureScales(series).first;
     root.selectAll('.stacked-line-rdr-point').each((int d, i, e) {
       var x = _xPositions[row],
           measureVal =
-             cumulated += area.data.rows.elementAt(row).elementAt(d) as num;
+              cumulated += area.data.rows.elementAt(row).elementAt(d) as num;
       if (measureVal != null && measureVal.isFinite) {
         var color = colorForColumn(d), filter = filterForColumn(d);
         e.attributes
@@ -318,9 +319,8 @@ class StackedLineChartRenderer extends CartesianRendererBase {
     if (mouseClickController != null && e.tagName == 'circle') {
       var row = int.parse(e.dataset['row']),
           column = int.parse(e.dataset['column']);
-      mouseClickController.add(
-          new DefaultChartEventImpl(scope.event, area, series, row, column,
-              d as int));
+      mouseClickController.add(new DefaultChartEventImpl(
+          scope.event, area, series, row, column, d as int));
     }
   }
 
@@ -331,9 +331,8 @@ class StackedLineChartRenderer extends CartesianRendererBase {
     if (mouseOverController != null && e.tagName == 'circle') {
       _savedOverRow = int.parse(e.dataset['row']);
       _savedOverColumn = int.parse(e.dataset['column']);
-      mouseOverController.add(new DefaultChartEventImpl(
-          scope.event, area, series, _savedOverRow, _savedOverColumn,
-          d as int));
+      mouseOverController.add(new DefaultChartEventImpl(scope.event, area,
+          series, _savedOverRow, _savedOverColumn, d as int));
     }
   }
 
@@ -343,9 +342,8 @@ class StackedLineChartRenderer extends CartesianRendererBase {
       area.state.preview = null;
     }
     if (mouseOutController != null && e.tagName == 'circle') {
-      mouseOutController.add(new DefaultChartEventImpl(
-          scope.event, area, series, _savedOverRow, _savedOverColumn,
-          d as int));
+      mouseOutController.add(new DefaultChartEventImpl(scope.event, area,
+          series, _savedOverRow, _savedOverColumn, d as int));
     }
   }
 }

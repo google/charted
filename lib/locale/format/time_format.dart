@@ -19,8 +19,8 @@ class TimeFormat {
   TimeFormat([String template = null, String identifier = 'en_US']) {
     _template = template;
     _locale = identifier;
-    if (_template != null) _dateFormat =
-        new DateFormat(_wrapStrptime2ICU(_template), _locale);
+    if (_template != null)
+      _dateFormat = new DateFormat(_wrapStrptime2ICU(_template), _locale);
   }
 
   TimeFormat _getInstance(String template) {
@@ -101,10 +101,10 @@ class TimeFormat {
     while (++i < n) {
       if (template[i] == '%') {
         string.add(template.substring(j, i));
-        if ((timeFormatPads[tempChar = template[++i]]) != null) tempChar =
-            template[++i];
-        if (timeFormatsTransform[tempChar] != null) string
-            .add(timeFormatsTransform[tempChar]);
+        if ((timeFormatPads[tempChar = template[++i]]) != null)
+          tempChar = template[++i];
+        if (timeFormatsTransform[tempChar] != null)
+          string.add(timeFormatsTransform[tempChar]);
         j = i + 1;
       }
     }

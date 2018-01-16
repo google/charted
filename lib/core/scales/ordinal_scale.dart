@@ -140,9 +140,7 @@ class _OrdinalScale implements OrdinalScale {
       num start = range.first,
           stop = range.last,
           step = (stop - start - 2 * outerPadding) /
-              (s.domain.length > 1
-                  ? (s.domain.length - padding)
-                  : 1);
+              (s.domain.length > 1 ? (s.domain.length - padding) : 1);
 
       s._range = s._steps(start + step * outerPadding, step);
       s._rangeBand = step * (1 - padding);
@@ -158,11 +156,9 @@ class _OrdinalScale implements OrdinalScale {
     scale._reset = (_OrdinalScale s) {
       num start = range.first,
           stop = range.last,
-          step =
-          ((stop - start - 2 * outerPadding) /
-              (s.domain.length > 1
-                  ? (s.domain.length - padding)
-                  : 1)).floor();
+          step = ((stop - start - 2 * outerPadding) /
+                  (s.domain.length > 1 ? (s.domain.length - padding) : 1))
+              .floor();
 
       s._range = s._steps(start + outerPadding, step);
       s._rangeBand = (step * (1 - padding)).round();

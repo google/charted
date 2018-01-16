@@ -58,8 +58,8 @@ class LineMarker implements ChartBehavior {
 
     assert(index == 0 || index == 1 && _area.useTwoDimensionAxes);
 
-    var dimensionAtBottom =
-        index == 1 && _isLeftAxisPrimary || index == 0 && !_isLeftAxisPrimary,
+    var dimensionAtBottom = index == 1 && _isLeftAxisPrimary ||
+            index == 0 && !_isLeftAxisPrimary,
         scale = _area.dimensionScales.elementAt(index),
         scaled = scale.scale(positions[column]) as num,
         theme = _area.theme.getDimensionAxisTheme(),

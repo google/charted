@@ -35,8 +35,9 @@ class DefaultChartEventImpl implements ChartEvent {
   DefaultChartEventImpl(this.source, this.area,
       [this.series, this.row, this.column, this.value]) {
     var hostRect = area.host.getBoundingClientRect(),
-        left =
-        area.config.isRTL ? area.theme.padding.end : area.theme.padding.start;
+        left = area.config.isRTL
+            ? area.theme.padding.end
+            : area.theme.padding.start;
     if (source is MouseEvent) {
       MouseEvent mouseSource = source;
       chartX = mouseSource.client.x - hostRect.left - left;

@@ -39,10 +39,8 @@ class QuantumChartTheme extends ChartTheme {
 
   static final _MEASURE_AXIS_THEME =
       new QuantumChartAxisTheme(ChartAxisTheme.FILL_RENDER_AREA, 5);
-  static final _ORDINAL_DIMENSION_AXIS_THEME =
-  new QuantumChartAxisTheme(0, 10);
-  static final _DEFAULT_DIMENSION_AXIS_THEME =
-  new QuantumChartAxisTheme(4, 10);
+  static final _ORDINAL_DIMENSION_AXIS_THEME = new QuantumChartAxisTheme(0, 10);
+  static final _DEFAULT_DIMENSION_AXIS_THEME = new QuantumChartAxisTheme(4, 10);
 
   final OrdinalScale _scale = new OrdinalScale()..range = COLORS;
 
@@ -71,9 +69,11 @@ class QuantumChartTheme extends ChartTheme {
 
   @override
   String getFilterForState(int state) => state & ChartState.COL_PREVIEW != 0 ||
-      state & ChartState.VAL_HOVERED != 0 ||
-      state & ChartState.COL_SELECTED != 0 ||
-      state & ChartState.VAL_HIGHLIGHTED != 0 ? 'url(#drop-shadow)' : '';
+          state & ChartState.VAL_HOVERED != 0 ||
+          state & ChartState.COL_SELECTED != 0 ||
+          state & ChartState.VAL_HIGHLIGHTED != 0
+      ? 'url(#drop-shadow)'
+      : '';
 
   @override
   String getOtherColor([int state = 0]) => OTHER_COLORS is Iterable

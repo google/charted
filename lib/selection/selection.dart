@@ -37,7 +37,8 @@ typedef E SelectionCallback<E>(datum, int index, Element element);
 typedef E SelectionValueAccessor<E>(datum, int index);
 
 /** Create a ChartedCallback that always returns [val] */
-SelectionCallback/*<T>*/ toCallback/*<T>*/(/*=T*/ val) => (datum, index, element) => val;
+SelectionCallback/*<T>*/ toCallback/*<T>*/(/*=T*/ val) =>
+    (datum, index, element) => val;
 
 /** Create a ChartedValueAccessor that always returns [val] */
 SelectionValueAccessor toValueAccessor(val) => (datum, index) => val;

@@ -87,9 +87,8 @@ class _TransitionImpl implements Transition {
           tweenList.add(_getAttrInterpolator(c, key, value(d, i, c)));
         });
         _attrTweens.forEach((String key, value) {
-          tweenList.add(
-              (t) => c.setAttribute(key,
-                  value(d, i, c.getAttribute(key))(t) as String));
+          tweenList.add((t) => c.setAttribute(
+              key, value(d, i, c.getAttribute(key))(t) as String));
         });
         _styles.forEach((String key, value) {
           tweenList.add(_getStyleInterpolator(

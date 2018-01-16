@@ -66,8 +66,8 @@ abstract class ChartConfig {
   bool switchAxesForRTL;
 
   /// Factory method to create an instance of the default implementation
-  factory ChartConfig(Iterable<ChartSeries> series,
-      Iterable<int> dimensions) = DefaultChartConfigImpl;
+  factory ChartConfig(Iterable<ChartSeries> series, Iterable<int> dimensions) =
+      DefaultChartConfigImpl;
 }
 
 ///

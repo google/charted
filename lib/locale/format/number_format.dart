@@ -70,8 +70,9 @@ class NumberFormat {
         zfill = match.group(5),
         width = match.group(6) != null ? int.parse(match.group(6)) : 0,
         comma = match.group(7) != null,
-        precision =
-        match.group(8) != null ? int.parse(match.group(8).substring(1)) : null,
+        precision = match.group(8) != null
+            ? int.parse(match.group(8).substring(1))
+            : null,
         type = match.group(9),
         scale = 1,
         prefix = '',
@@ -183,7 +184,6 @@ class NumberFormat {
       String before = i < 0 ? stringValue : stringValue.substring(0, i),
           after = i < 0 ? '' : localeDecimal + stringValue.substring(i + 1);
 
-
       // If the fill character is not '0', grouping is applied before
       //padding.
       if (zfill == null && comma) {
@@ -219,9 +219,9 @@ class NumberFormat {
                           negative +
                           stringValue +
                           padding.substring(length)
-                      : negative + (zcomma
-                          ? stringValue
-                          : padding + stringValue)) + fullSuffix;
+                      : negative +
+                          (zcomma ? stringValue : padding + stringValue)) +
+          fullSuffix;
     };
   }
 

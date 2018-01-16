@@ -30,8 +30,8 @@ abstract class HierarchyLayout<T extends HierarchyNode> {
       List rows, int parentColumn, int labelColumn, int valueColumn) {
     List<T> nodeList = [];
     for (var row in rows) {
-      nodeList.add(createNode(row[labelColumn] as String,
-          row[valueColumn] as num, 0));
+      nodeList.add(
+          createNode(row[labelColumn] as String, row[valueColumn] as num, 0));
     }
 
     for (var i = 0; i < rows.length; i++) {
