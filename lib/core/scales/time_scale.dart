@@ -179,7 +179,7 @@ class ScaleMilliSeconds implements TimeInterval {
   DateTime _toDateTime(x) {
     assert(x is int || x is DateTime);
     return x is int
-        ? new DateTime.fromMillisecondsSinceEpoch(x as int)
+        ? new DateTime.fromMillisecondsSinceEpoch(x)
         : x as DateTime;
   }
 

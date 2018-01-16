@@ -155,7 +155,7 @@ class StackedLineChartRenderer extends CartesianRendererBase {
   Extent get extent {
     assert(area != null && series != null);
     var rows = area.data.rows;
-    num max = SMALL_INT_MIN, min = SMALL_INT_MAX, rowIndex = 0;
+    num max = SMALL_INT_MIN, min = SMALL_INT_MAX;
 
     rows.forEach((row) {
       num line = null;
@@ -168,7 +168,6 @@ class StackedLineChartRenderer extends CartesianRendererBase {
       });
       if (line > max) max = line;
       if (line < min) min = line;
-      rowIndex++;
     });
 
     return new Extent(min, max);

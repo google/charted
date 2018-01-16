@@ -52,7 +52,7 @@ class TimeFormat {
         if (i < n) f = formats[i];
       }
       if (i == n) return null;
-      return f[0].apply(date);
+      return f[0].apply(date) as String;
     };
   }
 
