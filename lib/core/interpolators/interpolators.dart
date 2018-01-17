@@ -14,7 +14,7 @@ typedef Interpolator(num t);
 
 /// [InterpolatorGenerator] accepts two parameters [a], [b] and returns an
 /// [Interpolator] for transitioning from [a] to [b]
-typedef Interpolator InterpolatorGenerator(a, b);
+typedef Interpolator InterpolatorGenerator<T>(T a, T b);
 
 /// List of registered interpolators - [createInterpolatorFromRegistry]
 /// iterates through this list from backwards and the first non-null

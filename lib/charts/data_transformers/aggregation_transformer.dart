@@ -34,7 +34,8 @@ class AggregationTransformer extends Observable
   AggregationModel _model;
   bool _expandAllDimension = false;
   List<int> _selectedColumns = [];
-  FieldAccessor _indexFieldAccessor = (List row, int index) => row[index];
+  FieldAccessor _indexFieldAccessor =
+      (row, index) => (row as List)[index as int];
   ChartData _data;
 
   AggregationTransformer(this._dimensionColumnIndices, this._factsColumnIndices,

@@ -11,7 +11,7 @@ part of charted.charts;
 ///Function callback to filter items in the input
 typedef bool AggregationFilterFunc(var item);
 
-typedef int CompareFunc(dynamic a, dynamic b);
+typedef int CompareFunc(Comparable a, Comparable b);
 
 typedef dynamic FieldAccessor(dynamic item, dynamic key);
 
@@ -60,7 +60,7 @@ class AggregationModel {
   List<int> _sorted;
 
   // Enumeration map for dimension values
-  List<Map<dynamic, int>> _dimToIntMap;
+  List<Map<Comparable, int>> _dimToIntMap;
 
   // Sort orders for dimension values
   List<List<int>> _dimSortOrders;
@@ -245,8 +245,8 @@ class AggregationModel {
     // Create both when object is created and groupBy is called
     // Reuse dimension enumerations if possible.
     var oldDimToInt = _dimToIntMap;
-    _dimToIntMap = new List<Map<dynamic, int>>.generate(_dimFields.length,
-        (i) => i < _dimPrefixLength ? oldDimToInt[i] : new Map<dynamic, int>());
+    _dimToIntMap = new List<Map<Comparable, int>>.generate(_dimFields.length,
+        (i) => i < _dimPrefixLength ? oldDimToInt[i] : <Comparable, int>{});
   }
 
   /// Check cache entries
@@ -255,7 +255,7 @@ class AggregationModel {
   /// if they aren't valid anymore.
   /// Update the entities that are valid after the groupBy.
   void _updateCachedEntities() {
-    List keys = new List.from(_entityCache.keys, growable: false);
+    var keys = new List<String>.from(_entityCache.keys, growable: false);
     keys.forEach((String key) {
       _AggregationItemImpl entity = _entityCache[key];
       if (entity == null) {
@@ -274,7 +274,8 @@ class AggregationModel {
   final Map<String, List> _parsedKeys = {};
 
   /// Get value from a map-like object
-  dynamic _fetch(var item, String key) {
+  dynamic _fetch(var item, var _key) {
+    var key = _key as String;
     if (walkThroughMap && key.contains('.')) {
       return walk(item, key, _parsedKeys);
     } else {
@@ -317,7 +318,7 @@ class AggregationModel {
 
       // Enumerate the dimension values and cache enumerated rows
       for (int di = 0; di < dimensionsCount; di++) {
-        var dimensionVal = dimensionAccessor(item, _dimFields[di]);
+        Comparable dimensionVal = dimensionAccessor(item, _dimFields[di]);
         int dimensionValEnum = _dimToIntMap[di][dimensionVal];
         if (dimensionValEnum == null) {
           _dimToIntMap[di][dimensionVal] = dimensionValCount[di];
@@ -336,8 +337,8 @@ class AggregationModel {
         return oldSortOrders[i];
       }
 
-      List dimensionVals = new List.from(_dimToIntMap[i].keys);
-      List<int> retval = new List<int>(_dimToIntMap[i].length);
+      var dimensionVals = new List<Comparable>.from(_dimToIntMap[i].keys);
+      var retval = new List<int>(_dimToIntMap[i].length);
 
       // When a comparator is not specified, our implementation of the
       // comparator tries to gracefully handle null values.
@@ -576,7 +577,7 @@ class AggregationModel {
     if (di < 0) {
       return null;
     }
-    List values = new List.from(_dimToIntMap[di].keys);
+    var values = new List<Comparable>.from(_dimToIntMap[di].keys);
     if (comparators.containsKey(dimensionFieldName)) {
       values.sort(comparators[dimensionFieldName]);
     } else {
@@ -594,7 +595,8 @@ class AggregationModel {
 /// and outputs:
 ///     ["list", {"key": "val", "val": "m"},
 ///      "another", {"state": "good"}, "state"]
-List _parseKey(String key, Map parsedKeysCache) {
+List /* <String|Map<String, String>> */ _parseKey(
+    String key, Map parsedKeysCache) {
   List parts = parsedKeysCache == null ? null : parsedKeysCache[key];
   if (parts == null && key != null) {
     parts = new List();
@@ -674,7 +676,7 @@ dynamic walk(initial, String key, Map parsedKeyCache) {
   return parts.fold(initial, (current, part) {
     if (current == null) {
       return null;
-    } else if (current is List && part is Map) {
+    } else if (current is List && part is Map<String, dynamic>) {
       for (int i = 0; i < current.length; i++) {
         bool match = true;
         part.forEach((String key, val) {
