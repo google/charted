@@ -142,7 +142,8 @@ class NumberFormat {
 
     var zcomma = (zfill != null) && comma;
 
-    return (num value) {
+    return (dynamic _value) {
+      var value = _value as num;
       if (value == null) return '-';
       var fullSuffix = suffix;
 

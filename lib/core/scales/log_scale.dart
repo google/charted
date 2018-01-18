@@ -163,7 +163,8 @@ class LogScale implements Scale {
         formatter.format(formatStr != null ? formatStr : ".0E");
     var k = math.max(.1, ticksCount / this.ticks.length),
         e = _positive ? 1e-12 : -1e-12;
-    return (num d) {
+    return (dynamic _d) {
+      var d = _d as num;
       if (_positive) {
         return d / _pow((_log(d) + e).ceil()) <= k ? logFormatFunction(d) : '';
       } else {

@@ -52,7 +52,7 @@ class TimeScale extends LinearScale {
     [TimeInterval.year, 1]
   ];
 
-  static TimeFormatFunction _scaleLocalFormat = new TimeFormat().multi([
+  static FormatFunction _scaleLocalFormat = new TimeFormat().multi([
     [".%L", (DateTime d) => d.millisecond > 0],
     [":%S", (DateTime d) => d.second > 0],
     ["%I:%M", (DateTime d) => d.minute > 0],
