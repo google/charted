@@ -95,7 +95,7 @@ class _OrdinalScale implements OrdinalScale {
 
   @override
   FormatFunction createTickFormatter([String format]) =>
-      (dynamic s) => identityFunction/*<String>*/(s as String);
+      (String s) => identityFunction<String>(s as String);
 
   @override
   Iterable get ticks => _domain;
