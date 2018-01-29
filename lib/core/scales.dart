@@ -100,16 +100,17 @@ abstract class OrdinalScale extends Scale {
   /// Maps each value on the domain to a single point on output range.  When a
   /// non-zero value is specified, [padding] space is left unused on both ends
   /// of the range.
-  void rangePoints(Iterable range, [double padding]);
+  void rangePoints(Iterable<num> range, [double padding]);
 
   /// Maps each value on the domain to a band in the output range.  When a
   /// non-zero value is specified, [padding] space is left between each bands
   /// and [outerPadding] space is left unused at both ends of the range.
-  void rangeBands(Iterable range, [double padding, double outerPadding]);
+  void rangeBands(Iterable<num> range, [double padding, double outerPadding]);
 
   /// Similar to [rangeBands] but ensures that each band starts and ends on a
   /// pixel boundary - helps avoid anti-aliasing artifacts.
-  void rangeRoundBands(Iterable range, [double padding, double outerPadding]);
+  void rangeRoundBands(Iterable<num> range,
+      [double padding, double outerPadding]);
 }
 
 class RoundingFunctions extends Pair<RoundFunction, RoundFunction> {
@@ -129,9 +130,9 @@ class RoundingFunctions extends Pair<RoundFunction, RoundFunction> {
 /// Namespacing container for utilities used by scales.
 abstract class ScaleUtils {
   /// Utility to return extent of sorted [values].
-  static Extent extent(Iterable<num> values) => values.first < values.last
-      ? new Extent(values.first, values.last)
-      : new Extent(values.last, values.first);
+  static Extent<num> extent(Iterable<num> values) => values.first < values.last
+      ? new Extent<num>(values.first, values.last)
+      : new Extent<num>(values.last, values.first);
 
   /// Extends [values] to round numbers based on the given pair of
   /// floor and ceil functions.  [functions] is a pair of rounding function

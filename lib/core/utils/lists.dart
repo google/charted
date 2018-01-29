@@ -37,12 +37,12 @@ class Pair<T1, T2> {
 }
 
 /// Represents a pair of mininum and maximum values in a List.
-class Extent<T> extends Pair<T, T> {
+class Extent<T extends Comparable> extends Pair<T, T> {
   final T min;
   final T max;
 
   factory Extent.items(Iterable<T> items,
-      [Comparator compare = Comparable.compare]) {
+      [Comparator<T> compare = Comparable.compare]) {
     if (items.length == 0) return new Extent(null, null);
     var max = items.first, min = items.first;
     for (var value in items) {

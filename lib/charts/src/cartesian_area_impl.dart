@@ -423,7 +423,8 @@ class DefaultCartesianAreaImpl implements CartesianArea {
     config.dimensions.take(dimensionAxesCount).forEach((int column) {
       var axis = _getDimensionAxis(column),
           sampleColumnSpec = data.columns.elementAt(column),
-          values = data.rows.map((row) => row.elementAt(column));
+          values = data.rows.map((row) => row.elementAt(column))
+              as Iterable<Comparable>;
       List domain;
 
       if (sampleColumnSpec.useOrdinalScale) {
