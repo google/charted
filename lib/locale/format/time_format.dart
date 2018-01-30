@@ -7,8 +7,6 @@
  */
 part of charted.locale.format;
 
-typedef String TimeFormatFunction(DateTime date);
-
 //TODO(songrenchu): Document time format; Add test for time format.
 
 class TimeFormat {
@@ -39,7 +37,7 @@ class TimeFormat {
     return _dateFormat.parse(string);
   }
 
-  TimeFormatFunction multi(List<List> formats) {
+  FormatFunction multi(List<List> formats) {
     var n = formats.length, i = -1;
     while (++i < n) formats[i][0] = _getInstance(formats[i][0] as String);
     return (var date) {
