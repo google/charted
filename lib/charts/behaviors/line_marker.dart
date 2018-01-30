@@ -95,7 +95,8 @@ class LineMarker implements ChartBehavior {
     if (!_area.isReady) return;
     _markers = _parent.selectAll('.line-marker').data(positions.keys);
 
-    _markers.enter.append('path').each((int d, i, e) {
+    _markers.enter.append('path').each((_d, i, e) {
+      int d = _d;
       e.classes.add('line-marker');
       e.attributes['d'] = _getMarkerPath(d, animate);
     });
@@ -103,7 +104,7 @@ class LineMarker implements ChartBehavior {
     if (animate) {
       _markers
           .transition()
-          .attrWithCallback('d', (int d, i, e) => _getMarkerPath(d, false));
+          .attrWithCallback('d', (d, i, e) => _getMarkerPath(d as int, false));
     }
 
     _markers.exit.remove();

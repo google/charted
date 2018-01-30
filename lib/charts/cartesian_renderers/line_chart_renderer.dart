@@ -151,7 +151,8 @@ class LineChartRenderer extends CartesianRendererBase {
     });
 
     linePoints
-      ..each((int d, i, e) {
+      ..each((_d, i, e) {
+        int d = _d;
         var color = colorForColumn(d);
         e.attributes
           ..['r'] = '4'
@@ -174,7 +175,8 @@ class LineChartRenderer extends CartesianRendererBase {
     }
 
     var yScale = area.measureScales(series).first;
-    root.selectAll('.line-rdr-point').each((int d, i, e) {
+    root.selectAll('.line-rdr-point').each((_d, i, e) {
+      int d = _d;
       num x = _xPositions[row],
           measureVal = area.data.rows.elementAt(row).elementAt(d);
       if (measureVal != null && measureVal.isFinite) {

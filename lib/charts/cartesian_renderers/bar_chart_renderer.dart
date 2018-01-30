@@ -141,7 +141,8 @@ class BarChartRenderer extends CartesianRendererBase {
       }
     };
 
-    bar.enter.appendWithCallback((num d, i, e) {
+    bar.enter.appendWithCallback((_d, i, e) {
+      num d = _d;
       var rect = Namespace.createChildElement('path', e),
           measure = series.measures.elementAt(i),
           row = int.parse(e.dataset['row']),
@@ -168,9 +169,10 @@ class BarChartRenderer extends CartesianRendererBase {
       }
       return rect;
     })
-      ..on('click', (num d, i, e) => _event(mouseClickController, d, i, e))
-      ..on('mouseover', (num d, i, e) => _event(mouseOverController, d, i, e))
-      ..on('mouseout', (num d, i, e) => _event(mouseOutController, d, i, e));
+      ..on('click', (d, i, e) => _event(mouseClickController, d as num, i, e))
+      ..on(
+          'mouseover', (d, i, e) => _event(mouseOverController, d as num, i, e))
+      ..on('mouseout', (d, i, e) => _event(mouseOutController, d as num, i, e));
 
     if (animateBarGroups) {
       bar.each((d, i, e) {
@@ -194,7 +196,7 @@ class BarChartRenderer extends CartesianRendererBase {
       });
 
       bar.transition()
-        ..attrWithCallback('d', (num d, i, e) => buildPath(d, i, false));
+        ..attrWithCallback('d', (d, i, e) => buildPath(d as num, i, false));
     }
 
     bar.exit.remove();

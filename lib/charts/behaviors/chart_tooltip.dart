@@ -121,15 +121,17 @@ class ChartTooltip implements ChartBehavior {
     var tooltipItems = _tooltipRoot.selectAll('.tooltip-item');
     tooltipItems.append('div')
       ..classed('tooltip-item-label')
-      ..textWithCallback((int d, i, c) => _area.data.columns
-          .elementAt((showSelectedMeasure) ? d : e.series.measures.elementAt(i))
+      ..textWithCallback((d, i, c) => _area.data.columns
+          .elementAt(
+              (showSelectedMeasure) ? d as int : e.series.measures.elementAt(i))
           .label);
 
     // Display the value of the currently active series
     tooltipItems.append('div')
       ..classed('tooltip-item-value')
       ..styleWithCallback('color', (d, i, c) => _area.theme.getColorForKey(d))
-      ..textWithCallback((int d, i, c) {
+      ..textWithCallback((_d, i, c) {
+        int d = _d;
         var formatter = _getFormatterForColumn(d),
             value = _area.data.rows.elementAt(e.row).elementAt(d);
         return (formatter != null) ? formatter(value) : value.toString();

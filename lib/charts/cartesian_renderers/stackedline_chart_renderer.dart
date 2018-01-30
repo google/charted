@@ -205,7 +205,8 @@ class StackedLineChartRenderer extends CartesianRendererBase {
     });
 
     linePoints
-      ..each((int d, i, e) {
+      ..each((_d, i, e) {
+        int d = _d;
         var color = colorForColumn(d);
         e.attributes
           ..['r'] = '4'
@@ -229,7 +230,8 @@ class StackedLineChartRenderer extends CartesianRendererBase {
 
     double cumulated = 0.0;
     var yScale = area.measureScales(series).first;
-    root.selectAll('.stacked-line-rdr-point').each((int d, i, e) {
+    root.selectAll('.stacked-line-rdr-point').each((_d, i, e) {
+      int d = _d;
       var x = _xPositions[row],
           measureVal =
               cumulated += area.data.rows.elementAt(row).elementAt(d) as num;
