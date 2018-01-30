@@ -75,17 +75,17 @@ class _OrdinalScale implements OrdinalScale {
   Extent get rangeExtent => _rangeExtent;
 
   @override
-  void rangePoints(Iterable range, [double padding = 0.0]) =>
+  void rangePoints(Iterable<num> range, [double padding = 0.0]) =>
       _setRangePoints(this, range, padding);
 
   @override
-  void rangeBands(Iterable range,
+  void rangeBands(Iterable<num> range,
           [double padding = 0.0, double outerPadding]) =>
       _setRangeBands(
           this, range, padding, outerPadding == null ? padding : outerPadding);
 
   @override
-  void rangeRoundBands(Iterable range,
+  void rangeRoundBands(Iterable<num> range,
           [double padding = 0.0, double outerPadding]) =>
       _setRangeRoundBands(
           this, range, padding, outerPadding == null ? padding : outerPadding);
@@ -116,7 +116,7 @@ class _OrdinalScale implements OrdinalScale {
   }
 
   static void _setRangePoints(
-      _OrdinalScale scale, Iterable range, double padding) {
+      _OrdinalScale scale, Iterable<num> range, double padding) {
     scale._reset = (_OrdinalScale s) {
       var start = range.first,
           stop = range.last,
@@ -127,7 +127,7 @@ class _OrdinalScale implements OrdinalScale {
       s._range = s._steps(
           s.domain.length < 2 ? (start + stop) / 2 : start + padding, step);
       s._rangeBand = 0;
-      s._rangeExtent = new Extent(start, stop);
+      s._rangeExtent = new Extent<num>(start, stop);
     };
     if (scale.domain.isNotEmpty) {
       scale._reset(scale);

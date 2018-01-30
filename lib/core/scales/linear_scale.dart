@@ -149,7 +149,7 @@ class LinearScale implements Scale {
   @override
   invert(value) => _invert(value);
 
-  Range _linearTickRange([Extent extent]) {
+  Range _linearTickRange([Extent<num> extent]) {
     if (extent == null) {
       extent = ScaleUtils.extent(_domain as Iterable<num>);
     }
@@ -170,16 +170,14 @@ class LinearScale implements Scale {
           ? 1
           : math.pow(
               10,
-              (math.log((extent.max as num).abs() / forcedTicksCount) /
-                      math.LN10)
+              (math.log(extent.max.abs() / forcedTicksCount) / math.LN10)
                   .floor());
       num max = (extent.max / maxFactor).ceil() * maxFactor;
       num minFactor = extent.min == 0
           ? 1
           : math.pow(
               10,
-              (math.log((extent.min as num).abs() / forcedTicksCount) /
-                      math.LN10)
+              (math.log(extent.min.abs() / forcedTicksCount) / math.LN10)
                   .floor());
       num min = (extent.min / minFactor).floor() * minFactor;
       step = (max - min) / forcedTicksCount;
@@ -198,8 +196,8 @@ class LinearScale implements Scale {
       }
     }
 
-    return new Range(((extent.min as num) / step).ceil() * step,
-        ((extent.max as num) / step).floor() * step + step * 0.5, step);
+    return new Range((extent.min / step).ceil() * step,
+        (extent.max / step).floor() * step + step * 0.5, step);
   }
 
   @override

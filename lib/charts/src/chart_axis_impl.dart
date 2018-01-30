@@ -59,6 +59,7 @@ class DefaultChartAxisImpl {
   void initAxisScale(Iterable range) {
     assert(scale != null);
     if (scale is OrdinalScale) {
+      Iterable<num> numericRange = range;
       var usingBands = _area.dimensionsUsingBands.contains(_column),
           innerPadding = usingBands ? _theme.axisBandInnerPadding : 1.0,
           outerPadding = usingBands
@@ -68,13 +69,13 @@ class DefaultChartAxisImpl {
       // This is because when left axis is primary the first data row should
       // appear on top of the y-axis instead of on bottom.
       if (_area.config.isLeftAxisPrimary) {
-        range = range.toList().reversed;
+        numericRange = numericRange.toList().reversed;
       }
       if (usingBands) {
         (scale as OrdinalScale)
-            .rangeRoundBands(range, innerPadding, outerPadding);
+            .rangeRoundBands(numericRange, innerPadding, outerPadding);
       } else {
-        (scale as OrdinalScale).rangePoints(range, outerPadding);
+        (scale as OrdinalScale).rangePoints(numericRange, outerPadding);
       }
     } else {
       if (_title != null) {
@@ -234,8 +235,8 @@ class RotateHorizontalAxisTicks implements SvgAxisTicks {
     formattedTicks = ticks.map((x) => axis.tickFormat(x)).toList();
     shortenedTicks = formattedTicks;
 
-    var range = axis.scale.rangeExtent,
-        textMetrics = new TextMetrics(fontStyle: ticksFont);
+    Extent<num> range = axis.scale.rangeExtent;
+    var textMetrics = new TextMetrics(fontStyle: ticksFont);
     num allowedWidth = (range.max - range.min) ~/ ticks.length,
         maxLabelWidth = textMetrics.getLongestTextWidth(formattedTicks);
 

@@ -82,7 +82,7 @@ class TimeScale extends LinearScale {
   @override
   TimeScale clone() => new TimeScale._clone(this);
 
-  List _getTickMethod(Extent extent, int count) {
+  List _getTickMethod(Extent<num> extent, int count) {
     num target = (extent.max - extent.min) / count;
     int i = ScaleUtils.bisect(_scaleSteps, target);
 
@@ -90,7 +90,7 @@ class TimeScale extends LinearScale {
         ? [
             TimeInterval.year,
             _linearTickRange(
-                    new Extent(extent.min / 31536e6, extent.max / 31536e6))
+                    new Extent<num>(extent.min / 31536e6, extent.max / 31536e6))
                 .step
           ]
         : i == 0
