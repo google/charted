@@ -115,7 +115,8 @@ class DefaultChartLegendImpl implements ChartLegend {
             .data(_items, (x) => x.hashCode),
         isFirstRender = rows.length == 0;
 
-    var enter = rows.enter.appendWithCallback((ChartLegendItem d, i, e) {
+    var enter = rows.enter.appendWithCallback((_d, i, e) {
+      ChartLegendItem d = _d;
       var row = Namespace.createChildElement('div', e),
           color = Namespace.createChildElement('div', e)
             ..className = 'chart-legend-color',
@@ -159,7 +160,8 @@ class DefaultChartLegendImpl implements ChartLegend {
 
     // We have elements in the DOM that need updating.
     if (!isFirstRender) {
-      rows.each((ChartLegendItem d, i, Element e) {
+      rows.each((_d, i, Element e) {
+        ChartLegendItem d = _d;
         var classes = e.classes;
         if (state != null) {
           if (d.index == state.preview) {
@@ -187,13 +189,15 @@ class DefaultChartLegendImpl implements ChartLegend {
 
     if (state != null) {
       enter
-        ..on('mouseover', (ChartLegendItem d, i, e) => state.preview = d.index)
+        ..on('mouseover',
+            (d, i, e) => state.preview = (d as ChartLegendItem).index)
         ..on('mouseout', (d, i, e) {
           if (state.preview == d.index) {
             state.preview = null;
           }
         })
-        ..on('click', (ChartLegendItem d, i, e) {
+        ..on('click', (_d, i, e) {
+          ChartLegendItem d = _d;
           if (state.isSelected(d.index)) {
             state.unselect(d.index);
           } else {
