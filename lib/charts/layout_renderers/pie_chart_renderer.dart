@@ -98,7 +98,8 @@ class PieChartRenderer extends LayoutRendererBase {
       indices = indices.reversed.toList();
     }
 
-    num accessor(int d, int i) {
+    num accessor(dynamic _d, int i) {
+      var d = _d as int;
       var row = d == SMALL_INT_MAX ? otherRow : area.data.rows.elementAt(d);
       return row == null || row.elementAt(measure) == null
           ? 0

@@ -9,7 +9,7 @@
 part of charted.core.utils;
 
 /// Returns a sum of all values in the given list of values
-num sum(List values) => values == null || values.isEmpty
+num sum(List<num> values) => values == null || values.isEmpty
     ? 0
     : values.fold(0.0, (num old, num next) => old + next);
 
