@@ -60,6 +60,9 @@ class Extent<T extends Comparable> extends Pair<T, T> {
 
 /// Iterable representing a range of values containing the start, stop
 /// and each of the step values between them.
+// TODO(srawlins): Consider adding a type parameter to Range, like
+// `T extends num`, so that `new Range.integers` can reliably return a
+// `Range<int>`.
 class Range extends DelegatingList<num> {
   final num start;
   final num stop;

@@ -339,7 +339,7 @@ class Hovercard implements ChartBehavior {
         measureVals.add(_createHovercardItem(column, row));
       });
     } else if (_columnsToShow.length > 1 || _isMultiValue) {
-      var displayedCols = [];
+      var displayedCols = <int>[];
       _area.config.series.forEach((ChartSeries series) {
         series.measures.forEach((int column) {
           if (!displayedCols.contains(column)) displayedCols.add(column);
