@@ -362,7 +362,7 @@ class DefaultCartesianAreaImpl implements CartesianArea {
 
   /// Initialize the axes - required even if the axes are not being displayed.
   _initAxes({bool preRender: false}) {
-    Map measureAxisUsers = <String, Iterable<ChartSeries>>{};
+    var measureAxisUsers = <String, List<ChartSeries>>{};
     var keysToRemove = _measureAxes.keys.toList();
 
     // Create necessary measures axes.

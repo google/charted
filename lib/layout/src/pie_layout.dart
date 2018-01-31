@@ -50,7 +50,8 @@ class PieLayout {
         total = sum(values),
         scaleFactor = (endAngle - startAngle) / (total > 0 ? total : 1),
         arcs = new List<SvgArcData>(data.length);
-    List<num> index = new Range.integers(values.length).toList();
+    List<int> index =
+        new Range.integers(values.length).toList().map<int>((v) => v as int);
 
     if (compare != null) {
       index.sort((left, right) => compare(data[left], data[right]));
@@ -77,7 +78,7 @@ class PieLayout {
   }
 
   /** Default value accessor */
-  static num defaultValueAccessor(num d, i) => d;
+  static num defaultValueAccessor(d, int i) => d as num;
 
   /** Default start angle callback - returns 0 */
   static num defaultStartAngleCallback(d, i, _) => 0;
