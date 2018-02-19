@@ -63,7 +63,7 @@ class SvgAxis {
   FormatFunction get tickFormat => _tickFormat;
 
   /// Draw an axis on each non-null element in selection
-  draw(Selection g, {SvgAxisTicks axisTicksBuilder, bool isRTL: false}) =>
+  void draw(Selection g, {SvgAxisTicks axisTicksBuilder, bool isRTL: false}) =>
       g.each((d, i, e) =>
           create(e, g.scope, axisTicksBuilder: axisTicksBuilder, isRTL: isRTL));
 
