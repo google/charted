@@ -9,7 +9,7 @@
 part of charted.core.scales;
 
 /// TimeScale is a linear scale that operates on time.
-class TimeScale extends LinearScale {
+class TimeScale extends BaseLinearScale {
   static const _scaleSteps = const [
     1e3, // 1-second
     5e3, // 5-second
@@ -52,7 +52,7 @@ class TimeScale extends LinearScale {
     [TimeInterval.year, 1]
   ];
 
-  static FormatFunction _scaleLocalFormat = new TimeFormat().multi([
+  static final FormatFunction _scaleLocalFormat = new TimeFormat().multi([
     [".%L", (DateTime d) => d.millisecond > 0],
     [":%S", (DateTime d) => d.second > 0],
     ["%I:%M", (DateTime d) => d.minute > 0],
@@ -67,13 +67,14 @@ class TimeScale extends LinearScale {
   TimeScale._clone(TimeScale source) : super._clone(source);
 
   @override
-  scale(Object val) =>
+  num scale(Object val) =>
       super.scale(val is DateTime ? val.millisecondsSinceEpoch : val);
 
   @override
-  set domain(Iterable value) {
-    super.domain =
-        value.map((d) => d is DateTime ? d.millisecondsSinceEpoch : d).toList();
+  set domain(Iterable<dynamic> value) {
+    super.domain = value
+        .map<num>((d) => d is DateTime ? d.millisecondsSinceEpoch : d as num)
+        .toList();
   }
 
   @override
@@ -82,7 +83,7 @@ class TimeScale extends LinearScale {
   @override
   TimeScale clone() => new TimeScale._clone(this);
 
-  List _getTickMethod(Extent<num> extent, int count) {
+  List<dynamic> _getTickMethod(Extent<num> extent, int count) {
     num target = (extent.max - extent.min) / count;
     int i = ScaleUtils.bisect(_scaleSteps, target);
 
@@ -101,19 +102,15 @@ class TimeScale extends LinearScale {
                     : i];
   }
 
-  List niceInterval(int ticksCount, [int skip = 1]) {
-    var extent = ScaleUtils.extent(domain as Iterable<num>),
-        method = _getTickMethod(extent, ticksCount),
-        interval;
+  List<num> niceInterval(int ticksCount) {
+    var extent = ScaleUtils.extent(domain);
+    var method = _getTickMethod(extent, ticksCount);
+    TimeInterval interval = method[0];
+    int skip = method[1];
 
-    if (method != null) {
-      interval = method[0];
-      skip = method[1] as int;
-    }
-
-    bool skipped(var date) {
-      if (date is DateTime) date = date.millisecondsSinceEpoch;
-      return (interval as TimeInterval).range(date, date + 1, skip).length == 0;
+    bool skipped(DateTime date) {
+      var seconds = date.millisecondsSinceEpoch;
+      return interval.range(seconds, seconds + 1, skip).length == 0;
     }
 
     if (skip > 1) {
@@ -122,7 +119,7 @@ class TimeScale extends LinearScale {
           new RoundingFunctions((dateMillis) {
             var date =
                 new DateTime.fromMillisecondsSinceEpoch(dateMillis.round());
-            while (skipped(date = (interval as TimeInterval).floor(date))) {
+            while (skipped(date = interval.floor(date))) {
               date = new DateTime.fromMillisecondsSinceEpoch(
                   date.millisecondsSinceEpoch - 1);
             }
@@ -130,7 +127,7 @@ class TimeScale extends LinearScale {
           }, (dateMillis) {
             var date =
                 new DateTime.fromMillisecondsSinceEpoch(dateMillis.round());
-            while (skipped(date = (interval as TimeInterval).ceil(date))) {
+            while (skipped(date = interval.ceil(date))) {
               date = new DateTime.fromMillisecondsSinceEpoch(
                   date.millisecondsSinceEpoch + 1);
             }
@@ -140,13 +137,10 @@ class TimeScale extends LinearScale {
       domain = ScaleUtils.nice(
           domain as List<num>,
           new RoundingFunctions(
-              (date) =>
-                  (interval as TimeInterval).floor(date).millisecondsSinceEpoch,
-              (date) => (interval as TimeInterval)
-                  .ceil(date)
-                  .millisecondsSinceEpoch));
+              (date) => interval.floor(date).millisecondsSinceEpoch,
+              (date) => interval.ceil(date).millisecondsSinceEpoch));
     }
-    return domain as List;
+    return domain;
   }
 
   @override
@@ -158,46 +152,44 @@ class TimeScale extends LinearScale {
     }
   }
 
-  List ticksInterval(int ticksCount, [int skip]) {
-    var extent = ScaleUtils.extent(domain as Iterable<num>),
-        method = _getTickMethod(extent, ticksCount),
-        interval;
-    if (method != null) {
-      interval = method[0];
-      skip = method[1] as int;
-    }
-    return (interval as TimeInterval)
+  List<DateTime> ticksInterval(int ticksCount) {
+    var extent = ScaleUtils.extent(domain);
+    var method = _getTickMethod(extent, ticksCount);
+    TimeInterval interval = method[0];
+    int skip = method[1];
+    return interval
         .range(extent.min, extent.max + 1, skip < 1 ? 1 : skip)
         .toList();
   }
 
   @override
-  List get ticks => ticksInterval(ticksCount);
+  List<DateTime> get ticks => ticksInterval(ticksCount);
 }
 
 class ScaleMilliSeconds implements TimeInterval {
-  DateTime _toDateTime(x) {
-    assert(x is int || x is DateTime);
-    return x is int
-        ? new DateTime.fromMillisecondsSinceEpoch(x)
-        : x as DateTime;
-  }
-
   DateTime floor(dynamic val) => _toDateTime(val);
   DateTime ceil(dynamic val) => _toDateTime(val);
   DateTime round(dynamic val) => _toDateTime(val);
 
   DateTime offset(Object val, int dt) {
-    assert(val is int || val is DateTime);
-    return new DateTime.fromMillisecondsSinceEpoch(
-        val is int ? val + dt : (val as DateTime).millisecondsSinceEpoch + dt);
+    return new DateTime.fromMillisecondsSinceEpoch(_toMilliseconds(val) + dt);
   }
 
-  List<DateTime> range(var t0, var t1, int step) {
-    int start = t0 is DateTime ? t0.millisecondsSinceEpoch : t0,
-        stop = t1 is DateTime ? t1.millisecondsSinceEpoch : t1;
+  List<DateTime> range(dynamic t0, dynamic t1, int step) {
+    int start = _toMilliseconds(t0);
+    int stop = _toMilliseconds(t1);
     return new Range((start / step).ceil() * step, stop, step)
         .map((d) => new DateTime.fromMillisecondsSinceEpoch(d as int))
         .toList();
+  }
+
+  static DateTime _toDateTime(/* int | DateTime */ dynamic x) {
+    return x is int
+        ? new DateTime.fromMillisecondsSinceEpoch(x)
+        : x as DateTime;
+  }
+
+  static int _toMilliseconds(/* int | DateTime */ dynamic val) {
+    return val is int ? val : (val as DateTime).millisecondsSinceEpoch;
   }
 }

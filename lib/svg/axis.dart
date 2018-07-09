@@ -68,7 +68,7 @@ class SvgAxis {
           create(e, g.scope, axisTicksBuilder: axisTicksBuilder, isRTL: isRTL));
 
   /// Create an axis on [element].
-  create(Element element, SelectionScope scope,
+  void create(Element element, SelectionScope scope,
       {SvgAxisTicks axisTicksBuilder, bool isRTL: false}) {
     var group = scope.selectElements([element]),
         older = _scales[element],
@@ -82,21 +82,22 @@ class SvgAxis {
         isTop = !(isVertical || isBottom) && orientation == ORIENTATION_TOP,
         isHorizontal = !isVertical;
 
-    if (older == null) older = current;
-    if (axisTicksBuilder == null) {
-      axisTicksBuilder = new SvgAxisTicks();
-    }
+    older ??= current;
+    axisTicksBuilder ??= new SvgAxisTicks();
     axisTicksBuilder.init(this);
 
     var values = axisTicksBuilder.ticks,
         formatted = axisTicksBuilder.formattedTicks,
         ellipsized = axisTicksBuilder.shortenedTicks;
 
-    var ticks = group.selectAll('.tick').data(values, current.scale),
-        exit = ticks.exit,
-        transform = isVertical ? _yAxisTransform : _xAxisTransform,
-        sign = isTop || isLeft ? -1 : 1,
-        isEllipsized = ellipsized != formatted;
+    // Need to wrap the function `current.scale` to avoid fuzzy arrow.
+    dynamic Function(dynamic) fn = (value) => current.scale(value);
+
+    var ticks = group.selectAll('.tick').data(values, fn);
+    var exit = ticks.exit;
+    var transform = isVertical ? _yAxisTransform : _xAxisTransform;
+    var sign = isTop || isLeft ? -1 : 1;
+    var isEllipsized = ellipsized != formatted;
 
     var enter = ticks.enter.appendWithCallback((d, i, e) {
       var group = Namespace.createChildElement('g', e)

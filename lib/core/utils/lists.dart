@@ -38,8 +38,8 @@ class Pair<T1, T2> {
 
 /// Represents a pair of mininum and maximum values in a List.
 class Extent<T extends Comparable> extends Pair<T, T> {
-  final T min;
-  final T max;
+  T get min => first;
+  T get max => last;
 
   factory Extent.items(Iterable<T> items,
       [Comparator<T> compare = Comparable.compare]) {
@@ -53,16 +53,11 @@ class Extent<T extends Comparable> extends Pair<T, T> {
   }
 
   const Extent(T min, T max)
-      : min = min,
-        max = max,
-        super(min, max);
+      : super(min, max);
 }
 
 /// Iterable representing a range of values containing the start, stop
 /// and each of the step values between them.
-// TODO(srawlins): Consider adding a type parameter to Range, like
-// `T extends num`, so that `new Range.integers` can reliably return a
-// `Range<int>`.
 class Range extends DelegatingList<num> {
   final num start;
   final num stop;

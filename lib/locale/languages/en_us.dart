@@ -12,25 +12,32 @@ class EnUsLocale extends Locale {
   static EnUsLocale instance;
 
   factory EnUsLocale() {
-    if (EnUsLocale.instance == null) {
-      EnUsLocale.instance = new EnUsLocale._create();
-    }
-    return EnUsLocale.instance;
+    return instance ??= new EnUsLocale._();
   }
 
-  EnUsLocale._create();
+  EnUsLocale._();
 
-  final identifier = 'en_US';
-  final decimal = '.';
-  final thousands = ',';
-  final grouping = const [3];
-  final currency = const ['\$', ''];
-  final dateTime = '%a %b %e %X %Y';
-  final date = '%m/%d/%Y';
-  final time = '%H =>%M =>%S';
-  final periods = const ['AM', 'PM'];
+  @override
+  final String identifier = 'en_US';
+  @override
+  final String decimal = '.';
+  @override
+  final String thousands = ',';
+  @override
+  final List<int> grouping = const [3];
+  @override
+  final List<String> currency = const ['\$', ''];
+  @override
+  final String dateTime = '%a %b %e %X %Y';
+  @override
+  final String date = '%m/%d/%Y';
+  @override
+  final String time = '%H =>%M =>%S';
+  @override
+  final List<String> periods = const ['AM', 'PM'];
 
-  final days = const [
+  @override
+  final List<String> days = const [
     'Sunday',
     'Monday',
     'Tuesday',
@@ -39,9 +46,19 @@ class EnUsLocale extends Locale {
     'Friday',
     'Saturday'
   ];
-  final shortDays = const ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  @override
+  final List<String> shortDays = const [
+    'Sun',
+    'Mon',
+    'Tue',
+    'Wed',
+    'Thu',
+    'Fri',
+    'Sat'
+  ];
 
-  final months = const [
+  @override
+  final List<String> months = const [
     'January',
     'February',
     'March',
@@ -55,7 +72,8 @@ class EnUsLocale extends Locale {
     'November',
     'December'
   ];
-  final shortMonths = const [
+  @override
+  final List<String> shortMonths = const [
     'Jan',
     'Feb',
     'Mar',

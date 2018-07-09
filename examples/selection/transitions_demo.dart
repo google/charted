@@ -74,7 +74,7 @@ void main() {
 
   Transition t2 = new Transition(circle2);
   t2
-      ..ease = clampEasingFn(identityFunction(easeCubic()))
+      ..ease = clampEasingFn(easeCubic())
       ..attr('cx', 400)
       ..duration(4000);
 

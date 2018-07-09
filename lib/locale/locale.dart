@@ -22,17 +22,18 @@ abstract class Locale {
   String get dateTime;
   String get date;
   String get time;
-  List get periods;
+  List<String> get periods;
 
-  List get days;
-  List get shortDays;
+  List<String> get days;
+  List<String> get shortDays;
 
-  List get months;
-  List get shortMonths;
+  List<String> get months;
+  List<String> get shortMonths;
 
   Locale();
 
   NumberFormat get numberFormat => new NumberFormat(this);
-  TimeFormat timeFormat([String specifier = null]) =>
+
+  TimeFormat timeFormat([String specifier]) =>
       new TimeFormat(specifier, this.identifier);
 }

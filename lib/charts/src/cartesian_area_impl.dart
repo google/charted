@@ -85,8 +85,8 @@ class DefaultCartesianAreaImpl implements CartesianArea {
 
   bool _pendingLegendUpdate = false;
   bool _pendingAxisConfigUpdate = false;
-  List<ChartBehavior> _behaviors = new List<ChartBehavior>();
-  Map<ChartSeries, _ChartSeriesInfo> _seriesInfoCache = new Map();
+  List<ChartBehavior> _behaviors = [];
+  Map<ChartSeries, _ChartSeriesInfo> _seriesInfoCache = {};
 
   StreamController<ChartEvent> _valueMouseOverController;
   StreamController<ChartEvent> _valueMouseOutController;
@@ -214,8 +214,8 @@ class DefaultCartesianAreaImpl implements CartesianArea {
   /// if one was not already created for the given dimension [column].
   DefaultChartAxisImpl _getDimensionAxis(int column) {
     _dimensionAxes.putIfAbsent(column, () {
-      var axisConf = config.getDimensionAxis(column),
-          axis = axisConf != null
+      var axisConf = config.getDimensionAxis(column);
+      var axis = axisConf != null
               ? new DefaultChartAxisImpl.withAxisConfig(this, axisConf)
               : new DefaultChartAxisImpl(this);
       return axis;
@@ -333,17 +333,13 @@ class DefaultCartesianAreaImpl implements CartesianArea {
         ..each((_s, _, __) {
           ChartSeries s = _s;
           var info = _seriesInfoCache.remove(s);
-          if (info != null) {
-            info.dispose();
-          }
+          info?.dispose();
         })
         ..remove();
 
       // Notify on the stream that the chart has been updated.
       isReady = true;
-      if (_chartAxesUpdatedController != null) {
-        _chartAxesUpdatedController.add(this);
-      }
+      _chartAxesUpdatedController?.add(this);
     });
 
     // Save the list of valid series and initialize axes.
@@ -394,7 +390,7 @@ class DefaultCartesianAreaImpl implements CartesianArea {
       var sampleCol = listOfSeries.first.measures.first,
           sampleColSpec = data.columns.elementAt(sampleCol),
           axis = _getMeasureAxis(id);
-      List domain;
+      List<num> domain;
 
       if (sampleColSpec.useOrdinalScale) {
         throw new UnsupportedError(
@@ -402,11 +398,11 @@ class DefaultCartesianAreaImpl implements CartesianArea {
       } else {
         // Extent is available because [ChartRenderer.prepare] was already
         // called (when checking for valid series in [draw].
-        Iterable extents = listOfSeries
+        var extents = listOfSeries
             .map((s) => (s.renderer as CartesianRenderer).extent)
             .toList();
-        var lowest = min(extents.map((e) => e.min as num)),
-            highest = max(extents.map((e) => e.max as num));
+        var lowest = min(extents.map((e) => e.min as num));
+        var highest = max(extents.map((e) => e.max as num));
 
         // Use default domain if lowest and highest are the same, right now
         // lowest is always 0 unless it is less than 0 - change to lowest when
@@ -423,19 +419,20 @@ class DefaultCartesianAreaImpl implements CartesianArea {
     // Configure dimension axes.
     int dimensionAxesCount = useTwoDimensionAxes ? 2 : 1;
     config.dimensions.take(dimensionAxesCount).forEach((int column) {
-      var axis = _getDimensionAxis(column),
-          sampleColumnSpec = data.columns.elementAt(column),
-          values = data.rows
-              .map<Comparable>((row) => row.elementAt(column) as Comparable);
-      List domain;
+      var axis = _getDimensionAxis(column);
+      var sampleColumnSpec = data.columns.elementAt(column);
+
+      Iterable values = data.rows
+          .map((row) => row.elementAt(column));
 
       if (sampleColumnSpec.useOrdinalScale) {
-        domain = values.map((e) => e.toString()).toList();
+        List<String> domain = values.map((v) => v.toString()).toList();
+        axis.initAxisDomain(column, true, domain);
       } else {
-        var extent = new Extent.items(values);
-        domain = [extent.min, extent.max];
+        var extent = new Extent.items(values.cast<num>());
+        List<num> domain = [extent.min, extent.max];
+        axis.initAxisDomain(column, true, domain);
       }
-      axis.initAxisDomain(column, true, domain);
     });
 
     // See if any dimensions need "band" on the axis.
@@ -452,12 +449,12 @@ class DefaultCartesianAreaImpl implements CartesianArea {
     // List of measure and dimension axes that are displayed
     assert(isNullOrEmpty(config.displayedMeasureAxes) ||
         config.displayedMeasureAxes.length < 2);
-    var measureAxesCount = dimensionAxesCount == 1 ? 2 : 0,
-        displayedMeasureAxes = (isNullOrEmpty(config.displayedMeasureAxes)
+    var measureAxesCount = dimensionAxesCount == 1 ? 2 : 0;
+    var displayedMeasureAxes = (isNullOrEmpty(config.displayedMeasureAxes)
                 ? _measureAxes.keys.take(measureAxesCount)
                 : config.displayedMeasureAxes.take(measureAxesCount))
-            .toList(growable: false),
-        displayedDimensionAxes =
+            .toList(growable: false);
+    var displayedDimensionAxes =
             config.dimensions.take(dimensionAxesCount).toList(growable: false);
 
     // Compute size of the dimension axes
@@ -479,8 +476,8 @@ class DefaultCartesianAreaImpl implements CartesianArea {
           ? MEASURE_AXIS_ORIENTATIONS.last
           : MEASURE_AXIS_ORIENTATIONS.first;
       displayedMeasureAxes.asMap().forEach((int index, String key) {
-        var axis = _measureAxes[key],
-            orientation = _orientRTL(measureAxisOrientations[index]);
+        var axis = _measureAxes[key];
+        var orientation = _orientRTL(measureAxisOrientations[index]);
         axis.prepareToDraw(orientation);
         layout._axes[orientation] = axis.size;
       });
@@ -541,7 +538,6 @@ class DefaultCartesianAreaImpl implements CartesianArea {
             ? [layout.renderArea.height, 0]
             : [0, layout.renderArea.width]);
       }
-      ;
     }
   }
 
@@ -604,7 +600,7 @@ class DefaultCartesianAreaImpl implements CartesianArea {
 
   // Updates the AxisConfig, if configuration chagned since the last time the
   // AxisConfig was updated.
-  _updateAxisConfig() {
+  void _updateAxisConfig() {
     if (!_pendingAxisConfigUpdate) return;
     _series.forEach((ChartSeries s) {
       var measureAxisIds =

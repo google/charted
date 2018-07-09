@@ -10,11 +10,11 @@ part of charted.core.interpolators;
 
 /// [Interpolator] accepts [t], such that 0.0 < t < 1.0 and returns
 /// a value in a pre-defined range.
-typedef Interpolator(num t);
+typedef Interpolator<S> = S Function(num t);
 
 /// [InterpolatorGenerator] accepts two parameters [a], [b] and returns an
 /// [Interpolator] for transitioning from [a] to [b]
-typedef Interpolator InterpolatorGenerator<T>(T a, T b);
+typedef InterpolatorGenerator<T, S> = Interpolator<S> Function(T a, T b);
 
 /// List of registered interpolators - [createInterpolatorFromRegistry]
 /// iterates through this list from backwards and the first non-null
@@ -59,13 +59,13 @@ Interpolator createInterpolatorByType(a, b) {
 //
 
 /// Generate a numeric interpolator between numbers [a] and [b]
-Interpolator createNumberInterpolator(num a, num b) {
+Interpolator<num> createNumberInterpolator(num a, num b) {
   b -= a;
   return (t) => a + b * t;
 }
 
 /// Generate a rounded number interpolator between numbers [a] and [b]
-Interpolator createRoundedNumberInterpolator(num a, num b) {
+Interpolator<num> createRoundedNumberInterpolator(num a, num b) {
   b -= a;
   return (t) => (a + b * t).round();
 }
@@ -78,8 +78,8 @@ Interpolator createRoundedNumberInterpolator(num a, num b) {
 /// merging the non numeric part of the strings.
 ///
 /// Eg: Interpolate between $100.0 and $150.0
-Interpolator createStringInterpolator(String a, String b) {
-  if (a == null || b == null) return (t) => b;
+Interpolator<String> createStringInterpolator(String a, String b) {
+  if (a == null || b == null) return (num t) => b;
 
   // See if both A and B represent colors as RGB or HEX strings.
   // If yes, use color interpolators
@@ -95,14 +95,14 @@ Interpolator createStringInterpolator(String a, String b) {
         new Color.fromHslString(a), new Color.fromHslString(b));
   }
 
-  var numberRegEx = new RegExp(r'[-+]?(?:\d+\.?\d*|\.?\d+)(?:[eE][-+]?\d+)?'),
-      numMatchesInA = numberRegEx.allMatches(a),
-      numMatchesInB = numberRegEx.allMatches(b),
-      stringParts = [],
-      numberPartsInA = [],
-      numberPartsInB = [],
-      interpolators = [],
-      s0 = 0;
+  var numberRegEx = new RegExp(r'[-+]?(?:\d+\.?\d*|\.?\d+)(?:[eE][-+]?\d+)?');
+  var numMatchesInA = numberRegEx.allMatches(a);
+  var numMatchesInB = numberRegEx.allMatches(b);
+  List<String> stringParts = [];
+  List<String> numberPartsInA = [];
+  List<String> numberPartsInB = [];
+  List<Interpolator<num>> interpolators = [];
+  int s0 = 0;
 
   numberPartsInA.addAll(numMatchesInA.map((m) => m.group(0)));
 
@@ -118,18 +118,16 @@ Interpolator createStringInterpolator(String a, String b) {
   int maxLength = math.max(numberPartsInA.length, numberPartsInB.length);
   for (var i = 0; i < numberLength; i++) {
     interpolators.add(createNumberInterpolator(
-        num.parse(numberPartsInA[i] as String),
-        num.parse(numberPartsInB[i] as String)));
+        num.parse(numberPartsInA[i]), num.parse(numberPartsInB[i])));
   }
   if (numberPartsInA.length < numberPartsInB.length) {
     for (var i = numberLength; i < maxLength; i++) {
       interpolators.add(createNumberInterpolator(
-          num.parse(numberPartsInB[i] as String),
-          num.parse(numberPartsInB[i] as String)));
+          num.parse(numberPartsInB[i]), num.parse(numberPartsInB[i])));
     }
   }
 
-  return (t) {
+  return (num t) {
     StringBuffer sb = new StringBuffer();
     for (var i = 0; i < stringParts.length; i++) {
       sb.write(stringParts[i]);
@@ -142,30 +140,30 @@ Interpolator createStringInterpolator(String a, String b) {
 }
 
 /// Generate an interpolator for RGB values.
-Interpolator createRgbColorInterpolator(Color a, Color b) {
-  if (a == null || b == null) return (t) => b;
+Interpolator<String> createRgbColorInterpolator(Color a, Color b) {
+  if (a == null || b == null) return (num t) => b.toRgbaString();
   var ar = a.r, ag = a.g, ab = a.b, br = b.r - ar, bg = b.g - ag, bb = b.b - ab;
 
-  return (t) => new Color.fromRgba((ar + br * t).round(), (ag + bg * t).round(),
-          (ab + bb * t).round(), 1.0)
+  return (num t) => new Color.fromRgba((ar + br * t).round(),
+          (ag + bg * t).round(), (ab + bb * t).round(), 1.0)
       .toRgbaString();
 }
 
 /// Generate an interpolator using HSL color system converted to Hex string.
-Interpolator createHslColorInterpolator(Color a, Color b) {
-  if (a == null || b == null) return (t) => b;
+Interpolator<String> createHslColorInterpolator(Color a, Color b) {
+  if (a == null || b == null) return (num t) => b.toHslaString();
   var ah = a.h, as = a.s, al = a.l, bh = b.h - ah, bs = b.s - as, bl = b.l - al;
 
-  return (t) => new Color.fromHsla((ah + bh * t).round(), (as + bs * t).round(),
-          (al + bl * t).round(), 1.0)
+  return (num t) => new Color.fromHsla((ah + bh * t).round(),
+          (as + bs * t).round(), (al + bl * t).round(), 1.0)
       .toHslaString();
 }
 
 /// Generates an interpolator to interpolate each element between lists
 /// [a] and [b] using registered interpolators.
-Interpolator createListInterpolator(List a, List b) {
+Interpolator<List> createListInterpolator(List a, List b) {
   if (a == null || b == null) return (t) => b;
-  var x = [],
+  var x = <Interpolator>[],
       aLength = a.length,
       numInterpolated = b.length,
       output =
@@ -177,7 +175,7 @@ Interpolator createListInterpolator(List a, List b) {
   for (; i < aLength; ++i) output[i] = a[i];
   for (; i < numInterpolated; ++i) output[i] = b[i];
 
-  return (t) {
+  return (num t) {
     for (i = 0; i < n0; ++i) output[i] = x[i](t);
     return output;
   };
@@ -185,7 +183,7 @@ Interpolator createListInterpolator(List a, List b) {
 
 /// Generates an interpolator to interpolate each value on [a] to [b] using
 /// registered interpolators.
-Interpolator createMapInterpolator(Map a, Map b) {
+Interpolator<Map> createMapInterpolator(Map a, Map b) {
   if (a == null || b == null) return (t) => b;
   var interpolatorsMap = new Map(),
       output = new Map(),
@@ -214,7 +212,7 @@ Interpolator createMapInterpolator(Map a, Map b) {
 
 /// Returns the interpolator that interpolators two transform strings
 /// [a] and [b] by their translate, rotate, scale and skewX parts.
-Interpolator createTransformInterpolator(String a, String b) {
+Interpolator<String> createTransformInterpolator(String a, String b) {
   if (a == null || b == null) return (t) => b;
   var numRegExStr = r'[-+]?(?:\d+\.?\d*|\.?\d+)(?:[eE][-+]?\d+)?',
       numberRegEx = new RegExp(numRegExStr),
@@ -231,8 +229,7 @@ Interpolator createTransformInterpolator(String a, String b) {
       translateB = translateRegEx.firstMatch(b),
       scaleB = scaleRegEx.firstMatch(b),
       rotateB = rotateRegEx.firstMatch(b),
-      skewB = skewRegEx.firstMatch(b),
-      match;
+      skewB = skewRegEx.firstMatch(b);
 
   List<num> numSetA = [], numSetB = [];
   String tempStr;
@@ -240,7 +237,7 @@ Interpolator createTransformInterpolator(String a, String b) {
   // translate
   if (translateA != null) {
     tempStr = a.substring(translateA.start, translateA.end);
-    match = numberRegEx.allMatches(tempStr);
+    var match = numberRegEx.allMatches(tempStr);
     for (Match m in match) {
       numSetA.add(num.parse(m.group(0)));
     }
@@ -250,7 +247,7 @@ Interpolator createTransformInterpolator(String a, String b) {
 
   if (translateB != null) {
     tempStr = b.substring(translateB.start, translateB.end);
-    match = numberRegEx.allMatches(tempStr);
+    var match = numberRegEx.allMatches(tempStr);
     for (Match m in match) {
       numSetB.add(num.parse(m.group(0)));
     }
@@ -261,7 +258,7 @@ Interpolator createTransformInterpolator(String a, String b) {
   // scale
   if (scaleA != null) {
     tempStr = a.substring(scaleA.start, scaleA.end);
-    match = numberRegEx.allMatches(tempStr);
+    var match = numberRegEx.allMatches(tempStr);
     for (Match m in match) {
       numSetA.add(num.parse(m.group(0)));
     }
@@ -271,7 +268,7 @@ Interpolator createTransformInterpolator(String a, String b) {
 
   if (scaleB != null) {
     tempStr = b.substring(scaleB.start, scaleB.end);
-    match = numberRegEx.allMatches(tempStr);
+    var match = numberRegEx.allMatches(tempStr);
     for (Match m in match) {
       numSetB.add(num.parse(m.group(0)));
     }
@@ -282,16 +279,16 @@ Interpolator createTransformInterpolator(String a, String b) {
   // rotate
   if (rotateA != null) {
     tempStr = a.substring(rotateA.start, rotateA.end);
-    match = numberRegEx.firstMatch(tempStr);
-    numSetA.add(num.parse((match as Match).group(0)));
+    var match = numberRegEx.firstMatch(tempStr);
+    numSetA.add(num.parse(match.group(0)));
   } else {
     numSetA.add(0);
   }
 
   if (rotateB != null) {
     tempStr = b.substring(rotateB.start, rotateB.end);
-    match = numberRegEx.firstMatch(tempStr);
-    numSetB.add(num.parse((match as Match).group(0)));
+    var match = numberRegEx.firstMatch(tempStr);
+    numSetB.add(num.parse(match.group(0)));
   } else {
     numSetB.add(0);
   }
@@ -308,21 +305,21 @@ Interpolator createTransformInterpolator(String a, String b) {
   // skew
   if (skewA != null) {
     tempStr = a.substring(skewA.start, skewA.end);
-    match = numberRegEx.firstMatch(tempStr);
-    numSetA.add(num.parse((match as Match).group(0)));
+    var match = numberRegEx.firstMatch(tempStr);
+    numSetA.add(num.parse(match.group(0)));
   } else {
     numSetA.add(0);
   }
 
   if (skewB != null) {
     tempStr = b.substring(skewB.start, skewB.end);
-    match = numberRegEx.firstMatch(tempStr);
-    numSetB.add(num.parse((match as Match).group(0)));
+    var match = numberRegEx.firstMatch(tempStr);
+    numSetB.add(num.parse(match.group(0)));
   } else {
     numSetB.add(0);
   }
 
-  return (t) {
+  return (num t) {
     return 'translate(${createNumberInterpolator(numSetA[0], numSetB[0])(t)},'
         '${createNumberInterpolator(numSetA[1], numSetB[1])(t)})'
         'scale(${createNumberInterpolator(numSetA[2], numSetB[2])(t)},'
@@ -334,7 +331,7 @@ Interpolator createTransformInterpolator(String a, String b) {
 
 /// Returns the interpolator that interpolators zoom list [a] to [b]. Zoom
 /// lists are described by triple elements [ux0, uy0, w0] and [ux1, uy1, w1].
-Interpolator createZoomInterpolator(List a, List b) {
+Interpolator<List<num>> createZoomInterpolator(List a, List b) {
   if (a == null || b == null) return (t) => b;
   assert(a.length == b.length && a.length == 3);
 
@@ -353,7 +350,7 @@ Interpolator createZoomInterpolator(List a, List b) {
       dr = r1 - r0,
       S = ((!dr.isNaN) ? dr : math.log(w1 / w0)) / sqrt2;
 
-  return (t) {
+  return (num t) {
     var s = t * S;
     if (!dr.isNaN) {
       // General case.
@@ -362,18 +359,18 @@ Interpolator createZoomInterpolator(List a, List b) {
       return [ux0 + u * dx, uy0 + u * dy, w0 * coshr0 / cosh(sqrt2 * s + r0)];
     }
     // Special case for u0 ~= u1.
-    return [ux0 + t * dx, uy0 + t * dy, w0 * math.exp(sqrt2 * s)];
+    return <num>[ux0 + t * dx, uy0 + t * dy, w0 * math.exp(sqrt2 * s)];
   };
 }
 
 /// Reverse interpolator for a number.
-Interpolator uninterpolateNumber(num a, num b) {
+Interpolator<num> uninterpolateNumber(num a, num b) {
   b = 1 / (b - a);
   return (x) => (x - a) * b;
 }
 
 /// Reverse interpolator for a clamped number.
-Interpolator uninterpolateClamp(num a, num b) {
+Interpolator<num> uninterpolateClamp(num a, num b) {
   b = 1 / (b - a);
   return (x) => math.max(0, math.min(1, (x - a) * b));
 }
