@@ -28,25 +28,28 @@ part 'scales/linear_scale.dart';
 part 'scales/log_scale.dart';
 part 'scales/time_scale.dart';
 
-typedef num RoundFunction(num value);
+typedef RoundFunction = num Function(num);
 
 /// Minimum common interface supported by all scales. [QuantitativeScale] and
 /// [OrdinalScale] contain the interface for their respective types.
-abstract class Scale {
+abstract class Scale<TDomain extends Comparable, TRange> {
+  static final NumberFormat numberFormatter =
+      new NumberFormat(new EnUsLocale());
+
   /// Given a [value] in the input domain, map it to the range.
   /// On [QuantitativeScale]s both parameter and return values are numbers.
-  dynamic scale(value);
+  TRange scale(TDomain value);
 
   /// Given a [value] in the output range, return value in the input domain
   /// that maps to the value.
   /// On [QuantitativeScale]s both parameter and return values are numbers.
-  dynamic invert(value);
+  TDomain invert(TRange value);
 
   /// Input domain used by this scale.
-  Iterable domain;
+  Iterable<TDomain> domain;
 
   /// Output range used by this scale.
-  Iterable range;
+  Iterable<TRange> range;
 
   /// Maximum and minimum values of the scale's output range.
   Extent get rangeExtent;
@@ -89,8 +92,9 @@ abstract class Scale {
 
 /// Minimum common interface supported by scales whose input domain
 /// contains discreet values (Ordinal scales).
-abstract class OrdinalScale extends Scale {
-  factory OrdinalScale() = _OrdinalScale;
+abstract class OrdinalScale<TDomain extends Comparable, TRange>
+    extends Scale<TDomain, TRange> {
+  factory OrdinalScale() = _OrdinalScale<TDomain, TRange>;
 
   /// Amount of space that each value in the domain gets from the range. A band
   /// is available only after [rangeBands] or [rangeRoundBands] is called by
@@ -120,8 +124,8 @@ class RoundingFunctions extends Pair<RoundFunction, RoundFunction> {
   factory RoundingFunctions.defaults() =>
       new RoundingFunctions((x) => x.floor(), (x) => x.ceil());
 
-  factory RoundingFunctions.identity() => new RoundingFunctions(
-      (num n) => identityFunction<num>(n), (num n) => identityFunction<num>(n));
+  factory RoundingFunctions.identity() =>
+      new RoundingFunctions((num n) => n, (num n) => n);
 
   RoundFunction get floor => super.first;
   RoundFunction get ceil => super.last;
@@ -138,7 +142,7 @@ abstract class ScaleUtils {
   /// floor and ceil functions.  [functions] is a pair of rounding function
   /// among which the first is used to compute floor of a number and the
   /// second for ceil of the number.
-  static List nice(List<num> values, RoundingFunctions functions) {
+  static List<num> nice(List<num> values, RoundingFunctions functions) {
     if (values.last >= values.first) {
       values[0] = functions.floor(values.first);
       values[values.length - 1] = functions.ceil(values.last);
@@ -162,11 +166,14 @@ abstract class ScaleUtils {
   /// @param range          The range of the scale.
   /// @param uninterpolator The uninterpolator for domain values.
   /// @param interpolator   The interpolator for range values.
-  static Function bilinearScale(
-      List domain, List range, Function uninterpolator, Function interpolator) {
-    var u = uninterpolator(domain[0], domain[1]),
-        i = interpolator(range[0], range[1]);
-    return (x) => i(u(x));
+  static num Function(num) bilinearScale(
+      List<num> domain,
+      List<num> range,
+      InterpolatorGenerator<num, num> uninterpolator,
+      InterpolatorGenerator<num, num> interpolator) {
+    Interpolator<num> u = uninterpolator(domain[0], domain[1]);
+    Interpolator<num> i = interpolator(range[0], range[1]);
+    return (num x) => i(u(x));
   }
 
   /// Returns a Function that given a value x on the domain, returns the
@@ -176,9 +183,15 @@ abstract class ScaleUtils {
   /// @param range          The range of the scale.
   /// @param uninterpolator The uninterpolator for domain values.
   /// @param interpolator   The interpolator for range values.
-  static Function polylinearScale(List<num> domain, List range,
-      Function uninterpolator, Function interpolator) {
-    var u = [], i = [], j = 0, k = math.min(domain.length, range.length) - 1;
+  static num Function(num) polylinearScale(
+      List<num> domain,
+      List<num> range,
+      InterpolatorGenerator<num, num> uninterpolator,
+      InterpolatorGenerator<num, num> interpolator) {
+    List<Interpolator<num>> u = [];
+    List<Interpolator<num>> i = [];
+    int j = 0;
+    int k = math.min(domain.length, range.length) - 1;
 
     // Handle descending domains.
     if (domain[k] < domain[0]) {
@@ -191,7 +204,7 @@ abstract class ScaleUtils {
       i.add(interpolator(range[j - 1], range[j]));
     }
 
-    return (x) {
+    return (num x) {
       int index = bisect(domain, x, 1, k) - 1;
       return i[index](u[index](x));
     };
@@ -233,5 +246,5 @@ abstract class ScaleUtils {
     return lo;
   }
 
-  static Function bisect = bisectRight;
+  static int Function(List<num>, num, [int, int]) bisect = bisectRight;
 }

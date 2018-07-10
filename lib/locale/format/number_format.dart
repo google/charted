@@ -15,41 +15,21 @@ part of charted.locale.format;
  */
 class NumberFormat {
   // [[fill]align][sign][symbol][0][width][,][.precision][type]
-  static RegExp FORMAT_REGEX = new RegExp(
+  static final RegExp FORMAT_REGEX = new RegExp(
       r'(?:([^{])?([<>=^]))?([+\- ])?([$#])?(0)?(\d+)?(,)?'
       r'(\.-?\d+)?([a-z%])?',
       caseSensitive: false);
 
-  String localeDecimal;
-  String localeThousands;
-  List<int> localeGrouping;
-  List<String> localeCurrency;
-  Function formatGroup;
+  final String _localeDecimal;
+  final List<int> _localeGrouping;
+  final String _localeThousands;
+  final List<String> _localeCurrency;
 
-  NumberFormat(Locale locale) {
-    localeDecimal = locale.decimal;
-    localeThousands = locale.thousands;
-    localeGrouping = locale.grouping;
-    localeCurrency = locale.currency;
-    formatGroup = (localeGrouping != null)
-        ? (String value) {
-            int i = value.length, j = 0, g = localeGrouping[0];
-            var t = [];
-            while (i > 0 && g > 0) {
-              if (i - g >= 0) {
-                i = i - g;
-              } else {
-                g = i;
-                i = 0;
-              }
-              var length = (i + g) < value.length ? (i + g) : value.length;
-              t.add(value.substring(i, length));
-              g = localeGrouping[j = (j + 1) % localeGrouping.length];
-            }
-            return t.reversed.join(localeThousands);
-          }
-        : (x) => x;
-  }
+  NumberFormat(Locale locale)
+      : _localeDecimal = locale.decimal,
+        _localeGrouping = locale.grouping,
+        _localeThousands = locale.thousands,
+        _localeCurrency = locale.currency;
 
   /**
    * Returns a new format function with the given string specifier. A format
@@ -120,8 +100,8 @@ class NumberFormat {
     }
 
     if (symbol == '\$') {
-      prefix = localeCurrency[0];
-      suffix = localeCurrency[1];
+      prefix = _localeCurrency[0];
+      suffix = _localeCurrency[1];
     }
 
     // If no precision is specified for r, fallback to general notation.
@@ -165,7 +145,7 @@ class NumberFormat {
       if (scale < 0) {
         FormatPrefix unit =
             new FormatPrefix(value, (precision != null) ? precision : 0);
-        value = unit.scale(value) as num;
+        value = unit.scale(value);
         fullSuffix = unit.symbol + suffix;
       } else {
         value *= scale;
@@ -183,12 +163,12 @@ class NumberFormat {
       // (after).
       int i = stringValue.lastIndexOf('.');
       String before = i < 0 ? stringValue : stringValue.substring(0, i),
-          after = i < 0 ? '' : localeDecimal + stringValue.substring(i + 1);
+          after = i < 0 ? '' : _localeDecimal + stringValue.substring(i + 1);
 
       // If the fill character is not '0', grouping is applied before
       //padding.
       if (zfill == null && comma) {
-        before = formatGroup(before) as String;
+        before = _formatGroup(before);
       }
 
       int length = prefix.length +
@@ -201,7 +181,7 @@ class NumberFormat {
 
       // If the fill character is '0', grouping is applied after padding.
       if (zcomma) {
-        before = formatGroup(padding + before) as String;
+        before = _formatGroup(padding + before);
       }
 
       // Apply prefix.
@@ -250,5 +230,25 @@ class NumberFormat {
       default:
         return (num x, [int p = 0]) => x.toString();
     }
+  }
+
+  String _formatGroup(String value) {
+    if (_localeGrouping == null) {
+      return value;
+    }
+    int i = value.length, j = 0, g = _localeGrouping[0];
+    var t = <String>[];
+    while (i > 0 && g > 0) {
+      if (i - g >= 0) {
+        i = i - g;
+      } else {
+        g = i;
+        i = 0;
+      }
+      var length = (i + g) < value.length ? (i + g) : value.length;
+      t.add(value.substring(i, length));
+      g = _localeGrouping[j = (j + 1) % _localeGrouping.length];
+    }
+    return t.reversed.join(_localeThousands);
   }
 }

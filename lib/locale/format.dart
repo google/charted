@@ -28,10 +28,8 @@ typedef String NumberFormatFunction(num x, [int precision]);
  *
  * @see <a href="http://docs.python.org/release/3.1.3/library/string.html#formatspec">Python format specification mini-language</a>
  */
-FormatFunction format(String specifier, [Locale locale = null]) {
-  if (locale == null) {
-    locale = new EnUsLocale();
-  }
+FormatFunction format(String specifier, [Locale locale]) {
+  locale ??= new EnUsLocale();
   return locale.numberFormat.format(specifier);
 }
 
@@ -40,7 +38,7 @@ FormatFunction format(String specifier, [Locale locale = null]) {
  */
 class FormatPrefix {
   // SI scale units in increments of 1000.
-  static const List<String> unitPrefixes = const [
+  static const List<String> _unitPrefixes = const [
     "y",
     "z",
     "a",
@@ -60,7 +58,7 @@ class FormatPrefix {
     "Y"
   ];
 
-  Function _scale;
+  num Function(num) _scale;
   String _symbol;
 
   FormatPrefix(num value, [int precision = 0]) {
@@ -80,7 +78,7 @@ class FormatPrefix {
     // Sets the scale and symbol of the value.
     var k = math.pow(10, (8 - i).abs() * 3);
     _scale = i > 8 ? (d) => d / k : (d) => d * k;
-    _symbol = unitPrefixes[i];
+    _symbol = _unitPrefixes[i];
   }
 
   num _formatPrecision(num x, num p) {
@@ -96,5 +94,5 @@ class FormatPrefix {
   String get symbol => _symbol;
 
   /** Returns the scale for the value corresponding to the SI prefix. */
-  Function get scale => _scale;
+  num Function(num) get scale => _scale;
 }

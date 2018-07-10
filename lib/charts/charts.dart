@@ -25,7 +25,7 @@ import 'package:charted/svg/axis.dart';
 import 'package:charted/svg/shapes.dart';
 import 'package:charted/selection/transition.dart';
 
-import 'package:collection/equality.dart';
+import 'package:collection/collection.dart';
 import 'package:logging/logging.dart';
 import 'package:observable/observable.dart';
 import 'package:quiver/core.dart';

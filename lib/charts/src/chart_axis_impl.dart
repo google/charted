@@ -11,7 +11,7 @@ part of charted.charts;
 class DefaultChartAxisImpl {
   static const int _AXIS_TITLE_HEIGHT = 20;
 
-  CartesianArea _area;
+  final CartesianArea _area;
   ChartAxisConfig config;
   ChartAxisTheme _theme;
   SvgAxisTicks _axisTicksPlacement;
@@ -37,9 +37,7 @@ class DefaultChartAxisImpl {
     _isDimension = isDimension;
 
     // If we don't have a scale yet, create one.
-    if (scale == null) {
-      _scale = _columnSpec.createDefaultScale();
-    }
+    _scale ??= _columnSpec.createDefaultScale();
 
     // We have the scale, get theme.
     _theme = isDimension
@@ -56,7 +54,7 @@ class DefaultChartAxisImpl {
     _title = config?.title;
   }
 
-  void initAxisScale(Iterable range) {
+  void initAxisScale(Iterable<num> range) {
     assert(scale != null);
     if (scale is OrdinalScale) {
       Iterable<num> numericRange = range;
@@ -90,7 +88,8 @@ class DefaultChartAxisImpl {
   }
 
   void prepareToDraw(String orientation) {
-    if (orientation == null) orientation = ORIENTATION_BOTTOM;
+    assert(_theme != null);
+    orientation ??= ORIENTATION_BOTTOM;
     _orientation = orientation;
     _isVertical =
         _orientation == ORIENTATION_LEFT || _orientation == ORIENTATION_RIGHT;

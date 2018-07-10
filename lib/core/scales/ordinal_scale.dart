@@ -7,18 +7,20 @@
 //
 part of charted.core.scales;
 
-class _OrdinalScale implements OrdinalScale {
-  final _index = new Map<dynamic, int>();
-
-  List _domain = [];
-  List _range = [];
+class _OrdinalScale<TDomain extends Comparable, TRange>
+    implements OrdinalScale<TDomain, TRange> {
+  final Map<TDomain, int> _index = {};
+  final List<TDomain> _domain;
+  List<TRange> _range;
   num _rangeBand = 0;
-  Extent _rangeExtent;
-  Function _reset;
+  Extent<TDomain> _rangeExtent;
+  void Function(_OrdinalScale<TDomain, TRange>) _reset;
 
-  _OrdinalScale();
+  _OrdinalScale()
+      : _domain = [],
+        _range = [];
 
-  _OrdinalScale._clone(_OrdinalScale source)
+  _OrdinalScale._clone(_OrdinalScale<TDomain, TRange> source)
       : _domain = new List.from(source._domain),
         _range = new List.from(source._range),
         _reset = source._reset,
@@ -28,18 +30,18 @@ class _OrdinalScale implements OrdinalScale {
   }
 
   @override
-  scale(dynamic value) {
+  TRange scale(TDomain value) {
     if (!_index.containsKey(value)) {
       _index[value] = domain.length;
       _domain.add(value);
     }
     return _range.isNotEmpty
         ? _range.elementAt(_index[value] % _range.length)
-        : 0;
+        : null;
   }
 
   @override
-  dynamic invert(value) {
+  TDomain invert(TRange value) {
     int position = _range.indexOf(value);
     return position > -1 && position < _domain.length
         ? _domain[position]
@@ -47,12 +49,11 @@ class _OrdinalScale implements OrdinalScale {
   }
 
   @override
-  set domain(Iterable values) {
-    _domain = [];
+  set domain(Iterable<TDomain> values) {
+    _domain.clear();
     _index.clear();
 
-    for (var i = 0; i < values.length; i++) {
-      var value = values.elementAt(i);
+    for (var value in values) {
       if (_index[value] == null) {
         _index[value] = _domain.length;
         _domain.add(value);
@@ -63,16 +64,23 @@ class _OrdinalScale implements OrdinalScale {
   }
 
   @override
-  Iterable get domain => _domain;
+  Iterable<TDomain> get domain => _domain;
 
   @override
-  set range(Iterable values) => _setRange(this, values);
+  set range(Iterable<TRange> values) {
+    _reset = (_OrdinalScale<TDomain, TRange> s) {
+      s._range = new List<TRange>.from(values);
+      s._rangeBand = 0;
+      s._rangeExtent = null;
+    };
+    _reset(this);
+  }
 
   @override
-  Iterable get range => _range;
+  Iterable<TRange> get range => _range;
 
   @override
-  Extent get rangeExtent => _rangeExtent;
+  Extent<TDomain> get rangeExtent => _rangeExtent;
 
   @override
   void rangePoints(Iterable<num> range, [double padding = 0.0]) =>
@@ -81,21 +89,19 @@ class _OrdinalScale implements OrdinalScale {
   @override
   void rangeBands(Iterable<num> range,
           [double padding = 0.0, double outerPadding]) =>
-      _setRangeBands(
-          this, range, padding, outerPadding == null ? padding : outerPadding);
+      _setRangeBands(this, range, padding, outerPadding ?? padding);
 
   @override
   void rangeRoundBands(Iterable<num> range,
           [double padding = 0.0, double outerPadding]) =>
-      _setRangeRoundBands(
-          this, range, padding, outerPadding == null ? padding : outerPadding);
+      _setRangeRoundBands(this, range, padding, outerPadding ?? padding);
 
   @override
   num get rangeBand => _rangeBand;
 
   @override
   FormatFunction createTickFormatter([String format]) =>
-      (dynamic s) => identityFunction<String>(s as String);
+      (dynamic s) => s.toString();
 
   @override
   Iterable get ticks => _domain;
@@ -103,26 +109,17 @@ class _OrdinalScale implements OrdinalScale {
   @override
   OrdinalScale clone() => new _OrdinalScale._clone(this);
 
-  List _steps(start, step) =>
+  List _steps(num start, num step) =>
       new Range(domain.length).map((num i) => start + step * i).toList();
-
-  static void _setRange(_OrdinalScale scale, Iterable values) {
-    scale._reset = (_OrdinalScale s) {
-      s._range = new List.from(values);
-      s._rangeBand = 0;
-      s._rangeExtent = null;
-    };
-    scale._reset(scale);
-  }
 
   static void _setRangePoints(
       _OrdinalScale scale, Iterable<num> range, double padding) {
     scale._reset = (_OrdinalScale s) {
-      var start = range.first,
-          stop = range.last,
-          step = s.domain.length > 1
-              ? (stop - start - 2 * padding) / (s.domain.length - 1)
-              : 0;
+      var start = range.first;
+      var stop = range.last;
+      var step = s.domain.length > 1
+          ? (stop - start - 2 * padding) / (s.domain.length - 1)
+          : 0;
 
       s._range = s._steps(
           s.domain.length < 2 ? (start + stop) / 2 : start + padding, step);
@@ -144,14 +141,14 @@ class _OrdinalScale implements OrdinalScale {
 
       s._range = s._steps(start + step * outerPadding, step);
       s._rangeBand = step * (1 - padding);
-      s._rangeExtent = new Extent(start, stop);
+      s._rangeExtent = new Extent<num>(start, stop);
     };
     if (scale.domain.isNotEmpty) {
       scale._reset(scale);
     }
   }
 
-  static void _setRangeRoundBands(_OrdinalScale scale, Iterable range,
+  static void _setRangeRoundBands(_OrdinalScale scale, Iterable<num> range,
       double padding, double outerPadding) {
     scale._reset = (_OrdinalScale s) {
       num start = range.first,
@@ -162,7 +159,7 @@ class _OrdinalScale implements OrdinalScale {
 
       s._range = s._steps(start + outerPadding, step);
       s._rangeBand = (step * (1 - padding)).round();
-      s._rangeExtent = new Extent(start, stop);
+      s._rangeExtent = new Extent<num>(start, stop);
     };
     if (scale.domain.isNotEmpty) {
       scale._reset(scale);

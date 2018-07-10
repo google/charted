@@ -6,9 +6,12 @@ be kept up-to-date when a version update happens in the future.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
-## [master]
+## 0.6.0 - 2018-07-09
+
 
 ### Changed
+- Internal changes to make charted Dart 2.0 compatible.
+
 - Several typedef signatures have changed: `CompareFunc`,
   `InterpolatorGenerator`:
 

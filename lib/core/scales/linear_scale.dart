@@ -7,27 +7,40 @@
 //
 part of charted.core.scales;
 
-class LinearScale implements Scale {
-  static const defaultDomain = const [0, 1];
-  static const defaultRange = const [0, 1];
+class LinearScale extends BaseLinearScale {
+  LinearScale();
+  LinearScale._clone(LinearScale source) : super._clone(source);
+
+  @override
+  Iterable<num> get ticks => _linearTickRange();
+
+  @override
+  LinearScale clone() => new LinearScale._clone(this);
+}
+
+abstract class BaseLinearScale implements Scale<num, num> {
+  static const List<int> defaultDomain = const [0, 1];
+  static const List<int> defaultRange = const [0, 1];
 
   bool _rounded = false;
-  Iterable _domain = defaultDomain;
-  Iterable _range = defaultRange;
+  Iterable<num> _domain;
+  Iterable<num> _range;
 
   int _ticksCount = 5;
   int _forcedTicksCount = -1;
 
   bool _clamp = false;
   bool _nice = false;
-  Function _invert;
-  Function _scale;
+  num Function(num) _invert;
+  num Function(num) _scale;
 
-  LinearScale();
+  BaseLinearScale()
+      : _domain = defaultDomain,
+        _range = defaultRange;
 
-  LinearScale._clone(LinearScale source)
-      : _domain = source._domain.toList(),
-        _range = source._range.toList(),
+  BaseLinearScale._clone(BaseLinearScale source)
+      : _domain = new List<num>.from(source._domain),
+        _range = new List<num>.from(source._range),
         _ticksCount = source._ticksCount,
         _clamp = source._clamp,
         _nice = source._nice,
@@ -38,7 +51,7 @@ class LinearScale implements Scale {
   void _reset({bool nice: false}) {
     if (nice) {
       _domain = ScaleUtils.nice(
-          _domain as List<num>, ScaleUtils.niceStep(_linearTickRange().step));
+          _domain, ScaleUtils.niceStep(_linearTickRange().step));
     } else {
       if (_forcedTicksCount > 0) {
         var tickRange = _linearTickRange();
@@ -46,41 +59,39 @@ class LinearScale implements Scale {
       }
     }
 
-    Function linear = math.min(_domain.length, _range.length) > 2
-        ? ScaleUtils.polylinearScale
-        : ScaleUtils.bilinearScale;
+    num Function(num) Function(List<num>, List<num>,
+            InterpolatorGenerator<num, num>, InterpolatorGenerator<num, num>)
+        linear = math.min(_domain.length, _range.length) > 2
+            ? ScaleUtils.polylinearScale
+            : ScaleUtils.bilinearScale;
 
-    Function uninterpolator = clamp ? uninterpolateClamp : uninterpolateNumber;
-    InterpolatorGenerator<num> interpolator;
-    if (rounded) {
-      interpolator = createRoundedNumberInterpolator;
-    } else {
-      interpolator = createNumberInterpolator;
-    }
+    InterpolatorGenerator<num, num> uninterpolator =
+        clamp ? uninterpolateClamp : uninterpolateNumber;
+    InterpolatorGenerator<num, num> interpolator =
+        rounded ? createRoundedNumberInterpolator : createNumberInterpolator;
 
-    _invert = linear(_range, _domain, uninterpolator, createNumberInterpolator)
-        as Function;
-    _scale = linear(_domain, _range, uninterpolator, interpolator) as Function;
+    _invert = linear(_range, _domain, uninterpolator, createNumberInterpolator);
+    _scale = linear(_domain, _range, uninterpolator, interpolator);
   }
 
   @override
-  set range(Iterable value) {
+  set range(Iterable<num> value) {
     assert(value != null);
     _range = value;
     _reset();
   }
 
   @override
-  Iterable get range => _range;
+  Iterable<num> get range => _range;
 
   @override
-  set domain(Iterable value) {
+  set domain(Iterable<num> value) {
     _domain = value;
     _reset(nice: _nice);
   }
 
   @override
-  Iterable get domain => _domain;
+  Iterable<num> get domain => _domain;
 
   @override
   set rounded(bool value) {
@@ -106,15 +117,14 @@ class LinearScale implements Scale {
   @override
   int get ticksCount => _ticksCount;
 
+  @override
   set forcedTicksCount(int value) {
     _forcedTicksCount = value;
     _reset(nice: false);
   }
 
-  get forcedTicksCount => _forcedTicksCount;
-
   @override
-  Iterable get ticks => _linearTickRange();
+  int get forcedTicksCount => _forcedTicksCount;
 
   @override
   set clamp(bool value) {
@@ -141,18 +151,16 @@ class LinearScale implements Scale {
   bool get nice => _nice;
 
   @override
-  Extent get rangeExtent => ScaleUtils.extent(_range as Iterable<num>);
+  Extent<num> get rangeExtent => ScaleUtils.extent(_range);
 
   @override
-  scale(value) => _scale(value);
+  num scale(num value) => _scale(value);
 
   @override
-  invert(value) => _invert(value);
+  num invert(num value) => _invert(value);
 
   Range _linearTickRange([Extent<num> extent]) {
-    if (extent == null) {
-      extent = ScaleUtils.extent(_domain as Iterable<num>);
-    }
+    extent ??= ScaleUtils.extent(_domain);
     num span = extent.max - extent.min;
     if (span == 0) {
       span = 1.0; // [span / _ticksCount] should never be equal zero.
@@ -202,18 +210,14 @@ class LinearScale implements Scale {
 
   @override
   FormatFunction createTickFormatter([String formatStr]) {
-    int precision(num value) {
-      return -(math.log(value) / math.LN10 + .01).floor();
-    }
-
-    Range tickRange = _linearTickRange();
     if (formatStr == null) {
+      int precision(num value) {
+        return -(math.log(value) / math.LN10 + .01).floor();
+      }
+
+      Range tickRange = _linearTickRange();
       formatStr = ".${precision(tickRange.step)}f";
     }
-    NumberFormat formatter = new NumberFormat(new EnUsLocale());
-    return formatter.format(formatStr);
+    return Scale.numberFormatter.format(formatStr);
   }
-
-  @override
-  LinearScale clone() => new LinearScale._clone(this);
 }

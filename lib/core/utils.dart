@@ -31,11 +31,8 @@ const String ORIENTATION_RIGHT = 'right';
 const String ORIENTATION_TOP = 'top';
 const String ORIENTATION_BOTTOM = 'bottom';
 
-/// Identity function that returns the value passed as it's parameter.
-T identityFunction<T>(T x) => x;
-
 /// Function that formats a value to String.
-typedef String FormatFunction(value);
+typedef FormatFunction = String Function(dynamic);
 
 /// Test if the given String or Iterable, [val] is null or empty
 bool isNullOrEmpty(val) {

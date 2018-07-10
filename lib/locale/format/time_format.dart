@@ -10,20 +10,16 @@ part of charted.locale.format;
 //TODO(songrenchu): Document time format; Add test for time format.
 
 class TimeFormat {
-  String _template;
-  String _locale;
-  DateFormat _dateFormat;
+  final String _template;
+  final String _locale;
+  final DateFormat _dateFormat;
 
-  TimeFormat([String template = null, String identifier = 'en_US']) {
-    _template = template;
-    _locale = identifier;
-    if (_template != null)
-      _dateFormat = new DateFormat(_wrapStrptime2ICU(_template), _locale);
-  }
-
-  TimeFormat _getInstance(String template) {
-    return new TimeFormat(template, _locale);
-  }
+  TimeFormat([String template, String identifier = 'en_US'])
+      : _template = template,
+        _locale = identifier,
+        _dateFormat = template == null
+            ? null
+            : new DateFormat(_wrapStrptime2ICU(template), identifier);
 
   String apply(DateTime date) {
     assert(_dateFormat != null);
@@ -39,33 +35,30 @@ class TimeFormat {
 
   FormatFunction multi(List<List> formats) {
     var n = formats.length, i = -1;
-    while (++i < n) formats[i][0] = _getInstance(formats[i][0] as String);
-    return (var date) {
-      if (date is num) {
-        date = new DateTime.fromMillisecondsSinceEpoch((date as num).toInt());
-      }
+    while (++i < n) {
+      formats[i][0] = new TimeFormat(formats[i][0] as String, _locale);
+    }
+    return (dynamic _date) {
+      DateTime date = _date is DateTime
+          ? _date
+          : new DateTime.fromMillisecondsSinceEpoch((_date as num).toInt());
       var i = 0, f = formats[i];
-      while (f.length < 2 || f[1](date) == false) {
+      while (f.length < 2 || !(f[1] as bool Function(DateTime))(date)) {
         i++;
         if (i < n) f = formats[i];
       }
       if (i == n) return null;
-      return f[0].apply(date) as String;
+      return (f[0] as TimeFormat).apply(date);
     };
   }
 
-  UTCTimeFormat utc([String specifier = null]) {
-    return new UTCTimeFormat(
-        specifier == null ? _template : specifier, _locale);
-  }
-
-  static UTCTimeFormat iso() {
-    return new UTCTimeFormat("%Y-%m-%dT%H:%M:%S.%LZ");
-  }
-
-  static Map timeFormatPads = {"-": "", "_": " ", "0": "0"};
+  static const Map<String, String> _timeFormatPads = const {
+    "-": "",
+    "_": " ",
+    "0": "0"
+  };
   // TODO(songrenchu): Cannot fully be equivalent now.
-  static Map timeFormatsTransform = {
+  static const Map<String, String> _timeFormatsTransform = const {
     'a': 'EEE',
     'A': 'EEEE',
     'b': 'MMM',
@@ -94,33 +87,20 @@ class TimeFormat {
     '%': '%'
   };
 
-  String _wrapStrptime2ICU(String template) {
-    var string = [], i = -1, j = 0, n = template.length, tempChar;
+  static String _wrapStrptime2ICU(String template) {
+    List<String> string = [];
+    int i = -1, j = 0, n = template.length;
     while (++i < n) {
       if (template[i] == '%') {
         string.add(template.substring(j, i));
-        if ((timeFormatPads[tempChar = template[++i]]) != null)
-          tempChar = template[++i];
-        if (timeFormatsTransform[tempChar] != null)
-          string.add(timeFormatsTransform[tempChar]);
+        String ch = template[++i];
+        if ((_timeFormatPads[ch]) != null) ch = template[++i];
+        if (_timeFormatsTransform[ch] != null)
+          string.add(_timeFormatsTransform[ch]);
         j = i + 1;
       }
     }
-    if (j < i) string.add("'" + template.substring(j, i) + "'");
-    return string.join("");
-  }
-}
-
-class UTCTimeFormat extends TimeFormat {
-  UTCTimeFormat(String template, [String identifier = 'en_US'])
-      : super(template, identifier);
-
-  UTCTimeFormat _getInstance(String template) {
-    return new UTCTimeFormat(template, _locale);
-  }
-
-  DateTime parse(String string) {
-    assert(_dateFormat != null);
-    return _dateFormat.parseUTC(string);
+    if (j < i) string.add("'${template.substring(j, i)}'");
+    return string.join();
   }
 }

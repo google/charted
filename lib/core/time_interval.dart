@@ -8,14 +8,10 @@
 
 library charted.core.time_intervals;
 
-typedef DateTime TimeFloorFunction(DateTime val);
-typedef DateTime TimeStepFunction(DateTime val, int offset);
-typedef int TimeToNumberFunction(DateTime val);
-
 class TimeInterval {
-  TimeFloorFunction _floor;
-  TimeStepFunction _step;
-  TimeToNumberFunction _number;
+  final DateTime Function(DateTime) _floor;
+  final DateTime Function(DateTime, int) _step;
+  final int Function(DateTime) _number;
 
   TimeInterval(this._floor, this._step, this._number);
 
@@ -44,13 +40,13 @@ class TimeInterval {
     assert(t1 is int || t1 is DateTime);
 
     List<DateTime> values = [];
-    if (t1 is int) {
-      t1 = new DateTime.fromMillisecondsSinceEpoch(t1 as int);
-    }
+    DateTime t1Date = t1 is DateTime
+        ? t1
+        : new DateTime.fromMillisecondsSinceEpoch(t1 as int);
 
     DateTime time = ceil(t0);
     if (dt > 1) {
-      while (time.isBefore(t1 as DateTime)) {
+      while (time.isBefore(t1Date)) {
         if ((_number(time) % dt) == 0) {
           values.add(new DateTime.fromMillisecondsSinceEpoch(
               time.millisecondsSinceEpoch));
@@ -58,7 +54,7 @@ class TimeInterval {
         time = _step(time, 1);
       }
     } else {
-      while (time.isBefore(t1 as DateTime)) {
+      while (time.isBefore(t1Date)) {
         values.add(new DateTime.fromMillisecondsSinceEpoch(
             time.millisecondsSinceEpoch));
         time = _step(time, 1);
@@ -67,7 +63,7 @@ class TimeInterval {
     return values;
   }
 
-  static TimeInterval second = new TimeInterval(
+  static final TimeInterval second = new TimeInterval(
       (DateTime date) => new DateTime.fromMillisecondsSinceEpoch(
           (date.millisecondsSinceEpoch ~/ 1000) * 1000),
       (DateTime date, int offset) => date =
@@ -75,7 +71,7 @@ class TimeInterval {
               date.millisecondsSinceEpoch + offset * 1000),
       (DateTime date) => date.second);
 
-  static TimeInterval minute = new TimeInterval(
+  static final TimeInterval minute = new TimeInterval(
       (DateTime date) => new DateTime.fromMillisecondsSinceEpoch(
           (date.millisecondsSinceEpoch ~/ 60000) * 60000),
       (DateTime date, int offset) => date =
@@ -83,7 +79,7 @@ class TimeInterval {
               date.millisecondsSinceEpoch + offset * 60000),
       (DateTime date) => date.minute);
 
-  static TimeInterval hour = new TimeInterval(
+  static final TimeInterval hour = new TimeInterval(
       (DateTime date) => new DateTime.fromMillisecondsSinceEpoch(
           (date.millisecondsSinceEpoch ~/ 3600000) * 3600000),
       (DateTime date, int offset) => date =
@@ -91,7 +87,7 @@ class TimeInterval {
               date.millisecondsSinceEpoch + offset * 3600000),
       (DateTime date) => date.hour);
 
-  static TimeInterval day = new TimeInterval(
+  static final TimeInterval day = new TimeInterval(
       (DateTime date) => new DateTime(date.year, date.month, date.day),
       (DateTime date, int offset) => new DateTime(
           date.year,
@@ -103,7 +99,7 @@ class TimeInterval {
           date.millisecond),
       (DateTime date) => date.day - 1);
 
-  static TimeInterval week = new TimeInterval(
+  static final TimeInterval week = new TimeInterval(
       (DateTime date) =>
           new DateTime(date.year, date.month, date.day - (date.weekday % 7)),
       (DateTime date, int offset) => new DateTime(
@@ -118,7 +114,7 @@ class TimeInterval {
     return (dayOfYear(date) + day % 7) ~/ 7;
   });
 
-  static TimeInterval month = new TimeInterval(
+  static final TimeInterval month = new TimeInterval(
       (DateTime date) => new DateTime(date.year, date.month, 1),
       (DateTime date, int offset) => new DateTime(
           date.year,
@@ -130,7 +126,7 @@ class TimeInterval {
           date.millisecond),
       (DateTime date) => date.month - 1);
 
-  static TimeInterval year = new TimeInterval(
+  static final TimeInterval year = new TimeInterval(
       (DateTime date) => new DateTime(date.year),
       (DateTime date, int offset) => new DateTime(
           date.year + offset,
