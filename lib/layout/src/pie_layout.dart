@@ -51,7 +51,7 @@ class PieLayout {
         scaleFactor = (endAngle - startAngle) / (total > 0 ? total : 1),
         arcs = new List<SvgArcData>(data.length);
     List<int> index =
-        new Range.integers(values.length).toList().map<int>((v) => v as int);
+        new Range.integers(values.length).map<int>((v) => v as int).toList();
 
     if (compare != null) {
       index.sort((left, right) => compare(data[left], data[right]));

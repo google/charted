@@ -1,5 +1,5 @@
 name: charted
-version: 0.6.0
+version: 0.6.1
 authors:
 - Prasad Sunkari <prsd@google.com>
 - Michael Cheng <midoringo@google.com>
@@ -7,13 +7,13 @@ authors:
 description: Visualization toolkit for Dart - Provides D3 (http://d3js.org) like Selection API, utilities to achieve data driven DOM and an easy-to-use Charting library based on the Selection API.
 homepage: https://github.com/google/charted
 environment:
-  sdk: '>=2.0.0-dev.55.0 <2.0.0'
+  sdk: '>=2.0.0-dev.55.0 <3.0.0'
 dependencies:
   browser: any
   collection: ^1.14.10
   intl: any
   logging: any
-  observable: '>=0.14.0 <0.15.0'
+  observable: '^0.22.1'
   quiver: any
 dev_dependencies:
   hop: '>=0.27.0'
