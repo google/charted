@@ -11,20 +11,20 @@ part of charted.test.core;
 testMath() {
   test('toRadius() correctly converts degrees to radians', () {
     expect(toRadians(0), equals(0));
-    expect(toRadians(180), equals(math.PI));
-    expect(toRadians(360), equals(math.PI * 2));
-    expect(toRadians(90), equals(math.PI / 2));
-    expect(toRadians(30), equals(math.PI / 6));
-    expect(toRadians(45), equals(math.PI / 4));
+    expect(toRadians(180), equals(math.pi));
+    expect(toRadians(360), equals(math.pi * 2));
+    expect(toRadians(90), equals(math.pi / 2));
+    expect(toRadians(30), equals(math.pi / 6));
+    expect(toRadians(45), equals(math.pi / 4));
   });
 
   test('toDegrees() correctly converts radians to degrees', () {
     expect(toDegrees(0), closeTo(0, EPSILON));
-    expect(toDegrees(math.PI), closeTo(180, EPSILON));
-    expect(toDegrees(math.PI * 2), closeTo(360, EPSILON));
-    expect(toDegrees(math.PI / 2), closeTo(90, EPSILON));
-    expect(toDegrees(math.PI / 6), closeTo(30, EPSILON));
-    expect(toDegrees(math.PI / 4), closeTo(45, EPSILON));
+    expect(toDegrees(math.pi), closeTo(180, EPSILON));
+    expect(toDegrees(math.pi * 2), closeTo(360, EPSILON));
+    expect(toDegrees(math.pi / 2), closeTo(90, EPSILON));
+    expect(toDegrees(math.pi / 6), closeTo(30, EPSILON));
+    expect(toDegrees(math.pi / 4), closeTo(45, EPSILON));
   });
 
   test('sinh() correctly calculates sinh', () {

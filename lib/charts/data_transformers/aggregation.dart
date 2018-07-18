@@ -312,7 +312,7 @@ class AggregationModel {
         for (int fi = 0; fi < factsCount; fi++) {
           var value = factsAccessor(item, _factFields[fi]);
           _factsCache[factsDataOffset + fi] =
-              (value == null) ? double.NAN : (value as num).toDouble();
+              (value == null) ? double.nan : (value as num).toDouble();
         }
       }
 

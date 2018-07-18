@@ -55,9 +55,9 @@ EasingFunction reflectReverseEasingFn(EasingFunction f) =>
 EasingFunction easePoly([num e = 1]) => (t) => math.pow(t, e);
 
 EasingFunction easeElastic([num a = 1, num p = 0.45]) {
-  num s = p / 2 * math.PI * math.asin(1 / a);
+  num s = p / 2 * math.pi * math.asin(1 / a);
   return (t) =>
-      1 + a * math.pow(2, -10 * t) * math.sin((t - s) * 2 * math.PI / p);
+      1 + a * math.pow(2, -10 * t) * math.sin((t - s) * 2 * math.pi / p);
 }
 
 EasingFunction easeBack([num s = 1.70158]) =>
@@ -74,7 +74,7 @@ EasingFunction easeCubicInOut() => (num t) {
       return 4 * (t < .5 ? t3 : 3 * (t - t2) + t3 - .75);
     };
 
-EasingFunction easeSin() => (num t) => 1 - math.cos(t * math.PI / 2);
+EasingFunction easeSin() => (num t) => 1 - math.cos(t * math.pi / 2);
 
 EasingFunction easeExp() => (num t) => math.pow(2, 10 * (t - 1));
 

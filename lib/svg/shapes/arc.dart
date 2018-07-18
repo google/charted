@@ -67,7 +67,7 @@ class SvgArc implements SvgShape {
         se = math.sin(ea),
         cs = math.cos(sa),
         ce = math.cos(ea),
-        df = delta < PI ? 0 : 1;
+        df = delta < pi ? 0 : 1;
 
     return ir > 0
         ? "M${or * cs},${or * ss}"
@@ -84,7 +84,7 @@ class SvgArc implements SvgShape {
   List centroid(d, int i, Element e) {
     var r = (innerRadiusCallback(d, i, e) + outerRadiusCallback(d, i, e)) / 2,
         a = (startAngleCallback(d, i, e) + endAngleCallback(d, i, e)) / 2 -
-            math.PI / 2;
+            math.pi / 2;
     return [math.cos(a) * r, math.sin(a) * r];
   }
 

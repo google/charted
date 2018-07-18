@@ -71,7 +71,7 @@ class FormatPrefix {
     }
 
     // Determining SI scale of the value in increment of 1000.
-    i = 1 + (1e-12 + math.log(value) / math.LN10).floor();
+    i = 1 + (1e-12 + math.log(value) / math.ln10).floor();
     i = math.max(-24, math.min(24, ((i - 1) / 3).floor() * 3));
     i = 8 + (i / 3).floor();
 
@@ -82,7 +82,7 @@ class FormatPrefix {
   }
 
   num _formatPrecision(num x, num p) {
-    return p - (x != 0 ? (math.log(x) / math.LN10).ceil() : 1);
+    return p - (x != 0 ? (math.log(x) / math.ln10).ceil() : 1);
   }
 
   /** Returns the value of x rounded to the nth digit. */

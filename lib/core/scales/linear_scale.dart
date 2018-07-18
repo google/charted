@@ -178,20 +178,20 @@ abstract class BaseLinearScale implements Scale<num, num> {
           ? 1
           : math.pow(
               10,
-              (math.log(extent.max.abs() / forcedTicksCount) / math.LN10)
+              (math.log(extent.max.abs() / forcedTicksCount) / math.ln10)
                   .floor());
       num max = (extent.max / maxFactor).ceil() * maxFactor;
       num minFactor = extent.min == 0
           ? 1
           : math.pow(
               10,
-              (math.log(extent.min.abs() / forcedTicksCount) / math.LN10)
+              (math.log(extent.min.abs() / forcedTicksCount) / math.ln10)
                   .floor());
       num min = (extent.min / minFactor).floor() * minFactor;
       step = (max - min) / forcedTicksCount;
       return new Range(min, max + step * 0.5, step);
     } else {
-      step = math.pow(10, (math.log(span / _ticksCount) / math.LN10).floor());
+      step = math.pow(10, (math.log(span / _ticksCount) / math.ln10).floor());
       var err = _ticksCount / span * step;
 
       // Filter ticks to get closer to the desired count.
@@ -212,7 +212,7 @@ abstract class BaseLinearScale implements Scale<num, num> {
   FormatFunction createTickFormatter([String formatStr]) {
     if (formatStr == null) {
       int precision(num value) {
-        return -(math.log(value) / math.LN10 + .01).floor();
+        return -(math.log(value) / math.ln10 + .01).floor();
       }
 
       Range tickRange = _linearTickRange();

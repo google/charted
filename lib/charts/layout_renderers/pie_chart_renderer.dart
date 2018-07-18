@@ -161,7 +161,7 @@ class PieChartRenderer extends LayoutRendererBase {
           label: row.elementAt(dimension) as String,
           series: [series],
           value:
-              '${(((d.endAngle - d.startAngle) * 50) / math.PI).toStringAsFixed(2)}%');
+              '${(((d.endAngle - d.startAngle) * 50) / math.pi).toStringAsFixed(2)}%');
     });
     return _legend..addAll(area.config.isRTL ? items.reversed : items);
   }

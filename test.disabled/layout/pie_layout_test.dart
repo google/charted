@@ -16,10 +16,10 @@ testPieLayout() {
     [10, 5, 5],       // Case for sorting, results the same as the first case.
   ];
   List mockPieAngle = [
-    [[0, PI / 2], [PI / 2, PI], [PI, PI * 2]],
+    [[0, pi / 2], [pi / 2, pi], [pi, pi * 2]],
     [[0, 0], [0, 0]],
-    [[0, 2 * PI]],
-    [[0, PI / 2], [PI / 2, PI], [PI, PI * 2]],
+    [[0, 2 * pi]],
+    [[0, pi / 2], [pi / 2, pi], [pi, pi * 2]],
   ];
 
   group('PieLayout.startAngleCallback', () {
@@ -37,7 +37,7 @@ testPieLayout() {
   group('PieLayout.endAngleCallback', () {
     PieLayout pieLayout = new PieLayout();
     test('= 2 * PI by default', () {
-      expect(pieLayout.endAngleCallback(null, 0, null), equals(2 * PI));
+      expect(pieLayout.endAngleCallback(null, 0, null), equals(2 * pi));
     });
     PieLayout pieLayout2 = new PieLayout();
     pieLayout2.endAngle = 0.4;
