@@ -9,7 +9,7 @@
 library charted.test.time;
 
 import 'package:charted/time/time.dart';
-import 'package:unittest/unittest.dart';
+import 'package:test/test.dart';
 
 timeTests() {
   List granularity = [

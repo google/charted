@@ -6,7 +6,7 @@ import 'dart:html';
 import 'package:charted/charts/charts.dart';
 import 'package:charted/core/core.dart';
 import 'package:charted/scale/scale.dart';
-import 'package:unittest/unittest.dart';
+import 'package:test/test.dart';
 
 // TODO(midoringo): Add more complex tests on 0 height bars.
 main() {

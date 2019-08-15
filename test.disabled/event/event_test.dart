@@ -9,7 +9,7 @@
 library charted.test.event;
 
 import 'dart:async';
-import 'package:unittest/unittest.dart';
+import 'package:test/test.dart';
 import 'package:charted/event/event.dart';
 
 

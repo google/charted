@@ -14,7 +14,7 @@ import 'package:charted/core/utils.dart';
 import 'package:charted/interpolators/interpolators.dart';
 import 'package:charted/selection/selection.dart';
 import 'package:charted/selection/transition.dart';
-import 'package:unittest/unittest.dart';
+import 'package:test/test.dart';
 
 transitionTests() {
   const TIME_BIAS = 50;

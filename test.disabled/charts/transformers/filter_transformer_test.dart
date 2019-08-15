@@ -1,7 +1,7 @@
 library charted.test.filtertransformer;
 
 import 'package:charted/charts/charts.dart';
-import 'package:unittest/unittest.dart';
+import 'package:test/test.dart';
 
 main() {
   List COLUMNS = [

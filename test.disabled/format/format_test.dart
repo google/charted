@@ -10,7 +10,7 @@ library charted.test.format;
 
 import 'package:charted/core/utils.dart';
 import 'package:charted/locale/format.dart';
-import 'package:unittest/unittest.dart';
+import 'package:test/test.dart';
 
 formatTests() {
   List mockValues = [

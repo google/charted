@@ -9,16 +9,14 @@ homepage: https://github.com/google/charted
 environment:
   sdk: '>=2.0.0-dev.55.0 <3.0.0'
 dependencies:
-  browser: any
   collection: ^1.14.10
   intl: any
   logging: any
   observable: '^0.22.1'
   quiver: any
 dev_dependencies:
-  hop: '>=0.27.0'
   http: any
-  unittest: any
+  test: any
 transformers:
 - $dart2js:
     minify: true
