@@ -138,7 +138,7 @@ class TreeMapLayout extends HierarchyLayout<TreeMapNode> {
 
   /// Computes the most amount of area needed to layout the list of nodes.
   num _worst(List<TreeMapNode> nodes, num length, num pArea) {
-    num area, rmax = 0, rmin = double.INFINITY;
+    num area, rmax = 0, rmin = double.infinity;
     for (var node in nodes) {
       area = node.area;
       if (area <= 0) continue;
@@ -150,7 +150,7 @@ class TreeMapLayout extends HierarchyLayout<TreeMapNode> {
     return (pArea > 0)
         ? math.max(
             length * rmax * ratio / pArea, pArea / (length * rmin * ratio))
-        : double.INFINITY;
+        : double.infinity;
   }
 
   /// Recursively compute each nodes (and its children nodes) position and size
@@ -164,7 +164,7 @@ class TreeMapLayout extends HierarchyLayout<TreeMapNode> {
       var remaining = new List<TreeMapNode>.from(children);
       int n;
       num score,
-          best = double.INFINITY,
+          best = double.infinity,
           length = (mode == TREEMAP_LAYOUT_SLICE)
               ? rect.width
               : (mode == TREEMAP_LAYOUT_DICE)
@@ -187,7 +187,7 @@ class TreeMapLayout extends HierarchyLayout<TreeMapNode> {
           length = math.min(rect.width, rect.height);
           nodes.clear();
           area = 0;
-          best = double.INFINITY;
+          best = double.infinity;
         }
       }
       if (nodes.isNotEmpty) {

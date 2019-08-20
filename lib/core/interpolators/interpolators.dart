@@ -335,7 +335,7 @@ Interpolator<List<num>> createZoomInterpolator(List a, List b) {
   if (a == null || b == null) return (t) => b;
   assert(a.length == b.length && a.length == 3);
 
-  var sqrt2 = math.SQRT2, param2 = 2, param4 = 4;
+  var sqrt2 = math.sqrt2, param2 = 2, param4 = 4;
 
   num ux0 = a[0], uy0 = a[1], w0 = a[2], ux1 = b[0], uy1 = b[1], w1 = b[2];
 

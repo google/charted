@@ -13,12 +13,12 @@ testSvgArc() {
   List mockSvgData = [
     new SvgArcData(null, 0, 0,      0,      0,  100),  // Init sector
     new SvgArcData(null, 0, 0,      0,      50, 100),  // Init donut
-    new SvgArcData(null, 0, 0,      2 * PI, 0,  100),  // Whole sector
-    new SvgArcData(null, 0, 0,      2 * PI, 50, 100),  // Whole donut
-    new SvgArcData(null, 0, 0,      PI / 3, 0,  100),  // Sector start angle 0
-    new SvgArcData(null, 0, 0,      PI / 3, 50, 100),  // Slice start angle 0
-    new SvgArcData(null, 0, PI / 3, PI,     0,  100),  // Sector start angle > 0
-    new SvgArcData(null, 0, PI / 3, PI,     50, 100),  // Slice start angle > 0
+    new SvgArcData(null, 0, 0,      2 * pi, 0,  100),  // Whole sector
+    new SvgArcData(null, 0, 0,      2 * pi, 50, 100),  // Whole donut
+    new SvgArcData(null, 0, 0,      pi / 3, 0,  100),  // Sector start angle 0
+    new SvgArcData(null, 0, 0,      pi / 3, 50, 100),  // Slice start angle 0
+    new SvgArcData(null, 0, pi / 3, pi,     0,  100),  // Sector start angle > 0
+    new SvgArcData(null, 0, pi / 3, pi,     50, 100),  // Slice start angle > 0
   ];
 
   test('interpolateSvgArcData() returns an InterpolateFn that '
