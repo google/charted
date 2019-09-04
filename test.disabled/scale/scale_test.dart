@@ -12,7 +12,7 @@ import 'package:charted/core/utils.dart';
 import 'package:charted/interpolators/interpolators.dart';
 import 'package:charted/locale/locale.dart';
 import 'package:charted/scale/scale.dart';
-import 'package:unittest/unittest.dart';
+import 'package:test/test.dart';
 
 part 'linear_scale_test.dart';
 part 'log_scale_test.dart';

@@ -9,7 +9,7 @@
 library charted.test.selection;
 
 import 'dart:html' show document, Element;
-import 'package:unittest/unittest.dart';
+import 'package:test/test.dart';
 import 'package:charted/selection/selection.dart';
 
 part 'selection_scope_test.dart';

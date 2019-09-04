@@ -8,7 +8,7 @@
 
 library charted.test.locale;
 
-import 'package:unittest/unittest.dart';
+import 'package:test/test.dart';
 import 'package:charted/locale/locale.dart';
 
 part 'number_format_test.dart';

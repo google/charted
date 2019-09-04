@@ -10,7 +10,7 @@ library charted.test.interpolators;
 
 import 'package:charted/core/utils.dart';
 import 'package:charted/interpolators/interpolators.dart';
-import 'package:unittest/unittest.dart';
+import 'package:test/test.dart';
 
 part 'easing_test.dart';
 

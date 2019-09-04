@@ -7,7 +7,7 @@ import 'package:charted/charts/charts.dart';
 import 'package:charted/core/core.dart';
 import 'package:charted/layout/layout.dart';
 import 'package:charted/svg/svg.dart';
-import 'package:unittest/unittest.dart';
+import 'package:test/test.dart';
 
 main() {
   const CHART_WIDTH = 1000;

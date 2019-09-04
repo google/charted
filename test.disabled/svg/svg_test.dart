@@ -15,7 +15,7 @@ import 'package:charted/scale/scale.dart';
 import 'package:charted/selection/selection.dart';
 import 'package:charted/svg/svg.dart';
 import 'package:charted/interpolators/interpolators.dart';
-import 'package:unittest/unittest.dart';
+import 'package:test/test.dart';
 
 part 'svg_arc_test.dart';
 part 'svg_axis_test.dart';
